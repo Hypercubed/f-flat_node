@@ -1,0 +1,16 @@
+{
+  "import": "require define",
+  "exit": "$global.process.exit",
+  "isString": "type \"string\" =",
+  "isNumber": "type \"number\" =",
+  "isBoolean": "type \"boolean\" =",
+  "toRadians": "pi 180 / *",
+  "toDegrees": "180 pi / *",
+  "log": "ln ln10 /",
+  "erfc": "1 swap erf -",
+  "acosh": "dup dup * -- sqrt + ln",
+  "cosh": "exp dup inv + 2 /",
+  "sinh": "exp dup inv - 2 /",
+  "tanh": "2 * exp dup -- swap ++ /",
+  "atanh": "1 swap dup [ + 1 ] dip - / ln 0.5 *"
+}
