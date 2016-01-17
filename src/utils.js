@@ -81,3 +81,12 @@ export function eql (a, b) {
   }
   return is.equal(a, b);
 }
+
+export function toLiteral (d) {
+  if (isNumeric(d)) {
+    return +d;
+  } else if (isBoolean(d)) {
+    return d.toLowerCase() === 'true';
+  }
+  return new Command(d);
+}

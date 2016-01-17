@@ -15,9 +15,10 @@ export function Stack (s) {
 
   this.depth = 0;
   this.q = [];
+  this.dict = {};
 
   /* core */
-  this.dict = {
+  this.define({
     '+': function (lhs, rhs) {
       if (is.array(lhs) && is.array(rhs)) {  // concat
         return lhs.concat(rhs);
@@ -117,39 +118,40 @@ export function Stack (s) {
       lhs.push(rhs);
       return lhs;
     }
-  };
+  });
 
-  /* additioan ops */
-  this
-    // .define('/', function(lhs,rhs) { return lhs / rhs; })
-    .define('%', (lhs, rhs) => lhs % rhs)
-    .define('>', (lhs, rhs) => lhs > rhs)
-    .define('<', (lhs, rhs) => lhs < rhs)
-    .define('=', eql);
+  /* additional ops */
+  this.define({
+    '%': (lhs, rhs) => lhs % rhs,
+    '>': (lhs, rhs) => lhs > rhs,
+    '<': (lhs, rhs) => lhs < rhs,
+    '=': eql
+  });
 
   /* stack */
-  this
-    .define('depth', () => this.length)
-    .define('stack', () => this.splice(0))
-    .define('unstack', function (s) {
+  this.define({
+    'depth': () => this.length,
+    'stack': () => this.splice(0),
+    'unstack': function (s) {
       this.clr();
       this.push.apply(this, s);
-    })
-    .define('in', function (a) {
+    },
+    'in': function (a) {
       var r = this.splice(0);
       this.eval(a);
       var s = this.splice(0);
       this.push.apply(this, r);
       this.push(s);
-    });
+    }
+  });
 
   /* stack functions */
-  this
-    .define('drop', function () { this.pop(); })
-    .define('swap', function (a, b) { this.push(b); return a; })
-    .define('dup', function () { return copy(this[this.length - 1]); })
-    .define('sto', function (lhs, rhs) { this.dict[rhs] = lhs; })
-    .define('def', function (cmd, name) {
+  this.define({
+    'drop': function () { this.pop(); },
+    'swap': function (a, b) { this.push(b); return a; },
+    'dup': function () { return copy(this[this.length - 1]); },
+    'sto': function (lhs, rhs) { this.dict[rhs] = lhs; },
+    'def': function (cmd, name) {
       if (typeof cmd !== 'function') {
         cmd =
           (cmd instanceof Command)
@@ -157,20 +159,20 @@ export function Stack (s) {
           : new Command(cmd);
       }
       this.dict[name] = cmd;
-    })
-    .define('delete', function (a) { delete this.dict[a]; })
-    .define('type', function (a) { return typeof a; })
-    .define('rcl', function (a) { return this.lookup(a); })
-    .define('see', function (a) { return this.lookup(a).toString(); })
-    .define('eval', function (a) { this.eval(a); })
-    .define('clr', this.clr)
-    .define('>r', function (a) { this.q.push(a); })
-    .define('<r', function () { return this.q.pop(); })
-    .define('choose', function (b, t, f) { return b ? t : f; });
+    },
+    'delete': function (a) { delete this.dict[a]; },
+    'type': function (a) { return typeof a; },
+    'rcl': function (a) { return this.lookup(a); },
+    'see': function (a) { return this.lookup(a).toString(); },
+    'eval': function (a) { this.eval(a); },
+    'clr': this.clr,
+    '>r': function (a) { this.q.push(a); },
+    '<r': function () { return this.q.pop(); },
+    'choose': function (b, t, f) { return b ? t : f; }
+  });
 
   /* math */
   this
-    // .define('Math', Math)
     .define(Math.abs)
     .define(Math.cos)
     .define(Math.sin)
@@ -186,12 +188,12 @@ export function Stack (s) {
     .define(Math.max)
     .define(Math.min)
     .define(Math.exp)
-    .define('gamma', gamma)
-    .define('erf', erf)
-    .define('ln', Math.log)
-    .define('^', Math.pow)
-    .define('rand', Math.random)
     .define({
+      gamma,
+      erf,
+      'ln': Math.log,
+      '^': Math.pow,
+      'rand': Math.random,
       'e': Math.E,               // returns Euler's number
       'pi': Math.PI,             // returns PI
       'tau': 2 * Math.PI,
@@ -204,63 +206,69 @@ export function Stack (s) {
     });
 
   /* types */
-  this
-    .define('String', String)
-    .define('Number', Number)
-    .define('Boolean', Boolean)
-    .define('Array', function (n) { return new Array(n); })
-    .define('Integer', function (a) { return a | 0; });
+  this.define({
+    'String': String,
+    'Number': Number,
+    'Boolean': Boolean,
+    'Array': function (n) { return new Array(n); },
+    'Integer': function (a) { return a | 0; }
+  });
 
   /* other */
-  this
-    .define('null', function () { return null; })
-    .define('nan', function () { return NaN; });  // Doesn't work
+  this.define({
+    'null': function () { return null; },
+    'nan': function () { return NaN; }  // Doesn't work
+  });
 
   /* strings */
 
   /* lists  */
-  this.define('length', function (a) { return a.length; });
-  this.define('pluck', pluck);
-  this.define('pop', function () { return this[this.length - 1].pop(); });  // These should probabbly leave the array and the return value
-  this.define('shift', function () { return this[this.length - 1].shift(); });
-  this.define('slice', function (a, b, c) { return a.slice(b, c !== null ? c : undefined); });
-  this.define('splice', function (a, b, c) { return a.splice(b, c); });
-  // this.define('split', function (a,b) { return a.split(b); });
-  this.define('at', function (a, b) {
-    b = b | 0;
-    if (b < 0) b = a.length + b;
-    return (is.String(s)) ? a.charAt(b) : a[b];
-  });
-  this.define('indexof', function (a, b) {
-    return a.indexOf(b);
+  this.define({
+    'length': function (a) { return a.length; },
+    'pluck': pluck,
+    'pop': function () { return this[this.length - 1].pop(); },  // These should probabbly leave the array and the return value
+    'shift': function () { return this[this.length - 1].shift(); },
+    'slice': function (a, b, c) { return a.slice(b, c !== null ? c : undefined); },
+    'splice': function (a, b, c) { return a.splice(b, c); },
+    // 'split', function (a,b) { return a.split(b); },
+    'at': function (a, b) {
+      b = b | 0;
+      if (b < 0) b = a.length + b;
+      return (is.String(s)) ? a.charAt(b) : a[b];
+    },
+    'indexof': function (a, b) {
+      return a.indexOf(b);
+    }
   });
 
   /* experimental */
-  this.define('throw', this.throw);
-
-  this.define(function clock () { return (new Date()).getTime(); });
-
-  this.define(function print (a) { console.log(a); });
-  this.define('?', function (a) { console.info(a); });
-  // this.define('alert', function alert (a) { window.alert(a); });
-  this.define('$global', global);
-  // this.define('$', function $ (a) { return global.$(a); });
-  this.define(function stringify (a) { return JSON.stringify(a); });
-  this.define(function parse (a) { return JSON.parse(a); });
-  this.define(function call (a, b) { return a.call(this, b); });
-  this.define(function apply (a, b) { return a.apply(this, b); });
-  this.define(function $timeout (a, b) {
-    var self = this;
-    setTimeout(function () {
-      self.eval(a);
-    }, b);
+  this.define({
+    'throw': this.throw,
+    'clock': function clock () { return (new Date()).getTime(); },
+    'print': function print (a) { console.log(a); },
+    '?': function (a) { console.info(a); },
+    // 'alert', function alert (a) { window.alert(a); });
+    '$global': global,
+    // '$', function $ (a) { return global.$(a); });
+    'stringify': function stringify (a) { return JSON.stringify(a); },
+    'parse': function parse (a) { return JSON.parse(a); },
+    'call': function call (a, b) { return a.call(this, b); },
+    'apply': function apply (a, b) { return a.apply(this, b); },
+    '$timeout': function $timeout (a, b) {
+      var self = this;
+      setTimeout(function () {
+        self.eval(a);
+      }, b);
+    }
   });
 
-  this.define('jsFunc', function jsFunc (rhs) {
-    eval.call(this, 'var fn = ' + rhs);
-    return fn;
-  });
-  this.define('jsDef', '#jsFunc dip def');
+  /* this.define({
+    'jsFunc': function jsFunc (rhs) {
+      eval.call(this, 'var fn = ' + rhs);
+      return fn;
+    },
+    'jsDef': '#jsFunc dip def'
+  }); */
 
   this.define(function blob (b, t) {
     if (!(is.array(b))) {
@@ -288,34 +296,17 @@ export function Stack (s) {
     xhr.send(null);
   });
 
-  /* this.define(function bench (a) {
-    var i;
-    var N = 1000;
-
-    i = N;
-    var t0 = (new Date()).getTime();
-    while (i--) {
-      new F([]);
-    }
-
-    i = 1000;
-    var t1 = (new Date()).getTime();
-    while (i--) {
-      new F(a);
-    }
-
-    return (new Date()).getTime() - 2 * t1 + t0;
-  }); */
-
   this.define('define', function define (o) {
     this.define(o);
   });
 
   this.define('require', unary(require));
 
-  this.eval('"../package.json" require "version" pluck version def');
-  this.eval('"../ff-lib/core.json" require define');
-  this.eval('"../ff-lib/usr.json" import');
+  this.eval(`
+    "../package.json" require "version" pluck version def
+    "../ff-lib/core.json" require define
+    "../ff-lib/usr.json" import
+  `);
 
   if (s) { this.eval(s); }
 }
@@ -337,7 +328,7 @@ Stack.prototype.define = function (name, fn) {
     if (typeof fn === 'string') {
       fn = new Command(fn);
     }
-    this.dict[name] = fn;
+    this.dict[name.toLowerCase()] = fn;
   }
   return this;
 };
@@ -353,6 +344,8 @@ Stack.prototype.eval = function (s) {
   if (is.array(ss)) { ss = ss.slice(0); }
   if (ss instanceof Command) { ss = [ ss ]; }
   if (typeof ss === 'string') { ss = lexer(ss); }
+
+  // console.log('Lexer output: ', ss);
 
   const len = ss.length;
   for (var i = 0; i < len; ++i) {

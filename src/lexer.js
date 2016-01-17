@@ -1,5 +1,4 @@
-import {isWhitespace, isQuote, isBracket, isNumeric, isBoolean} from './utils';
-import {Command} from './command';
+import {isWhitespace, isQuote, isBracket, toLiteral} from './utils';
 
 export function lexer (text) {
   if (!text || text.length < 1) { return []; }
@@ -54,13 +53,4 @@ export function lexer (text) {
       token = '';
     }
   }
-
-  function toLiteral (d) {
-    if (isNumeric(d)) {
-      return +d;
-    } else if (isBoolean(d)) {
-      return d.toLowerCase() === 'true';
-    }
-    return new Command(d);
-  }
-};
+}

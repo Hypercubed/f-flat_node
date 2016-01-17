@@ -1,6 +1,5 @@
 {
   "import": "require define",
-  "exit": "$global.process.exit",
   "isString": "type \"string\" =",
   "isNumber": "type \"number\" =",
   "isBoolean": "type \"boolean\" =",
