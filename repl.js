@@ -1,20 +1,19 @@
 import {Stack} from './src/stack';
 import repl from 'repl';
 
-var f = new Stack();
-
-function evalF (code) {
-  code = code
-    .replace('({', '{')
-    .replace('})', '}');
-
-  // console.log('Input: ', code);
-
-  f.eval(code);
-  console.log(f.slice());
-}
+var f = new Stack('"Welcome to f♭" print');
 
 repl.start({
-  prompt: '> ',
-  eval: evalF
+  prompt: 'f♭> ',
+  eval: (code) => {
+    code = code
+      .replace(/^\(([\s\S]*)\n\)$/m, '$1')
+      .replace('({', '{')
+      .replace('})', '}');
+
+    // console.log('Input: ', code);
+
+    f.eval(code);
+    console.log(f.stack);
+  }
 });

@@ -1,0 +1,3 @@
+'./package.json' require 'version' pluck version def
+'./ff-lib/core.json' require define
+'./ff-lib/usr.json' require define

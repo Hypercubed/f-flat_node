@@ -3,6 +3,8 @@
 import is from 'is';
 import gamma from 'gamma';
 import erf from 'compute-erf';
+import fs from 'fs';
+import path from 'path';
 
 import {unary, pluck, copy, eql} from './utils';
 import {lexer} from './lexer';
@@ -16,6 +18,7 @@ export function Stack (s) {
   this.depth = 0;
   this.q = [];
   this.dict = {};
+  const stack = this.stack = [];
 
   /* core */
   this.define({
@@ -77,25 +80,25 @@ export function Stack (s) {
       }
       return lhs / rhs;
     },
-    '{': function () {
-      var s = this.splice(0);
+    '(': function () {
+      var s = stack.splice(0);
       this.q.push(s);
     },
-    '}': function () {
-      var s = this.splice(0);
+    ')': function () {
+      var s = stack.splice(0);
       var r = this.q.pop();
-      this.push.apply(this, r);
+      stack.push.apply(stack, r);
       return s;
     },
     '[': function () {
-      var s = this.splice(0);
+      var s = stack.splice(0);
       this.q.push(s);
       this.depth++;
     },
     ']': function () {
-      var s = this.splice(0);
+      var s = stack.splice(0);
       var r = this.q.pop();
-      this.push.apply(this, r);
+      stack.push.apply(stack, r);
       this.depth = Math.max(0, this.depth - 1);
       return s;
     },
@@ -130,26 +133,26 @@ export function Stack (s) {
 
   /* stack */
   this.define({
-    'depth': () => this.length,
-    'stack': () => this.splice(0),
+    'depth': () => stack.length,
+    'stack': () => stack.splice(0),
     'unstack': function (s) {
       this.clr();
-      this.push.apply(this, s);
+      stack.push.apply(stack, s);
     },
     'in': function (a) {
-      var r = this.splice(0);
+      var r = stack.splice(0);
       this.eval(a);
-      var s = this.splice(0);
-      this.push.apply(this, r);
-      this.push(s);
+      var s = stack.splice(0);
+      stack.push(r);
+      stack.push(s);
     }
   });
 
   /* stack functions */
   this.define({
-    'drop': function () { this.pop(); },
-    'swap': function (a, b) { this.push(b); return a; },
-    'dup': function () { return copy(this[this.length - 1]); },
+    'drop': function () { stack.pop(); },
+    'swap': function (a, b) { stack.push(b); return a; },
+    'dup': function () { return copy(stack[stack.length - 1]); },
     'sto': function (lhs, rhs) { this.dict[rhs] = lhs; },
     'def': function (cmd, name) {
       if (typeof cmd !== 'function') {
@@ -226,8 +229,8 @@ export function Stack (s) {
   this.define({
     'length': function (a) { return a.length; },
     'pluck': pluck,
-    'pop': function () { return this[this.length - 1].pop(); },  // These should probabbly leave the array and the return value
-    'shift': function () { return this[this.length - 1].shift(); },
+    'pop': function () { return stack[stack.length - 1].pop(); },  // These should probabbly leave the array and the return value
+    'shift': function () { return stack[stack.length - 1].shift(); },
     'slice': function (a, b, c) { return a.slice(b, c !== null ? c : undefined); },
     'splice': function (a, b, c) { return a.splice(b, c); },
     // 'split', function (a,b) { return a.split(b); },
@@ -300,18 +303,20 @@ export function Stack (s) {
     this.define(o);
   });
 
-  this.define('require', unary(require));
-
-  this.eval(`
-    "../package.json" require "version" pluck version def
-    "../ff-lib/core.json" require define
-    "../ff-lib/usr.json" import
-  `);
+  this.define('require', this.require);
+  this.require('./ff-lib/boot.ff');
 
   if (s) { this.eval(s); }
 }
 
-Stack.prototype = [];
+Stack.prototype.require = function (name) {
+  if (path.extname(name) === '.ff') {
+    var code = fs.readFileSync(name, 'utf8');
+    this.eval(code);
+    return;
+  }
+  return require(path.join(process.cwd(), name));
+};
 
 Stack.prototype.define = function (name, fn) {
   if (typeof name === 'object') {
@@ -338,7 +343,8 @@ Stack.prototype.lookup = function (path) {
 };
 
 Stack.prototype.eval = function (s) {
-  const stack = this;
+  const self = this;
+  const _stack = self.stack;
 
   let ss = s;
   if (is.array(ss)) { ss = ss.slice(0); }
@@ -351,41 +357,42 @@ Stack.prototype.eval = function (s) {
   for (var i = 0; i < len; ++i) {
     let c = ss[i];
 
-    if (c instanceof Command && (stack.depth < 1 || '[]'.indexOf(c.command) > -1)) {
+    if (c instanceof Command && (self.depth < 1 || '[]'.indexOf(c.command) > -1)) {
       if (c.command.charAt(0) === '#') {
         c = new Command(c.command.slice(1));
-        stack.push(c);
+        _stack.push(c);
       } else {
-        let d = stack.lookup(c.command);
+        let d = self.lookup(c.command);
         if (d instanceof Command) {
-          stack.eval(d.command);
+          self.eval(d.command);
         } else if (d instanceof Function) {
-          var args = d.length > 0 ? stack.splice(-d.length) : [];
-          var r = d.apply(stack, args);
+          var args = d.length > 0 ? _stack.splice(-d.length) : [];
+          var r = d.apply(self, args);
           // console.log(r);
           if (typeof r !== 'undefined') {
-            stack.push(r);
+            _stack.push(r);
           }
         } else if (d) {
-          stack.push(d);
+          _stack.push(d);
         } else {
-          stack.push(c.command);
+          _stack.push(c.command);
         }
       }
     } else {
-      stack.push(c);
+      _stack.push(c);
     }
   }
 
-  return stack;
+  return self;
 };
 
 Stack.prototype.clr = function () {
-  while (this.length > 0) { this.pop(); }
+  const stack = this.stack;
+  while (stack.length > 0) { stack.pop(); }
 };
 
 Stack.prototype.throw = function (exp) {
-  this.push(exp);
+  this.stack.push(exp);
 
   const e = new Error(exp);
   console.info(e.stack);

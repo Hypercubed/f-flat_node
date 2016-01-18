@@ -49,12 +49,13 @@ export function isWhitespace (ch) {
 }
 
 export function isQuote (ch) {
-  return (ch === '"' || ch === '\'');
+  return (ch === '"' || ch === '\'' || ch === '\`');
 }
 
 export function isBracket (ch) {
   return (ch === '{' || ch === '}' ||
-          ch === '[' || ch === ']');
+          ch === '[' || ch === ']' ||
+          ch === '(' || ch === ')');
 }
 
 export function isNumeric (num) {
