@@ -24,6 +24,8 @@ export function unary (fn) {
 }
 
 export function pluck (context, path) {
+  if (path === '.') return '.';
+
   const pathParts = path.split('.');
   let ii = pathParts.length;
 
@@ -37,7 +39,10 @@ export function pluck (context, path) {
 
 export function copy (src) {
   if (src instanceof Array) {
-    return JSON.parse(JSON.stringify(src));
+    return src.map(copy);
+  }
+  if (src instanceof Command) {
+    return src.clone();
   }
   return src;
 }

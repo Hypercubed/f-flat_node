@@ -1,11 +1,14 @@
 import test from 'tape';
 import {Stack as F} from '../src/stack';
 
+import winston from 'winston';
+winston.level = process.env.NODE_ENV;
+
 test('setup', t => {
   t.test('should create a stack object', t => {
     var f = F();
     // t.ok(f instanceof Array);
-    t.ok(f instanceof F);
+    // t.ok(f instanceof F);
     // t.notEqual(f.lexer, undefined);
     t.notEqual(f.eval, undefined);
     t.end();
@@ -456,6 +459,7 @@ test('stack', t => {
   t.test('should dup', t => {
     var f = F();
     t.deepEqual(f.eval('1 2 dup 3').stack, [1, 2, 2, 3]);
+    t.deepEqual(F().eval('[ 1 2 + ] dup swap drop eval').stack, [3]);
     t.end();
   });
 
@@ -500,7 +504,7 @@ test('stack', t => {
 
   t.test('should unstack', t => {
     var f = F();
-    t.deepEqual(f.eval('[ 1 2 3 ] unstack').stack, [1, 2, 3]);
+    t.deepEqual(f.eval('[ 1 2 3 ] <-').stack, [1, 2, 3]);
     t.end();
   });
 
@@ -510,6 +514,26 @@ test('stack', t => {
     t.deepEqual(F().eval('false 3 4 choose').stack, [4]);
     t.deepEqual(F().eval('5 false [ 2 + ] [ 2 * ] branch').stack, [10]);
     t.deepEqual(F().eval('5 true [ 2 + ] [ 2 * ] branch').stack, [7]);
+    t.end();
+  });
+});
+
+test('in', t => {
+  t.test('should evaluate list', t => {
+    var f = F();
+    t.deepEqual(f.eval('[ 2 1 + ] in').stack, [ [ 3 ] ]);
+    t.end();
+  });
+
+  t.test('should have access to parent scope', t => {
+    var f = F();
+    t.deepEqual(f.eval('"before" a sto [ a ] in').stack, [ [ 'before' ] ]);
+    t.end();
+  });
+
+  t.test('should isolate child scope', t => {
+    var f = F();
+    t.deepEqual(f.eval('"outer" a sto [ "inner" "a" sto a ] in a').stack, [ [ 'inner' ], 'outer' ]);
     t.end();
   });
 });

@@ -1,4 +1,8 @@
 {
+  "slip": "=> eval <=",
+  "dip": "swap slip",
+  "(": "stack =>",
+  ")": "stack <= dip",
   "import": "require define",
   "isString": "type \"string\" =",
   "isNumber": "type \"number\" =",

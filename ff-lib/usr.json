@@ -1,6 +1,4 @@
 {
-  "slip": ">r eval <r",
-  "dip": "swap slip",
   "cleave": "[ keep ] dip eval",
   "keep": "over slip",
   "dupd": "[ dup ] dip",
@@ -17,7 +15,7 @@
   "~!": "++ gamma",
   "c!": "pred [ count ] dip [ * ] swap times",
   "r!": "dup 0 = [ drop 1 ] [ pred r! * ] branch",
-  "!": "dup 25 < [ pred [ count ] dip [ * ] swap times ] [ ++ gamma ] branch",
+  "!": "dup 25 < [ pred [ count ] dip [ * ] swap times ] [ ~! ] branch",
   "npr": "[ [ ! ] keep ] dip - ! /",
   "ncr": "[ npr ] keep ! / round",
   "branch": "choose eval",
