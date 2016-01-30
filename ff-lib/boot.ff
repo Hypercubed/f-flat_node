@@ -1,9 +1,20 @@
-"./ff-lib/core.js" require define
 "./ff-lib/base.js" require define
-"./ff-lib/math.js" require define
+
+'./ff-lib/objects.js' require define
+
+"./ff-lib/core.js" require define
 './ff-lib/core.json' require define
+
+"./ff-lib/math.js" require define
+"./ff-lib/math.json" require define
+"./ff-lib/math.ff" require
+
 "./ff-lib/types.js" require define
 './ff-lib/experimental.js' require define
-'./ff-lib/objects.js' require define
+
 './ff-lib/usr.json' require define
-'./package.json' require 'version' pluck version def
+'./ff-lib/usr.ff' require
+
+'./ff-lib/functional.js' require define
+
+'./package.json' require 'version' @ 'version' def

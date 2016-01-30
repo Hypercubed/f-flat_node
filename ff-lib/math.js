@@ -1,34 +1,69 @@
 import gamma from 'gamma';
 import erf from 'compute-erf';
 
+import {typed, BigNumber, pi, Complex} from '../src/types';
+
 module.exports = {
-  abs: Math.abs,
-  cos: Math.cos,
-  sin: Math.sin,
-  tan: Math.tan,
-  acos: Math.acos,
-  asin: Math.asin,
-  atan: Math.atan,
-  atan2: Math.atan2,
-  round: Math.round,
-  floor: Math.floor,
-  ceil: Math.ceil,
-  sqrt: Math.sqrt,
-  max: Math.max,
-  min: Math.min,
-  exp: Math.exp,
-  gamma,
-  erf,
-  'ln': Math.log,
-  '^': Math.pow,
+  'number': x => new BigNumber(x),
+  'number?': typed('number_', {
+    'BigNumber | Complex | number': () => true,
+    'any': () => false
+  }),
+  're': typed('re', {
+    'BigNumber | number': (a) => a,
+    'Complex': (a) => a.re
+  }),
+  'im': typed('re', {
+    'BigNumber | number': (a) => 0,
+    'Complex': (a) => a.im
+  }),
+  'complex?': typed('complex_', {
+    'Complex': (a) => !a.im.isZero(),
+    'BigNumber | number | any': () => false
+  }),
+  '%': typed('mod', { 'BigNumber | Complex, BigNumber | number': (lhs, rhs) => lhs.modulo(rhs) }),
+  abs: typed('abs', { 'BigNumber | Complex': a => a.abs() }),
+  cos: a => BigNumber.cos(a),
+  sin: a => BigNumber.sin(a),
+  tan: a => BigNumber.tan(a),
+  acos: a => BigNumber.acos(a),
+  asin: a => BigNumber.asin(a),
+  atan: a => BigNumber.atan(a),
+  atan2: a => BigNumber.atan2(a),
+  round: typed('round', {
+    'BigNumber | Complex': a => a.round()
+  }),
+  floor: typed('floor', {
+    'BigNumber | Complex': a => a.floor()
+  }),
+  ceil: typed('ceil', {
+    'BigNumber | Complex': a => a.ceil()
+  }),
+  sqrt: typed('exp', {
+    'Complex': function (x) {
+      return x.sqrt();
+    },
+    'BigNumber': function (x) {
+      return (x.isNegative()) ? new Complex(x, 0).sqrt() : x.sqrt();
+    }
+  }),
+  max: (a, b, ...c) => BigNumber.max(a, b, ...c),
+  min: (a, b, ...c) => BigNumber.min(a, b, ...c),
+  exp: typed('exp', {
+    'BigNumber | Complex': x => x.exp()
+  }),
+  gamma: typed('gamma', {
+    'BigNumber | number': gamma,
+    'Complex': a => a.gamma(a)
+  }),
+  erf,  // todo: big
+  ln: typed('ln', {
+    'BigNumber | Complex': a => a.ln()
+  }),
+  '^': typed('pow', {
+    'BigNumber | Complex, BigNumber | Complex | number': (a, b) => a.pow(b)
+  }),
+  // '^': 'swap ln * exp',
   'rand': Math.random,
-  'e': Math.E,               // returns Euler's number
-  'pi': Math.PI,             // returns PI
-  'tau': 2 * Math.PI,
-  'sqrt2': Math.SQRT2,       // returns the square root of 2
-  'sqrt1_2': Math.SQRT1_2,   // returns the square root of 1/2
-  'ln2': Math.LN2,           // returns the natural logarithm of 2
-  'ln10': Math.LN10,         // returns the natural logarithm of 10
-  'log2e': Math.LOG2E,       // returns base 2 logarithm of E
-  'log10e': Math.LOG10E      // returns base 10 logarithm of E
+  'pi': pi
 };

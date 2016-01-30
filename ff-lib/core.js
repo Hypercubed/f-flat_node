@@ -1,23 +1,18 @@
-import {copy, pluck} from '../src/utils';
-import is from 'is';
+import {typed} from '../src/types/';
 
 module.exports = {
+  'id': (x) => x,  // same as nop
   'nop': () => {},
-  'drop': (a) => { },
+  'drop': (a) => {},  // 1 >nop
   'swap': function (a, b) { this.stack.push(b); return a; },
-  'dup': function (a) { this.stack.push(a); return copy(a); },
+  'dup': function (a) { this.stack.push(a); return a; },
   'depth': function () { return this.stack.length; },
-  'length': a => a.length,
-  'pluck': pluck,
-  'pop': function () { this.stack[this.stack.length - 1].pop(); },  // These should probabbly leave the array and the return value
-  'shift': function () { this.stack[this.stack.length - 1].shift(); },
+  'length': typed('length', { // count/size
+    'Array | string': a => a.length,
+    'Object': a => {
+      return Object.keys(a).length;
+    }
+  }),
   'slice': (a, b, c) => a.slice(b, c !== null ? c : undefined),
-  'splice': (a, b, c) => a.splice(b, c),
-  // 'split', function (a,b) { return a.split(b); },
-  'at': function (a, b) {
-    b = b | 0;
-    if (b < 0) b = a.length + b;
-    return (is.String(a)) ? a.charAt(b) : a[b];
-  },
   'indexof': (a, b) => a.indexOf(b)
 };

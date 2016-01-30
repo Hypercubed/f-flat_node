@@ -5,15 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "babel-node ./test/f-flat-spec.js",
-    "start": "babel-node ./repl.js"
+    "start": "babel-node ./bin/repl.js"
   },
   "author": "J. Harshbarger",
   "license": "MIT",
   "dependencies": {
     "compute-erf": "^3.0.3",
+    "decimal.js": "^5.0.0",
     "gamma": "^1.0.0",
     "is": "^3.1.0",
+    "progress": "^1.1.8",
     "rfr": "^1.2.3",
+    "typed-function": "^0.10.3",
     "winston": "^2.1.1"
   },
   "devDependencies": {

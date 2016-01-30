@@ -33,15 +33,17 @@ export function lexer (text) {
   function scanString (lch) {
     let token = '';
     const ll = lch.length;
+
+    let pch = null;
     let nch = null;
 
-    while (index < text.length && nch !== lch) {
+    while (index < text.length && (nch !== lch || pch === '\\')) {
       token += text[index++];
+      pch = nch;
       nch = text.substring(index, index + ll);
     }
     index += ll;
-
-    return token;
+    return token.replace('\\' + lch, lch);
   }
 
   function pushToken (t) {
