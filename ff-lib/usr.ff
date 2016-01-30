@@ -1,0 +1,12 @@
+[ dup eval ] "_x" def
+[ eval ] "_i" def
+[ dup [ [ _? ] >> ] dip ] "_?" def
+[ [ dup ] dip i ] "_w" def
+[ [ >> ] dip i ] "_b" def
+[ swapd i ] "_c" def
+[ [ drop ] dip i ] "_k" def
+[ swap i ] "_t" def
+[ [ over >> swap ] dip i ] "_s" def
+[ [ dup >> ] swap + dup >> eval ] "_y" def
+
+[ 2 swap ^ 1 - prime? ] "mersenne?" def

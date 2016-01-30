@@ -1,0 +1,9 @@
+( 1 exp ) 'e' def            // returns Euler's number
+( 2 ln ) 'ln2' def           // returns the natural logarithm of 2
+( 10 ln ) 'ln10' def         // returns the natural logarithm of 10
+( 1 ln2 / ) 'log2e' def        // returns base 2 logarithm of E
+( 1 ln10 / ) 'log10e' def      // returns base 10 logarithm of E
+( pi 2 * ) 'tau' def
+( 1 5 sqrt + 2 / ) 'phi' def   // golden ratio
+( 2 sqrt ) 'sqrt2' def         // returns the square root of 2
+( 1 2 / sqrt ) 'sqrt1_2' def   // returns the square root of 1/2
