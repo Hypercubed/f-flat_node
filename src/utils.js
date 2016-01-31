@@ -1,5 +1,5 @@
 import is from 'is';
-import {typed, Command, BigNumber, I} from './types/';
+import {typed, Atom, BigNumber, I} from './types/';
 
 export function nAry (n, fn) {
   switch (n) {
@@ -76,8 +76,8 @@ const __eql = typed('eql', {
     }
     return true;
   },
-  'Command, Command': function (a, b) {
-    return a.command === b.command;
+  'Atom, Atom': function (a, b) {
+    return a.value === b.value;
   },
   'BigNumber, BigNumber | number': function (a, b) {
     return a.equals(b);
@@ -102,8 +102,8 @@ export function eql (a, b) {
       return true;
     }
   }
-  if (a instanceof Command && b instanceof Command) {
-    return a.command === b.command;
+  if (a instanceof Atom && b instanceof Atom) {
+    return a.value === b.value;
   }
   if (a instanceof BigNumber && b instanceof BigNumber) {
     return a.equals(b);
@@ -125,6 +125,14 @@ export function toLiteral (d) {
     case '$':
       return d.slice(1);
     default:
-      return new Command(d);
+      if (d.length > 1 && (d[d.length - 1] === ':' || d[0] === '\\')) {
+        if (d[d.length - 1] === ':') {
+          d = d.slice(0, d.length - 1);
+        } else if (d[0] === '\\') {
+          d = d.slice(1);
+        }
+        d = new Atom(d);
+      }
+      return new Atom(d);
   }
 }

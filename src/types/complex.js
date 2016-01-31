@@ -1,3 +1,4 @@
+
 import {typed} from './typed';
 import {BigNumber, zero, pi} from './bigNumber';
 import {default as reGamma} from 'gamma';
@@ -217,9 +218,9 @@ export class Complex {
   }
 }
 
-var g = 4.7421875;
+const g = 4.7421875;
 
-var p = [
+const p = [
   0.99999999999999709182,
   57.156235665862923517,
   -59.597960355475491248,

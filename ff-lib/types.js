@@ -1,11 +1,11 @@
-import {typed, Command} from '../src/types/';
+import {typed, Atom} from '../src/types/';
 
 module.exports = {
   'types': typed.types,
   'type': a => typeof a,
   'string': String,
   'boolean': Boolean,
-  'command': x => new Command(x),
+  'atom': x => new Atom(x),
   'array': n => new Array(n),
   'integer': a => a | 0,
   'null': () => null,

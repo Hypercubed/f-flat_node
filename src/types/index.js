@@ -1,4 +1,4 @@
 export * from './typed';
 export * from './bigNumber';
 export * from './complex';
-export * from './command';
+export * from './atom';

@@ -8,7 +8,7 @@ import {log, bar} from './logger';
 import {pluck} from './utils';
 import {lexer} from './lexer';
 
-import {Command, CommandList} from './types/';
+import {Atom} from './types/';
 
 const cleanStack = x => JSON.parse(JSON.stringify(x));
 const quoteSymbol = Symbol('(');
@@ -104,9 +104,9 @@ function createStack (config = {}) {
     'def': function (cmd, name) {  // consider def and let, def top level, let local
       if (typeof cmd !== 'function') {
         cmd =
-          (cmd instanceof Command)
-          ? new Command(cmd.command)
-          : new Command(cmd);
+          (cmd instanceof Atom)
+          ? new Atom(cmd.value)
+          : new Atom(cmd);
       }
       dict[name] = cmd;
     },
@@ -132,7 +132,7 @@ function createStack (config = {}) {
 
   function lookupAction (path) {
     log.debug('lookup', path);
-    const r = pluck(dict, (path instanceof Command) ? path.command : path);
+    const r = pluck(dict, (path instanceof Atom) ? path.value : path);
     log.debug('lookup found', typeof r);
     return r;
   }
@@ -163,16 +163,18 @@ function createStack (config = {}) {
         name = fn.name;
       }
       if (typeof fn === 'string') {
-        fn = new Command(fn);
+        fn = new Atom(fn);
       }
       dict[name.toLowerCase()] = fn;
     }
   }
 
   function queueActions (s) {
-    if (is.array(s)) { s = s.slice(0); }
-    if (s instanceof Command) { s = [ s ]; }
-    if (typeof s === 'string') { s = lexer(s); }
+    if (typeof s === 'string') {
+      s = lexer(s);
+    } else if (!is.array(s)) {
+      s = [ s ];
+    }
 
     queue.unshift.apply(queue, s);
   }
@@ -184,7 +186,8 @@ function createStack (config = {}) {
   }
 
   function dispatchQueue () {
-    const showTrace = ('' + log.level === 'trace');
+    const showTrace = (('' + log.level) === 'trace');
+    const showBar = !showTrace && (('' + log.level) === 'warn');
     try {
       isDispatching = true;
       log.profile('dispatch');
@@ -193,7 +196,7 @@ function createStack (config = {}) {
       while (queue.length > 0) {
         if (showTrace) {
           log.trace('%s : %s', stack, queue);
-        } else {
+        } else if (showBar) {
           const q = stack.length + queue.length;
           if (q > qMax) qMax = q;
 
@@ -219,56 +222,56 @@ function createStack (config = {}) {
     if (typeof args === 'undefined') args = fn.length;
     if (!is.array(args)) args = args > 0 ? stack.splice(-args) : [];
     const r = fn.apply(self, args);
-    if (r instanceof CommandList) {
-      stack.push.apply(stack, r.command);
-    } else if (typeof r !== 'undefined') {
+    // if (r instanceof AtomList) {
+    //  stack.push.apply(stack, r.value);
+    // } else
+    if (typeof r !== 'undefined') {
       stack.push(r);
     }
   }
 
   function isImmediate (c) {
-    if (c instanceof Command && (
+    return (c instanceof Atom && (
       depth < 1 ||                          // in immediate state
-      '[](){}'.indexOf(c.command) > -1 ||   // quotes are always immediate
+      '[](){}'.indexOf(c.value) > -1 ||   // quotes are always immediate
       (
-        c.command[0] === '/' &&   // tokens prefixed with foward-slash are imediate
-        c.command.length !== 1
+        c.value[0] === '/' &&   // tokens prefixed with foward-slash are imediate
+        c.value.length !== 1
       )
-    )) return c.command;
-    return false;
+    ));
   }
 
   function dispatch (c) {
-    const cc = isImmediate(c);
-    if (cc !== false) {
-      if (!is.string(cc)) { throw new Error('Unknown error'); }
+    if (isImmediate(c)) {
+      const tokenValue = c.value;
 
-      const dd = lookupAction(cc);
-      if (dd instanceof Command) {
-        return queueActions(dd.command);
-      } else if (is.fn(dd)) {
-        return dispatchFn(dd, dd.lenth);
-      } else if (dd) {
-        return stack.push(dd);
-      } else if (cc[0] === '\\') {
-        return stack.push(new Command(cc.slice(1)));
-      } else if (cc[0] === '.') {
+      if (!is.string(tokenValue)) {
+        return stack.push(tokenValue);
+      }
+
+      const action = lookupAction(tokenValue);
+
+      if (action instanceof Atom) {
+        return queueActions(action.value);
+      } else if (is.fn(action)) {
+        return dispatchFn(action, action.lenth);
+      } else if (action) {
+        return stack.push(action);
+      /* } else if (cc[0] === '.') {
         const p = stack.pop();
-        return stack.push(p[cc.slice(1)]);
-      } else if (cc[cc.length - 1] === ':') {
-        return stack.push(new Command(cc.slice(0, cc.length - 1)));
-      } else if (cc[0] === '>') {
+        return stack.push(p[cc.slice(1)]); */
+      /* } else if (tokenValue[0] === '>') {
         const n = stack.pop();
-        const ccc = cc.slice(1);
-        const dd = lookupAction(ccc);
-        // if (dd instanceof Command) {  // not sure what to do here
-        //   return queueActions(dd.command);
+        const ccc = tokenValue.slice(1);
+        const action = lookupAction(ccc);
+        // if (action instanceof Atom) {  // not sure what to do here
+        //   return queueActions(action.value);
         // } else
-        if (is.fn(dd)) {
-          return dispatchFn(dd, n);
+        if (is.fn(action)) {
+          return dispatchFn(action, n);
         } else {
           throw new Error(`${ccc} is not a function`);
-        }
+        } */
       }
       throw new Error(`${c} is not defined`);
     }

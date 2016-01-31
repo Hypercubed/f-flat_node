@@ -1,6 +1,6 @@
 import is from 'is';
 
-import {typed, Command} from '../src/types/';
+import {typed} from '../src/types/';
 
 module.exports = {
   'object': typed('object', {
@@ -18,7 +18,7 @@ module.exports = {
   'contains?': (a, b) => b in a,  // object by keys, array by values
   'keys': Object.keys,
   'vals': Object.values,
-  ':': a => new Command(a),  // object constructon
+  // ':': a => new Token(a),  // object constructon
   '{': '[',
   '}': '] in object'
 };

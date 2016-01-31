@@ -1,4 +1,4 @@
-import {Stack} from '../src/stack';
+import {Stack} from '../';
 import repl from 'repl';
 import util from 'util';
 
@@ -29,7 +29,7 @@ const f_eval = (function (f) {
 
 const inspectOptions = { showHidden: false, depth: null, colors: true };
 
-console.log('** Welcome to f♭ **');
+console.log('** Welcome to f♭ **\n');
 
 const stackRepl = repl.start({
   prompt: initialPrompt + ' ',
@@ -38,7 +38,7 @@ const stackRepl = repl.start({
     const depth = '>'.repeat(f.getDepth());
     stackRepl.setPrompt(initialPrompt + depth + ' ');
 
-    return util.inspect(stack, inspectOptions);
+    return util.inspect(stack, inspectOptions) + '\n';
   },
   ignoreUndefined: true,
   useColors: true,

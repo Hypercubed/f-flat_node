@@ -35,6 +35,6 @@ module.exports = {
       f.eval(a);
     }, b);
   },
-  '|>': function call (a, b) { return b.call(b, a); },  // danger
-  '||>': function call (a, b) { return b.apply(b, a); }
+  '|>': function call (a, b) { return b.call(this, a); },  // danger
+  '||>': function call (a, b) { return b.apply(this, a); }
 };

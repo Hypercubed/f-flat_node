@@ -34,7 +34,7 @@ const arrayRepeat = (a, b) => {
 };
 
 const mul = typed('mul', {
-  'Array, Array | Command | Function': (lhs, rhs) => {
+  'Array, Array | Atom | Function': (lhs, rhs) => {
     var l = [];
     for (var i = 0; i < lhs.length; i++) {
       l.push(lhs[i]);
@@ -68,7 +68,7 @@ const div = typed('div', {
 });
 
 const unshift = typed('unshift', { // >>, Danger! No mutations
-  'any | Command | Object, Array': (lhs, rhs) => {
+  'any | Atom | Object, Array': (lhs, rhs) => {
     rhs = rhs.slice();
     rhs.unshift(lhs);
     return rhs;
@@ -78,7 +78,7 @@ const unshift = typed('unshift', { // >>, Danger! No mutations
 });
 
 const push = typed('push', {  // <<, Danger! No mutations
-  'Array, any | Command | Object': (lhs, rhs) => {
+  'Array, any | Atom | Object': (lhs, rhs) => {
     lhs = lhs.slice();
     lhs.push(rhs);
     return lhs;
@@ -104,8 +104,8 @@ const at = typed('at', {
     const r = lhs[rhs];
     return (r !== undefined) ? r : oob;
   },
-  'Object | Function, Command': (a, b) => {
-    const r = pluck(a, b.command);
+  'Object | Function, Atom': (a, b) => {
+    const r = pluck(a, b.value);
     return (r !== undefined) ? r : oob;
   },
   'Object | Function, number | string': (a, b) => {

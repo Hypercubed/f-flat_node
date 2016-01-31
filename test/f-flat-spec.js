@@ -1,5 +1,5 @@
 import test from 'tape';
-import {Stack as F} from '../src/stack';
+import {Stack as F} from '../';
 
 const tolerance = 0.5 * Math.pow(10, -9);
 
@@ -166,7 +166,7 @@ test('Math', t => {
     t.deepEqual(F('3 2 max').getStack(), [3]);
     t.deepEqual(F('4 7 max').getStack(), [7]);
     t.deepEqual(F('9 4 3 max').getStack(), [9, 4]);
-    t.deepEqual(F('10 9 4 3 3 >max').getStack(), [10, 9]);
+    // t.deepEqual(F('10 [ 9 4 3 ] max: rcl ||>').getStack(), [10, 9]);
     t.end();
   });
 
@@ -174,7 +174,6 @@ test('Math', t => {
     t.deepEqual(F('3 2 min').getStack(), [2]);
     t.deepEqual(F('4 7 min').getStack(), [4]);
     t.deepEqual(F('9 4 3 min').getStack(), [9, 3]);
-    t.deepEqual(F('10 9 4 1 3 >min').getStack(), [10, 1]);
     t.end();
   });
 
@@ -737,6 +736,14 @@ test('objects', t => {
     t.F('{ first: "Manfred" } dup { last: "von Thun" } +', [ { first: 'Manfred' }, { first: 'Manfred', last: 'von Thun' } ]);
     t.F('{ first: "Manfred" } dup { last: "von Thun" } >>', [ { first: 'Manfred' }, { first: 'Manfred', last: 'von Thun' } ]);
     t.F('{ first: "Manfred" } dup { last: "von Thun" } <<', [ { first: 'Manfred' }, { first: 'Manfred', last: 'von Thun' } ]);
+    t.end();
+  });
+});
+
+test('experimental', t => {
+  t.test('apply', t => {
+    t.F('10 [ 9 4 3 ] max: rcl ||>', [10, 9]);
+    t.F('10 [ 9 4 3 ] min: rcl ||>', [10, 3]);
     t.end();
   });
 });
