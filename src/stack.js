@@ -1,42 +1,78 @@
-import is from 'is';
 import fs from 'fs';
 import path from 'path';
 import rfr from 'rfr';
+
+import fetch from 'node-fetch';
+
+import {isString, isFunction} from 'fantasy-helpers/src/is';
+import {functionLength, functionName} from 'fantasy-helpers/src/functions';
 
 import {log, bar} from './logger';
 
 import {pluck} from './utils';
 import {lexer} from './lexer';
 
-import {Atom} from './types/';
+import {Atom, Result, Task, typed} from './types/index';
 
-const cleanStack = x => JSON.parse(JSON.stringify(x));
+import _base from './core/base.js';
+import _objects from './core/objects.js';
+import _core from './core/core.js';
+import _math from './core/math.js';
+import _types from './core/types.js';
+import _experimental from './core/experimental.js';
+import _functional from './core/functional.js';
+
+const useStrict = Object.freeze && true;
+
+const toArray = x => JSON.parse(JSON.stringify(x));
 const quoteSymbol = Symbol('(');
 
 const rootStack = Stack('boot');
 
-export function Stack (s) {
-  const stack = rootStack ? rootStack.createChild() : createStack();
-  if (s) stack.eval(s);
+export function Stack (s, cb) {
+  const stack = rootStack ? rootStack.createChild() : createStack({ silent: true });
+  if (s) stack.eval(s, cb);
   return stack;
 }
 
+let uuid = 0;
+const noop = function () {};
+
+// var __global = (typeof window !== 'undefined') ? window : global;
+
 function createStack (config = {}) {
+  let id = uuid++;
   let depth = 0;  // evaluation depth count
   let isDispatching = false;
+  let isPaused = false;
+  let lastCallback = noop;
+
+  // config.parent = config.parent ? config.parent.dict : global;
+  config.slient = typeof config.slient === 'undefined' ? false : config.slient;
 
   const queue = [];
-  const dict = Object.create(config.parent ? config.parent.dict : null);
   const stack = [];
+  const dict = Object.create(config.parent ? config.parent.dict : global);  // inherit from global?
 
   const self = {
-    eval: dispatchActions,
+    eval: (s, cb) => {
+      if (isFunction(cb)) lastCallback = cb;
+      if (isPaused) {
+        queueActionsBack(s);
+      } else {
+        dispatchActions(s);
+      }
+      return self;
+    },
     parse: lexer,
     getDepth: () => depth,
     dict,
     stack,
-    getStack: () => cleanStack(stack),
-    createChild: () => createStack({ parent: self })
+    // queue,
+    // push: stackPush,
+    getStack: () => toArray(stack),
+    createChild: () => createStack({ parent: self, silent: true }),
+    clear: clearStack
   };
 
   /* core */
@@ -47,10 +83,17 @@ function createStack (config = {}) {
     'set-log-level': (a) => {
       log.level = a;
     },
-    '=>': a => { queue.push(a); },
-    '<=': () => queue.pop(),
-    'stack': function stack () { return this.stack.splice(0); },
-    'unstack': function unstack (a) { this.stack.push.apply(this.stack, a); },
+    // '=>': a => { queue.push(a); },  // todo: these are dangerous
+    // '<=': () => queue.pop(),
+    'stack': function stack () {
+      return self.stack.splice(0);
+    },
+    // 'slip': '=> eval <=',
+    'slip': (a, b) => {
+      queue.unshift(b);
+      queueActions(a);
+    },
+    'unstack': (a) => new Result(a),
     '/d++': function () {
       depth++;
     },
@@ -58,73 +101,137 @@ function createStack (config = {}) {
       depth = Math.max(0, depth - 1);
     },
     '\(': quoteSymbol,
-    '\)': function unquote () {
+    '\)': function unquote (s) {
       const r = [];
-      var s = this.stack.pop();
-      while (this.stack.length > 0 && s !== quoteSymbol) {
+      while (stack.length > 0 && s !== quoteSymbol) {
         r.unshift(s);
-        s = this.stack.pop();
+        s = stack.pop();
       }
-      return Object.freeze(r);
-    }
+      if (useStrict) Object.freeze(r);
+      return r;
+    },
+    'depth': function () { return stack.length; }
   });
 
   /* stack */
   addActions({
     '<-': function (s) {  // replace stack
       clearStack();
-      this.stack.push.apply(stack, s);
+      return new Result(s);
     },
     '->': function (s) {  // replace queue
       queue.splice(0);
-      queue.push.apply(queue, s);
+      queue.push(...s);  // return new Atom(s);??
     },
-    'fork': function (a) {
+    /* 'fork': function (a) {
       var f = self.createChild();
       f.eval(a);
-    },
+    }, */
+    'in*': '=> stack <= [ stack ] + dip swap [unstack] dip',
     'in': function (a) {
       var f = self.createChild();
       f.eval(a);
-      self.stack.push(f.stack);
-    },
-    'ns': function (a) {
+      return f.stack;
+    }
+    /* 'ns': function (a) {
       this.dict[String(a).toLowerCase()] = this.dict;
-    },
-    'export': function (a) {
-      if (config.parent) {
-        config.parent.stack.push(a);
+    } */
+  });
+
+  /* tasks */
+  addActions({
+    'task': Task.of,
+    'fork': typed('fork', {
+      'Array': function (a) {  // same as in?  also A fork === A task fork
+        var f = self.createChild();
+        f.eval(a);
+        return f.stack;
+      },
+      'Task': function (task) {
+        var f = self.createChild();
+        f.stack.push('PENDING');
+        task.fork(undefined, function (data) {
+          f.clear();
+          f.eval(data);
+        });
+        return f.stack;
       }
+    }),
+    'await': typed('await', {
+      'Array': function (a) {  // same as eval
+        queueActions(a);
+      },
+      'Task': function (task) {
+        task.fork(undefined, function (data) {
+          dispatchActions(data);
+          resume();
+        });
+        pause();
+      }
+    }),
+    'yield': function () {
+      if (config.parent) {
+        config.parent.stack.push(...stack.splice(0));
+      }
+      return new Result(queue.splice(0));
+    },
+    'delay': function (task, time) {
+      return new Task(function (_, resolve) {
+        setTimeout(() => {
+          resolve(task);
+        }, time);
+      });
+    },
+    'all': 'fork: map',
+    'next': 'fork',
+    'fetch': function (url) {
+      return new Task(function (_, resolve) {
+        fetch(url)
+          .then(function (res) {
+            return res.json();
+          }).then(function (json) {
+            resolve(json);
+          }).catch(_);
+      });
     }
   });
 
   /* stack functions */
   addActions({
-    'sto': (lhs, rhs) => { dict[rhs] = lhs; },  // consider :=
+    'sto': (lhs, rhs) => { // consider :=
+      dict[rhs] = lhs;
+    },
     'def': function (cmd, name) {  // consider def and let, def top level, let local
-      if (typeof cmd !== 'function') {
-        cmd =
-          (cmd instanceof Atom)
-          ? new Atom(cmd.value)
-          : new Atom(cmd);
+      if (typeof cmd !== 'function' && !(cmd instanceof Atom)) {
+        cmd = new Atom(cmd);
       }
       dict[name] = cmd;
     },
     'delete': a => { delete dict[a]; },
     'rcl': a => lookupAction(a),
-    'see': a => {
-      a = lookupAction(a);
-      return String(a);
+    'see': a => String(lookupAction(a)),
+    'eval': a => {
+      queueActions(a);
     },
-    'eval': a => { queueActions(a); },
     'clr': clearStack,
     '\\': () => queue.shift()
   });
 
-  addActions('define', addActions);
+  if (!config.parent) {
+    addActions(_base);
+    addActions(_objects);
+    addActions(_core);
+    addActions(_math);
+    addActions(_types);
+    addActions(_experimental);
+    addActions(_functional);
+  }
+
+  addActions('define', x => addActions(x));
   addActions('require', loadFile);
 
-  return Object.freeze(self);
+  if (useStrict) Object.freeze(self);
+  return self;
 
   function clearStack () {
     stack.length = 0;
@@ -160,40 +267,45 @@ function createStack (config = {}) {
     } else {
       if (arguments.length === 1) {
         fn = name;
-        name = fn.name;
+        name = functionName(fn);
       }
       if (typeof fn === 'string') {
-        fn = new Atom(fn);
+        fn = new Atom(lexer(fn));
       }
-      dict[name.toLowerCase()] = fn;
+      dict[name] = fn;
     }
   }
 
   function queueActions (s) {
-    if (typeof s === 'string') {
-      s = lexer(s);
-    } else if (!is.array(s)) {
-      s = [ s ];
-    }
-
-    queue.unshift.apply(queue, s);
+    queue.unshift(...lexer(s));
   }
 
-  function dispatchActions (s) {
+  function queueActionsBack (s) {
+    queue.push(...lexer(s));
+  }
+
+  function stackPush (...a) {
+    if (useStrict) a.map(Object.freeze);
+    stack.push(...a);
+  }
+
+  function dispatchActions (s) {  // aka self.eval
     queueActions(s);
-    if (!isDispatching) dispatchQueue();
-    return self;
+    if (!isDispatching) {
+      resume();
+    }
   }
 
   function dispatchQueue () {
     const showTrace = (('' + log.level) === 'trace');
-    const showBar = !showTrace && (('' + log.level) === 'warn');
-    try {
-      isDispatching = true;
-      log.profile('dispatch');
-      var qMax = stack.length + queue.length;
+    const showBar = !config.silent && !showTrace && (('' + log.level) === 'warn');
 
-      while (queue.length > 0) {
+    isDispatching = true;
+    log.profile('dispatch ' + id);
+    var qMax = stack.length + queue.length;
+
+    try {
+      while (!isPaused && queue.length > 0) {
         if (showTrace) {
           log.trace('%s : %s', stack, queue);
         } else if (showBar) {
@@ -211,71 +323,93 @@ function createStack (config = {}) {
     } catch (e) {
       bar.terminate();
       log.error(e);
+      finsished(e);
     } finally {
-      isDispatching = false;
       bar.terminate();
-      log.profile('dispatch');
+      log.profile('dispatch ' + id);
+      if (!isPaused) {
+        finsished(null);
+      }
     }
   }
 
-  function dispatchFn (fn, args) {
-    if (typeof args === 'undefined') args = fn.length;
-    if (!is.array(args)) args = args > 0 ? stack.splice(-args) : [];
-    const r = fn.apply(self, args);
-    // if (r instanceof AtomList) {
-    //  stack.push.apply(stack, r.value);
-    // } else
-    if (typeof r !== 'undefined') {
-      stack.push(r);
+  function finsished (err) {
+    const fn = lastCallback;
+    isDispatching = false;
+    if (fn) {
+      lastCallback = noop;
+      fn(err, self);
+    }
+  }
+
+  function pause () {
+    isPaused = true;
+  }
+
+  function resume () {
+    isPaused = false;
+    dispatchQueue();
+  }
+
+  function dispatchFn (fn, args, name) {
+    if (typeof args === 'undefined') args = functionLength(fn);
+    if (args < 1 || args <= stack.length) {
+      args = args > 0 ? stack.splice(-args) : [];
+
+      const r = fn(...args);
+      if (r instanceof Atom) {
+        queueActions(r.value);
+      } else if (typeof r !== 'undefined') {
+        dispatch(r);
+      }
+    } else {
+      args = stack.splice(0);
+      args.push(Atom.of(name));
+      stackPush(args);
     }
   }
 
   function isImmediate (c) {
-    return (c instanceof Atom && (
+    return (
       depth < 1 ||                          // in immediate state
       '[](){}'.indexOf(c.value) > -1 ||   // quotes are always immediate
       (
         c.value[0] === '/' &&   // tokens prefixed with foward-slash are imediate
         c.value.length !== 1
       )
-    ));
+    );
   }
 
   function dispatch (c) {
-    if (isImmediate(c)) {
-      const tokenValue = c.value;
-
-      if (!is.string(tokenValue)) {
-        return stack.push(tokenValue);
-      }
-
-      const action = lookupAction(tokenValue);
-
-      if (action instanceof Atom) {
-        return queueActions(action.value);
-      } else if (is.fn(action)) {
-        return dispatchFn(action, action.lenth);
-      } else if (action) {
-        return stack.push(action);
-      /* } else if (cc[0] === '.') {
-        const p = stack.pop();
-        return stack.push(p[cc.slice(1)]); */
-      /* } else if (tokenValue[0] === '>') {
-        const n = stack.pop();
-        const ccc = tokenValue.slice(1);
-        const action = lookupAction(ccc);
-        // if (action instanceof Atom) {  // not sure what to do here
-        //   return queueActions(action.value);
-        // } else
-        if (is.fn(action)) {
-          return dispatchFn(action, n);
-        } else {
-          throw new Error(`${ccc} is not a function`);
-        } */
-      }
-      throw new Error(`${c} is not defined`);
+    if (c === null || typeof c.type === 'undefined') {
+      return stackPush(c);
     }
-    stack.push(c);
-    // stack.push(Object.freeze(c));  // Object freeze shouldn't be needed if functiosn are pure
+
+    switch (c.type) {
+      case '@@Atom':
+        if (isImmediate(c)) {
+          const tokenValue = c.value;
+
+          if (!isString(tokenValue)) {
+            return stackPush(tokenValue);
+          }
+
+          const action = lookupAction(tokenValue);
+
+          if (action instanceof Atom) {
+            return queueActions(action.value);
+          } else if (isFunction(action)) {
+            return dispatchFn(action, functionLength(action), tokenValue);
+          } else if (action) {
+            return stackPush(action);
+          }
+          throw new Error(`${c} is not defined`);
+        }
+        return stackPush(c);
+      case '@@Result':
+        return stackPush(...c.value);
+      default:
+        stackPush(c);
+    }
   }
 }

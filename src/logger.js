@@ -18,12 +18,12 @@ export const log = new Logger({
 // log.cli();
 log.level = process.env.NODE_ENV || 'warn';
 
-export const bar = new (Progress)(':elapsed s [:bar] :stack :queue :depth', {
+export const bar = new Progress(':elapsed s [:bar] :stack :queue :depth', {
   complete: '=',
   incomplete: ' ',
   total: 100,
   width: 50,
   clear: true,
-  renderThrottle: 320,
+  renderThrottle: 3200,
   stream: process.stderr
 });

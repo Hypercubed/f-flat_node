@@ -1,6 +1,10 @@
 import {isWhitespace, isQuote, isBracket, toLiteral} from './utils';
+import {isString, isArray} from 'fantasy-helpers/src/is';
 
 export function lexer (text) {
+  if (isArray(text)) return text;
+  if (!isString(text)) return [text];
+
   if (!text || text.length < 1) { return []; }
 
   const tokens = [];

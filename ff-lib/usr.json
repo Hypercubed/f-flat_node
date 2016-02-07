@@ -14,6 +14,7 @@
   "dropd": "[ drop ] dip",
   "over": "dupd swap",
   "roll": "swap [ swap ] dip",
+  "rolld": "[ swap ] dip swap",
   "rot": "roll swap",
   "nip": "swap drop",
   "tuck": "swap over",
@@ -28,7 +29,6 @@
   "time": "clock swap 100 times clock swap - 100 /",
   "reduce": "[ * ] >> dip swap eval",
   "sum": "0 [ + ] reduce",
-  "map": "* in",
   "product": "1 [ * ] reduce",
   "inv": "1 swap /",
   "_timefn": "clock swap [ dup in drop ] 1000 times drop clock -",
@@ -41,9 +41,9 @@
   "integers": "[ count ] appl",
   "loop": "[ eval ] keep [ loop ] >> when",
   "when": "[] branch",
-  "next": "[ ++ dup ] swap + [ not ] + loop",
-  "next-odd": "[ odd? ] next",
-  "next-even": "[ even? ] next",
+  "find-next": "[ ++ dup ] swap + [ not ] + loop",
+  "next-odd": "[ odd? ] find-next",
+  "next-even": "[ even? ] find-next",
   "zero?": "0 =",
   "odd?": "2 % zero? not",
   "even?": "2 % zero?",
@@ -52,5 +52,8 @@
   "while": "swap do + [ loop ] >> when",
   "prime?": "2 [ dup2 2 ^ > [ dup2 % 0 > ] dip swap * ] [ ++ ] while 2 ^ <",
   "next-fib": "over over +",
-  "fib": "[ 0 1 [ next-fib ] ] dip times drop"
+  "fib": "[ 0 1 [ next-fib ] ] dip -- times drop",
+  "next-fib*": "swap over +",
+  "fib*": "[ 0 1 ] dip [ 0 1 [ swap over + ] yield ] [ in ] rolld 2 - times drop",
+  "succ*": "[ 0 [ ++ dup yield: dip true ] loop ]"
 }

@@ -1,7 +1,6 @@
-import is from 'is';
-import {typed, Atom, BigNumber, I} from './types/';
+import {typed, Atom, BigNumber, I} from './types/index';
 
-export function nAry (n, fn) {
+/* export function nAry (n, fn) {
   switch (n) {
     case 0: return function () { return fn.call(this); };
     case 1: return function (a0) { return fn.call(this, a0); };
@@ -20,10 +19,10 @@ export function nAry (n, fn) {
 
 export function unary (fn) {
   return nAry(1, fn);
-}
+} */
 
 export function pluck (context, path) {
-  if (path === '.') return '.';
+  // if (path === '.') return undefined;
 
   const pathParts = path.split('.');
   let ii = pathParts.length;
@@ -36,12 +35,12 @@ export function pluck (context, path) {
   return context;
 }
 
-export function copy (src) {
+/* export function copy (src) {
   if (src instanceof Array) {
     return src.slice();
   }
   return src;
-}
+} */
 
 export function isWhitespace (ch) {
   return (ch === ' ' || ch === '\r' || ch === '\t' ||
@@ -83,7 +82,7 @@ const __eql = typed('eql', {
     return a.equals(b);
   },
   'any, any': function (a, b) {
-    return is.equal(a, b);
+    return a === b;
   }
 });
 
@@ -131,7 +130,7 @@ export function toLiteral (d) {
         } else if (d[0] === '\\') {
           d = d.slice(1);
         }
-        d = new Atom(d);
+        d = toLiteral(d);
       }
       return new Atom(d);
   }

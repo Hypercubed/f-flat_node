@@ -1,19 +1,21 @@
 
 import {typed} from './typed';
-import {BigNumber, zero, pi} from './bigNumber';
-import {default as reGamma} from 'gamma';
+import {BigNumber, zero, twoPiSqrt} from './bigNumber';
+import {g, c} from './gamma';
 
 const precision = Math.pow(10, -BigNumber.precision + 5);
-
-const twoPiSqrt = pi.times(2).sqrt();
 
 export class Complex {
   constructor (re, im = 0) {
     if (re instanceof Complex) return re;
-    this.re = new BigNumber(re);  // todo: use decimal internally
+    this.re = new BigNumber(re);
     this.im = new BigNumber(im);
 
     Object.freeze(this);
+  }
+
+  of (re, im) {
+    return new Complex(re, im);
   }
 
   empty () {
@@ -25,6 +27,14 @@ export class Complex {
     if (this.im.isZero()) return s;
     if (this.im.isPos()) s += '+';
     return s + this.im.toString() + 'i';
+  }
+
+  toJSON () {
+    return {
+      type: this.type,
+      re: this.re.valueOf(),  // fix this, should store full precision
+      im: this.im.valueOf()
+    };
   }
 
   inspect (depth) {
@@ -119,8 +129,8 @@ export class Complex {
 
   exp () {
     const r = this.re.exp();
-    const re = r.times(this.im.cos());
-    const im = r.times(this.im.sin());
+    const im = r.times(new BigNumber(this.im).sin());
+    const re = r.times(new BigNumber(this.im).cos());  // bug in Decimal.js causes t.im to mutate after cosine
     return new Complex(re, im);
   }
 
@@ -181,62 +191,41 @@ export class Complex {
   }
 
   gamma () {
-    // return NaN;
+    // The Lanczos approximation
+    // https://en.wikipedia.org/wiki/Lanczos_approximation
+    // G(z+1) = sqrt(2*pi)*(z+g+1/2)^(z+1/2)*exp(-(z+g+1/2))*Ag(z)
+    // Ag(z) = c0 + sum(k=1..N, ck/(z+k))
 
     if (this.im.isZero()) {
-      return reGamma(+this.re);
+      return this.re.gamma();
     }
 
-    let n = this.minus(1);
-    let xre = p[0];
-    let xim = 0;
+    const z = this.minus(1);
+    let agre = c[0];
+    let agim = 0;
 
-    for (var i = 1; i < p.length; ++i) {
-      let np = n.plus(i);
-      let den = np.dotProduct(np);  // x += p[i]/(n+i)
+    for (var i = 1; i < c.length; ++i) {
+      let npi = z.plus(i);
+      let den = npi.dotProduct(npi);  // x += p[i]/(n+i)
       if (!den.isZero()) {
-        xre = np.re.times(p[i]).div(den).plus(xre);
-        xim = np.im.times(-p[i]).div(den).plus(xim);
+        agre = npi.re.times(c[i]).div(den).plus(agre);   //  Ag += c(k)/(z+k)
+        agim = npi.im.times(-c[i]).div(den).plus(agim);
       } else {
-        xre = p[i] < 0 ? -Infinity : Infinity;
+        agre = c[i] < 0 ? -Infinity : Infinity;
       }
     }
 
-    let x = new Complex(xre, xim);
-    let t = n.plus(g + 0.5);
+    const t = z.plus(g + 0.5);  // z+g+1/2
 
-    let result = t
-      .pow(n.plus(0.5))
-      .times(twoPiSqrt); // sqrt(2*PI)*result
-
-    t = t.neg();
-
-    t = new Complex(new BigNumber(t.im).cos(), t.im.sin())  // bug in Decimal.js causes t.im to mutate after cosine
-      .times(t.re.exp());  // exp(-t)
-
-    return result.times(t).times(x);
+    return t.pow(z.plus(0.5))                    // (z+g+1/2)^(z+0.5)
+      .times(twoPiSqrt)                          //  *sqrt(2*PI)
+      .times(t.neg().exp())                      //  *exp(-(z+g+1/2))
+      .times(new Complex(agre, agim));           //  *Ag(z)
   }
 }
 
-const g = 4.7421875;
-
-const p = [
-  0.99999999999999709182,
-  57.156235665862923517,
-  -59.597960355475491248,
-  14.136097974741747174,
-  -0.49191381609762019978,
-  0.33994649984811888699e-4,
-  0.46523628927048575665e-4,
-  -0.98374475304879564677e-4,
-  0.15808870322491248884e-3,
-  -0.21026444172410488319e-3,
-  0.21743961811521264320e-3,
-  -0.16431810653676389022e-3,
-  0.84418223983852743293e-4,
-  -0.26190838401581408670e-4,
-  0.36899182659531622704e-5
-];
+Complex.type = '@@complex';
+Complex.of = (re, im) => new Complex(re, im);
 
 export const I = new Complex(0, 1);
 

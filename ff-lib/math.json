@@ -19,5 +19,7 @@
   "pred": "dup --",
   "succ": "dup ++",
   "^^^": "[ dup [ swap ^^ ] >> ] dip -- times",
-  "^^": "[ dup [ swap ^ ] >> ] dip -- times"
+  "^^": "[ dup [ swap ^ ] >> ] dip -- times",
+  "toRadians": "pi 180 / *",
+  "toDegrees": "180 pi / *"
 }

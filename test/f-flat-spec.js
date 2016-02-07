@@ -1,5 +1,8 @@
 import test from 'tape';
 import {Stack as F} from '../';
+import {log} from '../src/logger';
+
+log.level = process.env.NODE_ENV || 'error';
 
 const tolerance = 0.5 * Math.pow(10, -9);
 
@@ -134,17 +137,46 @@ test('Math', t => {
     t.end();
   });
 
-  t.test('should define factorial and gamma', t => {
+  t.test('should define gamma', t => {
+    var r = F('4 gamma').stack[0];
+    t.nearly(r, 6, '4 gamma');
+
+    r = F('1 2 / gamma').stack[0];
+    t.nearly(r, Math.sqrt(Math.PI), '1 2 / gamma');
+
+    r = F('-1 2 / gamma').stack[0];
+    t.nearly(r, -2 * Math.sqrt(Math.PI), '-1 2 / gamma');
+
+    r = F('1.5 gamma').stack[0];
+    t.nearly(r, 0.886226925452758013649083741670572591398774728061193564106, '1.5 gamma');
+
+    r = F('0.1 gamma').stack[0];
+    t.nearly(r, 9.513507698668731836292487177265402192550578626088377343050, '0.1 gamma');
+
+    r = F('-5 2 / gamma').stack[0];
+    t.nearly(r, -8 / 15 * Math.sqrt(Math.PI), '-5 2 / gamma');
+
+    r = F('102 gamma').stack[0];
+    t.nearly(r, 9.4259477598383563846e+159, '102 gamma');
+
+    t.end();
+  });
+
+  /* t.test('should define precise gamma', t => {
+    var r = F('4 gamma').stack[0].toString();
+    t.equals(r, '6', '4 gamma');
+
+    r = F('102 gamma').stack[0].toString();
+    t.equals(r, '9425947759838359420851623124482936749562312794702543768327889353416977599316221476503087861591808346911623490003549599583369706302603264000000000000000000000000.000000000000000000149097034282098123762036652313939703018730093107213584456746876441419287483569634136377833572244406013958372921486273539533554962988', '102 gamma');
+
+    t.end();
+  }); */
+
+  t.test('should define factorial', t => {
     t.deepEqual(F('20 !').getStack(), [2432902008176640000], '20 !');
 
-    var r = F('4 gamma').stack[0] - 6;
-    t.nearly(r, 0, '4 gamma');
-
-    r = F('1 2 / gamma').stack[0] - Math.sqrt(Math.PI);
-    t.nearly(r, 0, '1 2 / gamma');
-
-    r = (F('100 !').stack[0] - 9.33262154e157) / 9.33262154e157;
-    t.nearly(r, 0, '100 !');
+    var r = F('100 !').stack[0];
+    t.nearly(r, 9.3326215443944152704e+157, '100 !');
     t.end();
   });
 
@@ -178,8 +210,13 @@ test('Math', t => {
   });
 
   t.test('should test primes', t => {
-    t.F('10 integers prime?: map', [[true, true, true, false, true, false, true, false, false, false]]);
-    t.F('10 integers [ 2 swap ^ 1 - prime? ] map', [[true, true, true, false, true, false, true, false, false, false]]);
+    t.F('10 integers prime?: map',
+      [[true, true, true, false, true, false, true, false, false, false]], 'primes');
+      // 1     2     3     4      5     6      7     8      9      10
+
+    t.F('10 integers [ 2 swap ^ 1 - prime? ] map',
+      [[true, true, true, false, true, false, true, false, false, false]], 'messene primes');
+      // 1     2     3     4      5     6      7     8      9      10
 
     // t.F('[ 17 18 19 23 ] [ prime? ] map', [[true, false, true, true]]);
     // t.F('[ 17 18 19 23 ] [ 2 swap ^ 1 - prime? ] map', [[true, false, true, false]]);
@@ -187,7 +224,7 @@ test('Math', t => {
   });
 });
 
-test('complex', t => {
+test('BigComplex', t => {
   t.test('should parse i', t => {
     t.deepEqual(F('i').getStack(), [ { im: 1, re: 0 } ]);
     t.end();
@@ -266,6 +303,13 @@ test('complex', t => {
       //  -0.1549498283018106851249551304838866051958796520793249302658802767988608014911385390129513664794630707495928275143898...
     }]);
 
+    t.looseEqual(F('i 1 + gamma').getStack(), [{
+      re: 0.498015668118356,
+      //  0.4980156681183560427136911174621980919529629675876500928926429549984583004359819345078945042826705814056067643438428
+      im: -0.1549498283018107
+      //  -0.1549498283018106851249551304838866051958796520793249302658802767988608014911385390129513664794630707495928275143898...
+    }]);
+
     t.end();
   });
 
@@ -292,9 +336,18 @@ test('complex', t => {
     t.looseEqual(F('1 i - string').getStack(), [ '1-1i' ]);
     t.end();
   });
+
+  t.test('should calculate powers of complex numbers', t => {
+    t.deepEqual(F('2 i * 0 ^').getStack(), [ { im: 0, re: 1 } ]);
+    t.deepEqual(F('2 i * 1 ^').getStack(), [ { im: 2, re: 6.264338327950289e-20 } ]);
+    t.deepEqual(F('2 i * 2 ^').getStack(), [ { im: 2.5057353311801156e-19, re: -4 } ]);
+    t.deepEqual(F('2 i * 3 ^').getStack(), [ { im: -8, re: -7.517205993540346e-19 } ]);
+    t.deepEqual(F('e i * 1 ^').getStack(), [ { im: 2.718281828459045, re: 8.514118522093394e-20 } ]);
+    t.end();
+  });
 });
 
-test('boolean', t => {
+test('Bboolean', t => {
   /* t.test('should parse', t => {
     var f = F();
     t.deepEqual(f.lexer('true').stack, [true]);
@@ -322,6 +375,13 @@ test('boolean', t => {
   });
 
   t.test('should and', t => {
+    t.deepEqual(F('true false /').stack, [true]);
+    t.deepEqual(F('true true /').stack, [false]);
+    t.deepEqual(F('false false /').stack, [true]);
+    t.end();
+  });
+
+  t.test('should nand', t => {
     t.deepEqual(F('true false *').stack, [false]);
     t.deepEqual(F('true true *').stack, [true]);
     t.deepEqual(F('false false *').stack, [false]);
@@ -344,7 +404,7 @@ test('boolean', t => {
   });
 });
 
-test('strings', t => {
+test('String', t => {
   /* t.test('should parse', t => {
     var f = F();
     t.deepEqual(f.lexer('"test"').stack, ['test']);
@@ -383,7 +443,9 @@ test('strings', t => {
   });
 
   t.test('should multiply', t => {
-    t.deepEqual(F('"a" 2 *').stack, ['aa']);
+    t.F('"a" 2 *', ['aa']);
+    t.F('"bc" 2 *', ['bcbc']);
+    // t.F('2 * "de"', ['dede']);
     t.end();
   });
 
@@ -422,11 +484,35 @@ test('strings', t => {
     t.deepEqual(+f.eval('eval').stack[0], 3);
     t.end();
   });
+
+  t.test('should @', t => {
+    t.F('"abc" 0 @', ['a']);
+    t.F('"abc" 1 @', ['b']);
+    t.F('"abc" 2 @', ['c']);
+    t.end();
+  });
+
+  t.test('should @ from end', t => {
+    t.F('"abc" -1 @', ['c']);
+    t.F('"abc" -2 @', ['b']);
+    t.F('"abc" -3 @', ['a']);
+    t.end();
+  });
+
+  t.test('should @', t => {
+    t.F('"abc" 10 @', ['']);
+    t.end();
+  });
 });
 
-test('lists', t => {
+test('Lists', t => {
   t.test('should push', t => {
     t.deepEqual(F('( 1 ) ( 2 )').getStack(), [ [1], [2] ]);
+    t.end();
+  });
+
+  t.test('should get length', t => {
+    t.F('( 1 2 ) length', [ 2 ]);
     t.end();
   });
 
@@ -455,6 +541,7 @@ test('lists', t => {
     t.deepEqual(F('(1) 3 *').getStack(), [[1, 1, 1]]);
     t.deepEqual(F('(1 2) 2 *').getStack(), [[1, 2, 1, 2]]);
     t.deepEqual(F('(1 2 +) 2 *').getStack(), [[3, 3]]);
+    t.deepEqual(F('(1 2 +) 0 *').getStack(), [[]]);
     t.end();
   });
 
@@ -492,6 +579,25 @@ test('lists', t => {
     t.end();
   });
 
+  t.test('should @', t => {
+    t.F('( 4 5 6 ) 0 @', [4]);
+    t.F('( 4 5 6 ) 1 @', [5]);
+    t.F('( 4 5 6 ) 2 @', [6]);
+    t.end();
+  });
+
+  t.test('should @ from end', t => {
+    t.F('( 4 5 6 ) -1 @', [6]);
+    t.F('( 4 5 6 ) -2 @', [5]);
+    t.F('( 4 5 6 ) -3 @', [4]);
+    t.end();
+  });
+
+  t.test('should @', t => {
+    t.F('( 4 5 6 ) 10 @', [null]);
+    t.end();
+  });
+
   t.F('( 1 2 3 ) dup 4 <<', [[1, 2, 3], [1, 2, 3, 4]], 'should <<, immutable');
 
   t.test('should >>', t => {
@@ -512,7 +618,7 @@ test('lists', t => {
   });
 });
 
-test('quote', t => {
+test('Quotes', t => {
   t.test('should push', t => {
     var f = F('[ 1 ] [ 2 ]');
     t.deepEqual(f.getStack(), [ [1], [2] ]);
@@ -584,7 +690,7 @@ test('quote', t => {
   });
 });
 
-test('stack', t => {
+test('Stack Operations', t => {
   t.test('should drop', t => {
     t.deepEqual(F('1 2 drop 3').getStack(), [1, 3]);
     t.end();
@@ -648,7 +754,7 @@ test('stack', t => {
   });
 });
 
-test('in', t => {
+test('in/fork', t => {
   t.test('should evaluate list', t => {
     t.deepEqual(F('[ 2 1 + ] in').getStack(), [ [ 3 ] ]);
     t.end();
@@ -677,7 +783,7 @@ test('map', t => {
   });
 });
 
-test('objects', t => {
+test('Object', t => {
   t.test('should create objects from arrays', t => {
     t.deepEqual(F('[ "first" "Manfred" "last" "von Thun" ] object').getStack(), [ { first: 'Manfred', last: 'von Thun' } ]);
     t.end();
@@ -738,6 +844,11 @@ test('objects', t => {
     t.F('{ first: "Manfred" } dup { last: "von Thun" } <<', [ { first: 'Manfred' }, { first: 'Manfred', last: 'von Thun' } ]);
     t.end();
   });
+
+  t.test('should get keys length', t => {
+    t.F('{ first: "Manfred" last: "von Thun" } length', [ 2 ]);
+    t.end();
+  });
 });
 
 test('experimental', t => {
@@ -745,5 +856,189 @@ test('experimental', t => {
     t.F('10 [ 9 4 3 ] max: rcl ||>', [10, 9]);
     t.F('10 [ 9 4 3 ] min: rcl ||>', [10, 3]);
     t.end();
+  });
+
+  t.test('apply', t => {
+    t.F('10 [ 9 4 3 ] \\max rcl ||>', [10, 9]);
+    t.F('10 [ 9 4 3 ] \\min rcl ||>', [10, 3]);
+    t.end();
+  });
+
+  t.test('symbols', t => {
+    t.F('#test dup =', [true]);
+    t.F('#test #test =', [false]);
+    t.end();
+  });
+
+  t.test('string macro', t => {
+    t.F('$hello "hello" =', [true]);
+    t.end();
+  });
+
+  t.test('set-log-level', t => {
+    t.F('get-log-level set-log-level', []);
+    t.end();
+  });
+
+  t.test('fork', t => {
+    t.F('[1 2 +] fork', [[3]]);
+    t.end();
+  });
+
+  t.test('replace queue', t => {
+    t.F('1 2 + [ 4 5 ] -> 6 7', [3, 4, 5]);
+    t.end();
+  });
+
+  t.test('of', t => {
+    t.F('"abc" 123 of', [ '123' ]);
+    t.F('123 "456" of', [ 456 ]);
+    t.end();
+  });
+
+  t.test('empty', t => {
+    t.F('"abc" empty', [ '' ]);
+    t.F('123 empty', [ 0 ]);
+    t.end();
+  });
+
+  t.test('nop', t => {
+    t.F('"abc" nop', [ 'abc' ]);
+    t.F('"abc" id', [ 'abc' ]);
+    t.end();
+  });
+
+  t.test('depth', t => {
+    t.F('"abc" depth', [ 'abc', 1 ]);
+    t.F('"abc" 123 depth', [ 'abc', 123, 2 ]);
+    t.end();
+  });
+
+  t.test('indexof', t => {
+    t.F('"abc" "b" indexof', [ 1 ]);
+    t.end();
+  });
+
+  t.test('identical?', t => {
+    t.F('"abc" "abc" identical?', [ true ]);
+    t.F('["abc"] ["abc"] identical?', [ false ]);
+    t.F('["abc"] dup identical?', [ true ]);
+    t.end();
+  });
+
+  t.test('swap strings', t => {
+    t.F('"abc" "def" swap', [ 'def', 'abc' ]);
+    t.end();
+  });
+
+  t.test('swap atoms', t => {
+    t.F('abc: def: swap', [ { type: '@@Atom', value: 'def' }, { type: '@@Atom', value: 'abc' } ]);
+    t.end();
+  });
+
+  t.test('dup atoms', t => {
+    t.F('abc: dup', [ { type: '@@Atom', value: 'abc' }, { type: '@@Atom', value: 'abc' } ]);
+    t.end();
+  });
+
+  t.test('unstack should not eval', t => {
+    t.F('[2 1 +] unstack', [ 2, 1, { type: '@@Atom', value: '+' } ]);
+    t.end();
+  });
+});
+
+test('yield', t => {
+  t.test('yield and fork', t => {
+    t.F('[1 2 yield 4 5 yield 6 7] fork', [1, 2, [4, 5, { type: '@@Atom', value: 'yield' }, 6, 7]]);
+    t.end();
+  });
+
+  t.test('yield and fork', t => {
+    t.F('[1 2 yield 4 5 yield 6 7] fork fork', [1, 2, 4, 5, [6, 7]]);
+    t.end();
+  });
+
+  t.test('yield and fork', t => {
+    t.F('[1 2 + yield 4 5 + ] fork', [3, [4, 5, { type: '@@Atom', value: '+' }]]);
+    t.end();
+  });
+
+  t.test('yield and next', t => {
+    t.F('[1 2 + yield 4 5 + ] fork drop', [3]);
+    t.end();
+  });
+
+  t.test('multiple yields', t => {
+    t.F('[1 2 + yield 4 5 + yield ] fork fork drop', [3, 9]);
+    t.end();
+  });
+
+  t.test('multiple yields', t => {
+    t.F('succ* [ fork ] 10 times drop', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    t.end();
+  });
+});
+
+test('async', t => {
+  t.test('await', t => {
+    t.plan(1);
+    F().eval('[ 10 ! ] task await 4 5 + +', function (err, f) {
+      console.log('callback');
+      if (err) throw err;
+      t.deepLooseEqual(f.getStack(), [3628809]);
+      t.end();
+    });
+  });
+
+  t.test('delay and await', t => {
+    F().eval('[ 10 ! ] 100 delay await 4 5 + +', function (err, f) {
+      if (err) throw err;
+      t.deepLooseEqual(f.getStack(), [3628809]);
+      t.end();
+    });
+  });
+
+  t.test('delay and await', t => {
+    F().eval('[[ 10 ! ] 100 delay await 4 5 + +] task await', function (err, f) {
+      if (err) throw err;
+      t.deepLooseEqual(f.getStack(), [3628809]);
+      t.end();
+    });
+  });
+
+  t.test('delay and await', t => {
+    F().eval('[ 10 ! ] task [ fork ] task await', function (err, f) {
+      if (err) throw err;
+      t.deepLooseEqual(f.getStack(), [[3628800]]);
+      t.end();
+    });
+  });
+
+  t.test('delay and await', t => {
+    F().eval('[ 10 ! task await] task fork', function (err, f) {
+      if (err) throw err;
+      t.deepLooseEqual(f.getStack(), [[3628800]]);
+      t.end();
+    });
+  });
+
+  t.test('shouldn\'t call callback twice', t => {
+    t.plan(2);
+    const f = F();
+    f.eval('[ 10 ! ] 100 delay await 4 5 + +', function (err, f) {
+      if (err) throw err;
+      t.deepLooseEqual(f.getStack(), [3628809]);
+      t.deepLooseEqual(f.eval('1 2').getStack(), [3628809, 1, 2]);
+    });
+  });
+
+  t.test('should queue back when yielded', t => {
+    const f = F();
+    f.eval('[ 10 ! ] 100 delay await 4 5 + +', function (err, f) {
+      if (err) throw err;
+      t.deepLooseEqual(f.getStack(), [3628809, 1, 2]);
+      t.end();
+    });
+    t.deepLooseEqual(f.eval('1 2').getStack(), []);
   });
 });

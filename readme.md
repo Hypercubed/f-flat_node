@@ -1,6 +1,8 @@
 # F♭
 
-F♭ (pronounced F-flat) is a toy language. F♭ is a dynamically typed array-oriented concatenative language like Forth and Joy. F♭ is meant to be used interactively, for example in a CLI REPL or in a stack based calculator, like R or the command shell.  This constraint dictates many of the language features.
+F♭ (pronounced F-flat) is a toy language.
+
+F♭ is a dynamically typed array-oriented concatenative language like Forth and Joy. F♭ is meant to be used interactively, for example in a CLI REPL, , like R or the command shell, or in a stack based calculator.  This constraint dictates many of the language features.
 
 ## Project Goals
 
@@ -21,6 +23,13 @@ F♭ (pronounced F-flat) is a toy language. F♭ is a dynamically typed array-or
 * Session saving (TBD)
   * undo/redo
   * state is serializable
+* modules and namespaces (TBD)
+
+## Features
+
+* Arbitrary-precision decimal and complex number type.
+* Flat functional concatinative language, without unnecessary parentheses.
+* JSON format is value f-flat programs. (But not all f-flat programs are JSON).
 
 ## Example
 
@@ -71,7 +80,33 @@ f♭> clr
 
 f♭> i !
 [ 0.49801566811835599106-0.15494982830181068731i ]
+
+f♭> { first: "Manfred" }
+[ { first: 'Manfred' } ]
+
+f♭> {
+[ { first: 'Manfred' }, Symbol(() ]
+
+f♭>> last:
+[ { first: 'Manfred' }, Symbol((), last: ]
+
+f♭>> "von Thun"
+[ { first: 'Manfred' }, Symbol((), last:, 'von Thun' ]
+
+f♭>> }
+[ { first: 'Manfred' }, { last: 'von Thun' } ]
+
+f♭> +
+[ { first: 'Manfred', last: 'von Thun' } ]
 ```
+
+Why?
+
+* Designing a programming language in another language is a great way to learn about programming languages in general and the host language in particular.
+
+* Concatinative languages, with inherent functional composition, are a great way to explore functional programming and mathematics.  Higher order functions (including math functions) are composed of smaller functions.
+
+* Because 0.1 + 0.2 = 0.3 and sqrt of -1 is not "not a number".
 
 ## Influences
 
