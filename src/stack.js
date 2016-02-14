@@ -198,9 +198,9 @@ function createEnv (initalState = {}) {
       currentState.dict[rhs] = lhs;
     },
     'def': function (cmd, name) {  // consider def and let, def top level, let local
-      if (useStrict && currentState.dict.hasOwnProperty(name)) {
+      /* if (useStrict && currentState.dict.hasOwnProperty(name)) {
         throw new Error('Cannot overrite definitions in strict mode');
-      }
+      } */
       if (typeof cmd !== 'function' && !(cmd instanceof Action)) {
         cmd = new Action(cmd);
       }
@@ -253,10 +253,9 @@ function createEnv (initalState = {}) {
     'yield': 'return suspend',
     'delay': '[ sleep ] >> slip eval',
     'sleep': function (time) {
-      return new Promise(
-        function (resolve, _) {
-          setTimeout(resolve, time);
-        });
+      return new Promise(function (resolve) {
+        setTimeout(resolve, time);
+      });
     },
     'next': 'fork',
     'fetch': function (url) {
@@ -322,9 +321,9 @@ function createEnv (initalState = {}) {
       if (typeof fn === 'string') {
         fn = new Action(lexer(fn));
       }
-      if (useStrict && currentState.dict.hasOwnProperty(name)) {
+      /* if (useStrict && currentState.dict.hasOwnProperty(name)) {
         throw new Error('Cannot overrite definitions in strict mode');
-      }
+      } */
       currentState.dict[name] = fn;
     }
   }

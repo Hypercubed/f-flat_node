@@ -18,6 +18,7 @@ F♭ is a dynamically typed array-oriented concatenative language like Forth and
   * name code not values
   * multiple return values
   * concatenation is composition/pipeline style
+  * no unnecessary parentheses.
 * no surprises
   * decimal and complex numbers
   * both double and single quotes
@@ -32,8 +33,8 @@ F♭ is a dynamically typed array-oriented concatenative language like Forth and
 
 ## Features
 
+* Flat functional [concatenative language](http://concatenative.org/wiki/view/Front%20Page), words denote functions, concatenation is composition.
 * Arbitrary-precision decimal and complex number type.
-* Flat functional concatinative language, without unnecessary parentheses.
 * JSON format is a valid f-flat programs. (But not all f-flat programs are JSON).
 
 ## Example
@@ -89,16 +90,7 @@ f♭> i !
 f♭> { first: "Manfred" }
 [ { first: 'Manfred' } ]
 
-f♭> {
-[ { first: 'Manfred' }, Symbol(() ]
-
-f♭>> last:
-[ { first: 'Manfred' }, Symbol((), last: ]
-
-f♭>> "von Thun"
-[ { first: 'Manfred' }, Symbol((), last:, 'von Thun' ]
-
-f♭>> }
+f♭> { last: 'von Thun' }
 [ { first: 'Manfred' }, { last: 'von Thun' } ]
 
 f♭> +
@@ -109,17 +101,13 @@ Why?
 
 * Designing a programming language in another language is a great way to learn about programming languages in general and the host language in particular.
 
-* Concatinative languages, with inherent functional composition, are a great way to explore functional programming and mathematics.  Higher order functions (including math functions) are composed of smaller functions.
+* Concatenative languages, with inherent functional composition, are a great way to explore functional programming and mathematics.  Higher order functions (including math functions) are composed of smaller functions.
 
 * Because 0.1 + 0.2 = 0.3 and sqrt of -1 is not "not a number".
 
 ## Influences
 
-* HP RPL
-* Forth
-* Joy
-* Factor
-* XY
+* [Many concatenative languages](http://concatenative.org/wiki/view/Front%20Page) (HP RPL, Forth, Joy, Factor, XY)
 * Haskell
 * JavaScript
 
