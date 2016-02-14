@@ -2,16 +2,16 @@ import test from 'tape';
 import {Stack as F} from '../';
 import {log} from '../src/logger';
 
-/* var nock = require('nock');
-var good = 'hello world. 你好世界。';
-var bad = 'good bye cruel world. 再见残酷的世界。';
+import nock from 'nock';
 
-nock('https://mattandre.ws')
-  .get('/succeed.txt')
+var good = {
+    id: 123456,
+    name: 'f-flat_node'
+  };
+
+nock('https://api.github.com/')
+  .get('/users/Hypercubed/repos')
   .reply(200, good);
-nock('https://mattandre.ws')
-  .get('/fail.txt')
-  .reply(404, bad); */
 
 log.level = process.env.NODE_ENV || 'error';
 
@@ -358,7 +358,7 @@ test('BigComplex', t => {
   });
 });
 
-test('Bboolean', t => {
+test('Boolean', t => {
   /* t.test('should parse', t => {
     var f = F();
     t.deepEqual(f.lexer('true').stack, [true]);
@@ -1134,6 +1134,17 @@ test('async', t => {
         t.deepLooseEqual(f.getStack(), [{ type: '@@Future', value: [ 3628800 ] }, 9]);
         t.deepLooseEqual(f.eval('drop eval').getStack(), [3628800]);
       }, 200);
+    }
+  });
+
+  t.test('should fetch', t => {
+    t.plan(1);
+
+    F().eval('"https://api.github.com/users/Hypercubed/repos" fetch', done);
+
+    function done (err, f) {
+      if (err) throw err;
+      t.deepLooseEqual(f.getStack(), [good]);
     }
   });
 });

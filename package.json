@@ -5,9 +5,8 @@
   "main": "index.js",
   "bin": "./dist/repl.js",
   "scripts": {
-    "rollup": "rollup ./bin/repl.js --banner \"#!/usr/bin/env node\" > ./dist/repl.rollup.js",
-    "babel": "babel ./dist/repl.rollup.js > ./dist/repl.js",
-    "compile": "npm run rollup && npm run babel",
+    "rollup": "rollup -c rollup.config.js > dist/repl.js",
+    "compile": "npm run rollup",
     "test": "babel-node ./test/f-flat-spec.js",
     "coverage": "babel-node node_modules/isparta/bin/isparta cover --report lcov --report html --report text ./test/f-flat-spec.js",
     "start": "babel-node ./bin/repl.js"
@@ -26,18 +25,28 @@
     "winston": "^2.1.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.4.0",
+    "babel-cli": "^6.5.1",
     "babel-plugin-transform-object-rest-spread": "^6.5.0",
-    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-es2015-rollup": "^1.1.1",
     "isparta": "^4.0.0",
     "nock": "^7.0.2",
-    "rollup": "^0.25.2",
+    "rollup": "^0.25.3",
+    "rollup-plugin-babel": "^2.3.9",
     "tape": "^4.4.0"
   },
   "semistandard": {
     "parser": "babel-eslint",
     "extends": [
       "semistandard"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ],
+    "plugins": [
+      "transform-object-rest-spread"
     ]
   }
 }
