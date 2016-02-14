@@ -43,17 +43,17 @@ export function Stack (s, root = getRootEnv()) {
 const getRootEnv = (function () {
   let rootStack;
 
-  return function getRootEnv () {
+  return function getRootEnv (global) {
     if (!rootStack) {
-      rootStack = createRootEnv();
+      rootStack = createRootEnv(global);
     }
     return rootStack;
   };
-})(global || window || {});
+})(global || window || this);
 
-function createRootEnv () {
+function createRootEnv (global) {
   const env = createEnv({   // root
-    dict: Object.create(useStrict ? {} : global),
+    dict: useStrict ? {} : Object.create(global),
     silent: true
   });
 
@@ -98,7 +98,7 @@ function createEnv (initalState = {}) {
       return self;
     },
     next: function (s) {
-      if (s) queueActionsBack(s);
+      if (s) { queueActionsBack(s); }
       dispatchQueue();
       return self;
     },
@@ -106,7 +106,7 @@ function createEnv (initalState = {}) {
       return new Promise(
         function (resolve, reject) {
           finished.once(function (err) {
-            if (err) reject(err);
+            if (err) { reject(err); }
             resolve(self.stack);
           });
           self.next(s);
@@ -159,7 +159,7 @@ function createEnv (initalState = {}) {
         r.unshift(s);
         s = currentState.stack.pop();
       }
-      if (useStrict) Object.freeze(r);
+      if (useStrict) { Object.freeze(r); }
       return r;
     },
     'depth': function () { return currentState.stack.length; }
@@ -209,7 +209,7 @@ function createEnv (initalState = {}) {
     'delete': a => { delete currentState.dict[a]; },  // usefull?
     'rcl': a => {
       const r = lookupAction(a);
-      if (useStrict && isFunction(r)) return Action.of(r); // carefull pushing functions to stack
+      if (useStrict && isFunction(r)) { return Action.of(r); } // carefull pushing functions to stack
       return r;
     },
     'see': a => String(lookupAction(a)),
@@ -231,7 +231,7 @@ function createEnv (initalState = {}) {
     'spawn': function (a) {
       return Future.of(a, childPromise(a));
     },
-    'await': function (a) {  // perhaps this should be in?
+    ['a' + 'wait']: function (a) {  // rollup complains on await, perhaps this should be in?
       if (Future.isFuture(a)) {
         return a.promise;
       }
@@ -280,7 +280,7 @@ function createEnv (initalState = {}) {
   addActions('define', x => addActions(x));
   addActions('require', loadFile);
 
-  if (useStrict) Object.freeze(self);
+  if (useStrict) { Object.freeze(self); }
   return self;
 
   function clearStack () {
@@ -372,7 +372,7 @@ function createEnv (initalState = {}) {
 
       beforeEach = function () {
         const q = currentState.stack.length + currentState.queue.length;
-        if (q > qMax) qMax = q;
+        if (q > qMax) { qMax = q; }
 
         bar.update(currentState.stack.length / qMax, {
           stack: currentState.stack.length,
@@ -438,7 +438,7 @@ function createEnv (initalState = {}) {
   }
 
   function dispatch (action) {
-    if (typeof action === 'undefined') return;
+    if (typeof action === 'undefined') { return; }
 
     if (isPromise(action)) {  // promise middleware
       _state = YIELDING;
