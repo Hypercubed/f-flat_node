@@ -2,6 +2,17 @@ import test from 'tape';
 import {Stack as F} from '../';
 import {log} from '../src/logger';
 
+/* var nock = require('nock');
+var good = 'hello world. 你好世界。';
+var bad = 'good bye cruel world. 再见残酷的世界。';
+
+nock('https://mattandre.ws')
+  .get('/succeed.txt')
+  .reply(200, good);
+nock('https://mattandre.ws')
+  .get('/fail.txt')
+  .reply(404, bad); */
+
 log.level = process.env.NODE_ENV || 'error';
 
 const tolerance = 0.5 * Math.pow(10, -9);
@@ -503,6 +514,22 @@ test('String', t => {
     t.F('"abc" 10 @', ['']);
     t.end();
   });
+
+  t.test('should push empty strings', t => {
+    t.F('""', ['']);
+    t.end();
+  });
+
+  t.test('should process string templates', t => {
+    t.F('`-1 sqrt = ${-1 sqrt}`', ['-1 sqrt = 0+1i']);
+    t.F('`0.1 0.2 + = ${0.1 0.2 +}`', ['0.1 0.2 + = 0.3']);
+    t.end();
+  });
+
+  t.test('should suporrt emoji', t => {
+    t.F('"Dog!🐶"', ['Dog!🐶']);
+    t.end();
+  });
 });
 
 test('Lists', t => {
@@ -932,24 +959,41 @@ test('experimental', t => {
   });
 
   t.test('swap atoms', t => {
-    t.F('abc: def: swap', [ { type: '@@Atom', value: 'def' }, { type: '@@Atom', value: 'abc' } ]);
+    t.F('abc: def: swap', [ { type: '@@Action', value: 'def' }, { type: '@@Action', value: 'abc' } ]);
     t.end();
   });
 
   t.test('dup atoms', t => {
-    t.F('abc: dup', [ { type: '@@Atom', value: 'abc' }, { type: '@@Atom', value: 'abc' } ]);
+    t.F('abc: dup', [ { type: '@@Action', value: 'abc' }, { type: '@@Action', value: 'abc' } ]);
     t.end();
   });
 
   t.test('unstack should not eval', t => {
-    t.F('[2 1 +] unstack', [ 2, 1, { type: '@@Atom', value: '+' } ]);
+    t.F('[2 1 +] unstack', [ 2, 1, { type: '@@Action', value: '+' } ]);
+    t.end();
+  });
+
+  t.test('should slice', t => {
+    t.F('["a" "b" "c" "d"] 0 1 slice', [['a']]);
+    t.F('["a" "b" "c" "d"] 0 -1 slice', [['a', 'b', 'c']]);
+    t.end();
+  });
+
+  t.test('should splitat', t => {
+    t.F('["a" "b" "c" "d"] 1 splitat', [['a'], ['b', 'c', 'd']]);
+    t.F('["a" "b" "c" "d"] -1 splitat', [['a', 'b', 'c'], ['d']]);
+    t.end();
+  });
+
+  t.test('unstack should not eval', t => {
+    t.F('[2 1 +] unstack', [ 2, 1, { type: '@@Action', value: '+' } ]);
     t.end();
   });
 });
 
 test('yield', t => {
   t.test('yield and fork', t => {
-    t.F('[1 2 yield 4 5 yield 6 7] fork', [1, 2, [4, 5, { type: '@@Atom', value: 'yield' }, 6, 7]]);
+    t.F('[1 2 yield 4 5 yield 6 7] fork', [1, 2, [4, 5, { type: '@@Action', value: 'yield' }, 6, 7]]);
     t.end();
   });
 
@@ -959,7 +1003,7 @@ test('yield', t => {
   });
 
   t.test('yield and fork', t => {
-    t.F('[1 2 + yield 4 5 + ] fork', [3, [4, 5, { type: '@@Atom', value: '+' }]]);
+    t.F('[1 2 + yield 4 5 + ] fork', [3, [4, 5, { type: '@@Action', value: '+' }]]);
     t.end();
   });
 
@@ -974,71 +1018,122 @@ test('yield', t => {
   });
 
   t.test('multiple yields', t => {
-    t.F('succ* [ fork ] 10 times drop', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    t.F('count* [ fork ] 10 times drop', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     t.end();
   });
 });
 
 test('async', t => {
-  t.test('await', t => {
-    t.plan(1);
-    F().eval('[ 10 ! ] task await 4 5 + +', function (err, f) {
-      console.log('callback');
+  t.test('should yield on async', t => {
+    t.plan(2);
+    var f = F().eval('10 ! 100 sleep 4 5 + +', done);
+    t.deepLooseEqual(f.getStack(), [3628800]);
+
+    function done (err, f) {
       if (err) throw err;
       t.deepLooseEqual(f.getStack(), [3628809]);
-      t.end();
-    });
+    }
   });
 
-  t.test('delay and await', t => {
-    F().eval('[ 10 ! ] 100 delay await 4 5 + +', function (err, f) {
+  t.test('should delay', t => {
+    t.plan(2);
+
+    var f = F().eval('[ 10 ! ] 100 delay 4 5 + +', done);
+    t.deepLooseEqual(f.getStack(), [3628800]);
+
+    function done (err, f) {
       if (err) throw err;
       t.deepLooseEqual(f.getStack(), [3628809]);
-      t.end();
-    });
+    }
   });
 
-  t.test('delay and await', t => {
-    F().eval('[[ 10 ! ] 100 delay await 4 5 + +] task await', function (err, f) {
-      if (err) throw err;
-      t.deepLooseEqual(f.getStack(), [3628809]);
-      t.end();
-    });
-  });
+  t.test('should fork', t => {
+    t.plan(3);
 
-  t.test('delay and await', t => {
-    F().eval('[ 10 ! ] task [ fork ] task await', function (err, f) {
-      if (err) throw err;
-      t.deepLooseEqual(f.getStack(), [[3628800]]);
-      t.end();
-    });
-  });
+    var f = F().eval('[ 100 sleep 10 ! ] fork 4 5 +', done);
+    t.deepLooseEqual(f.getStack(), [[], 9]);
 
-  t.test('delay and await', t => {
-    F().eval('[ 10 ! task await] task fork', function (err, f) {
+    function done (err, f) {
       if (err) throw err;
-      t.deepLooseEqual(f.getStack(), [[3628800]]);
-      t.end();
-    });
+      t.deepLooseEqual(f.getStack(), [[], 9]);
+
+      setTimeout(function () {
+        t.deepLooseEqual(f.getStack(), [[ 3628800 ], 9]);
+      }, 200);
+    }
   });
 
   t.test('shouldn\'t call callback twice', t => {
-    t.plan(2);
+    t.plan(4);
+
     const f = F();
-    f.eval('[ 10 ! ] 100 delay await 4 5 + +', function (err, f) {
+    f.eval('[ 100 sleep 10 ! ] fork 4 5 +', done);
+    t.deepLooseEqual(f.getStack(), [[], 9, 1, 2]);
+
+    function done (err, f) {
       if (err) throw err;
-      t.deepLooseEqual(f.getStack(), [3628809]);
-      t.deepLooseEqual(f.eval('1 2').getStack(), [3628809, 1, 2]);
-    });
+      t.deepLooseEqual(f.getStack(), [[], 9]);
+      t.deepLooseEqual(f.eval('1 2').getStack(), [[], 9, 1, 2]);
+
+      setTimeout(function () {
+        t.deepLooseEqual(f.getStack(), [[ 3628800 ], 9, 1, 2]);
+      }, 200);
+    }
   });
 
-  t.test('should queue back when yielded', t => {
-    const f = F();
-    f.eval('[ 10 ! ] 100 delay await 4 5 + +', function (err, f) {
+  t.test('should await', t => {
+    t.plan(2);
+
+    var f = F().eval('1 [ 100 sleep 10 ! ] await 4 5 +', done);
+    t.deepLooseEqual(f.getStack(), [1]);
+
+    function done (err, f) {
       if (err) throw err;
-      t.deepLooseEqual(f.getStack(), [3628809, 1, 2]);
-      t.end();
-    });
-    t.deepLooseEqual(f.eval('1 2').getStack(), []);
+      t.deepLooseEqual(f.getStack(), [1, [3628800], 9]);
+    }
+  });
+
+  t.test('shouldn\'t call callback twice', t => {
+    t.plan(3);
+
+    const f = F();
+    f.eval('1 [ 100 sleep 10 ! ] await 4 5 +', done);
+    t.deepLooseEqual(f.getStack(), [1]);
+
+    function done (err, f) {
+      if (err) throw err;
+      t.deepLooseEqual(f.getStack(), [1, [3628800], 9]);
+      t.deepLooseEqual(f.eval('1 2').getStack(), [1, [3628800], 9, 1, 2]);
+    }
+  });
+
+  t.test('all', t => {
+    t.plan(2);
+
+    const f = F();
+    f.eval('[ 100 sleep 10 ! ] dup pair all', done);
+    t.deepLooseEqual(f.getStack(), []);
+
+    function done (err, f) {
+      if (err) throw err;
+      t.deepLooseEqual(f.getStack(), [ [ [ 3628800 ], [ 3628800 ] ] ]);
+    }
+  });
+
+  t.test('should spawn', t => {
+    t.plan(4);
+
+    var f = F().eval('[ 100 sleep 10 ! ] spawn 4 5 +', done);
+    t.deepLooseEqual(f.getStack(), [{ type: '@@Future' }, 9]);
+
+    function done (err, f) {
+      if (err) throw err;
+      t.deepLooseEqual(f.getStack(), [{ type: '@@Future' }, 9]);
+
+      setTimeout(function () {
+        t.deepLooseEqual(f.getStack(), [{ type: '@@Future', value: [ 3628800 ] }, 9]);
+        t.deepLooseEqual(f.eval('drop eval').getStack(), [3628800]);
+      }, 200);
+    }
   });
 });

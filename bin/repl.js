@@ -22,7 +22,7 @@ const stackRepl = repl.start({
   prompt: initialPrompt + ' ',
   eval: f_eval,
   writer: writer,
-  ignoreUndefined: true,
+  ignoreUndefined: false,
   useColors: true,
   useGlobal: false
 })
@@ -33,16 +33,16 @@ const stackRepl = repl.start({
 stackRepl.defineCommand('.', {
   help: 'print stack',
   action: function () {
-    console.log(writer(f.stack));
+    console.log(writer(f));
     this.displayPrompt();
   }
 });
 
-function writer (f) {
-  const depth = '>'.repeat(f.getDepth());
+function writer (_) {
+  const depth = '>'.repeat(_.depth);
   stackRepl.setPrompt(initialPrompt + depth + ' ');
 
-  return util.inspect(f.stack, inspectOptions) + '\n';
+  return util.inspect(_.stack, inspectOptions) + '\n';
 }
 
 function f_eval (code, context, filename, cb) {
@@ -51,16 +51,21 @@ function f_eval (code, context, filename, cb) {
     .replace('[\s]', ' ')
     .trim();
 
-  if (code[0] === '(' && code[code.length - 1] === ')') {
+  if (code.slice(0, 1) === '({' && code[code.length - 1] === ')') {
     code = code.slice(1, -1); // remove "(" and ")"
   }
 
   code = buffer + code;
 
-  if (code[code.length - 1] === '\\') {
+  const qcount = (code.match(/\`/g) || []).length;
+
+  if (code[code.length - 1] === '\\' || qcount % 2 === 1) {
     buffer = code.slice(0, -1) + '\n';
   } else {
     buffer = '';
-    f.eval(code, cb);
+    f.eval(code, function () {
+      // console.log('done', arguments);
+      cb(null, f);
+    });
   }
 }

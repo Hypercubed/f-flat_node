@@ -1,11 +1,11 @@
-import {typed, Atom, Result} from '../types/index';
+import {typed, Action, Just} from '../types/index';
 
 export default {
   'types': typed.types,
   'type': a => typeof a,
   'string': String,
   'boolean': Boolean,
-  'atom': a => Result.of([Atom.of(a)]),
+  'atom': a => Just.of(Action.of(a)),
   'array': n => new Array(n),
   'integer': a => a | 0,
   'null': () => null,

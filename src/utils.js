@@ -1,4 +1,4 @@
-import {typed, Atom, BigNumber, I} from './types/index';
+import {typed, Action, BigNumber, I, Seq} from './types/index';
 
 /* export function nAry (n, fn) {
   switch (n) {
@@ -42,14 +42,30 @@ export function pluck (context, path) {
   return src;
 } */
 
+export function isLineTerminator (ch) {
+  return (ch === '\n') || (ch === '\r') || (ch === 0x2028) || (ch === 0x2029);
+}
+
 export function isWhitespace (ch) {
+  return (ch === ',') || // camma
+        (ch === ' ') ||  // space
+        (ch === '\t') || (ch === '\v') || // tab
+        isLineTerminator(ch) || // newlines
+        (ch === '\n') ||
+        (ch === 0xB) ||
+        (ch === 0xC) ||
+        (ch === 0xA0) ||
+        (ch >= 0x1680 && '\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\uFEFF'.indexOf(String.fromCharCode(ch)) > 0);
+}
+
+/* export function isWhitespace (ch) {
   return (ch === ' ' || ch === '\r' || ch === '\t' ||
           ch === '\n' || ch === '\v' || ch === '\u00A0' ||
           ch === ',');
-}
+} */
 
 export function isQuote (ch) {
-  return (ch === '"' || ch === '\'' || ch === '\`');
+  return (ch === '"' || ch === '\'');
 }
 
 export function isBracket (ch) {
@@ -67,6 +83,10 @@ export function isBoolean (string) {
   return lc === 'true' || lc === 'false';
 }
 
+export function isPromise (val) {
+  return val && typeof val.then === 'function';
+}
+
 const __eql = typed('eql', {
   'Array, Array': function (a, b) {
     if (a.length !== b.length) return false;
@@ -75,7 +95,7 @@ const __eql = typed('eql', {
     }
     return true;
   },
-  'Atom, Atom': function (a, b) {
+  'Action, Action': function (a, b) {
     return a.value === b.value;
   },
   'BigNumber, BigNumber | number': function (a, b) {
@@ -101,7 +121,7 @@ export function eql (a, b) {
       return true;
     }
   }
-  if (a instanceof Atom && b instanceof Atom) {
+  if (a instanceof Action && b instanceof Action) {
     return a.value === b.value;
   }
   if (a instanceof BigNumber && b instanceof BigNumber) {
@@ -110,28 +130,58 @@ export function eql (a, b) {
   return is.equal(a, b);
 } */
 
+const reString = /^\$.+$/;
+const reSymbol = /^\#.+$/;
+const reProperty = /^\_\..+$/;
+const reAction = /^\\.+$/;
+const reAction2 = /^.+:$/;
+const reAt = /^\@.+$/;
+
+function processMacros (d) {
+  if (reString.test(d)) {
+    return d.slice(1);
+  }
+
+  if (reSymbol.test(d)) {
+    return Symbol(d.slice(1));
+  }
+
+  if (reAt.test(d)) {
+    return Seq.of([String(d.slice(1)), Action.of('@')]);
+  }
+
+  if (reProperty.test(d)) {
+    let r = (d
+      .replace('_.', '')
+      .replace('.', '.@.') + '.@')
+        .split('.')
+        .map(x => (x === '@') ? Action.of('@') : String(x));
+
+    return Seq.of(r);
+  }
+
+  if (reAction.test(d)) {
+    d = toLiteral(d.slice(1));
+  }
+
+  if (reAction2.test(d)) {
+    d = toLiteral(d = d.slice(0, d.length - 1));
+  }
+
+  return Action.of(d);
+}
+
 export function toLiteral (d) {
   if (isNumeric(d)) {
     return Object.freeze(new BigNumber(d));
-  } else if (isBoolean(d)) {
+  }
+  if (isBoolean(d)) {
     return d.toLowerCase() === 'true';
-  } else if (d === 'i') {
+  }
+
+  if (d === 'i') {
     return I;
   }
-  switch (d[0]) {
-    case '#':
-      return Symbol(d.slice(1));
-    case '$':
-      return d.slice(1);
-    default:
-      if (d.length > 1 && (d[d.length - 1] === ':' || d[0] === '\\')) {
-        if (d[d.length - 1] === ':') {
-          d = d.slice(0, d.length - 1);
-        } else if (d[0] === '\\') {
-          d = d.slice(1);
-        }
-        d = toLiteral(d);
-      }
-      return new Atom(d);
-  }
+
+  return processMacros(d);
 }

@@ -6,13 +6,18 @@ F♭ is a dynamically typed array-oriented concatenative language like Forth and
 
 ## Project Goals
 
+* conceptually simple
 * interactive first
   * minimal hidden state
   * easy to type and read
   * reads left to right, top to bottom
   * whitespace not significant syntax
   * no lambdas/parameters
-* flat language
+  * interactive development
+* flat concatenative language
+  * name code not values
+  * multiple return values
+  * concatenation is composition/pipeline style
 * no surprises
   * decimal and complex numbers
   * both double and single quotes
@@ -29,7 +34,7 @@ F♭ is a dynamically typed array-oriented concatenative language like Forth and
 
 * Arbitrary-precision decimal and complex number type.
 * Flat functional concatinative language, without unnecessary parentheses.
-* JSON format is value f-flat programs. (But not all f-flat programs are JSON).
+* JSON format is a valid f-flat programs. (But not all f-flat programs are JSON).
 
 ## Example
 

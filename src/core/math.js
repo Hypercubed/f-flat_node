@@ -1,6 +1,6 @@
 import erf from 'compute-erf';
 
-import {typed, BigNumber, pi, Complex, Atom} from '../types/index';
+import {typed, BigNumber, pi, Complex, Action} from '../types/index';
 import {lexer} from '../lexer';
 
 // const pow = lexer('ln * exp');
@@ -15,7 +15,7 @@ export default {
     'BigNumber | number': (a) => a,
     'Complex': (a) => a.re
   }),
-  'im': typed('re', {
+  'im': typed('im', {
     'BigNumber | number': (a) => 0,
     'Complex': (a) => a.im
   }),
@@ -41,7 +41,7 @@ export default {
   ceil: typed('ceil', {
     'BigNumber | Complex': a => a.ceil()
   }),
-  sqrt: typed('exp', {
+  sqrt: typed('sqrt', {
     'Complex': function (x) {
       return x.sqrt();
     },
@@ -67,8 +67,8 @@ export default {
   ln: typed('ln', {
     'BigNumber | Complex': a => a.ln()
   }),
-  '^': typed('pow', {
-    'Complex, BigNumber | Complex | number': (a, b) => new Atom([b, a].concat(lexer('ln * exp'))),
+  '^': typed('pow', {  // boolean or?
+    'Complex, BigNumber | Complex | number': (a, b) => Action.of([b, a].concat(lexer('ln * exp'))),
     'BigNumber, BigNumber | Complex | number': (a, b) => a.pow(b)
   }),
   // '^': 'swap ln * exp',

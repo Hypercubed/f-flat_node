@@ -1,4 +1,4 @@
-import {typed, Task} from '../types/index';
+import {typed} from '../types/index';
 import {pluck, eql} from '../utils';
 
 const oob = Symbol('out-of-bounds');
@@ -9,17 +9,7 @@ const add = typed('add', {
   'Object, Object': (lhs, rhs) => Object.assign({}, lhs, rhs),  // object assign/assoc
   'Complex, Complex': (lhs, rhs) => lhs.plus(rhs),
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.plus(rhs),
-  'Task, Array': (task, a) => {
-    return new Task(function (reject, resolve) {
-      return task.fork(a => reject(a), b => resolve(add(b, a)));
-    });
-  },
-  'Array, Task': (a, task) => {
-    return new Task(function (reject, resolve) {
-      return task.fork(a => reject(a), b => resolve(add(a, b)));
-    });
-  },
-  'any, any': (lhs, rhs) => lhs + rhs  // string concat
+  'string, string': (lhs, rhs) => lhs + rhs  // string concat
 });
 
 const sub = typed('sub', {
@@ -44,18 +34,13 @@ const arrayRepeat = (a, b) => {
 };
 
 const mul = typed('mul', {
-  'Array, Array | Atom | Function': (lhs, rhs) => {
+  'Array, Array | Action | Function': (lhs, rhs) => {
     var l = [];
     for (var i = 0; i < lhs.length; i++) {
       l.push(lhs[i]);
       l = l.concat(rhs);
     }
     return l;
-  },
-  'Task, Array': (task, a) => {
-    return new Task(function (reject, resolve) {
-      return task.fork(a => reject(a), b => resolve(mul(b, a)));
-    });
   },
   'Array, string': (lhs, rhs) => lhs.join(rhs),  // string join
   'boolean, boolean': (lhs, rhs) => (lhs && rhs),  // boolean and
@@ -83,30 +68,20 @@ const div = typed('div', {
 });
 
 const unshift = typed('unshift', { // >>, Danger! No mutations
-  'any | Atom | Object, Array': (lhs, rhs) => {
+  'any | Action | Object, Array': (lhs, rhs) => {
     rhs = rhs.slice();
     rhs.unshift(lhs);
     return rhs;
-  },
-  'any | Atom | Object, Task': (a, task) => {
-    return new Task(function (reject, resolve) {
-      return task.fork(a => reject(a), b => resolve(unshift(a, b)));
-    });
   },
   'Object, Object': (lhs, rhs) => Object.assign({}, rhs, lhs),  // object assign
   'number, number': (lhs, rhs) => lhs >> rhs  // Sign-propagating right shift
 });
 
 const push = typed('push', {  // <<, Danger! No mutations
-  'Array, any | Atom | Object': (lhs, rhs) => {
+  'Array, any | Action | Object': (lhs, rhs) => {
     lhs = lhs.slice();
     lhs.push(rhs);
     return lhs;
-  },
-  'Task, any | Atom | Object': (task, a) => {
-    return new Task(function (reject, resolve) {
-      return task.fork(a => reject(a), b => resolve(push(b, a)));
-    });
   },
   'Object, Object': (lhs, rhs) => Object.assign({}, lhs, rhs),  // object assign
   'number, number': (lhs, rhs) => lhs << rhs  // Left shift
@@ -129,12 +104,8 @@ const at = typed('at', {
     const r = lhs[rhs];
     return (r !== undefined) ? r : oob;
   },
-  'Object | Function, Atom': (a, b) => {
-    const r = pluck(a, b.value);
-    return (r !== undefined) ? r : oob;
-  },
-  'Object | Function, number | string': (a, b) => {
-    const r = pluck(a, b);
+  'any, Action | string': (a, b) => {
+    const r = pluck(a, String(b));
     return (r !== undefined) ? r : oob;
   }
 });

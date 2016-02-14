@@ -7,3 +7,4 @@
 ( 1 5 sqrt + 2 / ) 'phi' def   // golden ratio
 ( 2 sqrt ) 'sqrt2' def         // returns the square root of 2
 ( 1 2 / sqrt ) 'sqrt1_2' def   // returns the square root of 1/2
+( pi 180 / ) 'radians' def
