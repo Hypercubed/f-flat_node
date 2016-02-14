@@ -177,9 +177,9 @@ function createEnv (initalState = {}) {
     },
     'in*': '=> stack <= [ stack ] + dip swap [unstack] dip',
     'in': function (a) {
-      var f = self.createChild();
-      f.next(a);
-      return f.stack;
+      const c = self.createChild();
+      c.eval(a);
+      return c.stack;
     }
     /* 'ns': function (a) {
       this.dict[String(a).toLowerCase()] = this.dict;

@@ -1136,4 +1136,14 @@ test('async', t => {
       }, 200);
     }
   });
+
+  t.test('should generate promise', t => {
+    t.plan(1);
+
+    const f = F();
+
+    f.promise('100 sleep 10 !').then(() => {
+      t.deepLooseEqual(f.getStack(), [3628800]);
+    });
+  });
 });
