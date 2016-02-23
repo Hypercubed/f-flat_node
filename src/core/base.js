@@ -1,7 +1,7 @@
 import {typed} from '../types/index';
-import {pluck, eql} from '../utils';
+import {pluck, eql, arrayRepeat} from '../utils';
 
-const oob = Symbol('out-of-bounds');
+const oob = null;
 
 const add = typed('add', {
   'Array, Array': (lhs, rhs) => lhs.concat(rhs),  // list concatination/function composition
@@ -9,7 +9,7 @@ const add = typed('add', {
   'Object, Object': (lhs, rhs) => Object.assign({}, lhs, rhs),  // object assign/assoc
   'Complex, Complex': (lhs, rhs) => lhs.plus(rhs),
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.plus(rhs),
-  'string, string': (lhs, rhs) => lhs + rhs  // string concat
+  'any | string, any | string': (lhs, rhs) => String(lhs) + String(rhs)  // string concat
 });
 
 const sub = typed('sub', {
@@ -23,15 +23,6 @@ const sub = typed('sub', {
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.minus(rhs) // ,
   // 'any, any': (lhs, rhs) => lhs - rhs
 });
-
-const arrayRepeat = (a, b) => {
-  b = +b | 0;
-  if (b === 0) { return []; }
-  var r = [];
-  var len = a.length * b;
-  while (r.length < len) { r = r.concat(a); }
-  return r;
-};
 
 const mul = typed('mul', {
   'Array, Array | Action | Function': (lhs, rhs) => {

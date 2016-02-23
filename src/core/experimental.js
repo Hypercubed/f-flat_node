@@ -1,3 +1,4 @@
+/*eslint prefer-reflect: 2*/
 
 export default {
   // 'throw': this.throw,
@@ -25,9 +26,9 @@ export default {
   'this': function () { return this; },
   // '$', function $ (a) { return global.$(a); });
   'stringify': JSON.stringify, // global.JSON.stringify
-  'jsonparse': (a, b = undefined) => JSON.parse(a), // global.JSON.parse
-  'call': function call (a, b) { return a.call(this, b); },
-  'apply': function apply (a, b) { return a.apply(this, b); },
-  '|>': function call (a, b) { return b.call(this, a); },  // danger
-  '||>': function call (a, b) { return b.apply(this, a); }
+  'parse-json': (a, b = undefined) => JSON.parse(a), // global.JSON.parse
+  'call': function call (a, b) { return Reflect.call(a, this, b); },
+  'apply': function apply (a, b) { return Reflect.apply(a, this, b); },
+  '|>': function call (a, b) { return Reflect.call(b, this, a); },  // danger
+  '||>': function call (a, b) { return Reflect.apply(b, this, a); }
 };

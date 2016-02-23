@@ -5,8 +5,9 @@
   "main": "index.js",
   "bin": "./dist/repl.js",
   "scripts": {
-    "rollup": "rollup -c rollup.config.js > dist/repl.js",
-    "compile": "npm run rollup",
+    "rollup:bin": "rollup -c rollup.repl.js > dist/repl.js",
+    "rollup:lib": "rollup -c rollup.lib.js > dist/stack.js",
+    "compile": "npm run rollup:bin && npm run rollup:lib",
     "test": "babel-node ./test/f-flat-spec.js",
     "coverage": "babel-node node_modules/isparta/bin/isparta cover --report lcov --report html --report text ./test/f-flat-spec.js",
     "start": "babel-node ./bin/repl.js"
@@ -30,9 +31,11 @@
     "babel-preset-es2015": "^6.5.0",
     "babel-preset-es2015-rollup": "^1.1.1",
     "isparta": "^4.0.0",
+    "kneden": "^1.0.0",
     "nock": "^7.0.2",
     "rollup": "^0.25.3",
     "rollup-plugin-babel": "^2.3.9",
+    "rollup-plugin-json": "^2.0.0",
     "tape": "^4.4.0"
   },
   "semistandard": {
@@ -46,7 +49,8 @@
       "es2015"
     ],
     "plugins": [
-      "transform-object-rest-spread"
+      "transform-object-rest-spread",
+      "kneden"
     ]
   }
 }

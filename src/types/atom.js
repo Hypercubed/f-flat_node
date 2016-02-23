@@ -1,19 +1,22 @@
 import {typed} from './typed';
 
-// some base immutable types
-
-export class Just {
+export class Base {
   constructor (value) {
     this.value = value;
-    Object.freeze(this);
-  }
-
-  of (value) {
-    return new this.constructor(value);
   }
 
   toString () {
     return String(this.value);
+  }
+
+  [Symbol.toPrimitive] (hint) {
+    if (hint === 'string') {
+      return String(this.value);
+    } else if (hint === 'number') {
+      return Number(this.value);
+    } else {
+      return this.value;
+    }
   }
 
   inspect (depth) {
@@ -34,32 +37,83 @@ export class Just {
   extract () {
     return this.value;
   }
-}
-Just.prototype.type = '@@Just';
-Just.of = value => new Just(value);
-Just.isJust = (item) => item.type === Just.prototype.type;
 
-export class Action extends Just {  // todo type check
+  static get [Symbol.species] () {
+    return this;
+  }
+
+  static of (...args) {
+    const Species = this[Symbol.species];
+    return new Species(...args);
+  }
+
+  static isA (item) {
+    const Species = this[Symbol.species];
+    return item.type === Species.prototype.type;
+  }
+}
+
+// some base immutable types
+export class Just extends Base {
+  constructor (value) {
+    super(value);
+    Object.freeze(this);
+  }
+
+  get type () {
+    return '@@Just';
+  }
+
+  static isJust (item) {
+    const Species = this[Symbol.species];
+    return item.type === Species.prototype.type;
+  }
+}
+
+export class Action extends Base {
+  constructor (value) { // todo type check
+    super(value);
+    Object.freeze(this);
+  }
+
   inspect (depth) {
     if (typeof this.value === 'string') {
       return this.value;
     }
     return (this.value.inspect ? this.value.inspect() : String(this.value)) + ':';
   }
+
+  get type () {
+    return '@@Action';
+  }
+
+  static isAction (item) {
+    const Species = this[Symbol.species];
+    return item && item.type === Species.prototype.type;
+  }
 }
-Action.prototype.type = '@@Action';
-Action.of = value => new Action(value);
-Action.isAction = (item) => item.type === Action.prototype.type;
 
-export class Seq extends Just {}   // todo type check: value needs to be an array
-Seq.prototype.type = '@@Seq';
-Seq.of = (value) => new Seq(value);
-Seq.isSeq = (item) => item.type === Seq.prototype.type;
+export class Seq extends Just {
+  constructor (value) { // todo type check
+    super(value);
+    Object.freeze(this);
+  }
 
-export class Future {
+  get type () {
+    return '@@Seq';
+  }
+
+  static isSeq (item) {
+    const Species = this[Symbol.species];
+    return item.type === Species.prototype.type;
+  }
+}
+
+export class Future extends Base {
   constructor (action, promise) {
+    super(undefined);
+
     this.action = action;
-    this.value = undefined;
 
     if (typeof promise !== 'undefined') {
       this.promise = promise;
@@ -68,10 +122,6 @@ export class Future {
         return this.resolve(data);
       });
     }
-  }
-
-  of () {
-    return new this.constructor();
   }
 
   isResolved () {
@@ -103,13 +153,13 @@ export class Future {
 
   inspect () {
     const state = this.state();
-    let value = this.near();
-    value = (value.inspect ? value.inspect() : String(value));
-    return `<Future:${state} [${ value }]>`;
+    let near = this.near();
+    near = (near.inspect ? near.inspect() : String(near));
+    return `[Future:${state} [${ near }]]`;
   }
 
   toJSON () {
-    return {
+    return {  // todo
       type: this.type,
       value: this.value
       // state: this.state(),
@@ -123,12 +173,18 @@ export class Future {
     }
     return this.value;
   }
+
+  get type () {
+    return '@@Future';
+  }
+
+  static isFuture (item) {
+    const Species = this[Symbol.species];
+    return item.type === Species.prototype.type;
+  }
 }
-Future.prototype.type = '@@Future';
-Future.of = (action, promise) => new Future(action, promise);
-Future.isFuture = (item) => item.type === Future.prototype.type;
 
 typed.addType({
   name: 'Action',
-  test: Action.isAction
+  test: (item) => Action.isAction(item)
 });

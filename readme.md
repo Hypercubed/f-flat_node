@@ -20,16 +20,18 @@ F♭ is a dynamically typed array-oriented concatenative language like Forth and
   * concatenation is composition/pipeline style
   * no unnecessary parentheses.
 * no surprises
+  * immutable data
   * decimal and complex numbers
+  * percent values
   * both double and single quotes
   * returns error objects
 * pure functions
-* immutable data
 * host language interface
 * Session saving (TBD)
   * undo/redo
   * state is serializable
 * modules and namespaces (TBD)
+* closure
 
 ## Features
 

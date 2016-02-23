@@ -1,17 +1,34 @@
-
 import {Stack} from '../src/stack';
 import repl from 'repl';
 import util from 'util';
+import pkg from '../package.json';
+import {log} from '../src/logger';
 
 const initialPrompt = 'f♭>';
 const inspectOptions = { showHidden: false, depth: null, colors: true };
 
-const args = process.argv.slice(2).join(' ');
+const program = require('commander');
 
-let f = new Stack(args);
+var arg = '';
+
+program
+  .version(pkg.version)
+  .usage('[options] [commands...]')
+  .option('-L, --log-level [level]', 'Set the log level [warn]', 'warn')
+  .action(function (...cmds) {
+    cmds.pop();
+    arg += cmds.join(' ');
+  });
+
+program.parse(process.argv);
+
+let f = new Stack();
 let buffer = '';
 
-if (args !== '') {
+if (program.logLevel) log.level = program.logLevel;
+
+if (arg !== '') {
+  f.eval(arg);
   console.log(util.inspect(f.stack, inspectOptions) + '\n');
   process.exit();
 }
@@ -45,14 +62,14 @@ function writer (_) {
   return util.inspect(_.stack, inspectOptions) + '\n';
 }
 
-function f_eval (code, context, filename, cb) {
+async function f_eval (code, _, __, cb) {
   code = code
     .replace(/^\(([\s\S]*)\n\)$/m, '$1')
     .replace('[\s]', ' ')
     .trim();
 
   if (code.slice(0, 1) === '({' && code[code.length - 1] === ')') {
-    code = code.slice(1, -1); // remove "(" and ")"
+    code = code.slice(1, -1); // remove "(" and ")" added by node repl
   }
 
   code = buffer + code;
@@ -63,9 +80,17 @@ function f_eval (code, context, filename, cb) {
     buffer = code.slice(0, -1) + '\n';
   } else {
     buffer = '';
-    f.eval(code, function () {
-      // console.log('done', arguments);
-      cb(null, f);
-    });
+
+    /* f.eval(code, function (err, result) {
+      if (err) console.log(err);
+      cb(null, result);
+    }); */
+
+    try {
+      const _f = await f.promise(code);
+      cb(null, _f);
+    } catch (err) {
+      cb(err);
+    }
   }
 }

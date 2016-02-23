@@ -13,7 +13,7 @@ JavaScript  | F-Flat
 `0x0F` | `0x0F`
 *no complex numbers* | `i`
 `'Hello world!'`  | `'Hello world!'`
-``` `3 === ${1+2}` ``` | ``` `3 === ${1 2 +}` ```
+``` `3 === ${1+2}` ``` | ``` `3 === $(1 2 +)` ```
 `true` | `true`
 `[1,2,3]` | `[1 2 3]`
 

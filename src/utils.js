@@ -1,4 +1,4 @@
-import {typed, Action, BigNumber, I, Seq} from './types/index';
+import {typed, Action} from './types/index';
 
 /* export function nAry (n, fn) {
   switch (n) {
@@ -21,6 +21,15 @@ export function unary (fn) {
   return nAry(1, fn);
 } */
 
+export const arrayRepeat = (a, b) => {
+  b = +b | 0;
+  if (b === 0) { return []; }
+  var r = [];
+  var len = a.length * b;
+  while (r.length < len) { r = r.concat(a); }
+  return r;
+};
+
 export function pluck (context, path) {
   // if (path === '.') return undefined;
 
@@ -42,7 +51,10 @@ export function pluck (context, path) {
   return src;
 } */
 
-export function isLineTerminator (ch) {
+export function noop () {}
+export function throwError (e) { throw e; }
+
+/* export function isLineTerminator (ch) {
   return (ch === '\n') || (ch === '\r') || (ch === 0x2028) || (ch === 0x2029);
 }
 
@@ -56,7 +68,7 @@ export function isWhitespace (ch) {
         (ch === 0xC) ||
         (ch === 0xA0) ||
         (ch >= 0x1680 && '\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\uFEFF'.indexOf(String.fromCharCode(ch)) > 0);
-}
+} */
 
 /* export function isWhitespace (ch) {
   return (ch === ' ' || ch === '\r' || ch === '\t' ||
@@ -64,27 +76,31 @@ export function isWhitespace (ch) {
           ch === ',');
 } */
 
-export function isQuote (ch) {
+/* export function isQuote (ch) {
   return (ch === '"' || ch === '\'');
-}
+} */
 
-export function isBracket (ch) {
+/* export function isBracket (ch) {
   return (ch === '{' || ch === '}' ||
           ch === '[' || ch === ']' ||
           ch === '(' || ch === ')');
-}
+} */
 
-export function isNumeric (num) {
+/* export function isNumeric (num) {
   return !isNaN(num);
 }
 
 export function isBoolean (string) {
   var lc = string.toLowerCase();
   return lc === 'true' || lc === 'false';
-}
+} */
 
 export function isPromise (val) {
   return val && typeof val.then === 'function';
+}
+
+export function isDefined (val) {
+  return typeof val !== 'undefined';
 }
 
 const __eql = typed('eql', {
@@ -130,58 +146,43 @@ export function eql (a, b) {
   return is.equal(a, b);
 } */
 
-const reString = /^\$.+$/;
-const reSymbol = /^\#.+$/;
-const reProperty = /^\_\..+$/;
-const reAction = /^\\.+$/;
-const reAction2 = /^.+:$/;
-const reAt = /^\@.+$/;
-
-function processMacros (d) {
-  if (reString.test(d)) {
-    return d.slice(1);
-  }
-
-  if (reSymbol.test(d)) {
-    return Symbol(d.slice(1));
-  }
-
-  if (reAt.test(d)) {
-    return Seq.of([String(d.slice(1)), Action.of('@')]);
-  }
-
-  if (reProperty.test(d)) {
-    let r = (d
-      .replace('_.', '')
-      .replace('.', '.@.') + '.@')
-        .split('.')
-        .map(x => (x === '@') ? Action.of('@') : String(x));
-
-    return Seq.of(r);
-  }
-
-  if (reAction.test(d)) {
-    d = toLiteral(d.slice(1));
-  }
-
-  if (reAction2.test(d)) {
-    d = toLiteral(d = d.slice(0, d.length - 1));
-  }
-
-  return Action.of(d);
-}
-
-export function toLiteral (d) {
+/* export function toLiteral (d) {
   if (isNumeric(d)) {
     return Object.freeze(new BigNumber(d));
   }
   if (isBoolean(d)) {
     return d.toLowerCase() === 'true';
   }
-
   if (d === 'i') {
     return I;
   }
+  return processIdentifier(d);
+} */
 
-  return processMacros(d);
+export const asap = typeof setImmediate === 'function' ? setImmediate  // from https://github.com/folktale/data.task/blob/master/lib/task.js#L9
+  : typeof process !== 'undefined' ? process.nextTick
+  : function (fn) { setTimeout(fn, 0); };
+
+const re0 = /\$\(.*\)/g;
+const cap = '%-cap-%';
+const caplen = cap.length;
+const re = new RegExp(`(${cap}\\$\\(.*\\))`, 'g');
+
+export function generateTemplate (template) {
+  var r = [''];
+
+  template
+    .replace(re0, x => cap + x)
+    .split(re).forEach(s => {
+      if (s.slice(0, caplen) === cap) {
+        r.push(s.slice(caplen + 1));
+        r.push(Action.of('eval'));
+        r.push(Action.of('string'));
+        r.push(Action.of('+'));
+      } else {
+        r.push(String(s));
+        r.push(Action.of('+'));
+      }
+    });
+  return r;
 }

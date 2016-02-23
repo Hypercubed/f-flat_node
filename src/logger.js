@@ -8,7 +8,8 @@ export const log = new Logger({
     info: 2,
     timing: 3,
     trace: 4,
-    debug: 5
+    debug: 5,
+    deb: 5
   },
   transports: [
     new transports.Console()

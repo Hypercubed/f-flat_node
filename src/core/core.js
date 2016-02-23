@@ -17,5 +17,13 @@ export default {
     [].slice.call(arr, 0, a),
     [].slice.call(arr, a)
   ]),
-  'indexof': (a, b) => a.indexOf(b)
+  'indexof': (a, b) => a.indexOf(b),
+  'zip': (a, b) => {
+    const len = Math.min(a.length, b.length);
+    const r = [];
+    for (let i = 0; i < len; i++) {
+      r.push(a[i], b[i]);
+    }
+    return r;
+  }
 };
