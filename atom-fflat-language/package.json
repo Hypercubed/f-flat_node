@@ -1,0 +1,9 @@
+{
+  "name": "language-fflat",
+  "version": "0.0.1",
+  "description": "Syntax highlighting for fflat",
+  "engines": {
+    "atom": "*",
+    "node": "*"
+  }
+}
