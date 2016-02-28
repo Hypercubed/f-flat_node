@@ -37,6 +37,7 @@ export const Character = {
       (ch >= 60 && ch <= 90) ||         // <>=?A..Z
       (ch === 94) ||                    // ^
       (ch === 92) ||                    // \ (backslash)
+      (ch === 58) ||
       (ch === 126);                    // ~
   },
 

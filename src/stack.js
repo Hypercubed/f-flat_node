@@ -152,7 +152,6 @@ function createEnv (initalState = {}) {
     'stack': function stack () {
       return self.stack.splice(0);
     },
-    'slip': '=> eval <=',
     /* 'slip': (a, b) => {
       state.queue.unshift(b);
       return Action.of(a);
@@ -174,12 +173,11 @@ function createEnv (initalState = {}) {
       if (useStrict) { Object.freeze(r); }
       return r;
     },
-    'depth': function () { return state.stack.length; },
-    'times*': (q, n) => {  // need a tail call optomized version of times
-      for (let i = 0; i < n; i++) {
-        run(q);
-      }
-    }
+    'depth': function () { return state.stack.length; } // ,  or "stack [ unstack ] [ length ] bi"
+    /* 'runn': (n) => {  // tail call
+      n = n | 0;
+      return n > 0 ? Action.of([Action.of('run'), n - 1, Action.of('runn')]) : undefined;
+    } */
   });
 
   /* stack */
@@ -239,7 +237,6 @@ function createEnv (initalState = {}) {
       return r.value;
     },
     'expand': expandAction,
-    'expand-all': '() swap [ dup2 = not ] [ swap drop dup expand ] while drop',   // warning: won't halt in some cases
     'see': a => String(lookupAction(a)),
     'eval': a => {
       return Action.of(a);
@@ -315,16 +312,20 @@ function createEnv (initalState = {}) {
   defineAction('define', x => defineAction(x));
 
   defineAction('require', function (name) {
-    if (path.extname(name) === '.ff') {  // note: json files are valid ff files
+    const ext = path.extname(name);
+    if (ext === '.ff') {
       log.debug('loading', name);
-      var code = fs.readFileSync(name, 'utf8');
+      const code = fs.readFileSync(name, 'utf8');
       run(code);
       return;
     }
-    if (name.indexOf('./') > -1) {
-      return rfr(name);
+    if (ext === '.json' || !useStrict) {  // note: json files are a subset of ff files
+      if (name.indexOf('./') > -1) {
+        return rfr(name);
+      }
+      return require(name);
     }
-    return useStrict ? undefined : require(name);
+    return undefined;
   });
 
   defineAction('sesssave', function () {
@@ -402,7 +403,7 @@ function createEnv (initalState = {}) {
     }
     log.debug('lookup', path);
     const r = pluck(state.dict, path);
-    log.debug('lookup found', r.inspect ? r.inspect() : r.toString(), Action.isAction(r));
+    r && log.debug('lookup found', r.inspect ? r.inspect() : r.toString(), Action.isAction(r));
     return r;
   }
 
@@ -424,7 +425,8 @@ function createEnv (initalState = {}) {
       /* if (useStrict && state.dict.hasOwnProperty(name)) {
         throw new Error('Cannot overrite definitions in strict mode');
       } */
-      state.dict[name.toLowerCase()] = fn;
+      name = String(name).toLowerCase();
+      state.dict[name] = fn;
       if (isDefined(state.module)) {
         state.dict[state.module][name] = fn;
       }

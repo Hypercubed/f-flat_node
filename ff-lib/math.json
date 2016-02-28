@@ -6,11 +6,13 @@
   "tanh": "2 * exp pred swap ++ /",
   "atanh": "1 swap dup [ + 1 ] dip - / ln 0.5 *",
   "log": "ln ln10 /",
-  "isinteger": "dup [ floor = ] [ im 0 = ] bi *",
+  "integer?": "dup [ floor = ] [ im 0 = ] bi *",
+  "positive?": "0 >",
+  "negitive?": "0 <",
   "~!": "++ gamma",
   "c!": "pred [ count ] dip [ * ] swap times",
   "r!": "dup 0 = [ drop 1 ] [ pred 'r!' eval * ] branch",
-  "!": "dup isinteger [ c! ] [ ~! ] branch",
+  "!": "dup integer? [ c! ] [ ~! ] branch",
   "npr": "[ [ ! ] keep ] dip - ! /",
   "ncr": "[ npr ] keep ! / round",
   "--": "1 -",
@@ -24,5 +26,10 @@
   "mul": "-- dup [ [ dup ] swap times [ + ] ] dip times",
   "toradians": "radians *",
   "todegrees": "radians /",
-  "inv": "1 swap /"
+  "inv": "1 swap /",
+  "zero?": "0 =",
+  "divisor?": "% zero?",
+  "even?": "2 divisor?",
+  "odd?": "even? not",
+  "simple?": "[ even? ] [ 3 divisor? ] [ 5 divisor? ] tri + +"
 }

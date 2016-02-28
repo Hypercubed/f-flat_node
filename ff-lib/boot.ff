@@ -1,9 +1,10 @@
-'./ff-lib/core.json' require define
+'./ff-lib/core.ff' require define
 
-'./ff-lib/math.json' require define
-'./ff-lib/math.ff' require
+'./ff-lib/suffle.ff' import
 
-'./ff-lib/usr.json' require define
+'./ff-lib/math.json' import
+'./ff-lib/math.ff' import
+
+'./ff-lib/usr.json' import
+
 './ff-lib/usr.ff' require
-
-'./package.json' require 'version' @ 'version' def

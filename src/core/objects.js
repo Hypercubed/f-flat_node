@@ -27,9 +27,8 @@ export default {
   'contains?': (a, b) => b in a,  // object by keys, array by values
   'keys': Object.keys,
   'vals': Object.values,
-  ':': 'atom',
-  '{': '[',
-  '}': '] in object',
+  '{': '(',
+  '}': ') object',
   'assign': '{} [ + ] reduce'
 };
 

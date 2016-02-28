@@ -34,5 +34,6 @@ export default {
     return r;
   },
   'zipwith': 'zipinto in',
-  'dot': '[ * ] zipwith sum'
+  'dot': '[ * ] zipwith sum',
+  ':': 'atom'
 };
