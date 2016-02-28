@@ -174,7 +174,12 @@ function createEnv (initalState = {}) {
       if (useStrict) { Object.freeze(r); }
       return r;
     },
-    'depth': function () { return state.stack.length; }
+    'depth': function () { return state.stack.length; },
+    'times*': (q, n) => {  // need a tail call optomized version of times
+      for (let i = 0; i < n; i++) {
+        run(q);
+      }
+    }
   });
 
   /* stack */
