@@ -1,0 +1,34 @@
+{
+  "m": "dup eval",           // [a] -> [a] a
+  "run": "dup slip",         // [a] -> a [a]
+
+  "slip": "=> eval <=",      // [b] [a] -> b [a]
+  "dip": "swap slip",        // [b] [a] -> a [b]
+
+  "dup2": "over over",       // [b] [a] -> [b] [a] [b] [a]
+  "sip": "over slip",        // [b] [a] -> [b] a [b]
+  "keep": "over slip",       // [b] [a] -> [b] a [b]
+  "over": "dupd swap",       // [b] [a] -> [b] [a] [b]  (aka peek)
+  "dupd": "[ dup ] dip",     // [b] [a] -> [b] [b] [a]  (aka w)
+  "dropd": "[ drop ] dip",   // [b] [a] -> [a]          (aka nip)
+  "nip": "swap drop",        // [b] [a] -> [a]
+  "tuck": "swap over",       // [b] [a] -> [a] [b] [a]
+
+  "overd": "[ over ] dip",   // [c] [b] [a] -> [c] [b] [c] [a]
+  "pick": "overd swap",      // [c] [b] [a] -> [c] [b] [a] [c]
+  "dup3": "pick pick pick",  // [c] [b] [a] -> [c] [b] [a] [c] [b] [a]
+  "swapd": "[ swap ] dip",   // [c] [b] [a] -> [b] [c] [a]
+  "dig": "swapd swap"        // [c] [b] [a] -> [b] [a] [c]
+  "bury": "swap swapd",      // [c] [b] [a] -> [a] [c] [b]
+  "flip": "swapd bury",      // [c] [b] [a] -> [a] [b] [c]
+  "rot": "bury swap",        // [c] [b] [a] -> [a] [b] [c]
+
+  "repn": "runn drop",
+  "dipd": "[ dip ] dip",
+  "dive": "swap dipd",
+  "rolldown": "swapd swap",
+  "bi": "[ sip ] dip eval",  //
+  "bi*": "[ dip ] dip eval",
+  "tri": "[ [ sip ] dip sip ] dip eval",
+  "do": "dup dipd"
+}
