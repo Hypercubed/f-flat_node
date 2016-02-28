@@ -1,7 +1,8 @@
 import erf from 'compute-erf';
 
 import {typed, BigNumber, pi, Complex, Action} from '../types/index';
-import {lexer} from '../lexer';
+import {lexer} from '../tokenizer/lexer';
+// import {arrayMul} from '../utils';
 
 // const pow = lexer('ln * exp');
 
@@ -23,6 +24,22 @@ export default {
     'Complex': (a) => !a.im.isZero(),
     'BigNumber | number | any': () => false
   }),
+  'div': typed('div', {   // integer division
+    'BigNumber | Complex, BigNumber | Complex | number': (a, b) => a.div(b).floor(),
+    'Array | string, number': (a, b) => {
+      b = +(a.length / b) | 0;
+      if (b === 0 || b > a.length) { return null; }
+      return a.slice(0, b);
+    }
+  }),
+  'rem': typed('rem', {   // remainder
+    'BigNumber | Complex, BigNumber | Complex | number': (a, b) => a.modulo(b),
+    'Array | string, number': (a, b) => {
+      b = +(a.length / b) | 0;
+      if (b === 0 || b > a.length) { return null; }
+      return a.slice(b);
+    }
+  }),
   '%': typed('mod', { 'BigNumber | Complex, BigNumber | number': (lhs, rhs) => lhs.modulo(rhs) }),
   abs: typed('abs', { 'BigNumber | Complex': a => a.abs() }),
   cos: a => BigNumber.cos(a),
@@ -36,7 +53,8 @@ export default {
     'BigNumber | Complex': a => a.round()
   }),
   floor: typed('floor', {
-    'BigNumber | Complex': a => a.floor()
+    'BigNumber | Complex': a => a.floor() // ,
+    // 'any': a => a
   }),
   ceil: typed('ceil', {
     'BigNumber | Complex': a => a.ceil()
@@ -69,7 +87,8 @@ export default {
   }),
   '^': typed('pow', {  // boolean or?
     'Complex, BigNumber | Complex | number': (a, b) => Action.of([b, a].concat(lexer('ln * exp'))),
-    'BigNumber, BigNumber | Complex | number': (a, b) => a.pow(b)
+    'BigNumber, BigNumber | Complex | number': (a, b) => a.pow(b) // ,
+    // 'Array, number': (a, b) => Action.of([a, b, Action.of('pow')])  // this is only integers
   }),
   // '^': 'swap ln * exp',
   'rand': Math.random,

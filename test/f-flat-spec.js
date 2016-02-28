@@ -64,33 +64,40 @@ test('numeric', t => {
     t.end();
   }); */
 
-  t.F('1 2', [1, 2], 'should push numbers');
+  t.test('should push numberic values', t => {
+    t.plan(6);
+    t.F('1 2', [1, 2], 'should push numbers');
 
-  t.F('0x5 0x4d2', [5, 1234], 'should 0x4d2 push numbers');
+    t.F('0x5 0x4d2', [5, 1234], 'should 0x4d2 push numbers');
 
-  t.F('1 2 +', [3], 'should add numbers');
+    t.F('1 2 +', [3], 'should add numbers');
 
-  t.F('1 2 -', [-1], 'should sub numbers');
+    t.F('1 2 -', [-1], 'should sub numbers');
 
-  t.F('2 3 *', [6], 'should multiply numbers');
+    t.F('2 3 *', [6], 'should multiply numbers');
 
-  t.F('1 2 /', [0.5], 'should divide numbers');
+    t.F('1 2 /', [0.5], 'should divide numbers');
+  });
 
   t.test('should test equality', t => {
+    t.plan(2);
     t.F('1 2 =', [false], 'should test equality');
     t.F('2 2 =', [true], 'should test equality');
-    t.end();
   });
 
   t.test('should test inequality', t => {
+    t.plan(4);
     t.F('1 2 <', [true]);
     t.F('1 2 >', [false]);
     t.F('2 1 <', [false]);
     t.F('2 1 >', [true]);
-    t.end();
   });
 
-  t.F('0.1 0.2 +', [0.3], 'should use decimals');
+  t.test('precision', t => {
+    t.plan(2);
+    t.F('0.1 0.2 +', [0.3], 'should use decimals');
+    t.F('0.07 10 *', [0.7], 'should use decimals');
+  });
 });
 
 test('Math', t => {
@@ -453,6 +460,32 @@ test('Lists', t => {
     t.F('(1 2) 2 *', [[1, 2, 1, 2]]);
     t.F('(1 2 +) 2 *', [[3, 3]]);
     t.F('(1 2 +) 0 *', [[]]);
+    t.end();
+  });
+
+  t.test('mul/div identities', t => {
+    t.F('(1) 3 * sum', [3]);
+    t.F('(2) 3 * sum', [6]);
+    t.F('(1) 3 * 3 / sum', [1]);
+    t.F('(2) 3 * 3 / sum', [2]);
+    t.F('(1) 1 /', [[1]]);
+    t.F('(1 1) 2 /', [[1]]);
+    t.F('(1 1 1 1) 2 /', [[1, 1]]);
+    t.end();
+  });
+
+  t.test('add/sub identities', t => {
+    t.F('(1) 2 + sum', [3]);
+    // t.F('(1) 2 + 2 - sum', [1]); // ???
+    t.end();
+  });
+
+  t.test('pow identities', t => {  // right associative
+    t.F('(1) 2 pow', [[1, 1]]);
+    t.F('(2) 3 pow', [[2, 2, 2]]);
+    t.F('(1 1) 3 pow', [ [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ]);
+    t.F('(1 2) 3 pow', [ [ 1, 1, 1, 2, 2, 1, 2, 2, 1, 1, 2, 2, 1, 2 ] ]);
+    // t.F('(1) 2 + 2 - sum', [1]); // ???
     t.end();
   });
 
@@ -870,7 +903,7 @@ test('async', t => {
 
 test('undo', t => {
   t.test('should undo on error', t => {
-    const f = F('1 2');
+    const f = F('true auto-undo 1 2');
     t.deepEqual(f.getStack(), [1, 2]);
 
     f.eval('+ whatwhat');
@@ -917,10 +950,10 @@ test('experimental', t => {
     t.F('#test #test =', [false]);
   });
 
-  t.test('string macro', t => {
+  /* t.test('string macro', t => {
     t.plan(1);
     t.F('$hello "hello" =', [true]);
-  });
+  }); */
 
   t.test('fork', t => {
     t.plan(1);
@@ -996,5 +1029,29 @@ test('experimental', t => {
     t.F('10 integers 1 [ * ] reduce', [ 3628800 ], 'reduce');
 
     // t.F('`-1 sqrt = $( -1 sqrt )`', ['-1 sqrt = 0+1i'], 'sdfsadfasdf');
+  });
+
+  t.test('zip, zipwith and dot', t => {
+    t.plan(4);
+    t.F('[ 1 2 3 ] [ 4 5 6 ] zip', [ [ 1, 4, 2, 5, 3, 6 ] ], 'zip');
+    t.F('[ 1 2 3 ] [ 4 5 6 ] [ + ] zipwith in', [ [ 5, 7, 9 ] ], 'zipwith');
+    t.F('[ 1 2 3 ] [ 4 5 6 ] dot', [ 32 ], 'dot');
+    t.F('[ 1 2 3 4 ] [ 4 5 6 ] dot', [ 32 ], 'dot');
+  });
+
+  t.test('operations with null', t => {
+    t.plan(12);
+    t.F('null 5 +', [ 5 ], 'add');
+    t.F('5 null +', [ 5 ], 'add');
+    t.F('null 5 -', [ -5 ], 'sub');
+    t.F('5 null -', [ 5 ], 'sub');
+    t.F('null 5 *', [ 0 ], 'mul');
+    t.F('5 null *', [ 0 ], 'mul');
+    t.F('null 5 /', [ 0 ], 'div');
+    t.F('5 null /', [ null ], 'div');  // should be infinity, bad JSON conversion
+    t.F('null 5 <<', [ 0 ], '<<');
+    t.F('5 null <<', [ 5 ], '<<');
+    t.F('null 5 >>', [ 0 ], '>>');
+    t.F('5 null >>', [ 5 ], '>>');
   });
 });

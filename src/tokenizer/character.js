@@ -57,13 +57,11 @@ export const Character = {
     return (cp >= 0x30 && cp <= 0x39);      // 0..9
   },
 
-  isHexDigit (cp) {
-    return (cp >= 0x30 && cp <= 0x39) ||    // 0..9
-        (cp >= 0x41 && cp <= 0x48) ||       // A..H
-        (cp >= 0x61 && cp <= 0x68);         // a..h
+  isHexDigit (ch) {
+    return '0123456789abcdefABCDEF'.indexOf(ch) >= 0;
   },
 
-  isOctalDigit (cp) {
-    return (cp >= 0x30 && cp <= 0x37);      // 0..7
+  isOctalDigit (ch) {
+    return '01234567'.indexOf(ch) >= 0;      // 0..7
   }
 };

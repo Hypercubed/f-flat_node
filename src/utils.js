@@ -21,13 +21,20 @@ export function unary (fn) {
   return nAry(1, fn);
 } */
 
-export const arrayRepeat = (a, b) => {
-  b = +b | 0;
-  if (b === 0) { return []; }
+export const arrayRepeat = (a, n) => {
+  n = +n | 0;
+  if (n < 1) { return []; }
   var r = [];
-  var len = a.length * b;
-  while (r.length < len) { r = r.concat(a); }
+  for (var i = 0; i < n; i++) {
+    r = r.concat(a);
+  }
   return r;
+};
+
+export const arrayMul = (lhs, rhs) => {
+  return lhs.reduce((p, n) => {
+    return p.concat(n, rhs);
+  }, []);
 };
 
 export function pluck (context, path) {

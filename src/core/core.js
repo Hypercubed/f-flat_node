@@ -8,9 +8,8 @@ export default {
   'dup': (a) => Seq.of([a, a]),
   'length': typed('length', { // count/size
     'Array | string': a => a.length,
-    'Object': a => {
-      return Object.keys(a).length;
-    }
+    'Object': a => Object.keys(a).length,
+    'null': a => 0
   }),
   'slice': (arr, b, c) => [].slice.call(arr, b, c !== null ? c : undefined),
   'splitat': (arr, a) => Seq.of([  // use head and tail?
@@ -19,11 +18,21 @@ export default {
   ]),
   'indexof': (a, b) => a.indexOf(b),
   'zip': (a, b) => {
-    const len = Math.min(a.length, b.length);
+    const l = a.length < b.length ? a.length : b.length;
     const r = [];
-    for (let i = 0; i < len; i++) {
+    for (let i = 0; i < l; i++) {
       r.push(a[i], b[i]);
     }
     return r;
-  }
+  },
+  'zipinto': (a, b, c) => {
+    const l = a.length < b.length ? a.length : b.length;
+    const r = [];
+    for (let i = 0; i < l; i++) {
+      r.push(a[i], b[i], ...c);
+    }
+    return r;
+  },
+  'zipwith': 'zipinto in',
+  'dot': '[ * ] zipwith sum'
 };

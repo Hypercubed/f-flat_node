@@ -14,6 +14,7 @@ F♭ is a dynamically typed array-oriented concatenative language like Forth and
   * whitespace not significant syntax
   * no lambdas/parameters
   * interactive development
+  * case insensitive
 * flat concatenative language
   * name code not values
   * multiple return values

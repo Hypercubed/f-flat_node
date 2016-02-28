@@ -14,7 +14,7 @@ import MiniSignal from 'mini-signals';
 import {log, bar} from './logger';
 
 import {pluck, isPromise, isDefined, asap, arrayRepeat, generateTemplate} from './utils';
-import {lexer} from './lexer';
+import {lexer} from './tokenizer/lexer';
 
 import {Action, Seq, Future} from './types/index';
 
@@ -27,6 +27,7 @@ import _experimental from './core/experimental.js';
 import _functional from './core/functional.js';
 
 const useStrict = true;
+const MAXSTACK = 10000;
 
 const quoteSymbol = Symbol('(');
 
@@ -101,6 +102,7 @@ function createEnv (initalState = {}) {
     dict: {},
     depth: 0,
     silent: false,
+    undoable: false,
     parent: null,
     ...initalState
   };
@@ -187,6 +189,7 @@ function createEnv (initalState = {}) {
     },
     // 'in*': '=> stack <= [ stack ] + dip swap [unstack] dip',
     'in': async function (a) {
+      if (a === null) { return null; }
       const c = createChild();
       return c.next(a).stack;
     },
@@ -228,8 +231,10 @@ function createEnv (initalState = {}) {
     'rcl': a => {
       const r = lookupAction(a);
       if (useStrict && isFunction(r)) { return Action.of(r); } // carefull pushing functions to stack
-      return r;
+      return r.value;
     },
+    'expand': expandAction,
+    'expand-all': '() swap [ dup2 = not ] [ swap drop dup expand ] while drop',   // warning: won't halt in some cases
     'see': a => String(lookupAction(a)),
     'eval': a => {
       return Action.of(a);
@@ -241,10 +246,11 @@ function createEnv (initalState = {}) {
     '\\': () => state.queue.shift(),  // danger?
     'set-module': (a) => {
       state.module = a;
-      state.dict[a] = {};
+      state.dict[a] = {};  // maybe should be root?
     },
     'get-module': () => state.module,
-    'unset-module': () => { Reflect.deleteProperty(state, 'module'); }
+    'unset-module': () => { Reflect.deleteProperty(state, 'module'); },
+    'auto-undo': (a) => { state.undoable = a; }
   });
 
   /* tasks */
@@ -356,10 +362,42 @@ function createEnv (initalState = {}) {
     return JSON.parse(JSON.stringify(state.stack));
   }
 
+  function expandAction (a) {
+    if (Array.isArray(a)) {
+      return a.map(expandAction)
+      .reduce((p, n) => {
+        if (Seq.isSeq(n)) {
+          p.push(...n.value);
+        } else {
+          p.push(n);
+        }
+        return p;
+      }, []);
+    }
+
+    if (Action.isAction(a)) {
+      // console.log('expand Action', a, typeof a);
+      if (Array.isArray(a.value)) {
+        return Seq.of(expandAction(a.value));
+      }
+      const r = lookupAction(a.value);
+      return Action.isAction(r) ? expandAction(r) : Seq.of([a]);
+    }
+
+    return a;
+  }
+
   function lookupAction (path) {
+    if (Action.isAction(path)) {
+      return lookupAction(path.value);
+    }
+
+    if (typeof path !== 'string') {
+      return undefined;
+    }
     log.debug('lookup', path);
-    const r = pluck(state.dict, (path instanceof Action) ? path.value : path);
-    log.debug('lookup found', typeof r);
+    const r = pluck(state.dict, path);
+    log.debug('lookup found', r.inspect ? r.inspect() : r.toString(), Action.isAction(r));
     return r;
   }
 
@@ -381,7 +419,7 @@ function createEnv (initalState = {}) {
       /* if (useStrict && state.dict.hasOwnProperty(name)) {
         throw new Error('Cannot overrite definitions in strict mode');
       } */
-      state.dict[name] = fn;
+      state.dict[name.toLowerCase()] = fn;
       if (isDefined(state.module)) {
         state.dict[state.module][name] = fn;
       }
@@ -462,16 +500,20 @@ function createEnv (initalState = {}) {
         };
       } else if (showBar) {
         let qMax = state.stack.length + state.queue.length;
+        let c = 0;
 
         return function (state) {
-          const q = state.stack.length + state.queue.length;
-          if (q > qMax) { qMax = q; }
+          c++;
+          if (c % 1000 === 0) {
+            const q = state.stack.length + state.queue.length;
+            if (q > qMax) { qMax = q; }
 
-          bar.update(state.stack.length / qMax, {
-            stack: state.stack.length,
-            queue: state.queue.length,
-            depth: state.depth
-          });
+            bar.update(state.stack.length / qMax, {
+              stack: state.stack.length,
+              queue: state.queue.length,
+              depth: state.depth
+            });
+          }
         };
       } else {
         return function () {};
@@ -482,6 +524,9 @@ function createEnv (initalState = {}) {
       while (status !== YIELDING && state.queue.length > 0) {
         onNext(state);
         dispatch(state.queue.shift());
+        if (state.stack.length > MAXSTACK || state.queue.length > MAXSTACK) {
+          throw new Error(`MAXSTACK exceeded`);
+        }
       }
 
       function stackPush (...a) {
@@ -587,8 +632,8 @@ function createEnv (initalState = {}) {
   }
 
   function onError (err) {
-    log.error(err);
-    state = state.prevState;
+    // log.error(err);
+    if (state.undoable) state = state.prevState;
     status = IDLE;
     asap(() => {
       if (status === IDLE) {  // may be yielding on next tick

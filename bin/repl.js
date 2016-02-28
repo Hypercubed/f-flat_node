@@ -22,7 +22,7 @@ program
 
 program.parse(process.argv);
 
-let f = new Stack();
+let f = new Stack('true auto-undo');
 let buffer = '';
 
 if (program.logLevel) log.level = program.logLevel;
@@ -44,7 +44,7 @@ const stackRepl = repl.start({
   useGlobal: false
 })
 .on('reset', (context) => {
-  f = new Stack('"Welcome to f♭" println');
+  f = new Stack('true auto-undo "Welcome to f♭" println');
 });
 
 stackRepl.defineCommand('.', {
