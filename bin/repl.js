@@ -1,6 +1,5 @@
 import repl from 'repl';
 import util from 'util';
-// import v8 from 'v8';
 
 import {Stack} from '../src/stack';
 import pkg from '../package.json';

@@ -111,3 +111,8 @@ test('should calculate powers of complex numbers', t => {
   t.same(fSync('2 i * 3 ^'), [{im: -8, re: -7.517205993540346e-19}]);
   t.same(fSync('e i * 1 ^'), [{im: 2.718281828459045, re: 8.514118522093394e-20}]);
 });
+
+test('should define complex?', t => {
+  t.same(fSync('2 i * 0 + complex?'), [true]);
+  t.same(fSync('2 1 + complex?'), [false]);
+});

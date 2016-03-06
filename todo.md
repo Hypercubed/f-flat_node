@@ -12,4 +12,5 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [x] Undo history
   - [ ] redo?
 - [ ] better stack printing
-- [ ] bubble errors up from children (currently in: swallows errors)
+- [-] bubble errors up from children (currently in: swallows errors)
+- [ ] Serialize Nan, Infinity, etc.

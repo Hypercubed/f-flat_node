@@ -70,7 +70,7 @@ export class Just extends Base {
 }
 
 export class Action extends Base {
-  constructor (value) { // xodo type check
+  constructor (value) { // todo type check?
     super(value);
     if (typeof this.value === 'string') {
       this.value = this.value.toLowerCase();

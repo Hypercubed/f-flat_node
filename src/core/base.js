@@ -1,9 +1,6 @@
 import {Action, typed, I} from '../types/index';
 import {pluck, eql, arrayRepeat, arrayMul} from '../utils';
 
-// const outOfBounds = null;
-// const nothing = () => null;
-
 const add = typed('add', {
   'Array, Array': (lhs, rhs) => lhs.concat(rhs),  // list concatination/function composition
   'boolean, boolean': (lhs, rhs) => lhs || rhs,  // boolean or

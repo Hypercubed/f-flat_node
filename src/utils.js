@@ -62,7 +62,10 @@ export function pluck (context, path) {
   return src;
 } */
 
+/* istanbul ignore next */
 export function noop () {}
+
+/* istanbul ignore next */
 export function throwError (e) {
   throw e;
 }

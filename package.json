@@ -10,8 +10,8 @@
     "compile": "npm run rollup:bin && npm run rollup:lib",
     "test": "ava",
     "lint": "xo",
+    "check": "npm run coverage && npm run lint",
     "coverage": "nyc -r lcov -r html -r text ava",
-    "old-coverage": "babel-node node_modules/isparta/bin/isparta cover --report lcov --report html --report text ./test/f-flat-spec.js",
     "start": "babel-node ./bin/repl.js"
   },
   "author": "J. Harshbarger",
@@ -74,6 +74,7 @@
     ],
     "rules": {
       "space-before-function-paren": [2, {"anonymous": "always", "named": "always"}],
+      "no-warning-comments": 0,
       "prefer-reflect": 2,
       "ava/max-asserts": [2, 5],
       "ava/no-cb-test": 0,

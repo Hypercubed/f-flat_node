@@ -5,16 +5,14 @@ import fs from 'fs';
 import path from 'path';
 import rfr from 'rfr';
 
-import fetch from 'isomorphic-fetch';
-
-import {isString, isFunction} from 'fantasy-helpers/src/is';
+import {isString, isFunction, isObject} from 'fantasy-helpers/src/is';
 import {functionLength, functionName} from 'fantasy-helpers/src/functions';
 
 import MiniSignal from 'mini-signals';
 
 import {log, bar} from './logger';
 
-import {pluck, isPromise, isDefined, arrayRepeat, generateTemplate} from './utils';
+import {pluck, isPromise, isDefined} from './utils';
 import {lexer} from './tokenizer/lexer';
 
 import {Action, Seq, Future} from './types/index';
@@ -35,11 +33,16 @@ const quoteSymbol = Symbol('(');
 
 const nonInteractive = !process || !process.stdin.isTTY;
 
-const root = typeof window === 'object' && window.window === window && window ||
-        typeof global === 'object' && global.global === global && global ||
-        this;
-
-// var _uuid = 0;
+const root = (/* istanbul ignore next */ function (that) {
+  if (useStrict) {
+    return null;
+  } else if (typeof window === 'object' && window.window === window) {
+    return window;
+  } else if (typeof global === 'object' && global.global === global) {
+    return global;
+  }
+  return that;
+})(this);
 
 const getRootEnv = (function () {
   let rootStack;
@@ -68,7 +71,7 @@ export function Stack (s = '', root) {
 
 function createRootEnv () {
   const env = createEnv({   // root
-    dict: useStrict ? {} : Object.create(root),
+    dict: Object.create(root),
     silent: false
   });
 
@@ -92,9 +95,8 @@ const YIELDING = 2;
 const ERR = 3;
 // const BLOCKED = 4;
 
-function createEnv (initalState = {}) {
-  const tick = new MiniSignal();
-  const completed = new MiniSignal();  // called with err, state
+function createEnv (initalState = /* istanbul ignore next */ {}) {
+  const completed = new MiniSignal();  // called with (err, state)
 
   let status = IDLE;
 
@@ -111,7 +113,16 @@ function createEnv (initalState = {}) {
   };
 
   const self = {
-    promise,
+    promise: s => new Promise((resolve, reject) => {
+      enqueue(s);
+      completed.once(err => {
+        if (err) {
+          reject(err);
+        }
+        resolve(self);
+      });
+      run();
+    }),
     eval: s => {
       enqueue(s);
       let finished = false;
@@ -136,9 +147,6 @@ function createEnv (initalState = {}) {
     clear,
     defineAction,
 
-    get value () {
-      return self;
-    },
     get isDone () {
       return status === IDLE;
     },
@@ -164,11 +172,7 @@ function createEnv (initalState = {}) {
     },  // good for yielding, bad for repl
     '<=': () => state.queue.pop(),
     'stack': () => self.stack.splice(0),
-    /* 'slip': (a, b) => {
-      state.queue.unshift(b);
-      return Action.of(a);
-    }, */
-    'unstack': a => new Seq(a),
+    // 'unstack': moved to core.js
     '/d++': () => {
       state.depth++;
     },
@@ -182,22 +186,10 @@ function createEnv (initalState = {}) {
         r.unshift(s);
         s = state.stack.pop();
       }
-      if (useStrict) {
-        return Object.freeze(r);
-      }
-      return r;
+      /* istanbul ignore next */
+      return useStrict ? Object.freeze(r) : r;
     },
-    '(': '/quote',        // list
-    ')': '/dequote',
-    '[': '/quote /d++',   // quote
-    ']': '/d-- /dequote',
-    '{': '/quote',        // object
-    '}': '/dequote /object',
     'depth': () => state.stack.length // ,  or "stack [ unstack ] [ length ] bi"
-    /* 'runn': (n) => {  // tail call
-      n = n | 0;
-      return n > 0 ? Action.of([Action.of('run'), n - 1, Action.of('runn')]) : undefined;
-    } */
   });
 
   /* stack */
@@ -216,27 +208,23 @@ function createEnv (initalState = {}) {
       }
       const c = createChild();
       c.eval(a);
-      if (!c.isDone) {
+      /* if (!c.isDone) {  // shouldnt neex this.  eval throws
         throw new Error('Do Not Release Zalgo');
-      }
+      } */
       return c.stack;
     },
-    '/in': a => {
+    /* '/in': a => {
       if (a === null) {
         return null;
       }
       const c = createChild();
       return c.eval(a).stack;
-    },
+    }, */
     'undo': () => {
       if (state.prevState && state.prevState.prevState) {
         state = state.prevState.prevState;
       }
     }
-  });
-
-  defineAction({
-    template: generateTemplate
   });
 
   /* dictionary functions */
@@ -253,9 +241,9 @@ function createEnv (initalState = {}) {
       }
       defineAction(name, cmd);
     },
-    'delete': a => {
+    'delete': a => { // usefull?
       Reflect.deleteProperty(state.dict, a);
-    },  // usefull?
+    },
     'rcl': a => {
       const r = lookupAction(a);
       if (useStrict && isFunction(r)) {
@@ -267,16 +255,10 @@ function createEnv (initalState = {}) {
     'see': a => String(lookupAction(a)),
     'words': () => {
       const result = [];
-
-      // eslint-disable-next-line
-      for (const prop in state.dict) {
+      for (const prop in state.dict) {  // eslint-disable-line guard-for-in
         result.push(prop);
       }
       return result;
-    },
-    'eval': a => Action.of(a),
-    'repeat': (a, b) => {
-      return Action.of(arrayRepeat(a, b));
     },
     'clr': clear,
     '\\': () => state.queue.shift(),  // danger?
@@ -319,28 +301,13 @@ function createEnv (initalState = {}) {
       }
     },
     suspend: () => Seq.of(state.queue.splice(0)),   // stops execution, push queue to stack, loses other state (rename stop?)
-    yield: 'return suspend',
-    delay: '[ sleep ] >> slip eval',
-    sleep: ms => {
-      let timerId;
-      const promise = new Promise(resolve => {
-        timerId = setTimeout(resolve, ms);
-      });
-      promise.__cancel__ = () => clearTimeout(timerId);
-      return promise;
-    },
-    next: 'fork',
-    fetch: url => fetch(url)
-        .then(res => {
-          return res.text();
-        }),
     all: arr => Promise.all(arr.map(a => createChildPromise(a))),
     race: arr => Promise.race(arr.map(a => createChildPromise(a)))
   });
 
   defineAction('define', x => defineAction(x));
 
-  defineAction('require', name => {  // xodo: catch error, make async?
+  defineAction('require', name => {  // todo: catch error, make async? use System?
     const ext = path.extname(name);
     if (ext === '.ff') {
       log.debug('loading', name);
@@ -438,29 +405,30 @@ function createEnv (initalState = {}) {
     return r;
   }
 
+  /* istanbul ignore next */
   function defineAction (name, fn) {
-    if (typeof name === 'object' && !Action.isAction(name)) {
+    if (isObject(name) && !Action.isAction(name)) {
       for (const key in name) {
         if (name.hasOwnProperty(key)) {
           defineAction(key, name[key]);
         }
       }
-    } else {
-      if (arguments.length === 1) {
-        fn = name;
-        name = functionName(fn);
-      }
-      if (typeof fn === 'string') {
-        fn = new Action(lexer(fn));
-      }
-      /* if (useStrict && state.dict.hasOwnProperty(name)) {
-        throw new Error('Cannot overrite definitions in strict mode');
-      } */
-      name = String(name).toLowerCase();
-      state.dict[name] = fn;
-      if (isDefined(state.module)) {
-        state.dict[state.module][name] = fn;
-      }
+      return;
+    }
+    if (arguments.length === 1) {
+      fn = name;
+      name = functionName(fn);
+    }
+    if (typeof fn === 'string') {
+      fn = new Action(lexer(fn));
+    }
+    /* if (useStrict && state.dict.hasOwnProperty(name)) {
+      throw new Error('Cannot overrite definitions in strict mode');
+    } */
+    name = String(name).toLowerCase();
+    state.dict[name] = fn;
+    if (isDefined(state.module)) {
+      state.dict[state.module][name] = fn;
     }
   }
 
@@ -470,31 +438,13 @@ function createEnv (initalState = {}) {
     }
   }
 
-  /* function done (cb) {
-    if (isFunction(cb)) {
-      completed.once(cb);
-    }
-    return self;
-  } */
-
-  function promise (s) {
-    return new Promise((resolve, reject) => {
-      completed.once(err => {
-        if (err) {
-          reject(err);
-        }
-        resolve(self);
-      });
-      enqueue(s);
-      run();
-    });
-  }
-
   function queueFront (s) {
     state.queue.unshift(...lexer(s));
   }
 
   function run (s) {
+    const tick = new MiniSignal();
+
     if (s) {
       queueFront(s);
     }
@@ -587,14 +537,11 @@ function createEnv (initalState = {}) {
 
         if (isPromise(action)) {  // promise middleware
           status = YIELDING;
-          return action.then(resume);
-          // return;
+          return action.then(f => {
+            status = IDLE;
+            run([f]);
+          });
         }
-
-        /* if (isFunction(action)) {  // thunk middleware
-          dispatchFn(action, functionLength(action));
-          return;
-        } */
 
         if (action === null || typeof action.type === 'undefined') {
           return stackPush(action);
@@ -668,40 +615,20 @@ function createEnv (initalState = {}) {
     }
   }
 
-  function resume (f) {
-    status = IDLE;
-    run([f]);
-  }
-
-  /* function yield_ () {
-    status = YIELDING;
-  } */
-
-  // function onFinally (state) {
-    // _finally.dispatch(state);
-  // }
-
   function onError (err) {
     if (state.undoable) {
       state = state.prevState;
     }
     status = ERR;
-    // asap(() => {
-      // if (status === ERR) {  // may be yielding on next tick
     completed.dispatch(err, self);
-      // }
-    // });
   }
 
   function onCompleted () {
     if (status === DISPATCHING) {
       status = IDLE;
     }
-    // status === IDLE;
-    // asap(() => {
     if (status === IDLE) {  // may be yielding on next tick
       completed.dispatch(null, self);
     }
-    // });
   }
 }

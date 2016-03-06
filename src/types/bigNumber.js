@@ -50,7 +50,7 @@ BigNumber.prototype.gamma = function () {  // more tests
   // https://en.wikipedia.org/wiki/Lanczos_approximation
   // G(z+1) = sqrt(2*pi)*(z+g+1/2)^(z+1/2)*exp(-(z+g+1/2))*Ag(z)
   // Ag(z) = c0 + sum(k=1..N, ck/(z+k))
-  // xodo: Memoization?
+  // todo: Memoization?
 
   if (this.lt(0.5)) {
     return pi.div(this.times(pi).sin().times(one.minus(this).gamma()));

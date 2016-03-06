@@ -42,6 +42,11 @@ test('should split', t => {
   t.same(fSync('"a-b-c" "-" /'), [['a', 'b', 'c']]);
 });
 
+test('should cut', t => {
+  t.same(fSync('"abcd" 2 /'), ['ab']);
+  t.same(fSync('"abcd" 5 /'), [null]);
+});
+
 test('should test equality', t => {
   t.same(fSync('"a" "b" ='), [false]);
   t.same(fSync('"a" "a" ='), [true]);

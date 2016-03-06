@@ -11,7 +11,9 @@ function fSync (a) {
 }
 
 test('setup', t => {
-  t.not(new F().eval, undefined, 'should create a stack object');
+  t.not(new F().eval, undefined);
+  t.not(new F().promise, undefined);
+  t.not(new F().depth, undefined);
   t.same(fSync(''), [], 'should create an empty stack');
   t.same(fSync('1 2 3'), [1, 2, 3], 'should create an non-empty stack');
 });
@@ -193,17 +195,18 @@ test('operations with null', t => {
 });
 
 test('operations with null, cont', t => {
-  t.same(fSync('null 5 *'), [0], 'mul');
-  t.same(fSync('5 null *'), [0], 'mul');
-  t.same(fSync('null 5 /'), [0], 'div');
-  t.same(fSync('5 null /'), [null], 'div');  // should be infinity, bad JSON conversion
+  t.same(fSync('null 5 *'), [0]);
+  t.same(fSync('5 null *'), [0]);
+  t.same(fSync('null 5 /'), [0]);
+  t.same(fSync('5 null /'), [null]);  // should be infinity, bad JSON conversion
 });
 
 test('operations with null, cont2', t => {
-  t.same(fSync('null 5 <<'), [0], '<<');
-  t.same(fSync('5 null <<'), [5], '<<');
-  t.same(fSync('null 5 >>'), [0], '>>');
-  t.same(fSync('5 null >>'), [5], '>>');
+  t.same(fSync('null 5 <<'), [0]);
+  t.same(fSync('5 null <<'), [5]);
+  t.same(fSync('null 5 >>'), [0]);
+  t.same(fSync('5 null >>'), [5]);
+  t.same(fSync('null in'), [null]);
 });
 
 test('errors on unknown command, sync', t => {
@@ -221,6 +224,12 @@ test('errors on unknown command in child', t => {
 test('errors on async command in eval', t => {
   t.throws(() => {
     new F().eval('[ 1 2 + ] await');
+  });
+});
+
+test('errors on async child in eval', t => {
+  t.throws(() => {
+    new F().eval('[ 100 sleep ] in');
   });
 });
 

@@ -22,6 +22,10 @@ test('should perform basic arithmetic', t => {
   t.same(new F('1 2 /').toArray(), [0.5], 'should divide numbers');
 });
 
+test('should div by zero, returns infinity', t => {
+  t.same(new F('1 0 /').stack[0].valueOf(), Infinity);
+});
+
 test('should quickcheck integer arithmetic', t => {
   t.same(fSync('[rand-integer] [ integer? ] for-all'), [[]]);
   t.same(fSync('[rand-integer] [ [ 1 + ] [ 1 swap + ] bi = ] for-all'), [[]]);
@@ -50,6 +54,7 @@ test('trig', t => {
   t.same(fSync('1 cos 1 sin 1 tan'), [Math.cos(1), Math.sin(1), Math.tan(1)], 'should calculate trig funcs');
   t.same(fSync('1 acos 1 asin 1 atan'), [Math.acos(1), Math.asin(1), Math.atan(1)], 'should calculate inv trig funcs');
   t.same(fSync('1 atan 4 *'), [Math.PI], 'should calculate inv trig funcs');
+  t.same(fSync('1 1 atan2 4 *'), [Math.PI], 'should calculate inv trig funcs');
 });
 
 test('constants', t => {
@@ -128,4 +133,9 @@ test('should test primes', t => {
   t.same(fSync('10 integers [ 2 swap ^ 1 - prime? ] map'),
     [[false, true, true, false, true, false, true, false, false, false]], 'Mersenne primes');
     // 1     2     3     4      5     6      7     8      9      10
+});
+
+test('should define number?', t => {
+  t.same(fSync('3 number?'), [true]);
+  t.same(fSync('"4" number?'), [false]);
 });

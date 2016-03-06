@@ -16,10 +16,6 @@ export class Complex {
     Object.freeze(this);
   }
 
-  of (re, im) {
-    return new Complex(re, im);
-  }
-
   empty () {
     return zero;
   }

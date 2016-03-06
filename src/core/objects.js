@@ -14,7 +14,7 @@ const toObject = typed('object', {
 });
 
 export default {
-  'group': typed('group', {  // move
+  /* 'group': typed('group', {  // move
     Array: a => {
       const r = [];
       const l = a.length;
@@ -23,7 +23,7 @@ export default {
       }
       return r;
     }
-  }),
+  }), */
   'object': toObject,
   '/object': toObject,
   'object?': a => is.isObject(a) && !is.isArray(a),
@@ -32,6 +32,3 @@ export default {
   'vals': o => Object.values(o),
   'assign': '{} [ + ] reduce'
 };
-
-// xodo: zip-map
-// use maps by default?

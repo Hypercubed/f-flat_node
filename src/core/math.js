@@ -52,7 +52,7 @@ export default {  // eslint-disable-line
   acos: a => BigNumber.acos(a),
   asin: a => BigNumber.asin(a),
   atan: a => BigNumber.atan(a),
-  atan2: a => BigNumber.atan2(a),
+  atan2: (a, b) => BigNumber.atan2(a, b),
   round: typed('round', {
     'BigNumber | Complex': a => a.round()
   }),
@@ -85,7 +85,7 @@ export default {  // eslint-disable-line
   spouge: typed('nemes', {
     BigNumber: a => a.spouge()
   }),
-  erf,  // xodo: big
+  erf,  // todo: big
   ln: typed('ln', {
     'BigNumber | Complex': a => a.ln()
   }),
