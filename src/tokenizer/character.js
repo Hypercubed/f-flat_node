@@ -6,8 +6,8 @@ const Regex = {
 export const Character = {
 
   fromCodePoint (cp) {
-    return (cp < 0x10000) ? String.fromCharCode(cp)
-      : String.fromCharCode(0xD800 + ((cp - 0x10000) >> 10)) +
+    return (cp < 0x10000) ? String.fromCharCode(cp) :
+      String.fromCharCode(0xD800 + ((cp - 0x10000) >> 10)) +
       String.fromCharCode(0xDC00 + ((cp - 0x10000) & 1023));
   },
 

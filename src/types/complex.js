@@ -7,7 +7,9 @@ const precision = Math.pow(10, -BigNumber.precision + 5);
 
 export class Complex {
   constructor (re, im = 0) {
-    if (re instanceof Complex) return re;
+    if (re instanceof Complex) {
+      return re;
+    }
     this.re = new BigNumber(re);
     this.im = new BigNumber(im);
 
@@ -24,9 +26,13 @@ export class Complex {
 
   toString () {
     let s = this.re.toString();
-    if (this.im.isZero()) return s;
-    if (this.im.isPos()) s += '+';
-    return s + this.im.toString() + 'i';
+    if (this.im.isZero()) {
+      return s;
+    }
+    if (this.im.isPos()) {
+      s += '+';
+    }
+    return `${s}${this.im.toString()}i`;
   }
 
   toJSON () {
@@ -37,7 +43,7 @@ export class Complex {
     };
   }
 
-  inspect (depth) {
+  inspect () {
     return this.toString();
   }
 
@@ -79,14 +85,16 @@ export class Complex {
 
   div (rhs) {
     rhs = new Complex(rhs);
-    var re, im;
+    let re;
+    let im;
+
     const den = rhs.dotProduct(rhs);
-    if (!den.isZero()) {
-      re = this.dotProduct(rhs).div(den);
-      im = this._y(rhs).div(den);
-    } else {
+    if (den.isZero()) {
       re = (this.re.isZero()) ? 0 : (this.re.div(0));
       im = (this.im.isZero()) ? 0 : (this.im.div(0));
+    } else {
+      re = this.dotProduct(rhs).div(den);
+      im = this._y(rhs).div(den);
     }
     return new Complex(re, im);
   }
@@ -156,7 +164,8 @@ export class Complex {
   sqrt () {
     const r = this.abs();
 
-    var re, im;
+    let re;
+    let im;
 
     const two = new BigNumber(2.0);
 
@@ -204,14 +213,14 @@ export class Complex {
     let agre = c[0];
     let agim = 0;
 
-    for (var i = 1; i < c.length; ++i) {
-      let npi = z.plus(i);
-      let den = npi.dotProduct(npi);  // x += p[i]/(n+i)
-      if (!den.isZero()) {
+    for (let i = 1; i < c.length; ++i) {
+      const npi = z.plus(i);
+      const den = npi.dotProduct(npi);  // x += p[i]/(n+i)
+      if (den.isZero()) {
+        agre = c[i] < 0 ? -Infinity : Infinity;
+      } else {
         agre = npi.re.times(c[i]).div(den).plus(agre);   //  Ag += c(k)/(z+k)
         agim = npi.im.times(-c[i]).div(den).plus(agim);
-      } else {
-        agre = c[i] < 0 ? -Infinity : Infinity;
       }
     }
 
@@ -231,7 +240,7 @@ export const I = new Complex(0, 1);
 
 typed.addType({
   name: 'Complex',
-  test: function (x) {
+  test: x => {
     return x instanceof Complex;
   }
 });
@@ -239,15 +248,15 @@ typed.addType({
 typed.addConversion({
   from: 'number',
   to: 'Complex',
-  convert: function (x) {
-    return new Complex(+x, 0);
+  convert: x => {
+    return new Complex(Number(x), 0);
   }
 });
 
 typed.addConversion({
   from: 'BigNumber',
   to: 'Complex',
-  convert: function (x) {
+  convert: x => {
     return new Complex(x, 0);
   }
 });

@@ -8,3 +8,8 @@
 './ff-lib/usr.json' import
 
 './ff-lib/usr.ff' require
+
+'prime?' inline
+'loop' inline
+'next-prime' inline
+'nth-prime' inline

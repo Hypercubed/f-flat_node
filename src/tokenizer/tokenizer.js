@@ -56,15 +56,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 import {Character} from './character';
 import {Token, TokenName} from './tokens';
 
-var
-  source,
-  index,
-  lineNumber,
-  lineStart,
-  length,
-  lookahead,
-  state,
-  extra;
+let source;
+let index;
+let lineNumber;
+let lineStart;
+let length;
+let lookahead;
+let state;
+let extra;
 
 // Error messages should be identical to V8.
 const Messages = {
@@ -73,29 +72,29 @@ const Messages = {
 
 function assert (condition, message) {
   if (!condition) {
-    throw new Error('ASSERT: ' + message);
+    throw new Error(`ASSERT: ${message}`);
   }
 }
 
 // Throw an exception
 function throwError (token, messageFormat) {
-  var error;
-  var args = Array.prototype.slice.call(arguments, 2);
-  var msg = messageFormat.replace(
+  let error;
+  const args = Reflect.apply([].slice, arguments, [2]);
+  const msg = messageFormat.replace(
         /%(\d)/g,
-        function (whole, index) {
+        (whole, index) => {
           assert(index < args.length, 'Message reference must be in range');
           return args[index];
         }
     );
 
   if (typeof token.lineNumber === 'number') {
-    error = new Error('Line ' + token.lineNumber + ': ' + msg);
+    error = new Error(`Line ${token.lineNumber}: ${msg}`);
     error.index = token.range[0];
     error.lineNumber = token.lineNumber;
     error.column = token.range[0] - lineStart + 1;
   } else {
-    error = new Error('Line ' + lineNumber + ': ' + msg);
+    error = new Error(`Line ${token.lineNumber}: ${msg}`);
     error.index = index;
     error.lineNumber = lineNumber;
     error.column = index - lineStart + 1;
@@ -108,8 +107,6 @@ function throwError (token, messageFormat) {
 // Comments
 
 function addComment (type, value, start, end, loc) {
-  var comment, attacher;
-
   assert(typeof start === 'number', 'Comment must have valid position');
 
   // Because the way the actual token is scanned, often the comments
@@ -121,9 +118,9 @@ function addComment (type, value, start, end, loc) {
   }
   state.lastCommentStart = start;
 
-  comment = {
-    type: type,
-    value: value
+  const comment = {
+    type,
+    value
   };
   if (extra.range) {
     comment.range = [start, end];
@@ -134,8 +131,8 @@ function addComment (type, value, start, end, loc) {
   extra.comments.push(comment);
 
   if (extra.attachComment) {
-    attacher = {
-      comment: comment,
+    const attacher = {
+      comment,
       candidate: null,
       range: [start, end]
     };
@@ -144,10 +141,10 @@ function addComment (type, value, start, end, loc) {
 }
 
 function skipSingleLineComment () {
-  var start, loc, ch, comment;
+  let comment;
 
-  start = index - 2;
-  loc = {
+  const start = index - 2;
+  const loc = {
     start: {
       line: lineNumber,
       column: index - lineStart - 2
@@ -155,7 +152,7 @@ function skipSingleLineComment () {
   };
 
   while (index < length) {
-    ch = source.charCodeAt(index);
+    const ch = source.charCodeAt(index);
     ++index;
     if (Character.isLineTerminator(ch)) {
       if (extra.comments) {
@@ -186,7 +183,8 @@ function skipSingleLineComment () {
 }
 
 function skipMultiLineComment () {
-  var start, loc, ch, comment;
+  let start;
+  let loc;
 
   if (extra.comments) {
     start = index - 2;
@@ -199,7 +197,7 @@ function skipMultiLineComment () {
   }
 
   while (index < length) {
-    ch = source.charCodeAt(index);
+    const ch = source.charCodeAt(index);
     if (Character.isLineTerminator(ch)) {
       if (ch === 13 && source.charCodeAt(index + 1) === 10) {
         ++index;
@@ -216,7 +214,7 @@ function skipMultiLineComment () {
         ++index;
         ++index;
         if (extra.comments) {
-          comment = source.slice(start + 2, index - 2);
+          const comment = source.slice(start + 2, index - 2);
           loc.end = {
             line: lineNumber,
             column: index - lineStart
@@ -235,7 +233,7 @@ function skipMultiLineComment () {
 }
 
 function skipComment () {
-  var ch;
+  let ch;
 
   while (index < length) {
     ch = source.charCodeAt(index);
@@ -279,13 +277,12 @@ function skipComment () {
 }
 
 function scanHexEscape (prefix) {
-  var i, len, ch;
-  var code = 0;
+  let code = 0;
 
-  len = (prefix === 'u') ? 4 : 2;
-  for (i = 0; i < len; ++i) {
+  const len = (prefix === 'u') ? 4 : 2;
+  for (let i = 0; i < len; ++i) {
     if (index < length && Character.isHexDigit(source[index])) {
-      ch = source[index++];
+      const ch = source[index++];
       code = code * 16 + '0123456789abcdef'.indexOf(ch.toLowerCase());
     } else {
       return '';
@@ -295,7 +292,8 @@ function scanHexEscape (prefix) {
 }
 
 function getEscapedIdentifier () {
-  var ch, id;
+  let ch;
+  let id;
 
   ch = source.charCodeAt(index++);
   id = String.fromCharCode(ch);
@@ -340,11 +338,9 @@ function getEscapedIdentifier () {
 }
 
 function getIdentifier () {
-  var start, ch;
-
-  start = index++;
+  const start = index++;
   while (index < length) {
-    ch = source.charCodeAt(index);
+    const ch = source.charCodeAt(index);
     if (ch === 92) {
       // Blackslash (char #92) marks Unicode escape sequence.
       index = start;
@@ -361,12 +357,12 @@ function getIdentifier () {
 }
 
 function scanIdentifier () {
-  var start, id, type;
+  let type;
 
-  start = index;
+  const start = index;
 
   // Backslash (char #92) starts an escaped character.
-  id = (source.charCodeAt(index) === 92) ? getEscapedIdentifier() : getIdentifier();
+  const id = (source.charCodeAt(index) === 92) ? getEscapedIdentifier() : getIdentifier();
 
   // There is no keyword or literal with only one character.
   // Thus, it must be an identifier.
@@ -387,10 +383,10 @@ function scanIdentifier () {
   }
 
   return {
-    type: type,
+    type,
     value: id,
-    lineNumber: lineNumber,
-    lineStart: lineStart,
+    lineNumber,
+    lineStart,
     range: [start, index]
   };
 }
@@ -402,8 +398,8 @@ function scanPunctuator () {
     // ch2;
     // ch3;
     // ch4;
-  var start = index;
-  var code = source.charCodeAt(index);
+  const start = index;
+  const code = source.charCodeAt(index);
   // var ch1 = source[index];
 
   switch (code) {
@@ -432,8 +428,8 @@ function scanPunctuator () {
       return {
         type: Token.Punctuator,
         value: String.fromCharCode(code),
-        lineNumber: lineNumber,
-        lineStart: lineStart,
+        lineNumber,
+        lineStart,
         range: [start, index]
       };
 
@@ -571,7 +567,7 @@ function scanPunctuator () {
 // Numeric Literals
 
 function scanHexLiteral (start) {
-  var number = '';
+  let number = '';
 
   while (index < length) {
     if (!Character.isHexDigit(source[index])) {
@@ -590,15 +586,15 @@ function scanHexLiteral (start) {
 
   return {
     type: Token.NumericLiteral,
-    value: parseInt('0x' + number, 16),
-    lineNumber: lineNumber,
-    lineStart: lineStart,
+    value: parseInt(`0x${number}`, 16),
+    lineNumber,
+    lineStart,
     range: [start, index]
   };
 }
 
 function scanOctalLiteral (start) {
-  var number = '0' + source[index++];
+  let number = `0${source[index++]}`;
   while (index < length) {
     if (!Character.isOctalDigit(source[index])) {
       break;
@@ -614,20 +610,21 @@ function scanOctalLiteral (start) {
     type: Token.NumericLiteral,
     value: parseInt(number, 8),
     octal: true,
-    lineNumber: lineNumber,
-    lineStart: lineStart,
+    lineNumber,
+    lineStart,
     range: [start, index]
   };
 }
 
 function scanNumericLiteral () {
-  var number, start, ch;
+  let number;
+  let ch;
 
   ch = source[index];
   assert(Character.isDecimalDigit(ch.charCodeAt(0)) || (ch === '.') || (ch === '-'),
       'Numeric literal must start with a decimal digit or a decimal point');
 
-  start = index;
+  const start = index;
   number = '';
   if (ch !== '.') {
     number = source[index++];
@@ -690,8 +687,8 @@ function scanNumericLiteral () {
     return {
       type: Token.NumericLiteral,
       value: parseFloat(number) / 100,
-      lineNumber: lineNumber,
-      lineStart: lineStart,
+      lineNumber,
+      lineStart,
       range: [start, index]
     };
   }
@@ -699,8 +696,8 @@ function scanNumericLiteral () {
   return {
     type: Token.NumericLiteral,
     value: 35 * parseFloat(number),
-    lineNumber: lineNumber,
-    lineStart: lineStart,
+    lineNumber,
+    lineStart,
     range: [start, index]
   };
 }
@@ -708,15 +705,17 @@ function scanNumericLiteral () {
 // String Literals
 
 function scanStringLiteral () {
-  var str = '';
-  var quote, start, ch, code, unescaped, restore;
-  var octal = false;
+  let str = '';
+  let quote;
+  let ch;
+  let code;
+  let octal = false;
 
   quote = source[index];
   assert((quote === '\'' || quote === '"' || quote === '`'),
     'String literal must starts with a quote');
 
-  start = index;
+  const start = index;
   ++index;
 
   while (index < length) {
@@ -739,9 +738,9 @@ function scanStringLiteral () {
             str += '\t';
             break;
           case 'u':
-          case 'x':
-            restore = index;
-            unescaped = scanHexEscape(ch);
+          case 'x': // eslint-disable-line
+            const restore = index;
+            const unescaped = scanHexEscape(ch);
             if (unescaped) {
               str += unescaped;
             } else {
@@ -806,9 +805,9 @@ function scanStringLiteral () {
   return {
     type: Token.StringLiteral,
     value: str,
-    octal: octal,
-    lineNumber: lineNumber,
-    lineStart: lineStart,
+    octal,
+    lineNumber,
+    lineStart,
     range: [start, index]
   };
 }
@@ -821,20 +820,18 @@ function scanTemplate () {
 }
 
 function advance () {
-  var ch;
-
   skipComment();
 
   if (index >= length) {
     return {
       type: Token.EOF,
-      lineNumber: lineNumber,
-      lineStart: lineStart,
+      lineNumber,
+      lineStart,
       range: [index, index]
     };
   }
 
-  ch = source.charCodeAt(index);
+  const ch = source.charCodeAt(index);
 
   // Very common: (, ), [, and ]
   if (ch === 40 || ch === 41 || ch === 91 || ch === 93) {
@@ -879,31 +876,31 @@ function advance () {
 
 function collectToken () {
   // var start;
-  var loc, token, range, value;
+  // let rvalue;
 
   skipComment();
   // start = index;
-  loc = {
+  const loc = {
     start: {
       line: lineNumber,
       column: index - lineStart
     }
   };
 
-  token = advance();
+  const token = advance();
   loc.end = {
     line: lineNumber,
     column: index - lineStart
   };
 
   if (token.type !== Token.EOF) {
-    range = [token.range[0], token.range[1]];
-    value = source.slice(token.range[0], token.range[1]);
+    const range = [token.range[0], token.range[1]];
+    const value = source.slice(token.range[0], token.range[1]);
     extra.tokens.push({
       type: TokenName[token.type],
-      value: value,
-      range: range,
-      loc: loc
+      value,
+      range,
+      loc
     });
   }
 
@@ -911,14 +908,13 @@ function collectToken () {
 }
 
 function lex () {
-  var token;
+  const token = lookahead;
 
-  token = lookahead;
   index = token.range[1];
   lineNumber = token.lineNumber;
   lineStart = token.lineStart;
 
-  lookahead = (typeof extra.tokens !== 'undefined') ? collectToken() : advance();
+  lookahead = (typeof extra.tokens === 'undefined') ? advance() : collectToken();
 
   index = token.range[1];
   lineNumber = token.lineNumber;
@@ -928,24 +924,21 @@ function lex () {
 }
 
 function peek () {
-  var pos, line, start;
-
-  pos = index;
-  line = lineNumber;
-  start = lineStart;
-  lookahead = (typeof extra.tokens !== 'undefined') ? collectToken() : advance();
+  const pos = index;
+  const line = lineNumber;
+  const start = lineStart;
+  lookahead = (typeof extra.tokens === 'undefined') ? advance() : collectToken();
   index = pos;
   lineNumber = line;
   lineStart = start;
 }
 
 function filterTokenLocation () {
-  var i, entry, token;
-  var tokens = [];
+  const tokens = [];
 
-  for (i = 0; i < extra.tokens.length; ++i) {
-    entry = extra.tokens[i];
-    token = {
+  for (let i = 0; i < extra.tokens.length; ++i) {
+    const entry = extra.tokens[i];
+    const token = {
       type: entry.type,
       value: entry.value
     };
@@ -962,11 +955,10 @@ function filterTokenLocation () {
 }
 
 export function tokenize (code, options) {
-  var toString;
   // var token;
-  var tokens;
+  let tokens;
 
-  toString = String;
+  const toString = String;
   if (typeof code !== 'string' && !(code instanceof String)) {
     code = toString(code);
   }

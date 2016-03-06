@@ -32,6 +32,7 @@ const sub = typed('sub', {
 
 const mul = typed('mul', {
   'Array, Array | Action | Function': arrayMul,
+  'string, Array | Action | Function': (lhs, rhs) => arrayMul(lhs.split(''), rhs),
   'Array, string': (lhs, rhs) => lhs.join(rhs),  // string join
   'boolean, boolean': (lhs, rhs) => (lhs && rhs),  // boolean and
   'string, number': (a, b) => a.repeat(b),
@@ -48,8 +49,10 @@ const div = typed('div', {
   'boolean, boolean': (lhs, rhs) => !(lhs && rhs),  // boolean nand
   'string, string': (lhs, rhs) => lhs.split(rhs),  // string split (same as :split )
   'Array | string, number': (a, b) => {
-    b = +(a.length / b) | 0;
-    if (b === 0 || b > a.length) { return null; }
+    b = Number(a.length / b) | 0;
+    if (b === 0 || b > a.length) {
+      return null;
+    }
     return a.slice(0, b);
   },
   /* 'string | Array, number': (lhs, rhs) => {
@@ -82,20 +85,24 @@ const choose = typed('choose', {
 
 const at = typed('at', {
   'string, number | null': (lhs, rhs) => {
-    rhs = +rhs | 0;
-    if (rhs < 0) rhs = lhs.length + rhs;
+    rhs = Number(rhs) | 0;
+    if (rhs < 0) {
+      rhs = lhs.length + rhs;
+    }
     const r = lhs.charAt(rhs);
-    return (r !== undefined) ? r : null;
+    return (r === undefined) ? null : r;
   },
   'Array, number | null': (lhs, rhs) => {
-    rhs = +rhs | 0;
-    if (rhs < 0) rhs = lhs.length + rhs;
+    rhs = Number(rhs) | 0;
+    if (rhs < 0) {
+      rhs = lhs.length + rhs;
+    }
     const r = lhs[rhs];
-    return (r !== undefined) ? r : null;
+    return (r === undefined) ? null : r;
   },
   'any, Action | string | null': (a, b) => {
     const r = pluck(a, String(b));
-    return (r !== undefined) ? r : null;
+    return (r === undefined) ? null : r;
   }
 });
 
@@ -103,6 +110,7 @@ export default {
   'true': () => true,
   'false': () => false,
   'i': () => I,
+  'infinity': () => Infinity,
   '+': add,
   '-': sub,
   '*': mul,
@@ -113,7 +121,7 @@ export default {
   'identical?': (lhs, rhs) => lhs === rhs,
   '@': at,  // nth, get
   'get': '=> @ dup null = swap <= swap choose',
-  'choose': choose,
+  choose,
   '>': typed('gt', {
     'BigNumber | Complex, BigNumber | Complex | number': (lhs, rhs) => lhs.gt(rhs),
     'any, any': (lhs, rhs) => lhs > rhs

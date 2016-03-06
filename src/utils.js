@@ -22,10 +22,12 @@ export function unary (fn) {
 } */
 
 export const arrayRepeat = (a, n) => {
-  n = +n | 0;
-  if (n < 1) { return []; }
-  var r = [];
-  for (var i = 0; i < n; i++) {
+  n = Number(n) | 0;
+  if (n < 1) {
+    return [];
+  }
+  let r = [];
+  for (let i = 0; i < n; i++) {
     r = r.concat(a);
   }
   return r;
@@ -33,7 +35,7 @@ export const arrayRepeat = (a, n) => {
 
 export const arrayMul = (lhs, rhs) => {
   return lhs.reduce((p, n) => {
-    return p.concat(n, rhs);
+    return p.concat([n], rhs);
   }, []);
 };
 
@@ -41,10 +43,12 @@ export function pluck (context, path) {
   // if (path === '.') return undefined;
 
   const pathParts = path.split('.');
-  let ii = pathParts.length;
+  const ii = pathParts.length;
 
   for (let i = 0; i < ii; i++) {
-    if (!context) { break; }
+    if (!context) {
+      break;
+    }
     context = context[pathParts[i]];
   }
 
@@ -59,7 +63,9 @@ export function pluck (context, path) {
 } */
 
 export function noop () {}
-export function throwError (e) { throw e; }
+export function throwError (e) {
+  throw e;
+}
 
 /* export function isLineTerminator (ch) {
   return (ch === '\n') || (ch === '\r') || (ch === 0x2028) || (ch === 0x2029);
@@ -111,26 +117,32 @@ export function isDefined (val) {
 }
 
 const __eql = typed('eql', {
-  'Array, Array': function (a, b) {
-    if (a.length !== b.length) return false;
-    for (var i = 0; i < a.length; i++) {
-      if (!eql(a[i], b[i])) { return false; }
+  'Array, Array': (a, b) => {
+    if (a.length !== b.length) {
+      return false;
+    }
+    for (let i = 0; i < a.length; i++) {
+      if (!eql(a[i], b[i])) {
+        return false;
+      }
     }
     return true;
   },
-  'Action, Action': function (a, b) {
+  'Action, Action': (a, b) => {
     return a.value === b.value;
   },
-  'BigNumber, BigNumber | number': function (a, b) {
+  'BigNumber, BigNumber | number': (a, b) => {
     return a.equals(b);
   },
-  'any, any': function (a, b) {
+  'any, any': (a, b) => {
     return a === b;
   }
 });
 
 export function eql (a, b) {
-  if (a === b || a == b) { return true; } // eslint-disable-line eqeqeq
+  if (a === b || a == b) {  // eslint-disable-line eqeqeq
+    return true;
+  }
   return __eql(a, b);
 }
 
@@ -166,9 +178,11 @@ export function eql (a, b) {
   return processIdentifier(d);
 } */
 
-export const asap = typeof setImmediate === 'function' ? setImmediate  // from https://github.com/folktale/data.task/blob/master/lib/task.js#L9
+/* export const asap = typeof setImmediate === 'function' ? setImmediate  // from https://github.com/folktale/data.task/blob/master/lib/task.js#L9
   : typeof process !== 'undefined' ? process.nextTick
-  : function (fn) { setTimeout(fn, 0); };
+  : (fn) => {
+    setTimeout(fn, 0);
+  }; */
 
 const re0 = /\$\(.*\)/g;
 const cap = '%-cap-%';
@@ -176,7 +190,7 @@ const caplen = cap.length;
 const re = new RegExp(`(${cap}\\$\\(.*\\))`, 'g');
 
 export function generateTemplate (template) {
-  var r = [''];
+  const r = [''];
 
   template
     .replace(re0, x => cap + x)

@@ -1,3 +1,4 @@
+
 export const Token = {
   // BooleanLiteral: 1,
   EOF: 2,

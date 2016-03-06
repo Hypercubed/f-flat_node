@@ -21,17 +21,21 @@ import {tokenize} from './tokenizer';
   return Action.of(d);
 } */
 
-function processNumeric (value) {  // todo complex
+function processNumeric (value) {  // xodo complex
   return Object.freeze(
-    value.slice(-1) === '%'
-      ? new BigNumber(value.slice(0, -1)).div(100)
-      : new BigNumber(value)
+    value.slice(-1) === '%' ?
+      new BigNumber(value.slice(0, -1)).div(100) :
+      new BigNumber(value)
     );
 }
 
 export function lexer (text) {
-  if (isArray(text)) return text;
-  if (!isString(text)) return [text];
+  if (isArray(text)) {
+    return text;
+  }
+  if (!isString(text)) {
+    return [text];
+  }
 
   return tokenize(text)
     .map(({type, value}) => {
@@ -59,7 +63,8 @@ export function lexer (text) {
           console.log('Unknown type in lexer', type, value);
           process.exit();
       }
-    }).reduce(function (a, b) {  // flatmap
+      return undefined;
+    }).reduce((a, b) => {  // flatmap
       return a.concat(b);
     }, []);
 }

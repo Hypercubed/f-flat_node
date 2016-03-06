@@ -1,3 +1,6 @@
+/* Shuffle words
+   Many words derived from (Joy)[http://tunes.org/~iepos/joy.html] and Factor(http://factorcode.org/). */
+
 {
   "m": "dup eval",           // [a] -> [a] a
   "run": "dup slip",         // [a] -> a [a]
@@ -6,8 +9,9 @@
   "dip": "swap slip",        // [b] [a] -> a [b]
 
   "dup2": "over over",       // [b] [a] -> [b] [a] [b] [a]
-  "sip": "over slip",        // [b] [a] -> [b] a [b]
-  "keep": "over slip",       // [b] [a] -> [b] a [b]
+  "sip": "over slip",        // [b] [a] -> [b] a [b]    (aka keep)
+  "keep": "over slip",       // [b] [a] -> [b] a [b]    (aka sip)
+  "keep2": "[ dup2 ] dip dive",  // [c] [b] [a] -> [c] [b] a [c] [b]   (aka 2keep)
   "over": "dupd swap",       // [b] [a] -> [b] [a] [b]  (aka peek)
   "dupd": "[ dup ] dip",     // [b] [a] -> [b] [b] [a]  (aka w)
   "dropd": "[ drop ] dip",   // [b] [a] -> [a]          (aka nip)
@@ -19,16 +23,20 @@
   "dup3": "pick pick pick",  // [c] [b] [a] -> [c] [b] [a] [c] [b] [a]
   "swapd": "[ swap ] dip",   // [c] [b] [a] -> [b] [c] [a]
   "dig": "swapd swap"        // [c] [b] [a] -> [b] [a] [c]
+  "rolldown": "swapd swap",  // [c] [b] [a] -> [b] [a] [c] (aka dig)
   "bury": "swap swapd",      // [c] [b] [a] -> [a] [c] [b]
   "flip": "swapd bury",      // [c] [b] [a] -> [a] [b] [c]
   "rot": "bury swap",        // [c] [b] [a] -> [a] [b] [c]
 
   "repn": "runn drop",
-  "dipd": "[ dip ] dip",
-  "dive": "swap dipd",
-  "rolldown": "swapd swap",
-  "bi": "[ sip ] dip eval",  //
-  "bi*": "[ dip ] dip eval",
-  "tri": "[ [ sip ] dip sip ] dip eval",
+  "dipd": "[ dip ] dip",     // [d] [c] [b] [a] -> [d] b [c] [a]
+  "dive": "swap dipd",       // [c] [b] [a] -> a [c] [b]   (aka dip2)
+  "dip2": "swap [ dip ] dip" // [c] [b] [a] -> a [c] [b]
+
+  "bi": "[ sip ] dip eval",  // [c] [b] [a] -> [c] b [c] a
+  "bi2": "[ keep2 ] dip eval",  // [d] [c] [b] [a] -> [d] [c] b [d] [c] a
+  "bi*": "dipd eval",        // [d] [c] [b] [a] -> [d] b [c] a
+  "bi@": "dup bi*",          // [c] [b] [a] -> [c] a [c] a
+  "tri": "[ [ sip ] dip sip ] dip eval",   // [d] [c] [b] [a] -> [d] c [d] b [d] a
   "do": "dup dipd"
 }

@@ -1,21 +1,27 @@
-import {Stack} from '../src/stack';
 import repl from 'repl';
 import util from 'util';
+// import v8 from 'v8';
+
+import {Stack} from '../src/stack';
 import pkg from '../package.json';
 import {log} from '../src/logger';
 
 const initialPrompt = 'f♭>';
-const inspectOptions = { showHidden: false, depth: null, colors: true };
+const inspectOptions = {
+  showHidden: false,
+  depth: null,
+  colors: true
+};
 
 const program = require('commander');
 
-var arg = '';
+let arg = '';
 
 program
   .version(pkg.version)
   .usage('[options] [commands...]')
   .option('-L, --log-level [level]', 'Set the log level [warn]', 'warn')
-  .action(function (...cmds) {
+  .action((...cmds) => {
     cmds.pop();
     arg += cmds.join(' ');
   });
@@ -25,44 +31,56 @@ program.parse(process.argv);
 let f = new Stack('true auto-undo');
 let buffer = '';
 
-if (program.logLevel) log.level = program.logLevel;
+if (program.logLevel) {
+  log.level = program.logLevel;
+}
 
 if (arg !== '') {
   f.eval(arg);
-  console.log(util.inspect(f.stack, inspectOptions) + '\n');
+  console.log(`${util.inspect(f.stack, inspectOptions)}\n`);
   process.exit();
 }
 
-console.log('** Welcome to f♭ **\n');
+setupStack();
 
 const stackRepl = repl.start({
-  prompt: initialPrompt + ' ',
-  eval: f_eval,
-  writer: writer,
+  prompt: `${initialPrompt} `,
+  eval: fEval,
+  writer,
   ignoreUndefined: false,
   useColors: true,
   useGlobal: false
 })
-.on('reset', (context) => {
-  f = new Stack('true auto-undo "Welcome to f♭" println');
-});
+.on('reset', setupStack);
 
-stackRepl.defineCommand('.', {
-  help: 'print stack',
-  action: function () {
-    console.log(writer(f));
-    this.displayPrompt();
-  }
-});
+stackRepl
+  .defineCommand('.', {
+    help: 'print stack',
+    action: function action () {
+      console.log(writer(f));
+      this.displayPrompt();
+    }
+  });
+
+function setupStack () {
+  f = new Stack('true auto-undo "Welcome to f♭" println');
+  f.defineAction('prompt', () => {
+    return new Promise(resolve => {
+      stackRepl.question('', resolve);
+    });
+  });
+}
 
 function writer (_) {
   const depth = '>'.repeat(_.depth);
-  stackRepl.setPrompt(initialPrompt + depth + ' ');
+  stackRepl.setPrompt(`${initialPrompt}${depth} `);
 
-  return util.inspect(_.stack, inspectOptions) + '\n';
+  // console.log(v8.getHeapStatistics());
+
+  return `${util.inspect(_.stack, inspectOptions)}\n`;
 }
 
-async function f_eval (code, _, __, cb) {
+function fEval (code, _, __, cb) {
   code = code
     .replace(/^\(([\s\S]*)\n\)$/m, '$1')
     .replace('[\s]', ' ')
@@ -77,20 +95,12 @@ async function f_eval (code, _, __, cb) {
   const qcount = (code.match(/\`/g) || []).length;
 
   if (code[code.length - 1] === '\\' || qcount % 2 === 1) {
-    buffer = code.slice(0, -1) + '\n';
+    buffer = `${code.slice(0, -1)}\n`;
   } else {
     buffer = '';
 
-    /* f.eval(code, function (err, result) {
-      if (err) console.log(err);
-      cb(null, result);
-    }); */
-
-    try {
-      const _f = await f.promise(code);
-      cb(null, _f);
-    } catch (err) {
-      cb(err);
-    }
+    f.promise(code)
+      .then(result => cb(null, result))
+      .catch(err => cb(err));
   }
 }

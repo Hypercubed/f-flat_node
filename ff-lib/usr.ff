@@ -1,6 +1,6 @@
 [ dup _i ] "_x" def
 [ eval ] "_i" def
-[ dup [ [ _? ] >> ] dip ] "_?" def
+[ dup [ [ '_?' eval ] >> ] dip ] "_?" def
 [ [ dup ] dip _i ] "_w" def
 [ [ >> ] dip _i ] "_b" def
 [ swapd i ] "_c" def

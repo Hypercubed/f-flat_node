@@ -14,12 +14,11 @@ export class Base {
       return String(this.value);
     } else if (hint === 'number') {
       return Number(this.value);
-    } else {
-      return this.value;
     }
+    return this.value;
   }
 
-  inspect (depth) {
+  inspect () {
     return (this.value.inspect ? this.value.inspect() : String(this.value));
   }
 
@@ -71,17 +70,19 @@ export class Just extends Base {
 }
 
 export class Action extends Base {
-  constructor (value) { // todo type check
+  constructor (value) { // xodo type check
     super(value);
-    if (typeof this.value === 'string') this.value = this.value.toLowerCase();
+    if (typeof this.value === 'string') {
+      this.value = this.value.toLowerCase();
+    }
     Object.freeze(this);
   }
 
-  inspect (depth) {
+  inspect () {
     if (typeof this.value === 'string') {
       return this.value;
     }
-    return (this.value.inspect ? this.value.inspect() : String(this.value)) + ':';
+    return this.value.inspect ? this.value.inspect() : `${this.value}:`;
   }
 
   get type () {
@@ -95,7 +96,7 @@ export class Action extends Base {
 }
 
 export class Seq extends Just {
-  constructor (value) { // todo type check
+  constructor (value) { // txodo type check
     super(value);
     Object.freeze(this);
   }
@@ -119,7 +120,7 @@ export class Future extends Base {
     if (typeof promise !== 'undefined') {
       this.promise = promise;
 
-      promise.then((data) => {
+      promise.then(data => {
         return this.resolve(data);
       });
     }
@@ -156,11 +157,11 @@ export class Future extends Base {
     const state = this.state();
     let near = this.near();
     near = (near.inspect ? near.inspect() : String(near));
-    return `[Future:${state} [${ near }]]`;
+    return `[Future:${state} [${near}]]`;
   }
 
   toJSON () {
-    return {  // todo
+    return {
       type: this.type,
       value: this.value
       // state: this.state(),
@@ -187,5 +188,5 @@ export class Future extends Base {
 
 typed.addType({
   name: 'Action',
-  test: (item) => Action.isAction(item)
+  test: item => Action.isAction(item)
 });

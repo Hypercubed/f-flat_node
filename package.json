@@ -8,8 +8,10 @@
     "rollup:bin": "rollup -c rollup.repl.js > dist/repl.js",
     "rollup:lib": "rollup -c rollup.lib.js > dist/stack.js",
     "compile": "npm run rollup:bin && npm run rollup:lib",
-    "test": "babel-node ./test/f-flat-spec.js",
-    "coverage": "babel-node node_modules/isparta/bin/isparta cover --report lcov --report html --report text ./test/f-flat-spec.js",
+    "test": "ava",
+    "lint": "xo",
+    "coverage": "nyc -r lcov -r html -r text ava",
+    "old-coverage": "babel-node node_modules/isparta/bin/isparta cover --report lcov --report html --report text ./test/f-flat-spec.js",
     "start": "babel-node ./bin/repl.js"
   },
   "author": "J. Harshbarger",
@@ -26,23 +28,20 @@
     "winston": "^2.1.1"
   },
   "devDependencies": {
+    "ava": "^0.12.0",
     "babel-cli": "^6.5.1",
     "babel-plugin-transform-object-rest-spread": "^6.5.0",
     "babel-preset-es2015": "^6.5.0",
     "babel-preset-es2015-rollup": "^1.1.1",
-    "isparta": "^4.0.0",
+    "eslint": "^2.2.0",
+    "eslint-plugin-ava": "^1.0.0",
     "kneden": "^1.0.0",
     "nock": "^7.0.2",
+    "nyc": "^5.6.0",
     "rollup": "^0.25.3",
     "rollup-plugin-babel": "^2.3.9",
     "rollup-plugin-json": "^2.0.0",
-    "tape": "^4.4.0"
-  },
-  "semistandard": {
-    "parser": "babel-eslint",
-    "extends": [
-      "semistandard"
-    ]
+    "xo": "^0.13.0"
   },
   "babel": {
     "presets": [
@@ -51,6 +50,44 @@
     "plugins": [
       "transform-object-rest-spread",
       "kneden"
+    ]
+  },
+  "ava": {
+    "files": [
+      "test/*-spec.js"
+    ],
+    "require": [
+      "babel-register",
+      "babel-polyfill"
+    ]
+  },
+  "xo": {
+    "esnext": true,
+    "semicolon": true,
+    "space": 2,
+    "space-before-function-paren": [
+      2,
+      {
+        "anonymous": "always",
+        "named": "always"
+      }
+    ],
+    "rules": {
+      "space-before-function-paren": [2, {"anonymous": "always", "named": "always"}],
+      "prefer-reflect": 2,
+      "ava/max-asserts": [2, 5],
+      "ava/no-cb-test": 0,
+      "ava/no-identical-title": 2,
+      "ava/no-invalid-end": 2,
+      "ava/no-only-test": 2,
+      "ava/no-skip-assert": 2,
+      "ava/no-skip-test": 2,
+      "ava/prefer-power-assert": 0,
+      "ava/test-ended": 2,
+      "ava/test-title": [2, "always"]
+    },
+    "plugins": [
+      "ava"
     ]
   }
 }

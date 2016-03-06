@@ -1,20 +1,20 @@
 import {typed, Seq} from '../types/index';
 
 export default {
-  'id': (x) => x,  // same as nop
+  'id': x => x,  // same as nop
   'nop': () => {},
-  'drop': (a) => {},  // 1 >nop
+  'drop': a => {},  // eslint-disable-line
   'swap': (a, b) => Seq.of([b, a]),
-  'dup': (a) => Seq.of([a, a]),
+  'dup': a => Seq.of([a, a]),
   'length': typed('length', { // count/size
     'Array | string': a => a.length,
     'Object': a => Object.keys(a).length,
-    'null': a => 0
+    'null': a => 0  // eslint-disable-line
   }),
-  'slice': (arr, b, c) => [].slice.call(arr, b, c !== null ? c : undefined),
+  'slice': (arr, b, c) => Reflect.apply([].slice, arr, [b, c === null ? undefined : c]),
   'splitat': (arr, a) => Seq.of([  // use head and tail?
-    [].slice.call(arr, 0, a),
-    [].slice.call(arr, a)
+    Reflect.apply([].slice, arr, [0, a]),
+    Reflect.apply([].slice, arr, [a])
   ]),
   'indexof': (a, b) => a.indexOf(b),
   'zip': (a, b) => {

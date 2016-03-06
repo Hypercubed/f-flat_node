@@ -2,7 +2,6 @@
   pop: "0 -1 slice",
   shift: "1 null slice",
   map: "* in",
-  '[': '/d++ (',
-  ']': ') /d--',
+  step: "* eval",
   import: 'require define'
 }

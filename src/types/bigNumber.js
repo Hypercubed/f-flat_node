@@ -10,7 +10,7 @@ export const BigNumber = Decimal.clone({
   toExpPos: 21,
   minE: -9e15,
   maxE: 9e15,
-  crypto: void 0
+  crypto: undefined
 });
 
 const $PI = '3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132823066470938446095505822317253594081284811174502841027019385211055596446229489549303819644288109756659334461284756482337867831652712019091456485669234603486104543266482133936072602491412737245870066063155881748815209209628292540917153643678925903600113305305488204665213841469519415116094330572703657595919530921861173819326117931051185480744623799627495673518857527248912279381830119491298336733624406566430860213949463952247371907021798609437027705392171762931767523846748184676694051320005681271452635608277857713427577896091736371787214684409012249534301465495853710507922796892589235420199561121290219608640344181598136297747713099605187072113499999983729780499510597317328160963185950244594553469083026425223082533446850352619311881710100031378387528865875332083814206171776691473035982534904287554687311595628638823537875937519577818577805321712268066130019278766111959092164201989380952572010654858632789';
@@ -27,7 +27,7 @@ BigNumber.prototype.empty = () => zero;
 
 const _valueOf = BigNumber.prototype.valueOf;
 BigNumber.prototype.valueOf = BigNumber.prototype.toJSON = function () {
-  return +_valueOf.call(this);
+  return Number(Reflect.apply(_valueOf, this));
 };
 
 BigNumber.prototype.inspect = function () {
@@ -50,7 +50,7 @@ BigNumber.prototype.gamma = function () {  // more tests
   // https://en.wikipedia.org/wiki/Lanczos_approximation
   // G(z+1) = sqrt(2*pi)*(z+g+1/2)^(z+1/2)*exp(-(z+g+1/2))*Ag(z)
   // Ag(z) = c0 + sum(k=1..N, ck/(z+k))
-  // todo: Memoization?
+  // xodo: Memoization?
 
   if (this.lt(0.5)) {
     return pi.div(this.times(pi).sin().times(one.minus(this).gamma()));
@@ -59,8 +59,8 @@ BigNumber.prototype.gamma = function () {  // more tests
   const z = this.minus(1);
   let agz = c[0];
 
-  for (var k = 1; k < c.length; ++k) {
-    var den = z.plus(k);
+  for (let k = 1; k < c.length; ++k) {
+    const den = z.plus(k);
     if (den.isZero()) {
       agz = c[k] < 0 ? -Infinity : Infinity;
     } else {
@@ -68,7 +68,7 @@ BigNumber.prototype.gamma = function () {  // more tests
     }
   }
 
-  let t = z.plus(g + 0.5);  // z+g+1/2
+  const t = z.plus(g + 0.5);  // z+g+1/2
 
   return twoPiSqrt             // sqrt(2*PI)
     .times(t.pow(z.plus(0.5))) //  *(z+g+1/2)^(z+0.5)
@@ -91,19 +91,21 @@ BigNumber.prototype.nemesClosed = function () {
 BigNumber.prototype.spouge = function () {
   const z = this;
 
-  if (z.isNeg()) { return Number('0/0'); }
+  if (z.isNeg()) {
+    return Number('0/0');
+  }
 
-  var x = new BigNumber(c[0]);
-  for (var i = c.length - 1; i > 0; --i) {
-    var den = z.plus(i);
-    var num = new BigNumber(c[i]);
+  let x = new BigNumber(c[0]);
+  for (let i = c.length - 1; i > 0; --i) {
+    const den = z.plus(i);
+    const num = new BigNumber(c[i]);
     x = x.plus(num.div(den));
   }
 
-  var a = z.plus(1 / 2);
-  var t = a.plus(g);
+  const a = z.plus(1 / 2);
+  const t = a.plus(g);
 
-  var b = pi.times(2).ln().div(2)
+  const b = pi.times(2).ln().div(2)
           .plus(a.times(t.ln()))
           .minus(t)
           .plus(Math.log(x))
@@ -113,11 +115,11 @@ BigNumber.prototype.spouge = function () {
 };
 
 BigNumber.type = '@@BigNumber';
-BigNumber.of = (value) => new BigNumber(value);
+BigNumber.of = value => new BigNumber(value);
 
 typed.addType({
   name: 'BigNumber',
-  test: function (x) {
+  test: x => {
     return x instanceof BigNumber;
   }
 });
@@ -125,7 +127,7 @@ typed.addType({
 typed.addConversion({
   from: 'number',
   to: 'BigNumber',
-  convert: function (x) {
+  convert: x => {
     return new BigNumber(x);
   }
 });
@@ -133,7 +135,7 @@ typed.addConversion({
 typed.addConversion({
   from: 'BigNumber',
   to: 'number',
-  convert: function (x) {
+  convert: x => {
     return x.valueOf();
   }
 });

@@ -6,42 +6,46 @@ import {lexer} from '../tokenizer/lexer';
 
 // const pow = lexer('ln * exp');
 
-export default {
+export default {  // eslint-disable-line
   'number': x => new BigNumber(x),
   'number?': typed('number_', {
     'BigNumber | Complex | number': () => true,
     'any': () => false
   }),
   're': typed('re', {
-    'BigNumber | number': (a) => a,
-    'Complex': (a) => a.re
+    'BigNumber | number': a => a,
+    'Complex': a => a.re
   }),
   'im': typed('im', {
-    'BigNumber | number': (a) => 0,
-    'Complex': (a) => a.im
+    'BigNumber | number': a => 0,  // eslint-disable-line
+    'Complex': a => a.im
   }),
   'complex?': typed('complex_', {
-    'Complex': (a) => !a.im.isZero(),
+    'Complex': a => !a.im.isZero(),
     'BigNumber | number | any': () => false
   }),
   'div': typed('div', {   // integer division
     'BigNumber | Complex, BigNumber | Complex | number': (a, b) => a.div(b).floor(),
     'Array | string, number': (a, b) => {
-      b = +(a.length / b) | 0;
-      if (b === 0 || b > a.length) { return null; }
+      b = Number(a.length / b) | 0;
+      if (b === 0 || b > a.length) {
+        return null;
+      }
       return a.slice(0, b);
     }
   }),
   'rem': typed('rem', {   // remainder
     'BigNumber | Complex, BigNumber | Complex | number': (a, b) => a.modulo(b),
     'Array | string, number': (a, b) => {
-      b = +(a.length / b) | 0;
-      if (b === 0 || b > a.length) { return null; }
+      b = Number(a.length / b) | 0;
+      if (b === 0 || b > a.length) {
+        return null;
+      }
       return a.slice(b);
     }
   }),
-  '%': typed('mod', { 'BigNumber | Complex, BigNumber | number': (lhs, rhs) => lhs.modulo(rhs) }),
-  abs: typed('abs', { 'BigNumber | Complex': a => a.abs() }),
+  '%': typed('mod', {'BigNumber | Complex, BigNumber | number': (lhs, rhs) => lhs.modulo(rhs)}),
+  abs: typed('abs', {'BigNumber | Complex': a => a.abs()}),
   cos: a => BigNumber.cos(a),
   sin: a => BigNumber.sin(a),
   tan: a => BigNumber.tan(a),
@@ -60,10 +64,10 @@ export default {
     'BigNumber | Complex': a => a.ceil()
   }),
   sqrt: typed('sqrt', {
-    'Complex': function (x) {
+    Complex: x => {
       return x.sqrt();
     },
-    'BigNumber': function (x) {
+    BigNumber: x => {
       return (x.isNegative()) ? new Complex(x, 0).sqrt() : x.sqrt();
     }
   }),
@@ -76,12 +80,12 @@ export default {
     'BigNumber | Complex': a => a.gamma()
   }),
   nemes: typed('nemes', {
-    'BigNumber': a => a.nemesClosed()
+    BigNumber: a => a.nemesClosed()
   }),
   spouge: typed('nemes', {
-    'BigNumber': a => a.spouge()
+    BigNumber: a => a.spouge()
   }),
-  erf,  // todo: big
+  erf,  // xodo: big
   ln: typed('ln', {
     'BigNumber | Complex': a => a.ln()
   }),
@@ -92,5 +96,5 @@ export default {
   }),
   // '^': 'swap ln * exp',
   'rand': Math.random,
-  'pi': pi
+  pi
 };
