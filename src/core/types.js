@@ -4,7 +4,10 @@ export default {
   'types': typed.types,
   'type': a => typeof a,
   'string': String,
-  'char': x => String.fromCharCode(x),
+  'itoa': x => String.fromCharCode(x),
+  'atoi': x => x.charCodeAt(0),
+  'atob': x => new Buffer(x, 'base64').toString('binary'),
+  'btoa': x => new Buffer(x, 'binary').toString('base64'),
   'boolean': Boolean,
   'atom': a => Just.of(Action.of(a)),
   'array': n => new Array(n),
@@ -14,11 +17,7 @@ export default {
   'nan': NaN,
   'string?': 'type "string" =',
   'boolean?': 'type "boolean" =',
-  'of': (a, b) => {
-    return (a.constructor) ? new a.constructor(b) : undefined;
-  },
-  'empty': a => {
-    return (a.empty) ? a.empty() : new a.constructor();
-  },
+  'of': (a, b) => (a.constructor) ? new a.constructor(b) : undefined,
+  'empty': a => (a.empty) ? a.empty() : new a.constructor(),
   'is': (a, b) => a === b
 };

@@ -683,10 +683,9 @@ function scanNumericLiteral () {
 
   if (source.charCodeAt(index) === 37) {
     index++;
-    console.log('retyurning percent', parseFloat(number) / 100, typeof (parseFloat(number) / 100));
     return {
       type: Token.NumericLiteral,
-      value: parseFloat(number) / 100,
+      // value: parseFloat(number) / 100,  // not preceise, fix
       lineNumber,
       lineStart,
       range: [start, index]
@@ -695,7 +694,7 @@ function scanNumericLiteral () {
 
   return {
     type: Token.NumericLiteral,
-    value: 35 * parseFloat(number),
+    // value: parseFloat(number),
     lineNumber,
     lineStart,
     range: [start, index]

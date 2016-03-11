@@ -122,10 +122,47 @@ test('', async t => {
   t.same(await fAsync('10 100 sleep 20 +'), [30]);
 });
 
-/* test('should generate promise', async t => {
-  const f = await F().promise('100 sleep 10 !');
+test('multiple async', async t => {
+  t.same(await fAsync('10 100 sleep 20 + 100 sleep 15 +'), [45]);
+  t.same(await fAsync('10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 +'), [45]);
+});
+
+test('multiple async in children', async t => {
+  t.same(await fAsync('[ 10 100 sleep 20 + 100 sleep 15 + ] await'), [[45]]);
+  t.same(await fAsync('[ 10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 + ] await'), [[45]]);
+});
+
+test('should await on multiple promises', async t => {
+  const f = new F();
+  await f.promise('100 sleep 10 !');
   t.same(f.toArray(), [3628800]);
-}); */
+  await f.promise('100 sleep 9 +');
+  t.same(f.toArray(), [3628809]);
+});
+
+test('multiple promises', async t => {
+  const f = new F();
+  f.promise('1000 sleep 10 !');
+  t.same(f.toArray(), []);
+  f.promise('1000 sleep 9 +');
+  t.same(f.toArray(), []);
+  await f.promise();
+  t.same(f.toArray(), [3628809]);
+});
+
+test('multiple promises correct order', async t => {  // todo
+  const f = new F();
+  f.next('1000 sleep 10 !').then(f => {
+    t.same(f.toArray(), [3628800]);
+  });
+  t.same(f.toArray(), []);
+  f.next('10 sleep 9 +').then(f => {
+    t.same(f.toArray(), [3628809]);
+  });
+  t.same(f.toArray(), []);
+  await f.next();
+  t.same(f.toArray(), [3628809]);
+});
 
 test('errors on unknown command, async', async t => {
   t.throws(new F().promise('abc'));

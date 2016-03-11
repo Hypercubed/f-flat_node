@@ -9,7 +9,7 @@
   "~!": "++ gamma",
   "c!": "pred [ count ] dip [ * ] swap times",
   "r!": "dup 0 = [ drop 1 ] [ pred 'r!' eval * ] branch",
-  "!": "dup integer? [ c! ] [ ~! ] branch",
+  "!": "dup integer? [ r! ] [ ~! ] branch",
   "npr": "[ [ ! ] keep ] dip - ! /",
   "ncr": "[ npr ] keep ! / round",
   "--": "1 -",

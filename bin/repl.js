@@ -1,5 +1,6 @@
 import repl from 'repl';
 import util from 'util';
+import tripwire from 'tripwire';
 
 import {Stack} from '../src/stack';
 import pkg from '../package.json';
@@ -28,7 +29,6 @@ program
 program.parse(process.argv);
 
 let f = new Stack('true auto-undo');
-let buffer = '';
 
 if (program.logLevel) {
   log.level = program.logLevel;
@@ -51,6 +51,11 @@ const stackRepl = repl.start({
   useGlobal: false
 })
 .on('reset', setupStack);
+
+process.on('uncaughtException', () => {
+  console.log('The event loop was blocked for longer than 2000 milliseconds');
+  process.exit(1);
+});
 
 stackRepl
   .defineCommand('.', {
@@ -75,9 +80,13 @@ function writer (_) {
   stackRepl.setPrompt(`${initialPrompt}${depth} `);
 
   // console.log(v8.getHeapStatistics());
+  // console.log(_.queue);
 
   return `${util.inspect(_.stack, inspectOptions)}\n`;
 }
+
+let buffer = '';
+let timeout = null;
 
 function fEval (code, _, __, cb) {
   code = code
@@ -89,17 +98,41 @@ function fEval (code, _, __, cb) {
     code = code.slice(1, -1); // remove "(" and ")" added by node repl
   }
 
-  code = buffer + code;
+  buffer += `${code}\n`;
+  clearTimeout(timeout);
+  timeout = setTimeout(run, 60);
 
-  const qcount = (code.match(/\`/g) || []).length;
+  /* const qcount = (code.match(/\`/g) || []).length;
 
   if (code[code.length - 1] === '\\' || qcount % 2 === 1) {
     buffer = `${code.slice(0, -1)}\n`;
   } else {
     buffer = '';
 
-    f.promise(code)
+    tripwire.resetTripwire(600000);  // 10 mins max
+
+    f.next(code)
       .then(result => cb(null, result))
-      .catch(err => cb(err));
+      .catch(err => {
+        console.log(err);
+        cb(err);
+      });
+  } */
+
+  function run () {
+    clearTimeout(timeout);
+    if (!buffer.length) {
+      return;
+    }
+
+    tripwire.resetTripwire(600000);  // 10 mins max
+
+    f.next(buffer)
+      .then(result => cb(null, result))
+      .catch(err => {
+        cb(err);
+      });
+
+    buffer = '';
   }
 }

@@ -11,8 +11,9 @@ import {functionLength, functionName} from 'fantasy-helpers/src/functions';
 import MiniSignal from 'mini-signals';
 
 import {log, bar} from './logger';
+import {FFlatError} from './fflat-error';
 
-import {pluck, isPromise, isDefined} from './utils';
+import {pluck, isPromise, isDefined, formatState} from './utils';
 import {lexer} from './tokenizer/lexer';
 
 import {Action, Seq, Future} from './types/index';
@@ -27,7 +28,8 @@ import _functional from './core/functional.js';
 import _node from './core/node.js';
 
 const useStrict = true;
-const MAXSTACK = 10000;
+const MAXSTACK = 100000;
+const MAXRUN = 10000000;
 
 const quoteSymbol = Symbol('(');
 
@@ -109,20 +111,29 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     silent: false,
     undoable: true,
     parent: null,
+    nextAction: null,
     ...initalState
   };
 
+  let previousPromise = Promise.resolve();
+
   const self = {
     promise: s => new Promise((resolve, reject) => {
-      enqueue(s);
       completed.once(err => {
         if (err) {
           reject(err);
         }
         resolve(self);
       });
+      enqueue(s);
       run();
     }),
+    next: s => {
+      const invoke = () => self.promise(s);
+      const next = previousPromise.then(invoke, invoke);
+      previousPromise = next;
+      return next;
+    },
     eval: s => {
       enqueue(s);
       let finished = false;
@@ -134,7 +145,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       });
       run();
       if (!finished) {
-        throw new Error('Do Not Release Zalgo');
+        throw new FFlatError('Do Not Release Zalgo', state);
       }
       return self;
     },
@@ -147,6 +158,8 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     clear,
     defineAction,
 
+    inspect: () => formatState(state),
+
     get isDone () {
       return status === IDLE;
     },
@@ -158,6 +171,9 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     },
     get stack () {
       return state.stack;
+    },
+    get queue () {
+      return state.queue;
     }
   };
 
@@ -443,14 +459,16 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
   }
 
   function run (s) {
-    const tick = new MiniSignal();
+    const p = self;
 
     if (s) {
       queueFront(s);
     }
-    if (status === DISPATCHING) {
-      return;
+    if (status !== IDLE) {
+      return p;
     }
+
+    const tick = new MiniSignal();
 
     status = DISPATCHING;
 
@@ -466,6 +484,11 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
         tickBinding.detach();
       });
     }
+
+    const tickBinding = tick.add(_detectLongRunning());
+    completed.once(() => {
+      tickBinding.detach();
+    });
 
     try {
       log.profile('dispatch');
@@ -483,15 +506,24 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       log.profile('dispatch');
     }
 
-    return self;
+    return p;
+
+    function _detectLongRunning () {
+      let c = 0;
+      return function () {
+        if (c++ > MAXRUN) {
+          throw new FFlatError('MAXRUN exceeded', state);
+        }
+      };
+    }
 
     function _getBeforeEach () {
       const showTrace = (log.level.toString() === 'trace');
       const showBar = !nonInteractive || !state.silent && (log.level.toString() === 'warn');
 
       if (showTrace) {
-        return function (state) {
-          log.trace('%s : %s', state.stack, state.queue);
+        return () => {
+          console.log(formatState(self));
         };
       } else if (showBar) {
         let qMax = state.stack.length + state.queue.length;
@@ -517,13 +549,16 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     }
 
     function runLoop () {
+      tick.dispatch(state);
       while (status !== YIELDING && state.queue.length > 0) {
         tick.dispatch(state);
         dispatch(state.queue.shift());
         if (state.stack.length > MAXSTACK || state.queue.length > MAXSTACK) {
-          throw new Error(`MAXSTACK exceeded`);
+          // throw new Error(`MAXSTACK exceeded`);
+          throw new FFlatError('MAXSTACK exceeded', state);
         }
       }
+      tick.dispatch(state);
 
       function stackPush (...a) {
         // if (useStrict) a.map(Object.freeze);
@@ -568,7 +603,8 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
               } else if (lookup) {
                 return stackPush(lookup);
               }
-              throw new Error(`${action} is not defined`);
+              // throw new Error(`${action} is not defined`);
+              throw new FFlatError(`${action} is not defined`, state);
             }
             return stackPush(action);
           case '@@Seq':
@@ -621,6 +657,8 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     }
     status = ERR;
     completed.dispatch(err, self);
+    status = IDLE;
+    previousPromise = Promise.resolve();
   }
 
   function onCompleted () {

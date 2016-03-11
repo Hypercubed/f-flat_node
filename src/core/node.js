@@ -25,5 +25,6 @@ export default {
   },
   'rand-u32': function randU32 () {
     return crypto.randomBytes(4).readUInt32BE(0, true);
-  }
+  },
+  'env': () => process.env
 };

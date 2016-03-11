@@ -13,3 +13,5 @@
 'loop' inline
 'next-prime' inline
 'nth-prime' inline
+
+'r!' inline

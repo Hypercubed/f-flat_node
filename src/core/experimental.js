@@ -1,3 +1,13 @@
+import {typed} from '../types/index';
+
+typed.addConversion({
+  from: 'string',
+  to: 'RegExp',
+  convert: str => {
+    const match = str.match(new RegExp('^/(.*?)/([gimy]*)$'));
+    return (match) ? new RegExp(match[1], match[2]) : new RegExp(str);
+  }
+});
 
 export default {
   // 'throw': this.throw,
@@ -18,5 +28,17 @@ export default {
   '|>': function call (a, b) {
     return Reflect.apply(b, null, [a]);
   },  // danger */
+  'regexp': typed('regexp', {
+    RegExp: x => x  // typed will convert string to RegExp
+  }),
+  'match': typed('match', {
+    'string, RegExp': (lhs, rhs) => lhs.match(rhs)
+  }),
+  'test?': typed('test', {
+    'string, RegExp': (lhs, rhs) => rhs.test(lhs)
+  }),
+  'replace': typed('replace', {
+    'string, RegExp, string': (str, reg, rep) => str.replace(reg, rep)
+  }),
   '||>': (a, b) => Reflect.apply(b, null, a)
 };

@@ -21,11 +21,11 @@ import {tokenize} from './tokenizer';
   return Action.of(d);
 } */
 
-function processNumeric (value) {  // xodo complex
+function processNumeric (value) {  // todo complex
   return Object.freeze(
     value.slice(-1) === '%' ?
-      new BigNumber(value.slice(0, -1)).div(100) :
-      new BigNumber(value)
+      new BigNumber(String(value.slice(0, -1))).div(100) :
+      new BigNumber(String(value))
     );
 }
 

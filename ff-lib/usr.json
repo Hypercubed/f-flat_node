@@ -72,7 +72,7 @@
   "site-size": "fetch length",
   "site-war": "dup [ [ site-size ] >> ] map all zip object",
   "rand-integer": "rand-u32",
-  "rand-char": "rand-integer 128 % char",
+  "rand-char": "rand-integer 128 % itoa",
   "rand-seq": "rand-integer 16 % ++ [ times ] >> >> in",
   "rand-string": "[ rand-char ] rand-seq sum",
   "rand-bool": "rand-u32 even?",
@@ -80,5 +80,18 @@
   "for-all": "[ [ 100 times ] >> in ] dip [ not ] + filter",
   "check-for-all": "for-all dup empty? [ '+++ OK, passed 100 tests.' println drop ] [ [ ' Failed!' + println ] map ] branch",
   "inline": "dup rcl expand swap def",
-  "inline-dict": "words [ inline ] step"
+  "inline-dict": "words [ inline ] step",
+  "between?": "swap dupd < bury < *",
+  "lcase-char?": "atoi [ 96 123 ] dip between?",
+  "ucase-char?": "atoi [ 64 91 ] dip between?",
+  "lcase-char": "dup ucase-char? [ atoi 32 + itoa ] when",
+  "ucase-char": "dup lcase-char? [ atoi 32 - itoa ] when",
+  "char?": "[ lcase-char? ] [ ucase-char? ] bi or",
+  "rot13-char*": "[ atoi ] dip [ - 13 + 26 % ] [ + ] bi itoa",
+  "rot13-char": "dup ucase-char? [ 65 ] [ 97 ] branch rot13-char*",
+  "char-map": "map sum",
+  "rot13": "[ rot13-char ] char-map",
+  "ucase": "[ ucase-char ] char-map",
+  "lcase": "[ lcase-char ] char-map",
+  "trace": "trace: set-log-level"
 }

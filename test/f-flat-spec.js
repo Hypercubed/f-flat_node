@@ -255,3 +255,17 @@ test('should spawn, returning a future', async t => {
   t.same(f.toArray(), [{type: '@@Future', value: [3628800]}, 9]);
   t.same(f.eval('slip').toArray(), [3628800, 9]);
 });
+
+test('regular expressions, test', t => {
+  t.same(fSync('"abc" "/a./" test?'), [true]);
+  t.same(fSync('"abc" "/a.$/" test?'), [false]);
+  t.same(fSync('"abc" "/a.*$/" test?'), [true]);
+  t.same(fSync('"bcd" "/a./" test?'), [false]);
+});
+
+test('regular expressions, replace', t => {
+  t.same(fSync('"abc" "/a./" "X" replace'), ["Xc"]);
+  t.same(fSync('"abc" "/a.$/" "X" replace'), ["abc"]);
+  t.same(fSync('"abc" "/a.*$/" "X" replace'), ["X"]);
+  t.same(fSync('"bcd" "/a./" "X" replace'), ["bcd"]);
+});
