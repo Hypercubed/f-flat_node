@@ -96,5 +96,9 @@ export default {  // eslint-disable-line
   }),
   // '^': 'swap ln * exp',
   'rand': Math.random,
-  pi
+  pi,
+  'set-precision': x => {
+    BigNumber.config({precision: Number(x)});
+  },
+  'get-precision': () => BigNumber.precision
 };

@@ -106,10 +106,10 @@ test('should format complex output', t => {
 
 test('should calculate powers of complex numbers', t => {
   t.same(fSync('2 i * 0 ^'), [{im: 0, re: 1}]);
-  t.same(fSync('2 i * 1 ^'), [{im: 2, re: 6.264338327950289e-20}]);
-  t.same(fSync('2 i * 2 ^'), [{im: 2.5057353311801156e-19, re: -4}]);
-  t.same(fSync('2 i * 3 ^'), [{im: -8, re: -7.517205993540346e-19}]);
-  t.same(fSync('e i * 1 ^'), [{im: 2.718281828459045, re: 8.514118522093394e-20}]);
+  t.same(fSync('2 i * 1 ^ im'), [2]);
+  t.same(fSync('2 i * 2 ^ re'), [-4]);
+  t.same(fSync('2 i * 3 ^ im'), [-8]);
+  t.same(fSync('e i * 1 ^ im'), [2.718281828459045]);
 });
 
 test('should define complex?', t => {

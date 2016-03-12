@@ -61,10 +61,11 @@ Find the largest palindrome made from the product of two 3-digit numbers.
 What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?
 
 ```
-
+20 integers
+1 [ lcm ] reduce
 ```
 
-[232792560]
+[ 232792560 ]
 
 ## 6
 
@@ -209,4 +210,38 @@ string
 sum
 ```
 
-[5537376230]
+[ '5537376230' ]
+
+## 15
+
+Starting in the top left corner of a 2×2 grid, and only being able to move to the right and down, there are exactly 6 routes to the bottom right corner.
+
+![p015](https://projecteuler.net/project/images/p015.gif)
+
+How many such routes are there through a 20×20 grid?
+
+```forth
+20
+dup 2 *
+swap
+ncr
+```
+
+[ 137846528820 ]
+
+## 20
+
+n! means n × (n − 1) × ... × 3 × 2 × 1
+
+For example, 10! = 10 × 9 × ... × 3 × 2 × 1 = 3628800,
+and the sum of the digits in the number 10! is 3 + 6 + 2 + 8 + 8 + 0 + 0 = 27.
+
+Find the sum of the digits in the number 100!
+
+```
+200 set-precision
+100 !
+[ 0 [ swap 10 divrem ] 200 times ] >> in sum
+```
+
+[ 648 ]

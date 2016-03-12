@@ -29,7 +29,7 @@ import _node from './core/node.js';
 
 const useStrict = true;
 const MAXSTACK = 100000;
-const MAXRUN = 10000000;
+const MAXRUN = 1e10;
 
 const quoteSymbol = Symbol('(');
 

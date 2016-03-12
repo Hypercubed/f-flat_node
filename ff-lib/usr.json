@@ -93,5 +93,10 @@
   "rot13": "[ rot13-char ] char-map",
   "ucase": "[ ucase-char ] char-map",
   "lcase": "[ lcase-char ] char-map",
-  "trace": "trace: set-log-level"
+  "trace": "trace: set-log-level",
+  "divrem": "[ div ] [ rem ] bi2",
+  "gcd": "[ dup 0 > ] [ dup bury rem ] while drop",
+  "lcm": "dup2 [ [ * abs ] dip ] dip gcd /",
+  "next-collatz": "dup even? [ 2 / ] [ 3 * 1 + ] branch",
+  "collatz": "[ [ dup, 1, > ], [ dup, next-collatz ], while ] >> in"
 }
