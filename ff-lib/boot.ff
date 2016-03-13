@@ -9,9 +9,11 @@
 
 './ff-lib/usr.ff' require
 
-'prime?' inline
+/* 'prime?' inline
+'prime?' 1 memoize
+'next-prime' 1  */
+
 'loop' inline
-'next-prime' inline
-'nth-prime' inline
 
 'r!' inline
+'r!' 1 memoize

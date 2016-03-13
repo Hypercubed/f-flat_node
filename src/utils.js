@@ -1,5 +1,4 @@
 import {typed, Action} from './types/index';
-import {inspect} from 'util';
 
 /* export function nAry (n, fn) {
   switch (n) {
@@ -210,49 +209,4 @@ export function generateTemplate (template) {
       }
     });
   return r;
-}
-
-function lpad (str, n) {
-  if (str.length < n) {
-    while (str.length < n) {
-      str = ` ${str}`;
-    }
-    return str;
-  } else if (str.length > n) {
-    return `...${str.slice(3 - n)}`;
-  }
-  return str;
-}
-
-function rtrim (str, n) {
-  if (str.length > n) {
-    return `${str.slice(0, n - 3)}...`;
-  }
-  return str;
-}
-
-export function formatState ({stack, queue}) {
-  stack = lpad(formatArray(stack, 0), 40);
-  queue = rtrim(formatArray(queue, 0), 40);
-  return `${stack} : ${queue}`;
-}
-
-function formatValue (value, depth) {
-  if (typeof value === 'symbol') {
-    return formatSymbol(value);
-  }
-  if (Array.isArray(value)) {
-    return formatArray(value, depth);
-  }
-  return inspect(value);
-}
-
-function formatSymbol (value) {
-  return value.toString().replace(/Symbol\((.*)\)/g, '#$1');
-}
-
-function formatArray (obj, depth) {
-  obj = obj.map(x => formatValue(x, depth + 1));
-  obj = obj.join(' ').replace(/[\s]+/gm, ' ');
-  return `[ ${obj} ]`;
 }

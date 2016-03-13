@@ -1,4 +1,4 @@
-import {formatState} from "./utils";
+import {formatState} from "./pprint";
 
 export class FFlatError extends Error {
   constructor (message = 'FFlatError', state = {stack: [], queue: []}) {

@@ -98,5 +98,6 @@
   "gcd": "[ dup 0 > ] [ dup bury rem ] while drop",
   "lcm": "dup2 [ [ * abs ] dip ] dip gcd /",
   "next-collatz": "dup even? [ 2 / ] [ 3 * 1 + ] branch",
-  "collatz": "[ [ dup, 1, > ], [ dup, next-collatz ], while ] >> in"
+  "collatz": "[ [ dup, 1, > ], [ dup, next-collatz ], while ] >> in",
+  "timing": "timing: set-log-level"
 }

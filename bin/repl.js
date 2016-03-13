@@ -1,16 +1,17 @@
 import repl from 'repl';
-import util from 'util';
 import tripwire from 'tripwire';
 
 import {Stack} from '../src/stack';
 import pkg from '../package.json';
 import {log} from '../src/logger';
+import {formatArray} from '../src/pprint';
 
 const initialPrompt = 'f♭>';
 const inspectOptions = {
   showHidden: false,
   depth: null,
-  colors: true
+  colors: true,
+  indent: true
 };
 
 const program = require('commander');
@@ -36,7 +37,8 @@ if (program.logLevel) {
 
 if (arg !== '') {
   f.eval(arg);
-  console.log(`${util.inspect(f.stack, inspectOptions)}\n`);
+  console.log(formatArray(f.stack, null, inspectOptions));
+  console.log();
   process.exit();
 }
 
@@ -82,7 +84,9 @@ function writer (_) {
   // console.log(v8.getHeapStatistics());
   // console.log(_.queue);
 
-  return `${util.inspect(_.stack, inspectOptions)}\n`;
+  return `${formatArray(_.stack, null, inspectOptions)}\n`;
+
+  // return `${util.inspect(_.stack, inspectOptions)}\n`;
 }
 
 let buffer = '';
@@ -94,7 +98,7 @@ function fEval (code, _, __, cb) {
     .replace('[\s]', ' ')
     .trim();
 
-  if (code.slice(0, 1) === '({' && code[code.length - 1] === ')') {
+  if (code.slice(0, 2) === '({' && code.slice(-2) === '})') {
     code = code.slice(1, -1); // remove "(" and ")" added by node repl
   }
 
@@ -121,6 +125,8 @@ function fEval (code, _, __, cb) {
 
   function run () {
     clearTimeout(timeout);
+
+    // const qcount = (buffer.match(/\`/g) || []).length;
     if (!buffer.length) {
       return;
     }

@@ -42,6 +42,8 @@ F♭ is a dynamically typed array-oriented concatenative language like Forth and
 
 ## Example
 
+[![asciicast](https://asciinema.org/a/39282.png)](https://asciinema.org/a/39282)
+
 ```forth
 ** Welcome to f♭ **
 

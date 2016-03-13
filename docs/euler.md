@@ -245,3 +245,18 @@ Find the sum of the digits in the number 100!
 ```
 
 [ 648 ]
+
+
+## 30
+
+```
+325537 integers
+[ dup string [ number 5 ^ ] map sum = ] filter
+sum 1 -
+```
+
+```
+[ 2 [ dup dup string [ number 5 ^ ] map sum = [ dup ] when ++ ] 325537 times ]
+```
+
+[ 443839 ]

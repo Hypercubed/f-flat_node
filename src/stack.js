@@ -4,6 +4,7 @@ import 'babel-polyfill';
 import fs from 'fs';
 import path from 'path';
 import rfr from 'rfr';
+import memoize from 'memoizee';
 
 import {isString, isFunction, isObject} from 'fantasy-helpers/src/is';
 import {functionLength, functionName} from 'fantasy-helpers/src/functions';
@@ -13,7 +14,8 @@ import MiniSignal from 'mini-signals';
 import {log, bar} from './logger';
 import {FFlatError} from './fflat-error';
 
-import {pluck, isPromise, isDefined, formatState} from './utils';
+import {pluck, isPromise, isDefined} from './utils';
+import {formatState, formatValue} from './pprint';
 import {lexer} from './tokenizer/lexer';
 
 import {Action, Seq, Future} from './types/index';
@@ -28,7 +30,7 @@ import _functional from './core/functional.js';
 import _node from './core/node.js';
 
 const useStrict = true;
-const MAXSTACK = 100000;
+const MAXSTACK = 1e7;
 const MAXRUN = 1e10;
 
 const quoteSymbol = Symbol('(');
@@ -257,18 +259,41 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       }
       defineAction(name, cmd);
     },
+    'memoize': (name, n) => {
+      const cmd = lookupAction(name);
+      if (cmd) {
+        const fn = (...a) => {
+          const s = self
+            .createChild()
+            .eval([...a])
+            .eval(cmd)
+            .stack;
+          return Seq.of(s);
+        };
+        defineAction(name, memoize(fn, {length: n, primitive: true}));
+      }
+    },
     'delete': a => { // usefull?
       Reflect.deleteProperty(state.dict, a);
     },
     'rcl': a => {
       const r = lookupAction(a);
+      if (!r) {
+        return null;
+      }
       if (useStrict && isFunction(r)) {
         return Action.of(r);
       } // carefull pushing functions to stack
       return r.value;
     },
     'expand': expandAction,
-    'see': a => String(lookupAction(a)),
+    'see': a => {
+      const r = lookupAction(a);
+      if (!r) {
+        return null;
+      }
+      return formatValue(r.value, 0, {colors: false, indent: false});
+    },
     'words': () => {
       const result = [];
       for (const prop in state.dict) {  // eslint-disable-line guard-for-in
