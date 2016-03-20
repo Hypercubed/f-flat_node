@@ -44,12 +44,12 @@ export default {
   'zipwith': 'zipinto in',
   'dot': '[ * ] zipwith sum',
   ':': 'atom',
-  '(': '/quote',        // list
-  ')': '/dequote',
-  '[': '/quote /d++',   // quote
-  ']': '/d-- /dequote',
-  '{': '/quote',        // object
-  '}': '/dequote /object',
+  '(': ':quote',        // list
+  ')': ':dequote',
+  '[': ':quote :d++',   // quote
+  ']': ':d-- :dequote',
+  '{': ':quote',        // object
+  '}': ':dequote :object',
   'template': generateTemplate,
   'yield': 'return suspend',
   'delay': '[ sleep ] >> slip eval',

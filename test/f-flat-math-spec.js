@@ -1,29 +1,15 @@
 import test from 'ava';
-import {Stack as F} from '../';
-import {log} from '../src/logger';
-
-log.level = process.env.NODE_ENV || 'error';
-
-process.chdir('..');
-
-function fSync (a) {
-  return new F(a).toArray();
-}
-
-const tolerance = 0.5 * Math.pow(10, -9);
-function nearly (a, b) {
-  return Math.abs(Number(a) - Number(b)) < tolerance;
-}
+import {F, fSync, nearly} from './setup';
 
 test('should perform basic arithmetic', t => {
-  t.same(new F('1 2 +').toArray(), [3], 'should add numbers');
-  t.same(new F('1 2 -').toArray(), [-1], 'should sub numbers');
-  t.same(new F('2 3 *').toArray(), [6], 'should multiply numbers');
-  t.same(new F('1 2 /').toArray(), [0.5], 'should divide numbers');
+  t.same(fSync('1 2 +'), [3], 'should add numbers');
+  t.same(fSync('1 2 -'), [-1], 'should sub numbers');
+  t.same(fSync('2 3 *'), [6], 'should multiply numbers');
+  t.same(fSync('1 2 /'), [0.5], 'should divide numbers');
 });
 
 test('should div by zero, returns infinity', t => {
-  t.same(new F('1 0 /').stack[0].valueOf(), Infinity);
+  t.same(new F().eval('1 0 /').stack[0].valueOf(), Infinity);
 });
 
 test('should quickcheck integer arithmetic', t => {
@@ -64,40 +50,40 @@ test('constants', t => {
 test('should define logs', t => {
   t.same(fSync('1 log 10 log 100 log'), [0, 1, 2]);
 
-  const r = new F('2 ln 10 ln').toArray();
+  const r = new F().eval('2 ln 10 ln').toArray();
   t.ok(nearly(r[0], 0.6931471805599453));
   t.ok(nearly(r[1], 2.3025850929940458834));
 });
 
 test('should define gamma', t => {
-  let r = new F('4 gamma').stack[0];
+  let r = new F().eval('4 gamma').stack[0];
   t.ok(nearly(r, 6, '4 gamma'));
 
-  r = new F('1 2 / gamma').stack[0];
+  r = new F().eval('1 2 / gamma').stack[0];
   t.ok(nearly(r, Math.sqrt(Math.PI), '1 2 / gamma'));
 
-  r = new F('-1 2 / gamma').stack[0];
+  r = new F().eval('-1 2 / gamma').stack[0];
   t.ok(nearly(r, -2 * Math.sqrt(Math.PI), '-1 2 / gamma'));
 
-  r = new F('-5 2 / gamma').stack[0];
+  r = new F().eval('-5 2 / gamma').stack[0];
   t.ok(nearly(r, -8 / 15 * Math.sqrt(Math.PI), '-5 2 / gamma'));
 
-  r = new F('102 gamma').stack[0];
+  r = new F().eval('102 gamma').stack[0];
   t.ok(nearly(r, 9.4259477598383563846e+159, '102 gamma'));
 });
 
 test('should define gamma, cont', t => {
-  let r = new F('1.5 gamma').stack[0];
+  let r = new F().eval('1.5 gamma').stack[0];
   t.ok(nearly(r, 0.886226925452758013649083741670572591398774728061193564106, '1.5 gamma'));
 
-  r = new F('0.1 gamma').stack[0];
+  r = new F().eval('0.1 gamma').stack[0];
   t.ok(nearly(r, 9.513507698668731836292487177265402192550578626088377343050, '0.1 gamma'));
 });
 
 test('should define factorial', t => {
   t.same(fSync('20 !'), [2432902008176640000], '20 !');
 
-  const r = new F('100 !').toArray()[0];
+  const r = new F().eval('100 !').toArray()[0];
   t.ok(nearly(r, 9.3326215443944152704e+157, '100 !'));
 });
 

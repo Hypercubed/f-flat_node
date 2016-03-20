@@ -104,8 +104,8 @@ const at = typed('at', {
 });
 
 export default {
-  'true': () => true,
-  'false': () => false,
+  /* 'true': () => true,
+  'false': () => false, */
   'i': () => I,
   'infinity': () => Infinity,
   '+': add,

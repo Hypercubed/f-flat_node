@@ -1,14 +1,5 @@
 import test from 'ava';
-import {Stack as F} from '../';
-import {log} from '../src/logger';
-
-log.level = process.env.NODE_ENV || 'error';
-
-process.chdir('..');
-
-function fSync (a) {
-  return new F(a).toArray();
-}
+import {F, fSync} from './setup';
 
 test('should push lists', t => {
   t.same(fSync('( 1 ) ( 2 )'), [[1], [2]], 'should push');

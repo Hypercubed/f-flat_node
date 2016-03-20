@@ -1,14 +1,5 @@
 import test from 'ava';
-import {Stack as F} from '../';
-import {log} from '../src/logger';
-
-log.level = process.env.NODE_ENV || 'error';
-
-process.chdir('..');
-
-function fSync (a) {
-  return new F(a).toArray();
-}
+import {fSync} from './setup';
 
 test('should create objects object', t => {
   t.same(fSync('[ "first" "Manfred" "last" "von Thun" ] object'), [{first: 'Manfred', last: 'von Thun'}], 'should create objects from arrays');

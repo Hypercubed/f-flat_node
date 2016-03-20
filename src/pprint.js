@@ -1,87 +1,126 @@
 import {inspect} from 'util';
+import {typed} from './types/';
+import fixedWidthString from 'fixed-width-string';
+import {stripColor, supportsColor, default as chalk} from 'chalk';
+
+/* const colors = {
+  bold: [1, 22],
+  italic: [3, 23],
+  underline: [4, 24],
+  inverse: [7, 27],
+  white: [37, 39],
+  grey: [90, 39],
+  black: [30, 39],
+  blue: [34, 39],
+  cyan: [36, 39],
+  green: [32, 39],
+  magenta: [35, 39],
+  red: [31, 39],
+  yellow: [33, 39]
+};
+
+const styles = {
+  number: 'yellow',
+  boolean: 'yellow',
+
+  null: 'grey',
+  undefined: 'grey',
+
+  special: 'cyan',
+  string: 'green',
+
+  name: 'cyan',
+  symbol: 'cyan',
+  date: 'cyan',
+
+  regexp: 'red'
+}; */
+
+const styles = {
+  number: chalk.magenta,
+  boolean: chalk.magenta,
+
+  null: chalk.grey,
+  undefined: chalk.grey,
+
+  string: chalk.palegreen,
+
+  special: chalk.cyan,
+  name: chalk.cyan,
+  symbol: chalk.cyan,
+  date: chalk.cyan,
+
+  regexp: chalk.red
+};
 
 const defaultOpts = {
   showHidden: false,
   depth: null,
-  colors: false,
+  colors: supportsColor,
   indent: false
 };
 
-function strLen (str) {
-  return str.replace(/\u001b\[\d\d?m/g, '').length + 1;
+export const formatValue = typed('formatValue', {
+  'Symbol, any, any': (value, depth, opts) => formatSymbol(value, opts),
+
+  'BigNumber | Complex | number, any, any': (value, depth, opts) => stylize(value, 'number', opts),
+  'null, any, any': (value, depth, opts) => stylize('Null', 'null', opts),
+  'boolean, any, any': (value, depth, opts) => stylize(value, 'boolean', opts),
+
+  'Action, any, any': (value, depth, opts) => stylize(value, 'name', opts),
+  'string, any, any': (value, depth, opts) => formatString(value, opts),
+
+  'Array, any, any': formatArray,
+  'Object, any, any': formatMap,
+
+  'any, any, any': (value, depth, opts) => inspect(value, opts)
+});
+
+function formatString (value, opts) {
+  value = JSON.stringify(value).replace(/^"|"$/g, '')
+      .replace(/'/g, "\\'")
+      .replace(/\\"/g, '"');
+  return stylize(`'${value}'`, 'string', opts);
 }
+
+const strLen = str => stripColor(str).length + 1;
 
 function lpad (str, n = 40) {
   str = str.replace(/[\s\n]+/gm, ' ');
-  const length = strLen(str);
-  if (length < n) {
-    while (str.length < n) {
-      str = ` ${str}`;
-    }
-    return str;
-  } else if (length > n) {
-    return `...${str.slice(3 - n)}`;
-  }
-  return str;
+  return fixedWidthString(str, n, {align: 'right'});
 }
 
 function rtrim (str, n = 40) {
   str = str.replace(/[\s\n]+/gm, ' ');
-  const length = strLen(str);
-  if (length > n - 3) {
-    return `${str.slice(0, n - 3)}...`;
-  }
-  return str;
+  return fixedWidthString(str, n);
 }
 
-function stylizeWithColor (str, styleType) {
-  const style = inspect.styles[styleType];
-  if (style) {
-    return `\u001b[${inspect.colors[style][0]}m${str}\u001b[${inspect.colors[style][1]}m`;
+function stylize (value, styleType, opts) {
+  value = value.toString();
+  if (opts.colors) {
+    const style = styles[styleType];
+    if (style) {
+      return style(value);
+    }
   }
-  return str;
+  return value;
 }
 
 export function formatState ({stack, queue}, opts = defaultOpts) {
-  stack = lpad(formatArray(stack, 0, opts));
-  queue = rtrim(formatArray(queue, 0, opts));
-  return `${stack} : ${queue}`;
-}
-
-export function formatValue (value, depth, opts) {
-  opts = {
-    ...defaultOpts,
-    ...opts
-  };
-  if (value === null) {
-    return inspect(value, opts);
-  }
-  if (typeof value === 'symbol') {
-    return formatSymbol(value, opts);
-  }
-  if (Array.isArray(value)) {
-    return formatArray(value, depth, opts);
-  }
-  if (typeof value === 'object' && !value.inspect) {
-    return formatMap(value, depth, opts);
-  }
-  return inspect(value, opts);
+  const n = process.stdout.columns / 2 - 5;
+  stack = lpad(formatArray(stack, 0, opts, '  '), n);
+  queue = rtrim(formatArray(queue, 0, opts, '  '), n);
+  return `${stack} <=> ${queue}`;
 }
 
 function formatSymbol (value, opts) {
   value = value.toString().replace(/Symbol\((.*)\)/g, '#$1');
-  return opts.colors ? stylizeWithColor(value, 'symbol') : value;
+  return stylize(value, 'symbol', opts);
 }
 
-export function formatArray (obj, depth, opts) {
-  opts = {
-    ...defaultOpts,
-    ...opts
-  };
+function formatArray (obj, depth, opts, braces = '[]') {
   obj = obj.map(x => formatValue(x, depth + 1, opts).replace(/\n/g, '\n  '));
-  // obj = obj.join(' ').replace(/[\s]+/gm, ' ');
-  // obj = obj.replace(/\n/g, '\n  ');
-  return reduceToSingleString(obj, '[]', opts);
+  return reduceToSingleString(obj, braces, opts);
 }
 
 function reduceToSingleString (output, braces, opts) {
@@ -104,8 +143,7 @@ function formatMap (value, depth, opts) {
 }
 
 function formatProperty (key, value, depth, opts) {
-  key = JSON.stringify(String(key));
-  key = opts.colors ? stylizeWithColor(key, 'name') : key;
+  key = stylize(String(key), 'name', opts);
   value = formatValue(value, depth + 1, opts).replace(/\n/g, '\n  ');
 
   return `${key}: ${value}`;

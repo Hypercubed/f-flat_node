@@ -1,25 +1,10 @@
 // import {processIdentifier} from './utils';
-import {isString, isArray} from 'fantasy-helpers/src/is';
+// import {isString, isArray} from 'fantasy-helpers/src/is';
 
-import {Action, BigNumber} from '../types/index';
+import {Action, BigNumber, typed} from '../types/index';
+import {isNumeric} from '../utils';
 
-import {tokenize} from './tokenizer';
-
-// const reProperty = /^\_\..+$/;
-
-/* export function processIdentifier (d) {
-  if (reProperty.test(d)) {
-    d = (d
-      .replace('_.', '')
-      .replace('.', '.@.') + '.@')
-        .split('.')
-        .map(x => (x === '@') ? Action.of('@') : String(x));
-
-    return Seq.of(d);
-  }
-
-  return Action.of(d);
-} */
+import {lex} from 'literalizer';
 
 function processNumeric (value) {  // todo complex
   return Object.freeze(
@@ -29,42 +14,52 @@ function processNumeric (value) {  // todo complex
     );
 }
 
-export function lexer (text) {
-  if (isArray(text)) {
-    return text;
-  }
-  if (!isString(text)) {
-    return [text];
-  }
+export const lexer = typed('lexer', {
+  Array: arr => arr,
+  string: text => lex(text)
+    .reduce((a, b) => a.concat(processLexerTokens(b)), []), // flatmap
+  any: text => [text]
+});
 
-  return tokenize(text)
-    .map(({type, value}) => {
-      switch (type) {
-        case 'String':
-          return value.slice(1, -1);
-        case 'Template':
-          return [value.slice(1, -1), Action.of('template'), Action.of('eval')];
-        case 'Numeric':
-          return processNumeric(value);
-        /* case 'Boolean':
-          return value.toLowerCase() === 'true';
-        case 'Null':
-          return null; */
-        case 'Symbol':
-          return Symbol(value.slice(1));
-        case 'Token':
-          return Action.of(Action.of(value.slice(0, -1)));
-        case 'Getter':
-          return [String(value.slice(1)), Action.of('@')];
-        case 'Identifier':
-        case 'Punctuator':
-          return Action.of(value);
-        default:
-          console.log('Unknown type in lexer', type, value);
-          process.exit();
-      }
+function processLexerTokens ({type, val}) {
+  switch (type) {
+    case 0:  // general
+    case 4:  // regex
+      return val
+        .replace(/([\{\}\(\)\[\]])/g, ' $1 ')  // handle brackets
+        .split(/[\,\n\s]+/g)                    // split on whitespace
+        .reduce((p, c) => c.length > 0 ? p.concat(convertLiteral(c)) : p, []);
+    case 2: // string literal
+      return val.slice(1, -1);
+    case 3: // string template
+      return [val.slice(1, -1), Action.of('template'), Action.of('eval')];
+    case 1: // comment
       return undefined;
-    }).reduce((a, b) => {  // flatmap
-      return a.concat(b);
-    }, []);
+    default:
+      console.log('Unknown type in lexer', type, val);
+      return process.exit();
+  }
+}
+
+function convertLiteral (value) {
+  const id = value.toLowerCase().trim();
+  if (id.length <= 0) {
+    return undefined;
+  }
+  if (isNumeric(value)) {   // number
+    return processNumeric(value);
+  } else if (value.length === 1) {  // all one character tokens are actions
+    return Action.of(value);
+  } else if (id === 'null') {
+    return null;
+  } else if (id === 'true' || id === 'false') {
+    return id === 'true';
+  } else if (id[0] === '#') {
+    return Symbol(value.slice(1));
+  } else if (id[0] === '@' || id[0] === '.') {
+    return [String(value.slice(1)), Action.of('@')];
+  } else if (id.slice(-1) === ':') {
+    return Action.of(Action.of(value.slice(0, -1)));
+  }
+  return Action.of(value);
 }

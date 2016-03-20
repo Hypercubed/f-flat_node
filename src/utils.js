@@ -102,11 +102,11 @@ export function isWhitespace (ch) {
           ch === '(' || ch === ')');
 } */
 
-/* export function isNumeric (num) {
+export function isNumeric (num) {
   return !isNaN(num);
 }
 
-export function isBoolean (string) {
+/* export function isBoolean (string) {
   var lc = string.toLowerCase();
   return lc === 'true' || lc === 'false';
 } */

@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const stdout = process.stdout;
 
 export default {
+  'os': () => process.platform,
   'println': (a, ...b) => {
     stdout.clearLine();
     stdout.cursorTo(0);

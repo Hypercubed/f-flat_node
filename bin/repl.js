@@ -4,7 +4,7 @@ import tripwire from 'tripwire';
 import {Stack} from '../src/stack';
 import pkg from '../package.json';
 import {log} from '../src/logger';
-import {formatArray} from '../src/pprint';
+import {formatValue} from '../src/pprint';
 
 const initialPrompt = 'f♭>';
 const inspectOptions = {
@@ -37,7 +37,7 @@ if (program.logLevel) {
 
 if (arg !== '') {
   f.eval(arg);
-  console.log(formatArray(f.stack, null, inspectOptions));
+  console.log(formatValue(f.stack, null, inspectOptions));
   console.log();
   process.exit();
 }
@@ -84,7 +84,7 @@ function writer (_) {
   // console.log(v8.getHeapStatistics());
   // console.log(_.queue);
 
-  return `${formatArray(_.stack, null, inspectOptions)}\n`;
+  return `${formatValue(_.stack, null, inspectOptions)}\n`;
 
   // return `${util.inspect(_.stack, inspectOptions)}\n`;
 }

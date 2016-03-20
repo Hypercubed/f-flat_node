@@ -8,12 +8,3 @@
 './ff-lib/usr.json' import
 
 './ff-lib/usr.ff' require
-
-/* 'prime?' inline
-'prime?' 1 memoize
-'next-prime' 1  */
-
-'loop' inline
-
-'r!' inline
-'r!' 1 memoize

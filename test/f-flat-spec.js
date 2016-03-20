@@ -1,14 +1,5 @@
 import test from 'ava';
-import {Stack as F} from '../';
-import {log} from '../src/logger';
-
-log.level = process.env.NODE_ENV || 'error';
-
-process.chdir('..');
-
-function fSync (a) {
-  return new F(a).toArray();
-}
+import {F, fSync} from './setup';
 
 test('setup', t => {
   t.not(new F().eval, undefined);
@@ -42,7 +33,7 @@ test('should dup', t => {
 });
 
 test('should dup clone', t => {
-  const f = new F('[ 1 2 3 ] dup');
+  const f = new F().eval('[ 1 2 3 ] dup');
   t.same(f.toArray(), [[1, 2, 3], [1, 2, 3]]);
   t.is(f.stack[0], f.stack[1]);
 });
@@ -80,7 +71,7 @@ test('map', t => {
 });
 
 test('should undo on error', t => {
-  const f = new F('1 2');
+  const f = new F('1 2').eval();
   t.same(f.toArray(), [1, 2]);
 
   t.throws(() => f.eval('+ whatwhat'));
@@ -88,7 +79,7 @@ test('should undo on error', t => {
 });
 
 test('should undo', t => {
-  const f = new F('1');
+  const f = new F('1').eval();
 
   f.eval('2');
   t.same(f.toArray(), [1, 2]);
@@ -268,4 +259,68 @@ test('regular expressions, replace', t => {
   t.same(fSync('"abc" "/a.$/" "X" replace'), ["abc"]);
   t.same(fSync('"abc" "/a.*$/" "X" replace'), ["X"]);
   t.same(fSync('"bcd" "/a./" "X" replace'), ["bcd"]);
+});
+
+test('pick', t => {
+  t.same(fSync('{a: 1} a: @'), [1]);
+  t.same(fSync('{a: 2} "a" @'), [2]);
+  t.same(fSync('{a: 3} b: @'), [null]);
+  t.same(fSync('{a: {b: 5}} "a.b" @'), [5]);
+  t.same(fSync('{a: {b: 5}} a.b: @'), [5]);
+  t.same(fSync('{a: 7} "A" lcase @'), [7]);
+  t.same(fSync('{a: 11} b: @ 13 orelse'), [13]);
+  t.same(fSync('[ a: @ ] pickfunc: def { a: 17 } pickfunc'), [17]);
+});
+
+test('pick, short cuts', t => {
+  t.same(fSync('{a: 1} @a'), [1]);
+  t.same(fSync('{a: 2} @a'), [2]);
+  t.same(fSync('{a: 3} @b'), [null]);
+  t.same(fSync('{a: {b: 5}} @a.b'), [5]);
+  t.same(fSync('{a: 11} @b 13 orelse'), [13]);
+  t.same(fSync('[ @a ] pickfunc: def { a: 17 } pickfunc'), [17]);
+});
+
+test('pick into object', t => {
+  t.same(fSync('{ a: { a: 1 } a: @ }'), [{a: 1}]);
+  t.same(fSync('{ a: 2 } => { a: <= over @ }'), [{a: 2}]);
+  t.same(fSync('{ a: 3 } => { b: <= a: @ }'), [{b: 3}]);
+  // t.same(fSync('{ a: 23 } { a: } @'), [{a: 23}]);
+});
+
+test('pick into object, shortcuts', t => {
+  t.same(fSync('{ a: { a: 1 } @a }'), [{a: 1}]);
+  t.same(fSync('{ a: 3 } => { b: <= @a }'), [{b: 3}]);
+  // t.same(fSync('{ a: 23 } { a: } @'), [{a: 23}]);
+});
+
+test('pick into object with default', t => {
+  t.same(fSync('{ a: { a: 1 } b: @ 2 orelse }'), [{a: 2}]);
+  t.same(fSync('{ a: 3 } => { b: <= over @ 5 orelse }'), [{b: 5}]);
+  t.same(fSync('{ a: 7 } => { c: <= b: @ 11 orelse }'), [{c: 11}]);
+});
+
+test('pick into  shortcuts with default', t => {
+  t.same(fSync('{ a: { a: 1 } @b 2 orelse }'), [{a: 2}]);
+  t.same(fSync('{ a: 7 } => { c: <= @b 11 orelse }'), [{c: 11}]);
+});
+
+test('pick into array', t => {
+  t.same(fSync('( { a: 1 } a: @ )'), [[1]]);
+});
+
+test('pick into array, shortcut', t => {
+  t.same(fSync('( { a: 1 } @a )'), [[1]]);
+});
+
+test('pick from array', t => {
+  t.same(fSync('[1 2] 0 @'), [1]);
+  t.same(fSync('[3 5] 1 @'), [5]);
+  t.same(fSync('([7 11] 0 @)'), [[7]]);
+});
+
+test('pick from, shortcut', t => {
+  t.same(fSync('[1 2] @0'), [1]);
+  t.same(fSync('[3 5] @1'), [5]);
+  t.same(fSync('([7 11] @0)'), [[7]]);
 });

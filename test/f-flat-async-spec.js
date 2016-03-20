@@ -1,10 +1,5 @@
 import test from 'ava';
-import {Stack as F} from '../';
-import {log} from '../src/logger';
-
-log.level = process.env.NODE_ENV || 'error';
-
-process.chdir('..');
+import {F, fSync, fAsync} from './setup';
 
 import nock from 'nock';
 
@@ -16,15 +11,6 @@ const good = {
 nock('https://api.github.com/')
   .get('/users/Hypercubed/repos')
   .reply(200, good);
-
-function fSync (a) {
-  return new F(a).toArray();
-}
-
-async function fAsync (a) {
-  const f = await new F().promise(a);
-  return f.toArray();
-}
 
 test('yield', t => {
   t.same(fSync('[1 2 yield 4 5 yield 6 7] fork'), [1, 2, [4, 5, {type: '@@Action', value: 'yield'}, 6, 7]], 'yield and fork');

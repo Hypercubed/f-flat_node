@@ -70,7 +70,7 @@ export function Stack (s = '', root) {
     silent: false
   });
 
-  return stack.eval(s);
+  return stack.enqueue(s);
 }
 
 function createRootEnv () {
@@ -95,9 +95,11 @@ function createRootEnv () {
 
 const IDLE = 0;
 const DISPATCHING = 1;
-const YIELDING = 2;
+const YIELDING = 2;  // aka suspended
 const ERR = 3;
 // const BLOCKED = 4;
+
+const IIF = ':';
 
 function createEnv (initalState = /* istanbul ignore next */ {}) {
   const completed = new MiniSignal();  // called with (err, state)
@@ -152,9 +154,16 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       return self;
     },
 
+    enqueue: s => {
+      enqueue(s);
+      return self;
+    },
+    resume: run,
+
     parse: lexer,
 
     getState: () => state,
+    getStatus: () => status,
     toArray,
     createChild,
     clear,
@@ -191,14 +200,14 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     '<=': () => state.queue.pop(),
     'stack': () => self.stack.splice(0),
     // 'unstack': moved to core.js
-    '/d++': () => {
+    'd++': () => {
       state.depth++;
     },
-    '/d--': () => {
+    'd--': () => {
       state.depth = Math.max(0, state.depth - 1);
     },
-    '/quote': quoteSymbol,
-    '/dequote': s => {
+    'quote': quoteSymbol,
+    'dequote': s => {
       const r = [];
       while (state.stack.length > 0 && s !== quoteSymbol) {
         r.unshift(s);
@@ -483,6 +492,10 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     state.queue.unshift(...lexer(s));
   }
 
+  /* function _yield () {
+    status = YIELDING;
+  } */
+
   function run (s) {
     const p = self;
 
@@ -607,7 +620,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
           return stackPush(action);
         }
 
-        const tokenValue = action.value;
+        let tokenValue = action.value;
 
         switch (action.type) {
           case '@@Action':
@@ -617,6 +630,9 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
               }
               if (!isString(tokenValue)) {
                 return stackPush(tokenValue);
+              }
+              if (tokenValue[0] === IIF) {
+                tokenValue = tokenValue.slice(1);
               }
 
               const lookup = lookupAction(tokenValue);
@@ -668,7 +684,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
           state.depth < 1 ||                // in immediate state
           '[]{}'.indexOf(c.value) > -1 ||   // these quotes are always immediate
           (
-            c.value[0] === '/' &&   // tokens prefixed with foward-slash are imediate
+            c.value[0] === IIF &&   // tokens prefixed with : are imediate
             c.value.length !== 1
           )
         );

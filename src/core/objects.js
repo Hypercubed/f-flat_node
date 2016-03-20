@@ -25,7 +25,6 @@ export default {
     }
   }), */
   'object': toObject,
-  '/object': toObject,
   'object?': a => is.isObject(a) && !is.isArray(a),
   'contains?': (a, b) => b in a,  // object by keys, array by values
   'keys': o => Object.keys(o),

@@ -1,19 +1,5 @@
 import test from 'ava';
-import {Stack as F} from '../';
-import {log} from '../src/logger';
-
-log.level = process.env.NODE_ENV || 'error';
-
-process.chdir('..');
-
-function fSync (a) {
-  return new F(a).toArray();
-}
-
-const tolerance = 0.5 * Math.pow(10, -9);
-function nearly (a, b) {
-  return Math.abs(Number(a) - Number(b)) < tolerance;
-}
+import {F, fSync, nearly} from './setup';
 
 test('should parse i', t => {
   t.same(fSync('i'), [{im: 1, re: 0}]);
@@ -31,7 +17,7 @@ test('should return sqrt of imaginary numbers', t => {
 });
 
 test('should return sqrt of complex numbers', t => {
-  const f = new F('1 i + 4 * sqrt 1 i + sqrt /').toArray();
+  const f = new F().eval('1 i + 4 * sqrt 1 i + sqrt /').toArray();
   t.is(f[0].re, 2);
   t.ok(nearly(f[0].im, 0));
 });
@@ -51,7 +37,7 @@ test('should perform basic arithmetic, cont', t => {
 
 test('should evaluate Euler\'s Formula', t => {
   t.same(fSync('i pi * exp 1 + re'), [0]);
-  t.ok(nearly(new F('i pi * exp 1 + im').toArray()[0], [0]));
+  t.ok(nearly(new F().eval('i pi * exp 1 + im').toArray()[0], [0]));
 });
 
 test('should use decimals', t => {
