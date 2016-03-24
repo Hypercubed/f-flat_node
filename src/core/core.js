@@ -16,7 +16,10 @@ export default {
     'Object': a => Object.keys(a).length,
     'null': a => 0  // eslint-disable-line
   }),
-  'slice': (arr, b, c) => Reflect.apply([].slice, arr, [b, c === null ? undefined : c]),
+  'slice': typed('slice', {
+    'Array | string, number | null, number | null': (lhs, b, c) => lhs.slice(b, c === null ? undefined : c),
+    'any, number | null, number | null': (lhs, b, c) => Reflect.apply([].slice, lhs, [b, c === null ? undefined : c])
+  }),
   'splitat': (arr, a) => Seq.of([  // use head and tail?
     Reflect.apply([].slice, arr, [0, a]),
     Reflect.apply([].slice, arr, [a])

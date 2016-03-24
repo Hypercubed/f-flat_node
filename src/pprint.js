@@ -1,5 +1,5 @@
 import {inspect} from 'util';
-import {typed} from './types/';
+import {typed} from './types/index';
 import fixedWidthString from 'fixed-width-string';
 import {stripColor, supportsColor, default as chalk} from 'chalk';
 

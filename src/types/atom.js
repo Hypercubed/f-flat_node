@@ -48,7 +48,7 @@ export class Base {
 
   static isA (item) {
     const Species = this[Symbol.species];
-    return item.type === Species.prototype.type;
+    return item && item.type && item.type === Species.prototype.type;
   }
 }
 
@@ -65,7 +65,7 @@ export class Just extends Base {
 
   static isJust (item) {
     const Species = this[Symbol.species];
-    return item.type === Species.prototype.type;
+    return item && item.type && item.type === Species.prototype.type;
   }
 }
 
@@ -91,7 +91,7 @@ export class Action extends Base {
 
   static isAction (item) {
     const Species = this[Symbol.species];
-    return item && item.type === Species.prototype.type;
+    return item && item.type && item.type === Species.prototype.type;
   }
 }
 
@@ -107,7 +107,7 @@ export class Seq extends Just {
 
   static isSeq (item) {
     const Species = this[Symbol.species];
-    return item.type === Species.prototype.type;
+    return item && item.type && item.type === Species.prototype.type;
   }
 }
 
@@ -182,7 +182,7 @@ export class Future extends Base {
 
   static isFuture (item) {
     const Species = this[Symbol.species];
-    return item.type === Species.prototype.type;
+    return item && item.type && item.type === Species.prototype.type;
   }
 }
 

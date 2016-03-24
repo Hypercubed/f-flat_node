@@ -21,22 +21,30 @@ export function unary (fn) {
   return nAry(1, fn);
 } */
 
-export const arrayRepeat = (a, n) => {
-  n = Number(n) | 0;
-  if (n < 1) {
-    return [];
+export const arrayRepeat = (a, len) => {
+  len = Number(len) | 0;
+  let acc = [];
+  if (len < 1) {
+    return acc;
   }
-  let r = [];
-  for (let i = 0; i < n; i++) {
-    r = r.concat(a);
+  let i = -1;
+  while (++i < len) {
+    acc = acc.concat(a);
   }
-  return r;
+  return acc;
 };
 
 export const arrayMul = (lhs, rhs) => {
-  return lhs.reduce((p, n) => {
-    return p.concat([n], rhs);
-  }, []);
+  const len = lhs.length;
+  let acc = [];
+  if (len < 1) {
+    return acc;
+  }
+  let i = -1;
+  while (++i < len) {
+    acc = acc.concat(lhs[i], rhs);
+  }
+  return acc;
 };
 
 export function pluck (context, path) {

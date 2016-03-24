@@ -69,7 +69,7 @@ stackRepl
   });
 
 function setupStack () {
-  f = new Stack('true auto-undo "Welcome to f♭" println');
+  f = new Stack().eval('true auto-undo "Welcome to f♭" println');
   f.defineAction('prompt', () => {
     return new Promise(resolve => {
       stackRepl.question('', resolve);

@@ -30,7 +30,7 @@ import _functional from './core/functional.js';
 import _node from './core/node.js';
 
 const useStrict = true;
-const MAXSTACK = 1e7;
+const MAXSTACK = 1e10;
 const MAXRUN = 1e10;
 
 const quoteSymbol = Symbol('(');
@@ -235,17 +235,16 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       }
       const c = createChild();
       c.eval(a);
-      /* if (!c.isDone) {  // shouldnt neex this.  eval throws
+      /* if (!c.isDone) {  // shouldnt need this.  eval throws
         throw new Error('Do Not Release Zalgo');
       } */
       return c.stack;
     },
-    /* '/in': a => {
-      if (a === null) {
-        return null;
-      }
-      const c = createChild();
-      return c.eval(a).stack;
+    /* 'step': (lhs, rhs) => {
+      lhs.forEach(d => {
+        state.queue.unshift(d);
+        state.queue.unshift(...rhs);
+      });
     }, */
     'undo': () => {
       if (state.prevState && state.prevState.prevState) {
@@ -260,9 +259,9 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       state.dict[rhs] = lhs;
     },
     'def': (cmd, name) => {  // consider def and let, def top level, let local
-      /* if (useStrict && state.dict.hasOwnProperty(name)) {
+      if (useStrict && Reflect.apply(Object.prototype.hasOwnProperty, state.dict, [name])) {
         throw new Error('Cannot overrite definitions in strict mode');
-      } */
+      }
       if (!isFunction(cmd) && !Action.isAction(cmd)) {
         cmd = new Action(cmd);
       }
@@ -282,7 +281,10 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
         defineAction(name, memoize(fn, {length: n, primitive: true}));
       }
     },
-    'delete': a => { // usefull?
+    'delete': a => {
+      if (useStrict) {
+        throw new Error('Cannot delete definitions in strict mode');
+      }
       Reflect.deleteProperty(state.dict, a);
     },
     'rcl': a => {
@@ -414,7 +416,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     return JSON.parse(JSON.stringify(state.stack));
   }
 
-  function expandAction (a) {
+  function expandAction (a) {  // use typed
     if (Array.isArray(a)) {
       return a.map(expandAction)
       .reduce((p, n) => {
