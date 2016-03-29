@@ -1,5 +1,5 @@
 import repl from 'repl';
-import tripwire from 'tripwire';
+// import tripwire from 'tripwire';
 
 import {Stack} from '../src/stack';
 import pkg from '../package.json';
@@ -51,8 +51,10 @@ const stackRepl = repl.start({
   ignoreUndefined: false,
   useColors: true,
   useGlobal: false
-})
-.on('reset', setupStack);
+});
+
+stackRepl
+  .on('reset', setupStack);
 
 process.on('uncaughtException', () => {
   console.log('The event loop was blocked for longer than 2000 milliseconds');
@@ -79,7 +81,7 @@ function setupStack () {
 
 function writer (_) {
   const depth = '>'.repeat(_.depth);
-  stackRepl.setPrompt(`${initialPrompt}${depth} `);
+  // stackRepl.setPrompt(`${initialPrompt}${depth} `);
 
   // console.log(v8.getHeapStatistics());
   // console.log(_.queue);
@@ -131,7 +133,7 @@ function fEval (code, _, __, cb) {
       return;
     }
 
-    tripwire.resetTripwire(600000);  // 10 mins max
+    // tripwire.resetTripwire(600000);  // 10 mins max
 
     f.next(buffer)
       .then(result => cb(null, result))

@@ -1,12 +1,15 @@
 import fetch from 'isomorphic-fetch';
 
 import {typed, Seq, Action} from '../types/index';
-import {/* arrayRepeat, */generateTemplate} from '../utils';
+import {generateTemplate} from '../utils';
+import {freeze, slice} from 'icepick';
 
 export default {
   'id': x => x,  // same as nop
   'nop': () => {},
-  'eval': a => Action.of(a),
+  'eval': typed('_eval', {
+    'any': a => Action.of(a)
+  }),
   'drop': a => {},  // eslint-disable-line
   'swap': (a, b) => Seq.of([b, a]),
   'dup': a => Seq.of([a, a]),
@@ -17,33 +20,39 @@ export default {
     'null': a => 0  // eslint-disable-line
   }),
   'slice': typed('slice', {
-    'Array | string, number | null, number | null': (lhs, b, c) => lhs.slice(b, c === null ? undefined : c),
-    'any, number | null, number | null': (lhs, b, c) => Reflect.apply([].slice, lhs, [b, c === null ? undefined : c])
+    'Array | string, number | null, number | null': (lhs, b, c) => slice(lhs, b, c === null ? undefined : c),
+    'any, number | null, number | null': (lhs, b, c) => slice(lhs, [b, c === null ? undefined : c])
   }),
-  'splitat': (arr, a) => Seq.of([  // use head and tail?
-    Reflect.apply([].slice, arr, [0, a]),
-    Reflect.apply([].slice, arr, [a])
-  ]),
+  'splitat': typed('splitat', {
+    'Array, number | null': (arr, a) => Seq.of([  // use head and tail?
+      slice(arr, 0, a),
+      slice(arr, a)
+    ])
+  }),
   'indexof': (a, b) => a.indexOf(b),
   /* 'repeat': (a, b) => {
     return Action.of(arrayRepeat(a, b));
   }, */
-  'zip': (a, b) => {
-    const l = a.length < b.length ? a.length : b.length;
-    const r = [];
-    for (let i = 0; i < l; i++) {
-      r.push(a[i], b[i]);
+  'zip': typed('zip', {
+    'Array, Array': (a, b) => {
+      const l = a.length < b.length ? a.length : b.length;
+      const r = [];
+      for (let i = 0; i < l; i++) {
+        r.push(a[i], b[i]);
+      }
+      return freeze(r);
     }
-    return r;
-  },
-  'zipinto': (a, b, c) => {
-    const l = a.length < b.length ? a.length : b.length;
-    const r = [];
-    for (let i = 0; i < l; i++) {
-      r.push(a[i], b[i], ...c);
+  }),
+  'zipinto': typed('zipinto', {
+    'Array, Array, Array': (a, b, c) => {
+      const l = a.length < b.length ? a.length : b.length;
+      const r = [];
+      for (let i = 0; i < l; i++) {
+        r.push(a[i], b[i], ...c);
+      }
+      return freeze(r);
     }
-    return r;
-  },
+  }),
   'zipwith': 'zipinto in',
   'dot': '[ * ] zipwith sum',
   ':': 'atom',

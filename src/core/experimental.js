@@ -40,5 +40,7 @@ export default {
   'replace': typed('replace', {
     'string, RegExp, string': (str, reg, rep) => str.replace(reg, rep)
   }),
-  '||>': (a, b) => Reflect.apply(b, null, a)
+  '||>': typed('ap', {
+    'Array, Function': (a, b) => Reflect.apply(b, null, a)
+  })
 };

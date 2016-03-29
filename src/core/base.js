@@ -1,10 +1,11 @@
 import {Action, typed, I} from '../types/index';
-import {pluck, eql, arrayRepeat, arrayMul} from '../utils';
+import {pluck, eql, arrayRepeat, listMul, arrayMul} from '../utils';
+import {freeze, assign, merge, unshift, push} from 'icepick';
 
 const add = typed('add', {
   'Array, Array': (lhs, rhs) => lhs.concat(rhs),  // list concatination/function composition
   'boolean, boolean': (lhs, rhs) => lhs || rhs,  // boolean or
-  'Object, Object': (lhs, rhs) => ({...lhs, ...rhs}),  // object assign/assoc
+  'Object, Object': (lhs, rhs) => assign(lhs, rhs),  // object assign/assoc
   'Complex, Complex': (lhs, rhs) => lhs.plus(rhs),
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.plus(rhs),
   'Array, any': (lhs, rhs) => lhs.concat(rhs),  // list concatination/function composition
@@ -44,13 +45,13 @@ const mul = typed('mul', {
 
 const div = typed('div', {
   'boolean, boolean': (lhs, rhs) => !(lhs && rhs),  // boolean nand
-  'string, string': (lhs, rhs) => lhs.split(rhs),  // string split (same as :split )
+  'string, string': (lhs, rhs) => freeze(lhs.split(rhs)),  // string split (same as :split )
   'Array | string, number': (a, b) => {
     b = Number(a.length / b) | 0;
     if (b === 0 || b > a.length) {
       return null;
     }
-    return a.slice(0, b);
+    return　freeze(a.slice(0, b));
   },
   /* 'string | Array, number': (lhs, rhs) => {
     rhs = +rhs | 0;
@@ -62,17 +63,17 @@ const div = typed('div', {
   'number | null, number | null': (lhs, rhs) => lhs / rhs
 });
 
-const unshift = typed('unshift', { // >>, Danger! No mutations
-  'any | Action | Object, Array': (lhs, rhs) => [lhs, ...rhs],  // unshift/cons
-  'Array, string': (lhs, rhs) => [lhs, Action.of(rhs)],  // unshift/cons
-  'Array | Action, Action': (lhs, rhs) => [lhs, rhs],  // unshift/cons
-  'Object, Object': (lhs, rhs) => ({...rhs, ...lhs}),  // object assign
+const unshiftFn = typed('unshift', { // >>, Danger! No mutations
+  'any | Action | Object, Array': (lhs, rhs) => unshift(rhs, lhs),  // unshift/cons
+  'Array, string': (lhs, rhs) => freeze([lhs, Action.of(rhs)]),  // unshift/cons
+  'Array | Action, Action': (lhs, rhs) => freeze([lhs, rhs]),  // unshift/cons
+  'Object, Object': (lhs, rhs) => merge(rhs, lhs),  // object merge
   'string | number | null, string | number | null': (lhs, rhs) => lhs >> rhs // Sign-propagating right shift
 });
 
-const push = typed('push', {  // <<, Danger! No mutations
-  'Array, any | Action | Object': (lhs, rhs) => [...lhs, rhs],  // push/snoc
-  'Object, Object': (lhs, rhs) => ({...lhs, ...rhs}),  // object assign
+const pushFn = typed('push', {  // <<, Danger! No mutations
+  'Array, any | Action | Object': (lhs, rhs) => push(lhs, rhs),  // push/snoc
+  'Object, Object': (lhs, rhs) => merge(lhs, rhs),  // object merge
   'string | number | null, string | number | null': (lhs, rhs) => lhs << rhs  // Left shift
 });
 
@@ -112,8 +113,8 @@ export default {
   '-': sub,
   '*': mul,
   '/': div,
-  '>>': unshift,
-  '<<': push,
+  '>>': unshiftFn,
+  '<<': pushFn,
   '=': eql,
   'identical?': (lhs, rhs) => lhs === rhs,
   '@': at,  // nth, get

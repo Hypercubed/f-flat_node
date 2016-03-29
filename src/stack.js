@@ -19,6 +19,7 @@ import {formatState, formatValue} from './pprint';
 import {lexer} from './tokenizer/lexer';
 
 import {Action, Seq, Future} from './types/index';
+import {freeze} from 'icepick';
 
 import _base from './core/base.js';
 import _objects from './core/objects.js';
@@ -214,7 +215,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
         s = state.stack.pop();
       }
       /* istanbul ignore next */
-      return useStrict ? Object.freeze(r) : r;
+      return freeze(r);
     },
     'depth': () => state.stack.length // ,  or "stack [ unstack ] [ length ] bi"
   });
@@ -238,7 +239,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       /* if (!c.isDone) {  // shouldnt need this.  eval throws
         throw new Error('Do Not Release Zalgo');
       } */
-      return c.stack;
+      return freeze(c.stack);
     },
     /* 'step': (lhs, rhs) => {
       lhs.forEach(d => {
@@ -418,15 +419,15 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
 
   function expandAction (a) {  // use typed
     if (Array.isArray(a)) {
-      return a.map(expandAction)
-      .reduce((p, n) => {
-        if (Seq.isSeq(n)) {
-          p.push(...n.value);
-        } else {
-          p.push(n);
-        }
-        return p;
-      }, []);
+      return freeze(a).map(expandAction)
+        .reduce((p, n) => {
+          if (Seq.isSeq(n)) {
+            p.push(...n.value);
+          } else {
+            p.push(n);
+          }
+          return p;
+        }, []);
     }
 
     if (Action.isAction(a)) {
@@ -478,9 +479,9 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       throw new Error('Cannot overrite definitions in strict mode');
     } */
     name = String(name).toLowerCase();
-    state.dict[name] = fn;
+    state.dict[name] = freeze(fn);
     if (isDefined(state.module)) {
-      state.dict[state.module][name] = fn;
+      state.dict[state.module][name] = freeze(fn);
     }
   }
 

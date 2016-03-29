@@ -57,7 +57,9 @@ function convertLiteral (value) {
   } else if (id[0] === '#') {
     return Symbol(value.slice(1));
   } else if (id[0] === '@' || id[0] === '.') {
-    return [String(value.slice(1)), Action.of('@')];
+    value = value.slice(1);
+    value = isNumeric(value) ? processNumeric(value) : String(value);
+    return [value, Action.of('@')];
   } else if (id.slice(-1) === ':') {
     return Action.of(Action.of(value.slice(0, -1)));
   }

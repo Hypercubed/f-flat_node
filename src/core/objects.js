@@ -1,8 +1,9 @@
 import is from 'fantasy-helpers/src/is';
 import {typed} from '../types/index';
+import {freeze} from 'icepick';
 
 const toObject = typed('object', {
-  Array: a => {  // hash-map
+  'Array': a => {  // hash-map
     const r = {};
     const l = a.length;
     for (let i = 0; l - i > 1; i++) {
@@ -25,9 +26,13 @@ export default {
     }
   }), */
   'object': toObject,
-  'object?': a => is.isObject(a) && !is.isArray(a),
+  'object?': typed('object_', {
+    'Array | null | number | Complex': a => false,
+    'Object': a => true,
+    'any': a => false,
+  }),
   'contains?': (a, b) => b in a,  // object by keys, array by values
-  'keys': o => Object.keys(o),
-  'vals': o => Object.values(o),
+  'keys': o => freeze(Object.keys(o)),
+  'vals': o => freeze(Object.values(o)),
   'assign': '{} [ + ] reduce'
 };

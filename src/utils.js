@@ -1,4 +1,5 @@
 import {typed, Action} from './types/index';
+import {getIn} from 'icepick';
 
 /* export function nAry (n, fn) {
   switch (n) {
@@ -47,20 +48,12 @@ export const arrayMul = (lhs, rhs) => {
   return acc;
 };
 
+export const listMul = (lhs, rhs) => {
+  return lhs.flatMap(x => [x, ...rhs]);
+};
+
 export function pluck (context, path) {
-  // if (path === '.') return undefined;
-
-  const pathParts = path.split('.');
-  const ii = pathParts.length;
-
-  for (let i = 0; i < ii; i++) {
-    if (!context) {
-      break;
-    }
-    context = context[pathParts[i]];
-  }
-
-  return context;
+  return getIn(context, path.split('.'));
 }
 
 /* export function copy (src) {
