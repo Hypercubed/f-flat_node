@@ -198,7 +198,6 @@ test('operations with null, cont2', t => {
   t.same(fSync('5 null <<'), [5]);
   t.same(fSync('null 5 >>'), [0]);
   t.same(fSync('5 null >>'), [5]);
-  console.log(fSync('null in'));
   t.same(fSync('null in'), [[null]]);
 });
 

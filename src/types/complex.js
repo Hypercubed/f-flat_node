@@ -109,14 +109,28 @@ export class Complex {
     return new Complex(re, im);
   }
 
-  lt (rhs) {
+  cmp (rhs) {
     rhs = new Complex(rhs);
-    return this.abs() < rhs.abs();
+    if (this.equals(rhs)) {
+      return 0;
+    }
+    return this.abs().cmp(rhs.abs());
+  }
+
+  lt (rhs) {
+    return this.cmp(rhs) < 0;
   }
 
   gt (rhs) {
-    rhs = new Complex(rhs);
-    return this.abs() > rhs.abs();
+    return this.cmp(rhs) > 0;
+  }
+
+  gte (rhs) {
+    return this.cmp(rhs) >= 0;
+  }
+
+  lte (rhs) {
+    return this.cmp(rhs) <= 0;
   }
 
   /* min (...args) {

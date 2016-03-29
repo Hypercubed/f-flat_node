@@ -43,6 +43,12 @@ test('should test equality', t => {
   t.same(fSync('"a" "a" ='), [true]);
 });
 
+test('should cmp', t => {
+  t.same(fSync('"a" "a" cmp'), [0]);
+  t.same(fSync('"a" "b" cmp'), [-1]);
+  t.same(fSync('"b" "a" cmp'), [1]);
+});
+
 test('should test lt', t => {
   t.same(fSync('"a" "a" <'), [false]);
   t.same(fSync('"a" "b" <'), [true]);

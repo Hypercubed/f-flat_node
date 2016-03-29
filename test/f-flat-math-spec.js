@@ -24,7 +24,15 @@ test('should test equality', t => {
   t.same(fSync('2 2 ='), [true], 'should test equality');
 });
 
+test('should comparey', t => {
+  t.same(fSync('1 1 cmp'), [0]);
+  t.same(fSync('1 2 cmp'), [-1]);
+  t.same(fSync('2 1 cmp'), [1]);
+});
+
 test('should test inequality', t => {
+  t.same(fSync('1 1 <'), [false]);
+  t.same(fSync('1 1 >'), [false]);
   t.same(fSync('1 2 <'), [true]);
   t.same(fSync('1 2 >'), [false]);
   t.same(fSync('2 1 <'), [false]);

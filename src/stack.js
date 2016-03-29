@@ -298,7 +298,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       return result;
     },
     'clr': clear,
-    '\\': () => state.queue.shift(),  // danger?
+    '\\': () => state.queue.shift()  // danger?
   });
 
   /* module functions, experimental */

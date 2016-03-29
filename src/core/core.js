@@ -8,7 +8,7 @@ export default {
   'id': x => x,  // same as nop
   'nop': () => {},
   'eval': typed('_eval', {
-    'any': a => Action.of(a)
+    any: a => Action.of(a)
   }),
   'drop': a => {},  // eslint-disable-line
   'swap': (a, b) => Seq.of([b, a]),

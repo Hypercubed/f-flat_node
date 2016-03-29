@@ -27,7 +27,7 @@ function processLexerTokens ({type, val}) {
     case 4:  // regex
       return val
         .replace(/([\{\}\(\)\[\]])/g, ' $1 ')  // handle brackets
-        .split(/[\,\n\s]+/g)                    // split on whitespace
+        .split(/[\,\n\s]+/g)                   // split on whitespace
         .reduce((p, c) => c.length > 0 ? p.concat(convertLiteral(c)) : p, []);
     case 2: // string literal
       return val.slice(1, -1);

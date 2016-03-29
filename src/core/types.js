@@ -3,12 +3,12 @@ import {typed, Action, Just} from '../types/index';
 export default {
   'types': typed.types,
   'type': typed('string', {
-    'Array': x => 'array',
-    'any': x => typeof x
+    Array: x => 'array',
+    any: x => typeof x
   }),
   'string': typed('string', {
-    'Array': String,
-    'any': String
+    Array: String,
+    any: String
   }),
   'itoa': x => String.fromCharCode(x),
   'atoi': x => x.charCodeAt(0),

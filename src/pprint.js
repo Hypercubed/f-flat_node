@@ -3,39 +3,6 @@ import {typed} from './types/index';
 import fixedWidthString from 'fixed-width-string';
 import {stripColor, supportsColor, default as chalk} from 'chalk';
 
-/* const colors = {
-  bold: [1, 22],
-  italic: [3, 23],
-  underline: [4, 24],
-  inverse: [7, 27],
-  white: [37, 39],
-  grey: [90, 39],
-  black: [30, 39],
-  blue: [34, 39],
-  cyan: [36, 39],
-  green: [32, 39],
-  magenta: [35, 39],
-  red: [31, 39],
-  yellow: [33, 39]
-};
-
-const styles = {
-  number: 'yellow',
-  boolean: 'yellow',
-
-  null: 'grey',
-  undefined: 'grey',
-
-  special: 'cyan',
-  string: 'green',
-
-  name: 'cyan',
-  symbol: 'cyan',
-  date: 'cyan',
-
-  regexp: 'red'
-}; */
-
 const styles = {
   number: chalk.magenta,
   boolean: chalk.magenta,

@@ -1,6 +1,6 @@
 import {Action, typed, I} from '../types/index';
-import {pluck, eql, arrayRepeat, listMul, arrayMul} from '../utils';
-import {freeze, assign, merge, unshift, push} from 'icepick';
+import {pluck, eql, arrayRepeat, arrayMul} from '../utils';
+import {freeze, assign, merge, unshift, push, slice} from 'icepick';
 
 const add = typed('add', {
   'Array, Array': (lhs, rhs) => lhs.concat(rhs),  // list concatination/function composition
@@ -51,7 +51,7 @@ const div = typed('div', {
     if (b === 0 || b > a.length) {
       return null;
     }
-    return　freeze(a.slice(0, b));
+    return slice(a, 0, b);
   },
   /* 'string | Array, number': (lhs, rhs) => {
     rhs = +rhs | 0;
@@ -120,12 +120,25 @@ export default {
   '@': at,  // nth, get
   'get': '=> @ dup null = swap <= swap choose',
   choose,
-  '>': typed('gt', {
+  'cmp': typed('cmp', {
+    'BigNumber | Complex, BigNumber | Complex | number': (lhs, rhs) => lhs.cmp(rhs),
+    'string, string': (lhs, rhs) => {
+      if (lhs === rhs) {
+        return 0;
+      }
+      return lhs > rhs ? 1 : -1;
+    }
+  }),
+  '>': 'cmp 1 =',
+  '<': 'cmp -1 =',
+  '>=': '< not',
+  '=<': '> not'
+  /* '>': typed('gt', {
     'BigNumber | Complex, BigNumber | Complex | number': (lhs, rhs) => lhs.gt(rhs),
     'any, any': (lhs, rhs) => lhs > rhs
   }),
   '<': typed('lt', {
     'BigNumber | Complex, BigNumber | Complex | number': (lhs, rhs) => lhs.lt(rhs),
     'any, any': (lhs, rhs) => lhs < rhs
-  })
+  }) */
 };

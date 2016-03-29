@@ -102,3 +102,23 @@ test('should define complex?', t => {
   t.same(fSync('2 i * 0 + complex?'), [true]);
   t.same(fSync('2 1 + complex?'), [false]);
 });
+
+test('should test equality', t => {
+  t.same(fSync('1 i * 2 i * ='), [false], 'should test equality');
+  t.same(fSync('2 i * 2 i * ='), [true], 'should test equality');
+});
+
+test('should comparey', t => {
+  t.same(fSync('1 i * 1 i * cmp'), [0]);
+  t.same(fSync('1 i * 2 i * cmp'), [-1]);
+  t.same(fSync('2 i * 1 i * cmp'), [1]);
+});
+
+test('should test inequality', t => {
+  t.same(fSync('1 i * 1 i * <'), [false]);
+  t.same(fSync('1 i * 1 i * >'), [false]);
+  t.same(fSync('1 i * 2 i * <'), [true]);
+  t.same(fSync('1 i * 2 i * >'), [false]);
+  t.same(fSync('2 i * 1 i * <'), [false]);
+  t.same(fSync('2 i * 1 i * >'), [true]);
+});
