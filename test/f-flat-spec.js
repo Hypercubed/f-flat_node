@@ -61,8 +61,9 @@ test('should choose', t => {
 
 test('in/fork', t => {
   t.same(fSync('[ 2 1 + ] in'), [[3]], 'should evaluate list');
-  t.same(fSync('"before" "a" sto [ a ] in'), [['before']], 'should have access to parent scope');
-  t.same(fSync('"outer" "a" sto [ "inner" "a" sto a ] in a'), [['inner'], 'outer'], 'should isolate child scope');
+  t.same(fSync('"before" "a" sto [ a ] in'), [['before']], 'fork should have access to parent scope');
+  t.same(fSync('"outer" "a" sto [ "inner" "a" sto a ] fork a'), [['inner'], 'outer'], 'fork should isolate child scope');
+  t.same(fSync('"outer" "a" sto [ "inner" "a" sto a ] in a'), [['inner'], 'inner'], 'in does not isolate child scope');
 });
 
 test('map', t => {
@@ -197,7 +198,8 @@ test('operations with null, cont2', t => {
   t.same(fSync('5 null <<'), [5]);
   t.same(fSync('null 5 >>'), [0]);
   t.same(fSync('5 null >>'), [5]);
-  t.same(fSync('null in'), [null]);
+  console.log(fSync('null in'));
+  t.same(fSync('null in'), [[null]]);
 });
 
 test('errors on unknown command, sync', t => {

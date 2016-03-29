@@ -230,23 +230,6 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       state.queue.splice(0);
       state.queue.push(...s);
     },
-    'in': a => {         // this is sync
-      if (a === null) {
-        return null;
-      }
-      const c = createChild();
-      c.eval(a);
-      /* if (!c.isDone) {  // shouldnt need this.  eval throws
-        throw new Error('Do Not Release Zalgo');
-      } */
-      return freeze(c.stack);
-    },
-    /* 'step': (lhs, rhs) => {
-      lhs.forEach(d => {
-        state.queue.unshift(d);
-        state.queue.unshift(...rhs);
-      });
-    }, */
     'undo': () => {
       if (state.prevState && state.prevState.prevState) {
         state = state.prevState.prevState;
@@ -256,6 +239,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
 
   /* dictionary functions */
   defineAction({
+    'define': x => defineAction(x),
     'sto': (lhs, rhs) => { // consider :=
       state.dict[rhs] = lhs;
     },
@@ -315,6 +299,10 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     },
     'clr': clear,
     '\\': () => state.queue.shift(),  // danger?
+  });
+
+  /* module functions, experimental */
+  defineAction({
     'set-module': a => {
       state.module = a;
       state.dict[a] = {};  // maybe should be root?
@@ -328,16 +316,16 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     }
   });
 
-  /* tasks */
+  /* child tasks */
   defineAction({
-    fork: a => {  // same as in, sync only
-      return self
+    fork: a => {  // like in with child scope
+      return freeze(self
         .createChild()
         .eval(a)
-        .stack;
+        .stack);
     },
     spawn: a => Future.of(a, createChildPromise(a)),
-    [`await`]: a => {  // rollup complains on await, perhaps this should be in?
+    [`await`]: a => {  // rollup complains on await
       if (Future.isFuture(a)) {
         return a.promise;
       }
@@ -357,8 +345,6 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     all: arr => Promise.all(arr.map(a => createChildPromise(a))),
     race: arr => Promise.race(arr.map(a => createChildPromise(a)))
   });
-
-  defineAction('define', x => defineAction(x));
 
   defineAction('require', name => {  // todo: catch error, make async? use System?
     const ext = path.extname(name);

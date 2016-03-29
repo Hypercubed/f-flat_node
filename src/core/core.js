@@ -62,6 +62,7 @@ export default {
   ']': ':d-- :dequote',
   '{': ':quote',        // object
   '}': ':dequote :object',
+  'in': ':quote swap eval :dequote',
   'template': generateTemplate,
   'yield': 'return suspend',
   'delay': '[ sleep ] >> slip eval',
