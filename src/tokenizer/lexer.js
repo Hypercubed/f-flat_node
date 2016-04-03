@@ -2,18 +2,26 @@
 // import {isString, isArray} from 'fantasy-helpers/src/is';
 
 import {Action, BigNumber, typed} from '../types/index';
-import {isNumeric} from '../utils';
+// import {isNumeric} from '../utils';
 
 import {lex} from 'literalizer';
 
-function processNumeric (value) {  // todo complex
-  return Object.freeze(
-    value.slice(-1) === '%' ?
-      new BigNumber(String(value.slice(0, -1))).div(100) :
-      new BigNumber(String(value))
-    );
+function processNumeric (value) {
+  if (typeof value !== 'string') {
+    return NaN;
+  }
+  try {
+    return Object.freeze(
+      value.slice(-1) === '%' ?
+        new BigNumber(String(value.slice(0, -1))).div(100) :
+        new BigNumber(String(value))
+      );
+  } catch (e) {
+    return NaN;
+  }
 }
 
+/* two pass lexing using getify/literalizer */
 export const lexer = typed('lexer', {
   Array: arr => arr,
   string: text => lex(text)
@@ -21,18 +29,22 @@ export const lexer = typed('lexer', {
   any: text => [text]
 });
 
+const atAction = Action.of('@');
+const templateAction = Action.of('template');
+const evalAction = Action.of('eval');
+
 function processLexerTokens ({type, val}) {
   switch (type) {
     case 0:  // general
     case 4:  // regex
       return val
-        .replace(/([\{\}\(\)\[\]])/g, ' $1 ')  // handle brackets
+        .replace(/([\{\}\(\)\[\]])/g, ' $1 ')  // add white space around braces
         .split(/[\,\n\s]+/g)                   // split on whitespace
         .reduce((p, c) => c.length > 0 ? p.concat(convertLiteral(c)) : p, []);
     case 2: // string literal
       return val.slice(1, -1);
     case 3: // string template
-      return [val.slice(1, -1), Action.of('template'), Action.of('eval')];
+      return [val.slice(1, -1), templateAction, evalAction];
     case 1: // comment
       return undefined;
     default:
@@ -43,25 +55,45 @@ function processLexerTokens ({type, val}) {
 
 function convertLiteral (value) {
   const id = value.toLowerCase().trim();
+
   if (id.length <= 0) {
     return undefined;
   }
-  if (isNumeric(value)) {   // number
-    return processNumeric(value);
-  } else if (value.length === 1) {  // all one character tokens are actions
+
+  const ch = id.charCodeAt(0);
+
+  if (ch === 45 || ch === 46 || ch >= 0x30 && ch <= 0x39) {   // -.0-9
+    const n = processNumeric(id);
+    if (!isNaN(n)) {   // number
+      return n;
+    }
+  }
+
+  if (id.length === 1) {  // all one character tokens are actions
     return Action.of(value);
-  } else if (id === 'null') {
+  }
+
+  if (id === 'null') {
     return null;
-  } else if (id === 'true' || id === 'false') {
-    return id === 'true';
-  } else if (id[0] === '#') {
+  }
+
+  if (id === 'true' || id === 'false') {
+    return ch === 116;
+  }
+
+  if (ch === 35) {  // #
     return Symbol(value.slice(1));
-  } else if (id[0] === '@' || id[0] === '.') {
+  }
+
+  if (ch === 64 || ch === 46) {  // @ or .
     value = value.slice(1);
-    value = isNumeric(value) ? processNumeric(value) : String(value);
-    return [value, Action.of('@')];
-  } else if (id.slice(-1) === ':') {
+    value = parseInt(value) || String(value);  // eslint-disable-line radix
+    return [value, atAction];
+  }
+
+  if (id.slice(-1) === ':') {
     return Action.of(Action.of(value.slice(0, -1)));
   }
+
   return Action.of(value);
 }

@@ -17,8 +17,21 @@ test('should be chainable', t => {
 });
 
 test('should push numeric values', t => {
-  t.same(fSync('1 2'), [1, 2], 'should push numbers');
-  t.same(fSync('0x5 0x4d2'), [5, 1234], 'should 0x4d2 push numbers');
+  t.same(fSync('1 2 -3'), [1, 2, -3], 'integers');
+  t.same(fSync('1.1 2.2 -3.14'), [1.1, 2.2, -3.14], 'floats');
+  t.same(fSync('1.1e-1 2.2e+2 -3.14e-1'), [0.11, 220, -0.314], 'expoential');
+});
+
+test('should push hexidecimal numeric values', t => {
+  t.same(fSync('0x5 0x55 0xff'), [5, 85, 255], 'integers');
+  t.same(fSync('0x5.5 0xff.ff'), [85 * Math.pow(16, -1), 65535 * Math.pow(16, -2)], 'floats');
+  t.same(fSync('0x1p+1 0xffp-2'), [2, 255 * Math.pow(2, -2)], 'power of two');
+});
+
+test('should push binary numeric values', t => {
+  t.same(fSync('0b1 0b10 0b11'), [1, 2, 3], 'integers');
+  t.same(fSync('0b1.1 0b11.11'), [3 * Math.pow(2, -1), 15 * Math.pow(2, -2)], 'floats');
+  t.same(fSync('0b1p+1 0b11p-2'), [2, 3 * Math.pow(2, -2)], 'power of two');
 });
 
 test('should drop swap slip', t => {
@@ -284,26 +297,26 @@ test('pick, short cuts', t => {
 
 test('pick into object', t => {
   t.same(fSync('{ a: { a: 1 } a: @ }'), [{a: 1}]);
-  t.same(fSync('{ a: 2 } => { a: <= over @ }'), [{a: 2}]);
-  t.same(fSync('{ a: 3 } => { b: <= a: @ }'), [{b: 3}]);
+  t.same(fSync('{ a: 2 } q< { a: q> over @ }'), [{a: 2}]);
+  t.same(fSync('{ a: 3 } q< { b: q> a: @ }'), [{b: 3}]);
   // t.same(fSync('{ a: 23 } { a: } @'), [{a: 23}]);
 });
 
 test('pick into object, shortcuts', t => {
   t.same(fSync('{ a: { a: 1 } @a }'), [{a: 1}]);
-  t.same(fSync('{ a: 3 } => { b: <= @a }'), [{b: 3}]);
+  t.same(fSync('{ a: 3 } q< { b: q> @a }'), [{b: 3}]);
   // t.same(fSync('{ a: 23 } { a: } @'), [{a: 23}]);
 });
 
 test('pick into object with default', t => {
   t.same(fSync('{ a: { a: 1 } b: @ 2 orelse }'), [{a: 2}]);
-  t.same(fSync('{ a: 3 } => { b: <= over @ 5 orelse }'), [{b: 5}]);
-  t.same(fSync('{ a: 7 } => { c: <= b: @ 11 orelse }'), [{c: 11}]);
+  t.same(fSync('{ a: 3 } q< { b: q> over @ 5 orelse }'), [{b: 5}]);
+  t.same(fSync('{ a: 7 } q< { c: q> b: @ 11 orelse }'), [{c: 11}]);
 });
 
 test('pick into  shortcuts with default', t => {
   t.same(fSync('{ a: { a: 1 } @b 2 orelse }'), [{a: 2}]);
-  t.same(fSync('{ a: 7 } => { c: <= @b 11 orelse }'), [{c: 11}]);
+  t.same(fSync('{ a: 7 } q< { c: q> @b 11 orelse }'), [{c: 11}]);
 });
 
 test('pick into array', t => {

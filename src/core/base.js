@@ -118,7 +118,7 @@ export default {
   '=': eql,
   'identical?': (lhs, rhs) => lhs === rhs,
   '@': at,  // nth, get
-  'get': '=> @ dup null = swap <= swap choose',
+  'get': 'q< @ dup null = swap q> swap choose',
   choose,
   'cmp': typed('cmp', {
     'BigNumber | Complex, BigNumber | Complex | number': (lhs, rhs) => lhs.cmp(rhs),

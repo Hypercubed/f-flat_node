@@ -7,7 +7,7 @@
   m: "dup eval",           // [a] -> [a] a
   run: "dup slip",         // [a] -> a [a]
 
-  slip: "=> eval <=",      // [b] [a] -> b [a]
+  slip: "q< eval q>",      // [b] [a] -> b [a]
   dip: "swap slip",        // [b] [a] -> a [b]
 
   dup2: "over over",       // [b] [a] -> [b] [a] [b] [a]

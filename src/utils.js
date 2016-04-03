@@ -43,8 +43,8 @@ export function throwError (e) {
   throw e;
 }
 
-export function isNumeric (num) {
-  return !isNaN(num);
+export function isNumeric (n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
 export function isPromise (val) {

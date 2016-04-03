@@ -195,10 +195,10 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     'set-log-level': a => {
       log.level = a;
     },
-    '=>': a => {
+    'q<': a => {
       state.queue.push(a);
     },  // good for yielding, bad for repl
-    '<=': () => state.queue.pop(),
+    'q>': () => state.queue.pop(),
     'stack': () => self.stack.splice(0),
     // 'unstack': moved to core.js
     'd++': () => {
