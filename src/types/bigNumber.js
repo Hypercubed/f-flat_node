@@ -1,5 +1,6 @@
-import {typed} from './typed';
 import Decimal from 'decimal.js';
+
+import {typed} from './typed';
 import {g, c} from './gamma';
 
 export const BigNumber = Decimal.clone({

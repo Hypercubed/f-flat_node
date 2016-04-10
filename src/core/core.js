@@ -1,8 +1,8 @@
 import fetch from 'isomorphic-fetch';
+import {freeze, slice} from 'icepick';
 
 import {typed, Seq, Action} from '../types/index';
 import {generateTemplate} from '../utils';
-import {freeze, slice} from 'icepick';
 
 export default {
   /**

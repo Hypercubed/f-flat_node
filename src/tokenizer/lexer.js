@@ -1,10 +1,9 @@
 // import {processIdentifier} from './utils';
 // import {isString, isArray} from 'fantasy-helpers/src/is';
+import {lex} from 'literalizer';
 
 import {Action, BigNumber, typed} from '../types/index';
 // import {isNumeric} from '../utils';
-
-import {lex} from 'literalizer';
 
 function processNumeric (value) {
   if (typeof value !== 'string') {

@@ -1,6 +1,8 @@
 import repl from 'repl';
 import tripwire from 'tripwire';
 
+import program from 'commander';
+
 import {Stack} from '../src/stack';
 import pkg from '../package.json';
 import {log} from '../src/logger';
@@ -13,8 +15,6 @@ const inspectOptions = {
   colors: true,
   indent: true
 };
-
-const program = require('commander');
 
 let arg = '';
 
@@ -80,7 +80,7 @@ function setupStack () {
 }
 
 function writer (_) {
-  const depth = '>'.repeat(_.depth);
+  // const depth = '>'.repeat(_.depth);
   // stackRepl.setPrompt(`${initialPrompt}${depth} `);
 
   // console.log(v8.getHeapStatistics());
@@ -97,7 +97,7 @@ let timeout = null;
 function fEval (code, _, __, cb) {
   code = code
     .replace(/^\(([\s\S]*)\n\)$/m, '$1')
-    .replace('[\s]', ' ')
+    .replace(/[\s]/g, ' ')
     .trim();
 
   if (code.slice(0, 2) === '({' && code.slice(-2) === '})') {

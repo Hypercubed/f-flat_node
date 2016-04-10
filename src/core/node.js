@@ -1,5 +1,5 @@
 
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 // const stdin = process.stdin;
 const stdout = process.stdout;

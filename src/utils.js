@@ -1,5 +1,6 @@
-import {typed, Action} from './types/index';
 import {getIn} from 'icepick';
+
+import {typed, Action} from './types/index';
 
 export const arrayRepeat = (a, len) => {
   len = Number(len) | 0;

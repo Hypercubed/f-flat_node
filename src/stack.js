@@ -10,6 +10,7 @@ import {isString, isFunction, isObject} from 'fantasy-helpers/src/is';
 import {functionLength, functionName} from 'fantasy-helpers/src/functions';
 
 import MiniSignal from 'mini-signals';
+import {freeze} from 'icepick';
 
 import {log, bar} from './logger';
 import {FFlatError} from './fflat-error';
@@ -19,7 +20,6 @@ import {formatState, formatValue} from './pprint';
 import {lexer} from './tokenizer/lexer';
 
 import {Action, Seq, Future} from './types/index';
-import {freeze} from 'icepick';
 
 import _base from './core/base.js';
 import _objects from './core/objects.js';
