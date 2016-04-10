@@ -36,5 +36,6 @@
   "simple?": "[ even? ] [ 3 divisor? ] [ 5 divisor? ] tri + +",
   "sq": "dup *",
   "sum-of-squares": "0 [ sq + ] reduce",
-  "square-of-sum": "sum sq"
+  "square-of-sum": "sum sq",
+  "dot": "[ * ] zipwith sum"
 }

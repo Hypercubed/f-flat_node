@@ -79,6 +79,11 @@ test('in/fork', t => {
   t.same(fSync('"outer" "a" sto [ "inner" "a" sto a ] in a'), [['inner'], 'inner'], 'in does not isolate child scope');
 });
 
+test('clr in in and fork', t => {
+  // t.same(fSync('1 2 [ 2 1 clr 3 ] in'), [[3]], 'should evaluate list');
+  t.same(fSync('1 2 [ 2 1 clr 3 ] fork'), [1, 2, [3]], 'should evaluate list');
+});
+
 test('map', t => {
   t.same(fSync('[ 3 2 1 ] [ 2 * ] map'), [[6, 4, 2]], 'should map quotes over quotes');
   t.same(fSync('[ -3 -2 -1 ] abs: map'), [[3, 2, 1]], 'should map words over quotes');
@@ -145,7 +150,7 @@ test('empty', t => {
 
 test('nop', t => {
   t.same(fSync('"abc" nop'), ['abc']);
-  t.same(fSync('"abc" id'), ['abc']);
+  // t.same(fSync('"abc" id'), ['abc']);
 });
 
 test('depth', t => {
@@ -153,10 +158,10 @@ test('depth', t => {
   t.same(fSync('"abc" 123 depth'), ['abc', 123, 2]);
 });
 
-test('identical?', t => {
-  t.same(fSync('"abc" "abc" identical?'), [true]);
-  t.same(fSync('["abc"] ["abc"] identical?'), [false]);
-  t.same(fSync('["abc"] dup identical?'), [true]);
+test('is?', t => {
+  t.same(fSync('"abc" "abc" is?'), [true]);
+  t.same(fSync('["abc"] ["abc"] is?'), [false]);
+  t.same(fSync('["abc"] dup is?'), [true]);
 });
 
 test('others2', t => {

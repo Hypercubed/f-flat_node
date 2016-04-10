@@ -191,23 +191,74 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
 
   /* core */
   defineAction({
+
+    /**
+       # `get-log-level`
+       gets the current logging level
+       ( ... -> ... {number} )
+    **/
     'get-log-level': () => log.level,
+
+    /**
+      # `set-log-level`
+      sets the current logging level
+      ( ... {number} -> ... )
+    **/
     'set-log-level': a => {
       log.level = a;
     },
+
+    /**
+      # `q<`
+      moves the top of the stack to the tail of the queue
+      ( ... {any} -> ... )
+    **/
     'q<': a => {
       state.queue.push(a);
     },  // good for yielding, bad for repl
+
+    /**
+      # `q>`
+      moves the tail of the queue to the top of the stack
+      ( ... -> ... {any} )
+    **/
     'q>': () => state.queue.pop(),
+
+    /**
+      # `stack`
+      replaces the stack with a quote containing the current stack
+      ( ... -> [ ... ] )
+    **/
     'stack': () => self.stack.splice(0),
-    // 'unstack': moved to core.js
+
+    /**
+      # `d++`
+      increments the depth counter
+    **/
     'd++': () => {
       state.depth++;
     },
+
+    /**
+      # `d--`
+      decrements the depth counter
+    **/
     'd--': () => {
       state.depth = Math.max(0, state.depth - 1);
     },
+
+    /**
+      # `quote`
+      pushes a quotation maker onto the stack
+      ( ... -> ... #( )
+    **/
     'quote': quoteSymbol,
+
+    /**
+      # `dequote`
+      collects stack items upto the last quote marker
+      ( #( ... -> [ ... ] )
+    **/
     'dequote': s => {
       const r = [];
       while (state.stack.length > 0 && s !== quoteSymbol) {
@@ -217,32 +268,78 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       /* istanbul ignore next */
       return freeze(r);
     },
+
+    /**
+      # `depth`
+      pushes the size of the current stack
+      ( ... -> ... {number} )
+    **/
     'depth': () => state.stack.length // ,  or "stack [ unstack ] [ length ] bi"
   });
 
   /* stack */
   defineAction({
-    '<-': s => {  // stack, replaces the stack with the item found at the top of the stack
+    /**
+      # `<-` (stack)
+      replaces the stack with the item found at the top of the stack
+      ( ... [A] -> A )
+    **/
+    '<-': s => {
       clear();
       return new Seq(s);
     },
-    '->': s => {  // queue, replaces the queue with the item found at the top of the stack
+
+    /**
+      # `->` (queue)
+      replaces the queue with the item found at the top of the stack
+      ( ... [A] -> ... )
+    **/
+    '->': s => {
       state.queue.splice(0);
       state.queue.push(...s);
     },
+
+    /**
+      # `undo`
+      restores the stack to state before previous eval
+    **/
     'undo': () => {
       if (state.prevState && state.prevState.prevState) {
         state = state.prevState.prevState;
       }
+    },
+
+    /**
+      # `auto-undo`
+    **/
+    'auto-undo': a => {
+      state.undoable = a;
     }
   });
 
   /* dictionary functions */
   defineAction({
+    /**
+      # `define`
+      defines a set of words
+      ( ... { object} -> ... )
+    **/
     'define': x => defineAction(x),
+
+    /**
+      # `sto`
+      stores a quote in the dictionary
+      ( ... [A] {string} -> ... )
+    **/
     'sto': (lhs, rhs) => { // consider :=
       state.dict[rhs] = lhs;
     },
+
+    /**
+      # `def`
+      defines a word
+      ( ... [A] {string} -> ... )
+    **/
     'def': (cmd, name) => {  // consider def and let, def top level, let local
       if (useStrict && Reflect.apply(Object.prototype.hasOwnProperty, state.dict, [name])) {
         throw new Error('Cannot overrite definitions in strict mode');
@@ -252,6 +349,12 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       }
       defineAction(name, cmd);
     },
+
+    /**
+      # `memoize`
+      memoize a defined word
+      ( ... {string} -> ... )
+    **/
     'memoize': (name, n) => {
       const cmd = lookupAction(name);
       if (cmd) {
@@ -266,12 +369,24 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
         defineAction(name, memoize(fn, {length: n, primitive: true}));
       }
     },
+
+    /**
+      # `delete`
+      deletes a defined word
+      ( ... {string} -> ... )
+    **/
     'delete': a => {
       if (useStrict) {
         throw new Error('Cannot delete definitions in strict mode');
       }
       Reflect.deleteProperty(state.dict, a);
     },
+
+    /**
+      # `rcl`
+      recalls the definion of a word
+      ( ... {string} -> ... [A] )
+    **/
     'rcl': a => {
       const r = lookupAction(a);
       if (!r) {
@@ -282,7 +397,19 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       } // carefull pushing functions to stack
       return r.value;
     },
+
+    /**
+      # `expand`
+      expand the definion of a word
+      ( ... {string} -> ... )
+    **/
     'expand': expandAction,
+
+    /**
+      # `see`
+      recalls the definition of a word as a string
+      ( ... {string} -> ... {string} )
+    **/
     'see': a => {
       const r = lookupAction(a);
       if (!r) {
@@ -290,6 +417,12 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       }
       return formatValue(r.value, 0, {colors: false, indent: false});
     },
+
+    /**
+      # `words`
+      returns a list of defined words
+      ( ... -> ... {array} )
+    **/
     'words': () => {
       const result = [];
       for (const prop in state.dict) {  // eslint-disable-line guard-for-in
@@ -297,55 +430,126 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       }
       return result;
     },
+
+    /**
+      # `clr`
+      clears the stack
+      ( ... -> )
+    **/
     'clr': clear,
+
+    /**
+      # `\\`
+      push the top of the queue to the stack
+      ( ... -> ... {any} )
+    **/
     '\\': () => state.queue.shift()  // danger?
   });
 
   /* module functions, experimental */
   defineAction({
+    /**
+      # `set-module`
+    **/
     'set-module': a => {
       state.module = a;
       state.dict[a] = {};  // maybe should be root?
     },
+
+    /**
+      # `get-module`
+    **/
     'get-module': () => state.module,
+
+    /**
+      # `unset-module`
+    **/
     'unset-module': () => {
       Reflect.deleteProperty(state, 'module');
-    },
-    'auto-undo': a => {
-      state.undoable = a;
     }
   });
 
   /* child tasks */
   defineAction({
+    /**
+      # `fork`
+      evalues the quote in a child environment
+      ( [A] -> [a] )
+    **/
     fork: a => {  // like in with child scope
       return freeze(self
         .createChild()
         .eval(a)
         .stack);
     },
+
+    /**
+      # `spawn`
+      evalues the quote in a child environment, returns a future
+      ( [A] -> {future} )
+    **/
     spawn: a => Future.of(a, createChildPromise(a)),
+
+    /**
+      # `await`
+      evalues the quote in a child environment, waits for result
+      ( [A] -> [a]] )
+    **/
     [`await`]: a => {  // rollup complains on await
       if (Future.isFuture(a)) {
         return a.promise;
       }
       return createChildPromise(a);
     },
-    send: a => {  // pushes one element from stack to parent.
+
+    /**
+      # `send`
+      pushes one element from stack to parent.
+      ( ... A -> ... )
+    **/
+    send: a => {
       if (state.parent) {
         state.parent.stack.push(a);
       }
     },
-    return: () => {  // pushes current stack to parent. 'stack send'?
+
+    /**
+      # `return`
+      pushes current stack to parent
+      ( ... -> )
+    **/
+    return: () => {  // 'stack send'?
       if (state.parent) {
         state.parent.stack.push(...state.stack.splice(0));
       }
     },
-    suspend: () => Seq.of(state.queue.splice(0)),   // stops execution, push queue to stack, loses other state (rename stop?)
+
+    /**
+      # `suspend`
+      stops execution, push queue to stack, loses other state
+      ( ... -> )
+    **/
+    suspend: () => Seq.of(state.queue.splice(0)),   // rename stop?
+
+    /**
+      # `all`
+      executes each element in a child environment
+      ( ... [ A B C ]-> ... [ a b c ])
+    **/
     all: arr => Promise.all(arr.map(a => createChildPromise(a))),
+
+    /**
+      # `race`
+      executes each element in a child environment, returns first to finish
+      ( ... [ A B C ]-> ... [ x ])
+    **/
     race: arr => Promise.race(arr.map(a => createChildPromise(a)))
   });
 
+  /**
+    # `require`
+    loads and runs a ff or json file
+  **/
   defineAction('require', name => {  // todo: catch error, make async? use System?
     const ext = path.extname(name);
     if (ext === '.ff') {
@@ -363,6 +567,10 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     return undefined;
   });
 
+  /**
+    # `sesssave`
+    saves the current stack and dictionary as a JSON file
+  **/
   defineAction('sesssave', () => {
     log.debug('saving session');
     fs.writeFileSync('session', JSON.stringify({
@@ -620,7 +828,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
               if (!isString(tokenValue)) {
                 return stackPush(tokenValue);
               }
-              if (tokenValue[0] === IIF) {
+              if (tokenValue[0] === IIF && tokenValue.length > 1) {
                 tokenValue = tokenValue.slice(1);
               }
 
@@ -674,7 +882,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
           '[]{}'.indexOf(c.value) > -1 ||   // these quotes are always immediate
           (
             c.value[0] === IIF &&   // tokens prefixed with : are imediate
-            c.value.length !== 1
+            c.value.length > 1
           )
         );
       }

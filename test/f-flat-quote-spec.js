@@ -22,7 +22,7 @@ test('should mul quotes', t => {
   t.same(fSync('[ 1 2 + ] 2 *'), [[1, 2, {type: '@@Action', value: '+'}, 1, 2, {type: '@@Action', value: '+'}]], 'should multiply');
 });
 
-test('should test isity', t => {
+test('should test equality', t => {
   t.same(fSync('[ 1 2 + ] [ 1 2 ] ='), [false]);
   t.same(fSync('[ 1 2 + ] [ 1 2 + ] ='), [true]);
 });

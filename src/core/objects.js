@@ -27,9 +27,9 @@ export default {
   }), */
   'object': toObject,
   'object?': typed('object_', {
-    'Array | null | number | Complex': a => false,
-    'Object': a => true,
-    'any': a => false
+    'Array | null | number | Complex': a => false,  // eslint-disable-line no-unused-vars
+    'Object': a => true,  // eslint-disable-line no-unused-vars
+    'any': a => false  // eslint-disable-line no-unused-vars
   }),
   'contains?': (a, b) => b in a,  // object by keys, array by values
   'keys': o => freeze(Object.keys(o)),

@@ -1,4 +1,4 @@
-# Guide
+# F♭ guide
 
 ## Guiding principles
 
@@ -19,6 +19,7 @@
   - decimal and complex numbers
   - percent values
   - both double and single quotes
+  - no order of operations (RPN)
 - state is serializable
 - Use common work-flow in Forth-like languages: <sup>[Read-Eval-Print-λove]</sup>
   - Write some code to perform a task
@@ -48,7 +49,7 @@
 ## Word definition convention
 
 - should be lower kebab-case
-- inquisitive words (typically boolean returning functions) should end with question mark (?)
+- inquisitive words (typically boolean returning functions) should end with question mark (`?`)
   - `string?`, `zero?`, `prime?`
 - procedures should be verbs
   - `dup`, `dip`, `drop`

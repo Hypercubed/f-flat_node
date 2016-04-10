@@ -51,6 +51,11 @@ test('trig', t => {
   t.same(fSync('1 1 atan2 4 *'), [Math.PI], 'should calculate inv trig funcs');
 });
 
+test('trig 2', t => {
+  t.same(fSync('pi cos'), [-1]);
+  t.ok(nearly(fSync('pi sin')[0], 0));
+});
+
 test('constants', t => {
   t.same(fSync('e pi'), [Math.E, Math.PI], 'should define constants');
 });

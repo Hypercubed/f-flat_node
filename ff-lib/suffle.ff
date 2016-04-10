@@ -4,16 +4,18 @@
 /* note this is a f-flat file, not json */
 
 {
+  2drop: "drop drop",
+
   m: "dup eval",           // [a] -> [a] a
   run: "dup slip",         // [a] -> a [a]
 
   slip: "q< eval q>",      // [b] [a] -> b [a]
   dip: "swap slip",        // [b] [a] -> a [b]
 
-  dup2: "over over",       // [b] [a] -> [b] [a] [b] [a]
+  2dup: "over over",       // [b] [a] -> [b] [a] [b] [a]
   sip: "over slip",        // [b] [a] -> [b] a [b]    (aka keep)
   keep: "over slip",       // [b] [a] -> [b] a [b]    (aka sip)
-  keep2: "[ dup2 ] dip dive",  // [c] [b] [a] -> [c] [b] a [c] [b]   (aka 2keep)
+  keep2: "[ 2dup ] dip dive",  // [c] [b] [a] -> [c] [b] a [c] [b]   (aka 2keep)
   over: "dupd swap",       // [b] [a] -> [b] [a] [b]  (aka peek)
   dupd: "[ dup ] dip",     // [b] [a] -> [b] [b] [a]  (aka w)
   dropd: "[ drop ] dip",   // [b] [a] -> [a]          (aka nip)
@@ -22,7 +24,7 @@
 
   overd: "[ over ] dip",   // [c] [b] [a] -> [c] [b] [c] [a]
   pick: "overd swap",      // [c] [b] [a] -> [c] [b] [a] [c]
-  dup3: "pick pick pick",  // [c] [b] [a] -> [c] [b] [a] [c] [b] [a]
+  3dup: "pick pick pick",  // [c] [b] [a] -> [c] [b] [a] [c] [b] [a]
   swapd: "[ swap ] dip",   // [c] [b] [a] -> [b] [c] [a]
   dig: "swapd swap"        // [c] [b] [a] -> [b] [a] [c]
   rolldown: "swapd swap",  // [c] [b] [a] -> [b] [a] [c] (aka dig)

@@ -1,6 +1,6 @@
 import erf from 'compute-erf';
 
-import {typed, BigNumber, pi, Complex, Action} from '../types/index';
+import {typed, BigNumber, Complex, Action} from '../types/index';
 import {lexer} from '../tokenizer/lexer';
 // import {arrayMul} from '../utils';
 
@@ -91,12 +91,12 @@ export default {  // eslint-disable-line
   }),
   '^': typed('pow', {  // boolean or?
     'Complex, BigNumber | Complex | number': (a, b) => Action.of([b, a].concat(lexer('ln * exp'))),
-    'BigNumber, BigNumber | Complex | number': (a, b) => a.pow(b) // ,
+    'BigNumber, Complex': (a, b) => Action.of([b, a].concat(lexer('ln * exp'))),
+    'BigNumber, BigNumber | number': (a, b) => a.pow(b) // ,
     // 'Array, number': (a, b) => Action.of([a, b, Action.of('pow')])  // this is only integers
   }),
   // '^': 'swap ln * exp',
   'rand': Math.random,
-  pi,
   'set-precision': x => {
     BigNumber.config({precision: Number(x)});
   },

@@ -2,16 +2,35 @@ import {Action, typed, I} from '../types/index';
 import {pluck, eql, arrayRepeat, arrayMul} from '../utils';
 import {freeze, assign, merge, unshift, push, slice} from 'icepick';
 
+/**
+  # `+`
+  Add
+
+**/
 const add = typed('add', {
-  'Array, Array': (lhs, rhs) => lhs.concat(rhs),  // list concatination/function composition
-  'boolean, boolean': (lhs, rhs) => lhs || rhs,  // boolean or
-  'Object, Object': (lhs, rhs) => assign(lhs, rhs),  // object assign/assoc
+  /// - list concatenation/function composition
+  'Array, Array': (lhs, rhs) => lhs.concat(rhs),
+  'Array, any': (lhs, rhs) => lhs.concat(rhs),
+
+  /// - boolean or
+  'boolean, boolean': (lhs, rhs) => lhs || rhs,
+
+  /// - object assign/assoc
+  'Object, Object': (lhs, rhs) => assign(lhs, rhs),
+
+  /// - arithmetic addition
   'Complex, Complex': (lhs, rhs) => lhs.plus(rhs),
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.plus(rhs),
-  'Array, any': (lhs, rhs) => lhs.concat(rhs),  // list concatination/function composition
+
+  /// - string concatenation
   'string | number | null, string | number | null': (lhs, rhs) => lhs + rhs
 });
 
+/**
+   # `-`
+   Minus
+
+**/
 const sub = typed('sub', {
   /* 'Object, any': (lhs, rhs) => {  // dissoc
     const r = Object.assign({}, lhs);
@@ -22,30 +41,58 @@ const sub = typed('sub', {
     var c = a[a.length - 1];
     return Action.of([a.slice(0, -1), c, b, Action.of('-'), Action.of('+')]);
   }, */
+
+  /// - boolean xor
   'boolean, boolean': (lhs, rhs) => (lhs || rhs) && !(lhs && rhs),  // boolean xor
+
+  /// - arithmetic subtraction
   'Complex, Complex': (lhs, rhs) => lhs.minus(rhs),
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.minus(rhs),
   'any, any': (lhs, rhs) => lhs - rhs
 });
 
+/**
+   # `*`
+   Mul
+
+**/
 const mul = typed('mul', {
+  /// - intersparse
   'Array, Array | Action | Function': arrayMul,
   'string, Array | Action | Function': (lhs, rhs) => arrayMul(lhs.split(''), rhs),
-  'Array, string': (lhs, rhs) => lhs.join(rhs),  // string join
-  'boolean, boolean': (lhs, rhs) => (lhs && rhs),  // boolean and
+
+  /// - string join
+  'Array, string': (lhs, rhs) => lhs.join(rhs),
+
+  /// - boolean and
+  'boolean, boolean': (lhs, rhs) => (lhs && rhs),
+
+  /// - repeat sequence
   'string, number': (a, b) => a.repeat(b),
   // 'BigNumber | number, string': (a, b) => b.repeat(a),
   'Array, number': (a, b) => arrayRepeat(a, b),
   // 'BigNumber | number, Array': (b, a) => arrayRepeat(a, b),
+
+  // - arithmetic multiplication
   'Complex, Complex': (lhs, rhs) => lhs.times(rhs).normalize(),
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.times(rhs),
   // 'BigNumber | number, Array': (lhs, rhs) => lhs * rhs,  // map?
   'number | null, number | null': (lhs, rhs) => lhs * rhs
 });
 
+/**
+   # `/`
+   div
+
+**/
 const div = typed('div', {
+  /// - boolean nand
   'boolean, boolean': (lhs, rhs) => !(lhs && rhs),  // boolean nand
-  'string, string': (lhs, rhs) => freeze(lhs.split(rhs)),  // string split (same as :split )
+
+  /// - string split
+  'string, string': (lhs, rhs) => freeze(lhs.split(rhs)),
+
+  /// - array/string slice
   'Array | string, number': (a, b) => {
     b = Number(a.length / b) | 0;
     if (b === 0 || b > a.length) {
@@ -58,29 +105,61 @@ const div = typed('div', {
     var len = lhs.length / rhs;
     return lhs.slice(0, len);
   }, */
+
+  /// - arithmetic division
   'Complex, Complex': (lhs, rhs) => lhs.div(rhs),
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.div(rhs),
   'number | null, number | null': (lhs, rhs) => lhs / rhs
 });
 
+/**
+   # `>>`
+   right shift
+
+**/
 const unshiftFn = typed('unshift', { // >>, Danger! No mutations
-  'any | Action | Object, Array': (lhs, rhs) => unshift(rhs, lhs),  // unshift/cons
-  'Array, string': (lhs, rhs) => freeze([lhs, Action.of(rhs)]),  // unshift/cons
-  'Array | Action, Action': (lhs, rhs) => freeze([lhs, rhs]),  // unshift/cons
-  'Object, Object': (lhs, rhs) => merge(rhs, lhs),  // object merge
-  'string | number | null, string | number | null': (lhs, rhs) => lhs >> rhs // Sign-propagating right shift
+  /// - unshift/cons
+  'any | Action | Object, Array': (lhs, rhs) => unshift(rhs, lhs),
+  'Array, string': (lhs, rhs) => freeze([lhs, Action.of(rhs)]),
+  'Array | Action, Action': (lhs, rhs) => freeze([lhs, rhs]),
+
+  /// - object merge
+  'Object, Object': (lhs, rhs) => merge(rhs, lhs),
+
+  /// - Sign-propagating right shift
+  'string | number | null, string | number | null': (lhs, rhs) => lhs >> rhs
 });
 
+/**
+   # `<<`
+   Left shift
+**/
 const pushFn = typed('push', {  // <<, Danger! No mutations
-  'Array, any | Action | Object': (lhs, rhs) => push(lhs, rhs),  // push/snoc
-  'Object, Object': (lhs, rhs) => merge(lhs, rhs),  // object merge
-  'string | number | null, string | number | null': (lhs, rhs) => lhs << rhs  // Left shift
+  /// - push/snoc
+  'Array, any | Action | Object': (lhs, rhs) => push(lhs, rhs),
+
+  /// - object merge
+  'Object, Object': (lhs, rhs) => merge(lhs, rhs),
+
+  /// - Left shift
+  'string | number | null, string | number | null': (lhs, rhs) => lhs << rhs
 });
 
+/**
+   # `choose`
+   conditional (ternary) operator
+   ( boolean [A] [B] -> [A|B] )
+**/
 const choose = typed('choose', {
   'boolean | null, any, any': (b, t, f) => b ? t : f
 });
 
+/**
+   # `@`
+   at
+   returns the item at the specified index in a sequence
+   ( seq index -> item )
+**/
 const at = typed('at', {
   'string, number | null': (lhs, rhs) => {
     rhs = Number(rhs) | 0;
@@ -105,9 +184,16 @@ const at = typed('at', {
 });
 
 export default {
-  /* 'true': () => true,
-  'false': () => false, */
+  /**
+     # `i`
+     push the imaginary number 0+1i
+  **/
   'i': () => I,
+
+  /**
+     # `infinity`
+     pushes the Infinity
+  **/
   'infinity': () => Infinity,
   '+': add,
   '-': sub,
@@ -116,10 +202,15 @@ export default {
   '>>': unshiftFn,
   '<<': pushFn,
   '=': eql,
-  'identical?': (lhs, rhs) => lhs === rhs,
   '@': at,  // nth, get
-  'get': 'q< @ dup null = swap q> swap choose',
   choose,
+
+  /**
+     # `cmp`
+     pushes 0 if rhs and lhs are equal
+     pushes - if lhs is > rhs
+     pushes -1 otherwise
+  **/
   'cmp': typed('cmp', {
     'BigNumber | Complex, BigNumber | Complex | number': (lhs, rhs) => lhs.cmp(rhs),
     'string, string': (lhs, rhs) => {
@@ -128,12 +219,10 @@ export default {
       }
       return lhs > rhs ? 1 : -1;
     }
-  }),
-  '>': 'cmp 1 =',
-  '<': 'cmp -1 =',
-  '>=': '< not',
-  '=<': '> not'
-  /* '>': typed('gt', {
+  })
+
+  /*
+  '>': typed('gt', {
     'BigNumber | Complex, BigNumber | Complex | number': (lhs, rhs) => lhs.gt(rhs),
     'any, any': (lhs, rhs) => lhs > rhs
   }),
