@@ -15,7 +15,7 @@
   "appl": ">> in",
   "with": "[ swap [ swap ] ] dip + >>",
   "spawn2": "[ spawn ] dip spawn",
-  "eval2": "[ eval ] dip eval",
+  "eval2": "slip eval",
   "spawnsplit": "spawn2 eval2",
   "runn": "[ -- dup -1 > ] [ [ run ] dip ] while drop",
   "times": "runn drop",
@@ -27,7 +27,7 @@
   "count": "1 swap range*",
   "integers": "[ count ] appl",
   "branch": "choose eval",
-  "ifte": "[ slip ] dip branch",
+  "ifte": "slipd branch",
   "if": "slip when",
   "when": "() branch",
   "guard": "[ keep ] >> dip branch",
@@ -98,7 +98,9 @@
   "gcd": "[ dup 0 > ] [ dup bury rem ] while drop",
   "lcm": "2dup [ [ * abs ] dip ] dip gcd /",
   "next-collatz": "dup even? [ 2 / ] [ 3 * 1 + ] branch",
-  "collatz": "[ [ dup, 1, > ], [ dup, next-collatz ], while ] >> in",
+  "collatz": "[ [ dup 1 > ] [ dup next-collatz ] while ] >> in",
   "timing": "timing: set-log-level",
-  "pad-left": "over * [ swap + ] >> dip tail"
+  "pad-left": "over * [ swap + ] >> dip tail",
+  "y": "[ dup >> ] swap + dup >>",
+  "nth": "-- @"
 }

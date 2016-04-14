@@ -1,5 +1,5 @@
 import repl from 'repl';
-import tripwire from 'tripwire';
+// import tripwire from 'tripwire';
 
 import program from 'commander';
 
@@ -133,7 +133,7 @@ function fEval (code, _, __, cb) {
       return;
     }
 
-    tripwire.resetTripwire(600000);  // 10 mins max
+    // tripwire.resetTripwire(600000);  // 10 mins max
 
     f.next(buffer)
       .then(result => cb(null, result))

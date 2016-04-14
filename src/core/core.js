@@ -4,50 +4,96 @@ import {freeze, slice} from 'icepick';
 import {typed, Seq, Action} from '../types/index';
 import {generateTemplate} from '../utils';
 
+/**
+   # Core Internal Words
+**/
+
 export default {
   /**
-     # `nop`
+     ## `nop`
      no op
+
+     ( -> )
   **/
   'nop': () => {},
 
   /**
-     # `eval`
-     evalute quote or string
+    ## `eval`
+    evaluate quote or string
+
+    ( [A] -> a )
+
+    ```
+    f♭> [ 1 2 * ] eval
+    [ 2 ]
+    ```
   **/
   'eval': typed('_eval', {
     any: a => Action.of(a)
   }),
 
   /**
-     # `drop`
+     ## `drop`
      drops the item on the bottom of the stack
+
+     ( x -> )
+
+     ```
+     > 1 2 3 drop
+     [ 1 2 ]
+     ```
   **/
   'drop': a => {},  // eslint-disable-line
 
   /**
-     # `swap`
+     ## `swap`
      swaps the items on the bottom of the stack
+
      ( x y -- y x )
+
+     ```
+     > 1 2 3 swap
+     [ 1 3 2 ]
+     ```
   **/
   'swap': (a, b) => Seq.of([b, a]),
 
   /**
-     # `dup`
+     ## `dup`
      duplicates the item on the bottom of the stack
+
      ( x -- x x )
+
+     ```
+     > 1 2 3 dup
+     [ 1 2 3 3 ]
+     ```
   **/
   'dup': a => Seq.of([a, a]),
 
   /**
-     # `unstack`
-     push item in a quote to teh stack without evaluation
+    ## `unstack`
+    push items in a quote to the stack without evaluation
+
+    ( [A B C] -> A B C)
+
+    ```
+    f♭> [ 1 2 * ] unstack
+    [ 1 2 * ]
+    ```
   **/
   'unstack': a => new Seq(a),
 
   /**
-     # `length`
+     ## `length`
      Outputs the length of the Array, string, or object.
+
+     ( {seq} -> {number} )
+
+     ```
+     > [ 1 2 3 ] length
+     3
+     ```
   **/
   'length': typed('length', {
     'Array | string': a => a.length,
@@ -56,8 +102,9 @@ export default {
   }),
 
   /**
-     # `slice`
+     ## `slice`
      a shallow copy of a portion of an array or string
+
      ( seq from to -> seq )
   **/
   'slice': typed('slice', {
@@ -66,8 +113,9 @@ export default {
   }),
 
   /**
-     # `splitat`
+     ## `splitat`
      splits a array or string
+
      ( seq at -> seq )
   **/
   'splitat': typed('splitat', {
@@ -78,8 +126,9 @@ export default {
   }),
 
   /**
-     # `indexof`
+     ## `indexof`
      returns the position of the first occurrence of a specified value in a sequence
+
      ( seq item -> number )
   **/
   'indexof': (a, b) => a.indexOf(b),
@@ -88,7 +137,12 @@ export default {
   }, */
 
   /**
-     # `zip`
+     ## `zip`
+
+     ```
+     f♭> [ 1 2 3 ] [ 4 5 6 ] zip
+     [ 1 4 2 5 3 6 ]
+     ```
   **/
   'zip': typed('zip', {
     'Array, Array': (a, b) => {
@@ -102,7 +156,7 @@ export default {
   }),
 
   /**
-     # `zipinto`
+     ## `zipinto`
   **/
   'zipinto': typed('zipinto', {
     'Array, Array, Array': (a, b, c) => {
@@ -116,50 +170,52 @@ export default {
   }),
 
   /**
-     # `(`
+     ## `(`
      pushes a quotation maker onto the stack
   **/
   '(': ':quote',        // list
 
   /**
-     # `)`
+     ## `)`
      collects stack items upto the last quote marker
   **/
   ')': ':dequote',
 
   /**
-     # `[`
+     ## `[`
      pushes a quotation maker onto the stack, increments depth
   **/
   '[': ':quote :d++',   // quote
 
   /**
-     # `]`
+     ## `]`
      decrements depth, collects stack items upto the last quote marker
   **/
   ']': ':d-- :dequote',
 
   /**
-     # `{`
+     ## `{`
      pushes a quotation maker onto the stack
   **/
   '{': ':quote',        // object
 
   /**
-     # `}`
+     ## `}`
      collects stack items upto the last quote marker, converts to an object
   **/
   '}': ':dequote :object',
 
   /**
-     # `template`
+     ## `template`
      converts a string to a string template
   **/
   'template': generateTemplate,
 
   /**
-     # `sleep`
-     wait nn milliseconds
+     ## `sleep`
+     wait x milliseconds
+
+     ( x -> )
   **/
   'sleep': ms => {  // todo: make cancelable?
     // let timerId;
@@ -172,8 +228,10 @@ export default {
   },
 
   /**
-     # `fetch`
+     ## `fetch`
      fetch a url as a string
+
+     ( {url} -> {string} )
   **/
   'fetch': url => fetch(url)
     .then(res => {

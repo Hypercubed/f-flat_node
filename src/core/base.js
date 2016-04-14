@@ -4,8 +4,19 @@ import {Action, typed, I} from '../types/index';
 import {pluck, eql, arrayRepeat, arrayMul} from '../utils';
 
 /**
-  # `+`
-  Add
+  # Base Internal Functions
+
+**/
+
+/**
+  ## `+` (plus)
+
+  ( x y -> z)
+
+  ```
+  f♭> 1 2 +
+  [ 3 ]
+  ```
 
 **/
 const add = typed('add', {
@@ -28,9 +39,14 @@ const add = typed('add', {
 });
 
 /**
-   # `-`
-   Minus
+   ## `-` (minus)
 
+   ( x y -> z)
+
+   ```
+   f♭> 2 1 -
+   [ 1 ]
+   ```
 **/
 const sub = typed('sub', {
   /* 'Object, any': (lhs, rhs) => {  // dissoc
@@ -53,9 +69,14 @@ const sub = typed('sub', {
 });
 
 /**
-   # `*`
-   Mul
+   ## `*` (times)
 
+   ( x y -> z)
+
+   ```
+   f♭> 2 3 *
+   [ 6 ]
+   ```
 **/
 const mul = typed('mul', {
   /// - intersparse
@@ -82,9 +103,14 @@ const mul = typed('mul', {
 });
 
 /**
-   # `/`
-   div
+   ## `/` (forward slash)
 
+   ( x y -> z)
+
+   ```
+   f♭> 6 2 /
+   [ 3 ]
+   ```
 **/
 const div = typed('div', {
   /// - boolean nand
@@ -114,8 +140,15 @@ const div = typed('div', {
 });
 
 /**
-   # `>>`
+   ## `>>`
    right shift
+
+   ( x y -> z)
+
+   ```
+   > 1 [ 2 3 ] >>
+   [ 1 2 3 ]
+   ```
 
 **/
 const unshiftFn = typed('unshift', { // >>, Danger! No mutations
@@ -132,8 +165,16 @@ const unshiftFn = typed('unshift', { // >>, Danger! No mutations
 });
 
 /**
-   # `<<`
-   Left shift
+  ## `<<`
+  Left shift
+
+  ( x y -> z)
+
+  ```
+  f♭> [ 1 2 ] 3 <<
+  [ [ 1 2 3 ] ]
+  ```
+
 **/
 const pushFn = typed('push', {  // <<, Danger! No mutations
   /// - push/snoc
@@ -147,19 +188,30 @@ const pushFn = typed('push', {  // <<, Danger! No mutations
 });
 
 /**
-   # `choose`
-   conditional (ternary) operator
-   ( boolean [A] [B] -> [A|B] )
+  ## `choose`
+  conditional (ternary) operator
+
+  ( {boolean} [A] [B] -> {A|B} )
+
+  ```
+  f♭> true 1 2 choose
+  [ 1 ]
+  ```
 **/
 const choose = typed('choose', {
   'boolean | null, any, any': (b, t, f) => b ? t : f
 });
 
 /**
-   # `@`
-   at
+   ## `@` (at)
    returns the item at the specified index in a sequence
-   ( seq index -> item )
+
+   ( {seq} {index} -> {item} )
+
+   ```
+   > [ 1 2 3 ] 1 @
+   [ 2 ]
+   ```
 **/
 const at = typed('at', {
   'string, number | null': (lhs, rhs) => {
@@ -186,14 +238,23 @@ const at = typed('at', {
 
 export default {
   /**
-     # `i`
+     ## `i`
      push the imaginary number 0+1i
+
+     ( -> 0+1i )
   **/
   'i': () => I,
 
   /**
-     # `infinity`
-     pushes the Infinity
+    ## `infinity`
+    pushes the value Infinity
+
+    ( -> Infinity )
+
+    ```
+    f♭> i
+    [ 0+1i ]
+    ```
   **/
   'infinity': () => Infinity,
   '+': add,
@@ -202,18 +263,47 @@ export default {
   '/': div,
   '>>': unshiftFn,
   '<<': pushFn,
+
+  /**
+    ## `=` equal
+    Pushes true if x is equal to y.
+
+    ( x y -> z )
+
+    ```
+    f♭> 1 2 =
+    [ false ]
+    ```
+  **/
   '=': eql,
   '@': at,  // nth, get
   choose,
 
   /**
-     # `cmp`
-     pushes 0 if rhs and lhs are equal
-     pushes - if lhs is > rhs
-     pushes -1 otherwise
+    ## `cmp`
+    Pushes a -1, 0, or a +1 when x is 'less than', 'equal to', or 'greater than' y.
+
+    ( x y -> z )
+
+    ```
+    f♭> 1 2 cmp
+    [ -1 ]
+    ```
   **/
   'cmp': typed('cmp', {
     'BigNumber | Complex, BigNumber | Complex | number': (lhs, rhs) => lhs.cmp(rhs),
+    'Array, Array': (lhs, rhs) => {
+      if (eql(lhs, rhs)) {
+        return 0;
+      }
+      if (lhs.length === rhs.length) {
+        /* for (let i = 0; i < lhs.length; i++) {  // todo: compare each element
+
+        } */
+        return 0;
+      }
+      return lhs.length > rhs.length ? 1 : -1;
+    },
     'string, string': (lhs, rhs) => {
       if (lhs === rhs) {
         return 0;

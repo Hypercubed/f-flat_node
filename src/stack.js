@@ -189,50 +189,63 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     }
   };
 
-  /* core */
+  /**
+     # Core words
+
+  **/
   defineAction({
 
     /**
-       # `get-log-level`
+       ## `get-log-level`
        gets the current logging level
-       ( ... -> ... {number} )
+
+       ( -> {string} )
     **/
     'get-log-level': () => log.level,
 
     /**
-      # `set-log-level`
+      ## `set-log-level`
       sets the current logging level
-      ( ... {number} -> ... )
+
+      ( {string} -> )
     **/
     'set-log-level': a => {
       log.level = a;
     },
 
     /**
-      # `q<`
+      ## `q<`
       moves the top of the stack to the tail of the queue
-      ( ... {any} -> ... )
+
+      ( {any} -> )
     **/
     'q<': a => {
       state.queue.push(a);
     },  // good for yielding, bad for repl
 
     /**
-      # `q>`
+      ## `q>`
       moves the tail of the queue to the top of the stack
-      ( ... -> ... {any} )
+
+      ( -> {any} )
     **/
     'q>': () => state.queue.pop(),
 
     /**
-      # `stack`
+      ## `stack`
       replaces the stack with a quote containing the current stack
+
       ( ... -> [ ... ] )
+
+      ```
+      f♭> 1 2 3 stack
+      [ [ 1 2 3 ] ]
+      ```
     **/
     'stack': () => self.stack.splice(0),
 
     /**
-      # `d++`
+      ## `d++`
       increments the depth counter
     **/
     'd++': () => {
@@ -240,7 +253,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     },
 
     /**
-      # `d--`
+      ## `d--`
       decrements the depth counter
     **/
     'd--': () => {
@@ -248,15 +261,17 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     },
 
     /**
-      # `quote`
+      ## `quote`
       pushes a quotation maker onto the stack
-      ( ... -> ... #( )
+
+      ( -> #( )
     **/
     'quote': quoteSymbol,
 
     /**
-      # `dequote`
+      ## `dequote`
       collects stack items upto the last quote marker
+
       ( #( ... -> [ ... ] )
     **/
     'dequote': s => {
@@ -270,285 +285,24 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     },
 
     /**
-      # `depth`
+      ## `depth`
       pushes the size of the current stack
-      ( ... -> ... {number} )
+
+      ( -> {number} )
+
+      ```
+      f♭> 1 2 3 depth
+      [ 1 2 3 3 ]
+      ```
     **/
     'depth': () => state.stack.length // ,  or "stack [ unstack ] [ length ] bi"
   });
 
-  /* stack */
-  defineAction({
-    /**
-      # `<-` (stack)
-      replaces the stack with the item found at the top of the stack
-      ( ... [A] -> A )
-    **/
-    '<-': s => {
-      clear();
-      return new Seq(s);
-    },
-
-    /**
-      # `->` (queue)
-      replaces the queue with the item found at the top of the stack
-      ( ... [A] -> ... )
-    **/
-    '->': s => {
-      state.queue.splice(0);
-      state.queue.push(...s);
-    },
-
-    /**
-      # `undo`
-      restores the stack to state before previous eval
-    **/
-    'undo': () => {
-      if (state.prevState && state.prevState.prevState) {
-        state = state.prevState.prevState;
-      }
-    },
-
-    /**
-      # `auto-undo`
-    **/
-    'auto-undo': a => {
-      state.undoable = a;
-    }
-  });
-
-  /* dictionary functions */
-  defineAction({
-    /**
-      # `define`
-      defines a set of words
-      ( ... { object} -> ... )
-    **/
-    'define': x => defineAction(x),
-
-    /**
-      # `sto`
-      stores a quote in the dictionary
-      ( ... [A] {string} -> ... )
-    **/
-    'sto': (lhs, rhs) => { // consider :=
-      state.dict[rhs] = lhs;
-    },
-
-    /**
-      # `def`
-      defines a word
-      ( ... [A] {string} -> ... )
-    **/
-    'def': (cmd, name) => {  // consider def and let, def top level, let local
-      if (useStrict && Reflect.apply(Object.prototype.hasOwnProperty, state.dict, [name])) {
-        throw new Error('Cannot overrite definitions in strict mode');
-      }
-      if (!isFunction(cmd) && !Action.isAction(cmd)) {
-        cmd = new Action(cmd);
-      }
-      defineAction(name, cmd);
-    },
-
-    /**
-      # `memoize`
-      memoize a defined word
-      ( ... {string} -> ... )
-    **/
-    'memoize': (name, n) => {
-      const cmd = lookupAction(name);
-      if (cmd) {
-        const fn = (...a) => {
-          const s = self
-            .createChild()
-            .eval([...a])
-            .eval(cmd)
-            .stack;
-          return Seq.of(s);
-        };
-        defineAction(name, memoize(fn, {length: n, primitive: true}));
-      }
-    },
-
-    /**
-      # `delete`
-      deletes a defined word
-      ( ... {string} -> ... )
-    **/
-    'delete': a => {
-      if (useStrict) {
-        throw new Error('Cannot delete definitions in strict mode');
-      }
-      Reflect.deleteProperty(state.dict, a);
-    },
-
-    /**
-      # `rcl`
-      recalls the definion of a word
-      ( ... {string} -> ... [A] )
-    **/
-    'rcl': a => {
-      const r = lookupAction(a);
-      if (!r) {
-        return null;
-      }
-      if (useStrict && isFunction(r)) {
-        return Action.of(r);
-      } // carefull pushing functions to stack
-      return r.value;
-    },
-
-    /**
-      # `expand`
-      expand the definion of a word
-      ( ... {string} -> ... )
-    **/
-    'expand': expandAction,
-
-    /**
-      # `see`
-      recalls the definition of a word as a string
-      ( ... {string} -> ... {string} )
-    **/
-    'see': a => {
-      const r = lookupAction(a);
-      if (!r) {
-        return null;
-      }
-      return formatValue(r.value, 0, {colors: false, indent: false});
-    },
-
-    /**
-      # `words`
-      returns a list of defined words
-      ( ... -> ... {array} )
-    **/
-    'words': () => {
-      const result = [];
-      for (const prop in state.dict) {  // eslint-disable-line guard-for-in
-        result.push(prop);
-      }
-      return result;
-    },
-
-    /**
-      # `clr`
-      clears the stack
-      ( ... -> )
-    **/
-    'clr': clear,
-
-    /**
-      # `\\`
-      push the top of the queue to the stack
-      ( ... -> ... {any} )
-    **/
-    '\\': () => state.queue.shift()  // danger?
-  });
-
-  /* module functions, experimental */
-  defineAction({
-    /**
-      # `set-module`
-    **/
-    'set-module': a => {
-      state.module = a;
-      state.dict[a] = {};  // maybe should be root?
-    },
-
-    /**
-      # `get-module`
-    **/
-    'get-module': () => state.module,
-
-    /**
-      # `unset-module`
-    **/
-    'unset-module': () => {
-      Reflect.deleteProperty(state, 'module');
-    }
-  });
-
-  /* child tasks */
-  defineAction({
-    /**
-      # `fork`
-      evalues the quote in a child environment
-      ( [A] -> [a] )
-    **/
-    fork: a => {  // like in with child scope
-      return freeze(self
-        .createChild()
-        .eval(a)
-        .stack);
-    },
-
-    /**
-      # `spawn`
-      evalues the quote in a child environment, returns a future
-      ( [A] -> {future} )
-    **/
-    spawn: a => Future.of(a, createChildPromise(a)),
-
-    /**
-      # `await`
-      evalues the quote in a child environment, waits for result
-      ( [A] -> [a]] )
-    **/
-    [`await`]: a => {  // rollup complains on await
-      if (Future.isFuture(a)) {
-        return a.promise;
-      }
-      return createChildPromise(a);
-    },
-
-    /**
-      # `send`
-      pushes one element from stack to parent.
-      ( ... A -> ... )
-    **/
-    send: a => {
-      if (state.parent) {
-        state.parent.stack.push(a);
-      }
-    },
-
-    /**
-      # `return`
-      pushes current stack to parent
-      ( ... -> )
-    **/
-    return: () => {  // 'stack send'?
-      if (state.parent) {
-        state.parent.stack.push(...state.stack.splice(0));
-      }
-    },
-
-    /**
-      # `suspend`
-      stops execution, push queue to stack, loses other state
-      ( ... -> )
-    **/
-    suspend: () => Seq.of(state.queue.splice(0)),   // rename stop?
-
-    /**
-      # `all`
-      executes each element in a child environment
-      ( ... [ A B C ]-> ... [ a b c ])
-    **/
-    all: arr => Promise.all(arr.map(a => createChildPromise(a))),
-
-    /**
-      # `race`
-      executes each element in a child environment, returns first to finish
-      ( ... [ A B C ]-> ... [ x ])
-    **/
-    race: arr => Promise.race(arr.map(a => createChildPromise(a)))
-  });
-
   /**
-    # `require`
+    ## `require`
     loads and runs a ff or json file
+
+    ( {string} -> {any} )
   **/
   defineAction('require', name => {  // todo: catch error, make async? use System?
     const ext = path.extname(name);
@@ -568,7 +322,268 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
   });
 
   /**
-    # `sesssave`
+     # Stack words
+
+  **/
+  defineAction({
+    /**
+      ## `<-` (stack)
+      replaces the stack with the item found at the top of the stack
+
+      ( [A] -> A )
+
+      ```
+      f♭> 1 2 [ 3 4 ] <-
+      [ 3 4 ]
+      ```
+    **/
+    '<-': s => {
+      clear();
+      return new Seq(s);
+    },
+
+    /**
+      ## `->` (queue)
+      replaces the queue with the item found at the top of the stack
+
+      ( [A] -> )
+
+      ```
+      f♭> 1 2 [ 3 4 ] -> 5 6
+      [ 1 2 3 4 ]
+      ```
+    **/
+    '->': s => {
+      state.queue.splice(0);
+      state.queue.push(...s);
+    },
+
+    /**
+      ## `undo`
+      restores the stack to state before previous eval
+    **/
+    'undo': () => {
+      if (state.prevState && state.prevState.prevState) {
+        state = state.prevState.prevState;
+      }
+    },
+
+    /**
+      ## `auto-undo`
+      set flag to auto-undo on error
+      ( {boolean} -> )
+    **/
+    'auto-undo': a => {
+      state.undoable = a;
+    }
+  });
+
+  /**
+     # Dictionary words
+
+  **/
+  defineAction({
+    /**
+      ## `define`
+      defines a set of words from an object
+
+      ( {object} -> )
+
+      ```
+      f♭> { sqr: "dup *" } define
+      [ ]
+      ```
+    **/
+    'define': x => defineAction(x),
+
+    /**
+      ## `sto`
+      stores a quote in the dictionary
+
+      ( [A] {string|atom} -> )
+
+      ```
+      f♭> [ dup * ] "sqr" sto
+      [ ]
+      ```
+    **/
+    'sto': (lhs, rhs) => { // consider :=
+      state.dict[rhs] = lhs;
+    },
+
+    /**
+      ## `def`
+      defines a word
+
+      ( [A] {string|atom} -> )
+
+      ```
+      f♭> [ dup * ] "sqr" def
+      [ ]
+      ```
+    **/
+    'def': (cmd, name) => {  // consider def and let, def top level, let local
+      if (useStrict && Reflect.apply(Object.prototype.hasOwnProperty, state.dict, [name])) {
+        throw new Error('Cannot overrite definitions in strict mode');
+      }
+      if (!isFunction(cmd) && !Action.isAction(cmd)) {
+        cmd = new Action(cmd);
+      }
+      defineAction(name, cmd);
+    },
+
+    /**
+      ### `memoize`
+      memoize a defined word
+
+      ( {string|atom} -> )
+    **/
+    'memoize': (name, n) => {
+      const cmd = lookupAction(name);
+      if (cmd) {
+        const fn = (...a) => {
+          const s = self
+            .createChild()
+            .eval([...a])
+            .eval(cmd)
+            .stack;
+          return Seq.of(s);
+        };
+        defineAction(name, memoize(fn, {length: n, primitive: true}));
+      }
+    },
+
+    /**
+      ## `delete`
+      deletes a defined word
+
+      ( {string|atom} -> )
+    **/
+    'delete': a => {
+      if (useStrict) {
+        throw new Error('Cannot delete definitions in strict mode');
+      }
+      Reflect.deleteProperty(state.dict, a);
+    },
+
+    /**
+      ## `rcl`
+      recalls the definion of a word
+
+      ( {string|atom} -> [A] )
+
+      ```
+      f♭> "sqr" rcl
+      [ [ dup * ] ]
+      ```
+    **/
+    'rcl': a => {
+      const r = lookupAction(a);
+      if (!r) {
+        return null;
+      }
+      if (useStrict && isFunction(r)) {
+        return Action.of(r);
+      } // carefull pushing functions to stack
+      return r.value;
+    },
+
+    /**
+      ## `expand`
+      expand a quote
+
+      ( [A] -> [a b c])
+
+      ```
+      f♭> [ sqr ] expand
+      [ [ dup * ] ]
+      ```
+    **/
+    'expand': expandAction,
+
+    /**
+      ## `see`
+      recalls the definition of a word as a formatted string
+
+      ( {string|atom} -> {string} )
+
+      ```
+      f♭> "sqr" see
+      [ '[ dup * ]' ]
+      ```
+    **/
+    'see': a => {
+      const r = lookupAction(a);
+      if (!r) {
+        return null;
+      }
+      return formatValue(r.value, 0, {colors: false, indent: false});
+    },
+
+    /**
+      ## `words`
+      returns a list of defined words
+
+      ( -> {array} )
+    **/
+    'words': () => {
+      const result = [];
+      for (const prop in state.dict) {  // eslint-disable-line guard-for-in
+        result.push(prop);
+      }
+      return result;
+    },
+
+    /**
+      ## `clr`
+      clears the stack
+
+      ( ... -> )
+
+      ```
+      f♭> 1 2 3 clr
+      [  ]
+      ```
+    **/
+    'clr': clear,
+
+    /**
+      ## `\\`
+      push the top of the queue to the stack
+
+      ( -> {any} )
+    **/
+    '\\': () => state.queue.shift()  // danger?
+  });
+
+  /**
+     # module functions, experimental
+
+  **/
+  defineAction({
+    /**
+      ## `set-module`
+    **/
+    'set-module': a => {
+      state.module = a;
+      state.dict[a] = {};  // maybe should be root?
+    },
+
+    /**
+      ## `get-module`
+    **/
+    'get-module': () => state.module,
+
+    /**
+      ## `unset-module`
+    **/
+    'unset-module': () => {
+      Reflect.deleteProperty(state, 'module');
+    }
+  });
+
+  /**
+    ## `sesssave`
     saves the current stack and dictionary as a JSON file
   **/
   defineAction('sesssave', () => {
@@ -577,6 +592,114 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
       dict: state.dict,
       stack: state.stack
     }, null, 2), 'utf8');
+  });
+
+  /**
+     # Child tasks
+
+  **/
+  defineAction({
+    /**
+      ## `fork`
+      evalues the quote in a child environment
+
+      ( [A] -> [a] )
+
+      ```
+      f♭> [ 1 2 * ] fork
+      [ [ 2 ] ]
+      ```
+    **/
+    fork: a => {  // like in with child scope
+      return freeze(self
+        .createChild()
+        .eval(a)
+        .stack);
+    },
+
+    /**
+      ## `spawn`
+      evalues the quote in a child environment, returns a future
+
+      ( [A] -> {future} )
+    **/
+    spawn: a => Future.of(a, createChildPromise(a)),
+
+    /**
+      ## `await`
+      evalues the quote in a child environment, waits for result
+
+      ( [A] -> [a] )
+    **/
+    [`await`]: a => {  // rollup complains on await
+      if (Future.isFuture(a)) {
+        return a.promise;
+      }
+      return createChildPromise(a);
+    },
+
+    /**
+      ## `send`
+      pushes one element from stack to parent.
+
+      ( A -> )
+
+      ```
+      f♭> [ 1 2 3 send 4 ] fork
+      [ 3 [ 1 2 4 ] ]
+      ```
+    **/
+    send: a => {
+      if (state.parent) {
+        state.parent.stack.push(a);
+      }
+    },
+
+    /**
+      ## `return`
+      pushes current stack to parent
+
+      ( ... -> )
+
+      ```
+      f♭> [ 1 2 3 return 4 ] fork
+      [ 1 2 3 [ 4 ] ]
+      ```
+    **/
+    return: () => {  // 'stack send'?
+      if (state.parent) {
+        state.parent.stack.push(...state.stack.splice(0));
+      }
+    },
+
+    /**
+      ## `suspend`
+      stops execution, push queue to stack, loses other state
+
+      ( ... -> )
+
+      ```
+      f♭> [ 1 2 * suspend 3 4 *  ] fork
+      [ [ 2 3 4 * ] ]
+      ```
+    **/
+    suspend: () => Seq.of(state.queue.splice(0)),   // rename stop?
+
+    /**
+      ## `all`
+      executes each element in a child environment
+
+      ( [ A B C ]-> [ [a] [b] [c] ])
+    **/
+    all: arr => Promise.all(arr.map(a => createChildPromise(a))),
+
+    /**
+      ## `race`
+      executes each element in a child environment, returns first to finish
+
+      ( [ A B C ]-> [x])
+    **/
+    race: arr => Promise.race(arr.map(a => createChildPromise(a)))
   });
 
   if (useStrict) {

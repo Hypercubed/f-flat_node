@@ -29,7 +29,6 @@
     "mini-signals": "^1.1.1",
     "progress": "^1.1.8",
     "rfr": "^1.2.3",
-    "tripwire": "^4.1.0",
     "typed-function": "^0.10.4",
     "winston": "^2.2.0"
   },
