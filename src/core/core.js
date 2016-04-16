@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-fetch';
 import {freeze, slice} from 'icepick';
 
+import {log} from '../logger';
 import {typed, Seq, Action} from '../types/index';
 import {generateTemplate} from '../utils';
 
@@ -236,5 +237,23 @@ export default {
   'fetch': url => fetch(url)
     .then(res => {
       return res.text();
-    })
+    }),
+
+  /**
+     ## `get-log-level`
+     gets the current logging level
+
+     ( -> {string} )
+  **/
+  'get-log-level': () => log.level,
+
+  /**
+    ## `set-log-level`
+    sets the current logging level
+
+    ( {string} -> )
+  **/
+  'set-log-level': a => {
+    log.level = a;
+  }
 };

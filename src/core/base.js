@@ -204,7 +204,7 @@ const choose = typed('choose', {
 
 /**
    ## `@` (at)
-   returns the item at the specified index in a sequence
+   returns the item at the specified index/key
 
    ( {seq} {index} -> {item} )
 
@@ -214,6 +214,7 @@ const choose = typed('choose', {
    ```
 **/
 const at = typed('at', {
+  /// - {string}, {number|null} - gets char at
   'string, number | null': (lhs, rhs) => {
     rhs = Number(rhs) | 0;
     if (rhs < 0) {
@@ -222,6 +223,7 @@ const at = typed('at', {
     const r = lhs.charAt(rhs);
     return (r === undefined) ? null : r;
   },
+  /// - {array}, {number|null} - gets item by index, zero based index
   'Array, number | null': (lhs, rhs) => {
     rhs = Number(rhs) | 0;
     if (rhs < 0) {
@@ -230,6 +232,7 @@ const at = typed('at', {
     const r = lhs[rhs];
     return (r === undefined) ? null : r;
   },
+  /// - {object}, {atom|string|null} - gets item by key
   'any, Action | string | null': (a, b) => {
     const r = pluck(a, String(b));
     return (r === undefined) ? null : r;

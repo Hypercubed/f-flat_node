@@ -51,6 +51,7 @@
 - should be lower kebab-case
 - inquisitive words (typically boolean returning functions) should end with question mark (`?`)
   - `string?`, `zero?`, `prime?`
+- unsafe operation (typically operations that cannot be undone by restoring the stack) should end with exclamation mark (`!`)
 - procedures should be verbs
   - `dup`, `dip`, `drop`
 - types should be nouns

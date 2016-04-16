@@ -161,7 +161,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     },
     resume: run,
 
-    parse: lexer,
+    // parse: lexer,
 
     getState: () => state,
     getStatus: () => status,
@@ -196,24 +196,6 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
   defineAction({
 
     /**
-       ## `get-log-level`
-       gets the current logging level
-
-       ( -> {string} )
-    **/
-    'get-log-level': () => log.level,
-
-    /**
-      ## `set-log-level`
-      sets the current logging level
-
-      ( {string} -> )
-    **/
-    'set-log-level': a => {
-      log.level = a;
-    },
-
-    /**
       ## `q<`
       moves the top of the stack to the tail of the queue
 
@@ -246,7 +228,12 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
 
     /**
       ## `d++`
-      increments the depth counter
+      increments the d counter, if d > 0 words are not push to the stack as literals
+
+      ```
+      f♭> d++ drop :d--
+      [ drop ]
+      ```
     **/
     'd++': () => {
       state.depth++;
@@ -254,7 +241,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
 
     /**
       ## `d--`
-      decrements the depth counter
+      decrements the d counter
     **/
     'd--': () => {
       state.depth = Math.max(0, state.depth - 1);
