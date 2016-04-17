@@ -1,11 +1,71 @@
-[ 1 exp ] 'e' def            // Euler's number
-[ -1 acos ] 'pi' def         // pi
-[ 2 ln ] 'ln2' def           // natural logarithm of 2
-[ 10 ln ] 'ln10' def         // natural logarithm of 10
-[ 1 ln2 / ] 'log2e' def        // base 2 logarithm of E
-[ 1 ln10 / ] 'log10e' def      // base 10 logarithm of E
-[ pi 2 * ] 'tau' def
-[ 1 5 sqrt + 2 / ] 'phi' def   // golden ratio
-[ 2 sqrt ] 'sqrt2' def         // square root of 2
-[ 1 2 / sqrt ] 'sqrt1_2' def   // square root of 1/2
-[ pi 180 / ] 'radians' def
+// lazy constants
+e:  [ 1 exp ] ;             // Euler's number
+pi: [ -1 acos ] ;           // pi
+ln2: [ 2 ln ] ;             // natural logarithm of 2
+ln10: [ 10 ln ] ;           // natural logarithm of 10
+log2e: [ 1 ln2 / ] ;        // base 2 logarithm of E
+log10e: [ 1 ln10 / ] ;      // base 10 logarithm of E
+tau: [ pi 2 * ] ;
+phi: [ 1 5 sqrt + 2 / ] ;   // golden ratio
+sqrt2: [ 2 sqrt ] ;         // square root of 2
+sqrt1_2: [ 1 2 / sqrt ] ;   // square root of 1/2
+radians: [ pi 180 / ] ;
+
+// incrementors
+--: [ 1 - ] ;
+++: [ 1 + ] ;
+pred: [ dup -- ] ;
+succ: [ dup ++ ] ;
+
+// Log errfn
+erfc: [ 1 swap erf - ] ;
+log: [ ln ln10 / ] ;
+
+// Misc
++-: [ [ + ] [ - ] bi2 ] ;
+-+: [ [ - ] [ + ] bi2 ] ;
+neg: [ 0 swap - ] ;
+inv: [ 1 swap / ] ;
+sq: [ dup * ] ;
+sum-of-squares: [ 0 [ sq + ] reduce ] ;
+square-of-sum: [ sum sq ] ;
+dot: [ [ * ] zipwith sum ] ;
+
+// angles
+toradians: [ radians * ] ;
+todegrees: [ radians / ] ;
+
+// hyperbolic trig
+acosh: [ dup dup * -- sqrt + ln ] ;
+cosh: [ exp dup inv + 2 / ] ;
+sinh: [ exp dup inv - 2 / ] ;
+tanh: [ 2 * exp pred swap ++ / ] ;
+atanh: [ 1 swap dup [ + 1 ] dip - / ln 0.5 * ] ;
+
+// inquisitive
+integer?: [ dup [ floor = ] [ im 0 = ] bi * ] ;
+positive?: [ 0 > ] ;
+negitive?: [ 0 < ] ;
+zero?: [ 0 = ] ;
+divisor?: [ % zero? ] ;
+even?: [ 2 divisor? ] ;
+odd?: [ even? not ] ;
+simple?: [ [ even? ] [ 3 divisor? ] [ 5 divisor? ] tri + + ] ;
+mersenne?: [ 2 swap ^ 1 - prime? ] ;
+
+// Kunth
+^^^: [ -- dup [ [ dup ] swap times [ ^^ ] ] dip times ] ;
+^^: [ -- dup [ [ dup ] swap times [ ^ ] ] dip times ] ;
+pow: [ -- dup [ [ dup ] swap times [ * ] ] dip times ] ;
+mul: [ -- dup [ [ dup ] swap times [ + ] ] dip times ] ;
+
+// Factorials
+~!: [ ++ gamma ] ;
+c!: [ pred [ count ] dip [ * ] swap times ] ;
+r!: [ dup zero? [ drop 1 ] [ pred 'r!' eval * ] branch ] ;
+y!: [ [ [ over zero? ] [ drop ++ ] [ [ pred ] dip eval * ] ifte ] y eval ] ;
+!: [ dup integer? [ r! ] [ ~! ] branch ] ;
+
+// Prob
+npr: [ [ [ ! ] keep ] dip - ! / ] ;
+ncr: [ [ npr ] keep ! / round ] ;

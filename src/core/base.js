@@ -13,28 +13,56 @@ import {pluck, eql, arrayRepeat, arrayMul} from '../utils';
 
   ( x y -> z)
 
-  ```
-  f♭> 1 2 +
-  [ 3 ]
-  ```
-
 **/
 const add = typed('add', {
-  /// - list concatenation/function composition
+  /**
+    - list concatenation/function composition
+
+    ```
+    f♭> [ 1 2 ] [ 3 ] +
+    [ [ 1 2 3 ] ]
+    ```
+  **/
   'Array, Array': (lhs, rhs) => lhs.concat(rhs),
   'Array, any': (lhs, rhs) => lhs.concat(rhs),
 
-  /// - boolean or
+  'Future, any': (f, rhs) => f.map(lhs => lhs.concat(rhs)),
+
+  /**
+    - boolean or
+
+    ```
+    f♭> true false +
+    [ true ]
+    ```
+  **/
   'boolean, boolean': (lhs, rhs) => lhs || rhs,
 
-  /// - object assign/assoc
+  /**
+    - object assign/assoc
+
+  **/
   'Object, Object': (lhs, rhs) => assign(lhs, rhs),
 
-  /// - arithmetic addition
+  /**
+    - arithmetic addition
+
+    ```
+    f♭> 0.1 0.2 +
+    [ 0.3 ]
+    ```
+  **/
   'Complex, Complex': (lhs, rhs) => lhs.plus(rhs),
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.plus(rhs),
 
-  /// - string concatenation
+  /**
+    - string concatenation
+
+    ```
+    f♭> "abc" "xyz" +
+    [ "abcxyz" ]
+    ```
+  **/
   'string | number | null, string | number | null': (lhs, rhs) => lhs + rhs
 });
 
@@ -43,10 +71,6 @@ const add = typed('add', {
 
    ( x y -> z)
 
-   ```
-   f♭> 2 1 -
-   [ 1 ]
-   ```
 **/
 const sub = typed('sub', {
   /* 'Object, any': (lhs, rhs) => {  // dissoc
@@ -59,10 +83,24 @@ const sub = typed('sub', {
     return Action.of([a.slice(0, -1), c, b, Action.of('-'), Action.of('+')]);
   }, */
 
-  /// - boolean xor
+  /**
+    - boolean or
+
+    ```
+    f♭> true true -
+    [ false ]
+    ```
+  **/
   'boolean, boolean': (lhs, rhs) => (lhs || rhs) && !(lhs && rhs),  // boolean xor
 
-  /// - arithmetic subtraction
+  /**
+    - arithmetic subtraction
+
+    ```
+    f♭> 2 1 -
+    [ 1 ]
+    ```
+  **/
   'Complex, Complex': (lhs, rhs) => lhs.minus(rhs),
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.minus(rhs),
   'any, any': (lhs, rhs) => lhs - rhs
@@ -73,15 +111,13 @@ const sub = typed('sub', {
 
    ( x y -> z)
 
-   ```
-   f♭> 2 3 *
-   [ 6 ]
-   ```
 **/
 const mul = typed('mul', {
   /// - intersparse
   'Array, Array | Action | Function': arrayMul,
   'string, Array | Action | Function': (lhs, rhs) => arrayMul(lhs.split(''), rhs),
+
+  'Future, any': (f, rhs) => f.map(lhs => mul(lhs, rhs)),
 
   /// - string join
   'Array, string': (lhs, rhs) => lhs.join(rhs),
@@ -95,7 +131,14 @@ const mul = typed('mul', {
   'Array, number': (a, b) => arrayRepeat(a, b),
   // 'BigNumber | number, Array': (b, a) => arrayRepeat(a, b),
 
-  // - arithmetic multiplication
+  /**
+    - arithmetic multiplication
+
+    ```
+    f♭> 2 3 *
+    [ 6 ]
+    ```
+  **/
   'Complex, Complex': (lhs, rhs) => lhs.times(rhs).normalize(),
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.times(rhs),
   // 'BigNumber | number, Array': (lhs, rhs) => lhs * rhs,  // map?
@@ -127,13 +170,21 @@ const div = typed('div', {
     }
     return slice(a, 0, b);
   },
+  'Future, any': (f, rhs) => f.map(lhs => div(lhs, rhs)),
   /* 'string | Array, number': (lhs, rhs) => {
     rhs = +rhs | 0;
     var len = lhs.length / rhs;
     return lhs.slice(0, len);
   }, */
 
-  /// - arithmetic division
+  /**
+    - arithmetic division
+
+    ```
+    f♭> 6 2 /
+    [ 3 ]
+    ```
+  **/
   'Complex, Complex': (lhs, rhs) => lhs.div(rhs),
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.div(rhs),
   'number | null, number | null': (lhs, rhs) => lhs / rhs
@@ -156,6 +207,7 @@ const unshiftFn = typed('unshift', { // >>, Danger! No mutations
   'any | Action | Object, Array': (lhs, rhs) => unshift(rhs, lhs),
   'Array, string': (lhs, rhs) => freeze([lhs, Action.of(rhs)]),
   'Array | Action, Action': (lhs, rhs) => freeze([lhs, rhs]),
+  'Future, any': (f, rhs) => f.map(lhs => unshiftFn(lhs, rhs)),
 
   /// - object merge
   'Object, Object': (lhs, rhs) => merge(rhs, lhs),
@@ -179,6 +231,7 @@ const unshiftFn = typed('unshift', { // >>, Danger! No mutations
 const pushFn = typed('push', {  // <<, Danger! No mutations
   /// - push/snoc
   'Array, any | Action | Object': (lhs, rhs) => push(lhs, rhs),
+  'Future, any': (f, rhs) => f.map(lhs => pushFn(lhs, rhs)),
 
   /// - object merge
   'Object, Object': (lhs, rhs) => merge(lhs, rhs),
@@ -199,7 +252,8 @@ const pushFn = typed('push', {  // <<, Danger! No mutations
   ```
 **/
 const choose = typed('choose', {
-  'boolean | null, any, any': (b, t, f) => b ? t : f
+  'boolean | null, any, any': (b, t, f) => b ? t : f,
+  'Future, any, any': (ff, t, f) => ff.map(b => b ? t : f)
 });
 
 /**
@@ -232,6 +286,7 @@ const at = typed('at', {
     const r = lhs[rhs];
     return (r === undefined) ? null : r;
   },
+  'Future, any': (f, rhs) => f.map(lhs => at(lhs, rhs)),
   /// - {object}, {atom|string|null} - gets item by key
   'any, Action | string | null': (a, b) => {
     const r = pluck(a, String(b));

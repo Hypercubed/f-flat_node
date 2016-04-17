@@ -27,7 +27,7 @@ import _core from './core/core.js';
 import _math from './core/math.js';
 import _types from './core/types.js';
 import _experimental from './core/experimental.js';
-import _functional from './core/functional.js';
+// import _functional from './core/functional.js';
 import _node from './core/node.js';
 
 const useStrict = true;
@@ -86,10 +86,10 @@ function createRootEnv () {
   env.defineAction(_math);
   env.defineAction(_types);
   env.defineAction(_experimental);
-  env.defineAction(_functional);
+  // env.defineAction(_functional);
   env.defineAction(_node);
 
-  env.eval('"./ff-lib/boot.ff" require');
+  env.eval("'./ff-lib/boot.ff' load");
 
   return env;
 }
@@ -291,7 +291,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
 
     ( {string} -> {any} )
   **/
-  defineAction('require', name => {  // todo: catch error, make async? use System?
+  defineAction('load', name => {  // todo: catch error, make async? use System?
     const ext = path.extname(name);
     if (ext === '.ff') {
       log.debug('loading', name);
@@ -399,6 +399,27 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     },
 
     /**
+      ## `;`
+      defines a word
+
+      ( {string|atom} [A] -> )
+
+      ```
+      f♭> sqr: [ dup * ] ;
+      [ ]
+      ```
+    **/
+    ';': (name, cmd) => {
+      if (useStrict && Reflect.apply(Object.prototype.hasOwnProperty, state.dict, [name])) {
+        throw new Error(`Cannot overrite definitions in strict mode: ${name}`);
+      }
+      if (!isFunction(cmd) && !Action.isAction(cmd)) {
+        cmd = new Action(cmd);
+      }
+      defineAction(name, cmd);
+    },
+
+    /**
       ## `def`
       defines a word
 
@@ -411,7 +432,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
     **/
     'def': (cmd, name) => {  // consider def and let, def top level, let local
       if (useStrict && Reflect.apply(Object.prototype.hasOwnProperty, state.dict, [name])) {
-        throw new Error('Cannot overrite definitions in strict mode');
+        throw new Error(`Cannot overrite definitions in strict mode: ${name}`);
       }
       if (!isFunction(cmd) && !Action.isAction(cmd)) {
         cmd = new Action(cmd);

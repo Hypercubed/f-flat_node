@@ -39,6 +39,7 @@ export const formatValue = typed('formatValue', {
   'string, any, any': (value, depth, opts) => formatString(value, opts),
 
   'Array, any, any': formatArray,
+  'Future, any, any': (value, depth, opts) => inspect(value, opts),
   'Object, any, any': formatMap,
 
   'any, any, any': (value, depth, opts) => inspect(value, opts)

@@ -5,6 +5,20 @@ import {log} from '../logger';
 import {typed, Seq, Action} from '../types/index';
 import {generateTemplate} from '../utils';
 
+const _slice = typed('slice', {
+  'Array | string, number | null, number | null': (lhs, b, c) => slice(lhs, b, c === null ? undefined : c),
+  'Future, any, any': (f, b, c) => f.map(lhs => slice(lhs, b, c)),
+  'any, number | null, number | null': (lhs, b, c) => slice(lhs, [b, c === null ? undefined : c])
+});
+
+const splitat = typed('splitat', {
+  'Array, number | null': (arr, a) => Seq.of([  // use head and tail?
+    slice(arr, 0, a),
+    slice(arr, a)
+  ]),
+  'Future, any': (f, a) => f.map(arr => splitat(arr, a))
+});
+
 /**
    # Core Internal Words
 **/
@@ -30,6 +44,7 @@ export default {
     ```
   **/
   'eval': typed('_eval', {
+    Future: f => f.promise.then(a => Action.of(a)),
     any: a => Action.of(a)
   }),
 
@@ -83,7 +98,10 @@ export default {
     [ 1 2 * ]
     ```
   **/
-  'unstack': a => new Seq(a),
+  'unstack': typed('unstack', {
+    Array: a => Seq.of(a),
+    Future: f => f.promise.then(a => Seq.of(a))
+  }),
 
   /**
      ## `length`
@@ -98,6 +116,7 @@ export default {
   **/
   'length': typed('length', {
     'Array | string': a => a.length,
+    'Future': f => f.promise.then(a => a.length),
     'Object': a => Object.keys(a).length,
     'null': a => 0  // eslint-disable-line
   }),
@@ -108,10 +127,7 @@ export default {
 
      ( seq from to -> seq )
   **/
-  'slice': typed('slice', {
-    'Array | string, number | null, number | null': (lhs, b, c) => slice(lhs, b, c === null ? undefined : c),
-    'any, number | null, number | null': (lhs, b, c) => slice(lhs, [b, c === null ? undefined : c])
-  }),
+  'slice': _slice,
 
   /**
      ## `splitat`
@@ -119,12 +135,7 @@ export default {
 
      ( seq at -> seq )
   **/
-  'splitat': typed('splitat', {
-    'Array, number | null': (arr, a) => Seq.of([  // use head and tail?
-      slice(arr, 0, a),
-      slice(arr, a)
-    ])
-  }),
+  splitat,
 
   /**
      ## `indexof`
@@ -133,6 +144,7 @@ export default {
      ( seq item -> number )
   **/
   'indexof': (a, b) => a.indexOf(b),
+
   /* 'repeat': (a, b) => {
     return Action.of(arrayRepeat(a, b));
   }, */

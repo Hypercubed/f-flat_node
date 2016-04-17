@@ -1,16 +1,19 @@
-{
-  pop: "0 -1 slice",
-  shift: "1 null slice",
-  map: "* in",
-  step: "* eval",
-  import: "require define",
-  >: "cmp 1 =",
-  <: "cmp -1 =",
-  >=: "< not",
-  =<: "> not",
-  get: 'q< @ dup null = swap q> swap choose',
-  zipwith: 'zipinto in',
-  in: ':quote swap eval :dequote',
-  yield: 'return suspend',
-  delay: '[ sleep ] >> slip eval'
-}
+import: [ require define ] ;
+
+map: [ * in ] ;
+foreach: [ * eval ] ;
+in: [ ( swap eval ) ] ;
+
+pop: [ 0 -1 slice ] ;
+shift: [ 1 null slice ] ;
+
+not: [ false = ] ;
+>: [ cmp 1 = ] ;
+<: [ cmp -1 = ] ;
+>=: [ < not ] ;
+=<: [ > not ] ;
+!=: [ = not ] ;
+get: [ q< @ dup null? swap q> swap choose ] ;
+zipwith: [ zipinto in ] ;
+yield: [ return suspend ] ;
+delay: [ [ sleep ] >> slip eval ] ;

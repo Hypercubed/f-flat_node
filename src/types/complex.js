@@ -25,7 +25,7 @@ export class Complex {
     if (this.im.isZero()) {
       return s;
     }
-    if (this.im.isPos()) {
+    if (!this.im.isNeg()) {
       s += '+';
     }
     return `${s}${this.im.toString()}i`;

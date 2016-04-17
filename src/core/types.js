@@ -2,7 +2,7 @@ import {typed, Action, Just} from '../types/index';
 
 export default {
   'types': typed.types,
-  'type': typed('string', {
+  'type': typed('type', {
     Array: x => 'array',       // eslint-disable-line no-unused-vars
     BigNumber: x => 'number',  // eslint-disable-line no-unused-vars
     Complex: x => 'complex',   // eslint-disable-line no-unused-vars
@@ -20,12 +20,12 @@ export default {
   ':': a => Just.of(Action.of(a)),
   'array': n => new Array(n),
   'integer': a => a | 0,
-  'null': () => null,
   'null?': 'null =',
   'nan': NaN,
   'string?': 'type "string" =',
   'boolean?': 'type "boolean" =',
   'of': (a, b) => (a.constructor) ? new a.constructor(b) : undefined,
   'empty': a => (a.empty) ? a.empty() : new a.constructor(),
-  'is?': (a, b) => a === b
+  'is?': (a, b) => a === b,
+  'nothing?': a => a === null || typeof a === 'undefined'
 };

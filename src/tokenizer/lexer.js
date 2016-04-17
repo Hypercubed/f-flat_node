@@ -32,16 +32,29 @@ const atAction = Action.of('@');
 const templateAction = Action.of('template');
 const evalAction = Action.of('eval');
 
+const reEscape = /\\u([\d\w]{4})/gi;
+const reBrackets = /([\{\}\(\)\[\]])/g;
+const reWS = /[\,\n\s]+/g;
+
+function unescape (val) {
+  return val
+    .replace(reEscape, (match, grp) => String.fromCharCode(parseInt(grp, 16)));
+}
+
+function innerParse (val) {
+  return val
+    .replace(reBrackets, ' $1 ')  // add white space around braces
+    .split(reWS)                   // split on whitespace
+    .reduce((p, c) => c.length > 0 ? p.concat(convertLiteral(c)) : p, []);
+}
+
 function processLexerTokens ({type, val}) {
   switch (type) {
     case 0:  // general
     case 4:  // regex
-      return val
-        .replace(/([\{\}\(\)\[\]])/g, ' $1 ')  // add white space around braces
-        .split(/[\,\n\s]+/g)                   // split on whitespace
-        .reduce((p, c) => c.length > 0 ? p.concat(convertLiteral(c)) : p, []);
+      return innerParse(val);
     case 2: // string literal
-      return val.slice(1, -1);
+      return convertString(val);
     case 3: // string template
       return [val.slice(1, -1), templateAction, evalAction];
     case 1: // comment
@@ -50,6 +63,11 @@ function processLexerTokens ({type, val}) {
       console.log('Unknown type in lexer', type, val);
       return process.exit();
   }
+}
+
+function convertString (val) {
+  const v = val.slice(1, -1);
+  return (val.charCodeAt(0) === 34) ? unescape(v) : v;
 }
 
 function convertLiteral (value) {

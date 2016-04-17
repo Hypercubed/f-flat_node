@@ -28,7 +28,5 @@ export default {
     return crypto.randomBytes(4).readUInt32BE(0, true);
   },
   'env': () => process.env,
-  'clear-screen': () => {
-    stdout.write('\u001B[2J\u001B[0;0f');
-  }
+  'cls': '"\u001B[2J\u001B[0;0f" println'
 };

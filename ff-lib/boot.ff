@@ -1,10 +1,6 @@
-'./ff-lib/core.ff' require define
-
-'./ff-lib/suffle.ff' import
-
-'./ff-lib/math.json' import
-'./ff-lib/math.ff' import
-
-'./ff-lib/usr.json' import
-
-'./ff-lib/usr.ff' require
+'./ff-lib/core.ff' load
+'./ff-lib/suffle.ff' load
+'./ff-lib/math.ff' load
+'./ff-lib/usr.ff' load
+'./ff-lib/combinators.ff' load
+'./ff-lib/math-sym.ff' load

@@ -176,17 +176,25 @@ export class Future extends Base {
     return this.value;
   }
 
+  map (fn) {
+    return Future.of(this.action, this.promise.then(fn));
+  }
+
   get type () {
     return '@@Future';
   }
 
   static isFuture (item) {
-    const Species = this[Symbol.species];
-    return item && item.type && item.type === Species.prototype.type;
+    return item && item.type && item.type === '@@Future';
   }
 }
 
 typed.addType({
   name: 'Action',
   test: item => Action.isAction(item)
+});
+
+typed.addType({
+  name: 'Future',
+  test: item => Future.isFuture(item)
 });
