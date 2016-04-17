@@ -12,12 +12,17 @@ import {functionLength, functionName} from 'fantasy-helpers/src/functions';
 import MiniSignal from 'mini-signals';
 import {freeze} from 'icepick';
 
-import {log, bar} from './logger';
-import {FFlatError} from './fflat-error';
-
-import {pluck, isPromise, isDefined} from './utils';
-import {formatState, formatValue} from './pprint';
-import {lexer} from './tokenizer/lexer';
+import {
+  log,
+  bar,
+  FFlatError,
+  pluck,
+  isPromise,
+  isDefined,
+  formatState,
+  formatValue,
+  lexer
+} from './utils/index';
 
 import {Action, Seq, Future} from './types/index';
 

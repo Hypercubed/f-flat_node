@@ -1,7 +1,7 @@
 import {freeze, assign, merge, unshift, push, slice} from 'icepick';
 
 import {Action, typed, I} from '../types/index';
-import {pluck, eql, arrayRepeat, arrayMul} from '../utils';
+import {pluck, eql, arrayRepeat, arrayMul} from '../utils/index';
 
 /**
   # Base Internal Functions

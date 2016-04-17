@@ -2,7 +2,7 @@ import {inspect} from 'util';
 import fixedWidthString from 'fixed-width-string';
 import {stripColor, supportsColor, default as chalk} from 'chalk';
 
-import {typed} from './types/index';
+import {typed} from '../types/index';
 
 const styles = {
   number: chalk.magenta,

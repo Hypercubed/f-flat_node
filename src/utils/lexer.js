@@ -3,7 +3,7 @@
 import {lex} from 'literalizer';
 
 import {Action, BigNumber, typed} from '../types/index';
-// import {isNumeric} from '../utils';
+import {unescapeString} from './stringConversion';
 
 function processNumeric (value) {
   if (typeof value !== 'string') {
@@ -32,19 +32,15 @@ const atAction = Action.of('@');
 const templateAction = Action.of('template');
 const evalAction = Action.of('eval');
 
-const reEscape = /\\u([\d\w]{4})/gi;
-const reBrackets = /([\{\}\(\)\[\]])/g;
-const reWS = /[\,\n\s]+/g;
-
-function unescape (val) {
+/* function unescapeUnicode (val) {
   return val
-    .replace(reEscape, (match, grp) => String.fromCharCode(parseInt(grp, 16)));
-}
+    .replace(/\\u([\d\w]{4})/gi, (match, grp) => String.fromCharCode(parseInt(grp, 16)));
+} */
 
 function innerParse (val) {
   return val
-    .replace(reBrackets, ' $1 ')  // add white space around braces
-    .split(reWS)                   // split on whitespace
+    .replace(/([\{\}\(\)\[\]])/g, ' $1 ')  // add white space around braces
+    .split(/[\,\n\s]+/g)                   // split on whitespace
     .reduce((p, c) => c.length > 0 ? p.concat(convertLiteral(c)) : p, []);
 }
 
@@ -67,7 +63,7 @@ function processLexerTokens ({type, val}) {
 
 function convertString (val) {
   const v = val.slice(1, -1);
-  return (val.charCodeAt(0) === 34) ? unescape(v) : v;
+  return (val.charCodeAt(0) === 34) ? unescapeString(v) : v;
 }
 
 function convertLiteral (value) {
@@ -102,6 +98,10 @@ function convertLiteral (value) {
     return Symbol(value.slice(1));
   }
 
+  if (id.slice(-1) === ':') {
+    return Action.of(Action.of(value.slice(0, -1)));
+  }
+
   if (ch === 64) {  // @
     value = value.slice(1);
     value = parseInt(value) || String(value);  // eslint-disable-line radix
@@ -112,10 +112,6 @@ function convertLiteral (value) {
     value = value.slice(1);
     value = String(value);
     return [value, atAction, evalAction];
-  }
-
-  if (id.slice(-1) === ':') {
-    return Action.of(Action.of(value.slice(0, -1)));
   }
 
   return Action.of(value);

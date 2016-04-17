@@ -5,8 +5,8 @@ import program from 'commander';
 
 import {Stack} from '../src/stack';
 import pkg from '../package.json';
-import {log} from '../src/logger';
-import {formatValue} from '../src/pprint';
+import {log} from '../src/utils/logger';
+import {formatValue} from '../src/utils/pprint';
 
 const initialPrompt = 'f♭>';
 const inspectOptions = {

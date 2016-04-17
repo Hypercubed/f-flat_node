@@ -1,6 +1,6 @@
 import {getIn} from 'icepick';
 
-import {typed, Action} from './types/index';
+import {typed} from '../types/index';
 
 export const arrayRepeat = (a, len) => {
   len = Number(len) | 0;
@@ -84,28 +84,4 @@ export function eql (a, b) {
     return true;
   }
   return __eql(a, b);
-}
-
-const re0 = /\$\(.*\)/g;
-const cap = '%-cap-%';
-const caplen = cap.length;
-const re = new RegExp(`(${cap}\\$\\(.*\\))`, 'g');
-
-export function generateTemplate (template) {
-  const r = [''];
-
-  template
-    .replace(re0, x => cap + x)
-    .split(re).forEach(s => {
-      if (s.slice(0, caplen) === cap) {
-        r.push(s.slice(caplen + 1));
-        r.push(Action.of('eval'));
-        r.push(Action.of('string'));
-        r.push(Action.of('+'));
-      } else {
-        r.push(String(s));
-        r.push(Action.of('+'));
-      }
-    });
-  return r;
 }

@@ -1,7 +1,7 @@
 import erf from 'compute-erf';
 
 import {typed, BigNumber, Complex, Action} from '../types/index';
-import {lexer} from '../tokenizer/lexer';
+import {lexer} from '../utils/index';
 // import {arrayMul} from '../utils';
 
 // const pow = lexer('ln * exp');
