@@ -38,15 +38,6 @@
     "nock": "^8.0.0",
     "nyc": "^6.2.1"
   },
-  "babel": {
-    "presets": [
-      "es2015"
-    ],
-    "plugins": [
-      "transform-object-rest-spread",
-      "kneden"
-    ]
-  },
   "ava": {
     "files": [
       "test/*-spec.js"
@@ -55,23 +46,6 @@
       "babel-register",
       "babel-polyfill"
     ]
-  },
-  "xo": {
-    "esnext": true,
-    "semicolon": true,
-    "space": 2,
-    "rules": {
-      "space-before-function-paren": [
-        2,
-        {
-          "anonymous": "always",
-          "named": "always"
-        }
-      ],
-      "spaced-comment": 0,
-      "no-warning-comments": 0,
-      "prefer-reflect": 2
-    }
   },
   "@std/esm": {
     "esm": "all",
