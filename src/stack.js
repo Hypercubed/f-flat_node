@@ -1,5 +1,4 @@
-/* global window */
-import 'babel-polyfill';
+/* global window, global, process, require */
 
 import fs from 'fs';
 import path from 'path';
@@ -94,7 +93,7 @@ function createRootEnv () {
   // env.defineAction(_functional);
   env.defineAction(_node);
 
-  env.eval("'./ff-lib/boot.ff' load");
+  env.eval('\'./ff-lib/boot.ff\' load');
 
   return env;
 }
@@ -644,7 +643,7 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
 
       ( [A] -> [a] )
     **/
-    [`await`]: a => {  // rollup complains on await
+    ['await']: a => {  // rollup complains on await
       if (Future.isFuture(a)) {
         return a.promise;
       }
@@ -956,39 +955,39 @@ function createEnv (initalState = /* istanbul ignore next */ {}) {
         let tokenValue = action.value;
 
         switch (action.type) {
-          case '@@Action':
-            if (isImmediate(action)) {
-              if (Array.isArray(tokenValue)) {
-                return queueFront(tokenValue);
-              }
-              if (!isString(tokenValue)) {
-                return stackPush(tokenValue);
-              }
-              if (tokenValue[0] === IIF && tokenValue.length > 1) {
-                tokenValue = tokenValue.slice(1);
-              }
-
-              const lookup = lookupAction(tokenValue);
-
-              if (Action.isAction(lookup)) {
-                return queueFront(lookup.value);
-              } else if (isFunction(lookup)) {
-                return dispatchFn(lookup, functionLength(lookup), tokenValue);
-              } else if (lookup) {
-                return stackPush(lookup);
-              }
-              // throw new Error(`${action} is not defined`);
-              throw new FFlatError(`${action} is not defined`, state);
+        case '@@Action':
+          if (isImmediate(action)) {
+            if (Array.isArray(tokenValue)) {
+              return queueFront(tokenValue);
             }
-            return stackPush(action);
-          case '@@Seq':
-            return stackPush(...tokenValue);
-          case '@@Just':
-            return stackPush(tokenValue);
-          case '@@Future':
-            return action.isResolved() ? stackPush(...tokenValue) : stackPush(action);
-          default:
-            return stackPush(action);
+            if (!isString(tokenValue)) {
+              return stackPush(tokenValue);
+            }
+            if (tokenValue[0] === IIF && tokenValue.length > 1) {
+              tokenValue = tokenValue.slice(1);
+            }
+
+            const lookup = lookupAction(tokenValue);
+
+            if (Action.isAction(lookup)) {
+              return queueFront(lookup.value);
+            } else if (isFunction(lookup)) {
+              return dispatchFn(lookup, functionLength(lookup), tokenValue);
+            } else if (lookup) {
+              return stackPush(lookup);
+            }
+            // throw new Error(`${action} is not defined`);
+            throw new FFlatError(`${action} is not defined`, state);
+          }
+          return stackPush(action);
+        case '@@Seq':
+          return stackPush(...tokenValue);
+        case '@@Just':
+          return stackPush(tokenValue);
+        case '@@Future':
+          return action.isResolved() ? stackPush(...tokenValue) : stackPush(action);
+        default:
+          return stackPush(action);
         }
       }
 

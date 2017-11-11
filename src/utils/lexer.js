@@ -46,18 +46,18 @@ function innerParse (val) {
 
 function processLexerTokens ({type, val}) {
   switch (type) {
-    case 0:  // general
-    case 4:  // regex
-      return innerParse(val);
-    case 2: // string literal
-      return convertString(val);
-    case 3: // string template
-      return [val.slice(1, -1), templateAction, evalAction];
-    case 1: // comment
-      return undefined;
-    default:
-      console.log('Unknown type in lexer', type, val);
-      return process.exit();
+  case 0:  // general
+  case 4:  // regex
+    return innerParse(val);
+  case 2: // string literal
+    return convertString(val);
+  case 3: // string template
+    return [val.slice(1, -1), templateAction, evalAction];
+  case 1: // comment
+    return undefined;
+  default:
+    console.log('Unknown type in lexer', type, val);
+    return process.exit();
   }
 }
 

@@ -274,10 +274,10 @@ test('regular expressions, test', t => {
 });
 
 test('regular expressions, replace', t => {
-  t.deepEqual(fSync('"abc" "/a./" "X" replace'), ["Xc"]);
-  t.deepEqual(fSync('"abc" "/a.$/" "X" replace'), ["abc"]);
-  t.deepEqual(fSync('"abc" "/a.*$/" "X" replace'), ["X"]);
-  t.deepEqual(fSync('"bcd" "/a./" "X" replace'), ["bcd"]);
+  t.deepEqual(fSync('"abc" "/a./" "X" replace'), ['Xc']);
+  t.deepEqual(fSync('"abc" "/a.$/" "X" replace'), ['abc']);
+  t.deepEqual(fSync('"abc" "/a.*$/" "X" replace'), ['X']);
+  t.deepEqual(fSync('"bcd" "/a./" "X" replace'), ['bcd']);
 });
 
 test('pick', t => {

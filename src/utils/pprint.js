@@ -47,7 +47,7 @@ export const formatValue = typed('formatValue', {
 
 function formatString (value, opts) {
   value = JSON.stringify(value).replace(/^"|"$/g, '')
-      .replace(/'/g, "\\'")
+      .replace(/'/g, '\\\'')
       .replace(/\\"/g, '"');
   return stylize(`'${value}'`, 'string', opts);
 }

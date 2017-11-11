@@ -28,7 +28,7 @@ BigNumber.prototype.empty = () => zero;
 
 const _valueOf = BigNumber.prototype.valueOf;
 BigNumber.prototype.valueOf = BigNumber.prototype.toJSON = function () {
-  return Number(Reflect.apply(_valueOf, this));
+  return Number(_valueOf.apply(this));
 };
 
 BigNumber.prototype.inspect = function () {

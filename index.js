@@ -1,7 +1,3 @@
 
-import {Stack} from './src/stack';
-
-export {
-  Stack as default,
-  Stack
-};
+require = require('@std/esm')(module);
+module.exports = require('./src/stack').Stack;

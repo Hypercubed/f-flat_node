@@ -3,7 +3,7 @@ import {F, fSync} from './setup';
 
 test('should push strings', t => {
   t.deepEqual(fSync('"a" "b"'), ['a', 'b']);
-  t.deepEqual(fSync("'a' 'b'"), ['a', 'b']);
+  t.deepEqual(fSync('\'a\' \'b\''), ['a', 'b']);
   t.deepEqual(fSync('"ab de"'), ['ab de'], 'should push strings with spaces');
   t.deepEqual(fSync('""'), [''], 'should push empty strings');
   t.deepEqual(fSync('"Dog!🐶"'), ['Dog!🐶'], 'should support emoji');
@@ -17,7 +17,7 @@ test('should quickcheck strings', t => {
 
 test('should push strings with nested quotes', t => {
   t.deepEqual(fSync('"ab \'de\' fg"'), ['ab \'de\' fg']);
-  t.deepEqual(fSync("'ab \"de\" fg'"), ['ab \"de\" fg']);
+  t.deepEqual(fSync('\'ab "de" fg\''), ['ab \"de\" fg']);
 });
 
 test('should add', t => {
