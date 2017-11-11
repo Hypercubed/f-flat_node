@@ -1,15 +1,10 @@
-import {freeze, assign, merge, unshift, push, slice} from 'icepick';
+import { freeze, assign, merge, unshift, push, slice } from 'icepick';
 
-import {Action, typed, I} from '../types/index';
-import {pluck, eql, arrayRepeat, arrayMul} from '../utils/index';
-
-/**
-  # Base Internal Functions
-
-**/
+import { Action, typed, I } from '../types';
+import { pluck, eql, arrayRepeat, arrayMul } from '../utils';
 
 /**
-  ## `+` (plus)
+  ## `+` (add)
 
   ( x y -> z)
 
@@ -91,7 +86,7 @@ const sub = typed('sub', {
     [ false ]
     ```
   **/
-  'boolean, boolean': (lhs, rhs) => (lhs || rhs) && !(lhs && rhs),  // boolean xor
+  'boolean, boolean': (lhs, rhs) => (lhs || rhs) && !(lhs && rhs), // boolean xor
 
   /**
     - arithmetic subtraction
@@ -115,7 +110,8 @@ const sub = typed('sub', {
 const mul = typed('mul', {
   /// - intersparse
   'Array, Array | Action | Function': arrayMul,
-  'string, Array | Action | Function': (lhs, rhs) => arrayMul(lhs.split(''), rhs),
+  'string, Array | Action | Function': (lhs, rhs) =>
+    arrayMul(lhs.split(''), rhs),
 
   'Future, any': (f, rhs) => f.map(lhs => mul(lhs, rhs)),
 
@@ -123,7 +119,7 @@ const mul = typed('mul', {
   'Array, string': (lhs, rhs) => lhs.join(rhs),
 
   /// - boolean and
-  'boolean, boolean': (lhs, rhs) => (lhs && rhs),
+  'boolean, boolean': (lhs, rhs) => lhs && rhs,
 
   /// - repeat sequence
   'string, number': (a, b) => a.repeat(b),
@@ -157,7 +153,7 @@ const mul = typed('mul', {
 **/
 const div = typed('div', {
   /// - boolean nand
-  'boolean, boolean': (lhs, rhs) => !(lhs && rhs),  // boolean nand
+  'boolean, boolean': (lhs, rhs) => !(lhs && rhs), // boolean nand
 
   /// - string split
   'string, string': (lhs, rhs) => freeze(lhs.split(rhs)),
@@ -202,7 +198,8 @@ const div = typed('div', {
    ```
 
 **/
-const unshiftFn = typed('unshift', { // >>, Danger! No mutations
+const unshiftFn = typed('unshift', {
+  // >>, Danger! No mutations
   /// - unshift/cons
   'any | Action | Object, Array': (lhs, rhs) => unshift(rhs, lhs),
   'Array, string': (lhs, rhs) => freeze([lhs, Action.of(rhs)]),
@@ -228,7 +225,8 @@ const unshiftFn = typed('unshift', { // >>, Danger! No mutations
   ```
 
 **/
-const pushFn = typed('push', {  // <<, Danger! No mutations
+const pushFn = typed('push', {
+  // <<, Danger! No mutations
   /// - push/snoc
   'Array, any | Action | Object': (lhs, rhs) => push(lhs, rhs),
   'Future, any': (f, rhs) => f.map(lhs => pushFn(lhs, rhs)),
@@ -252,8 +250,8 @@ const pushFn = typed('push', {  // <<, Danger! No mutations
   ```
 **/
 const choose = typed('choose', {
-  'boolean | null, any, any': (b, t, f) => b ? t : f,
-  'Future, any, any': (ff, t, f) => ff.map(b => b ? t : f)
+  'boolean | null, any, any': (b, t, f) => (b ? t : f),
+  'Future, any, any': (ff, t, f) => ff.map(b => (b ? t : f))
 });
 
 /**
@@ -275,7 +273,7 @@ const at = typed('at', {
       rhs = lhs.length + rhs;
     }
     const r = lhs.charAt(rhs);
-    return (r === undefined) ? null : r;
+    return r === undefined ? null : r;
   },
   /// - {array}, {number|null} - gets item by index, zero based index
   'Array, number | null': (lhs, rhs) => {
@@ -284,13 +282,13 @@ const at = typed('at', {
       rhs = lhs.length + rhs;
     }
     const r = lhs[rhs];
-    return (r === undefined) ? null : r;
+    return r === undefined ? null : r;
   },
   'Future, any': (f, rhs) => f.map(lhs => at(lhs, rhs)),
   /// - {object}, {atom|string|null} - gets item by key
   'any, Action | string | null': (a, b) => {
     const r = pluck(a, String(b));
-    return (r === undefined) ? null : r;
+    return r === undefined ? null : r;
   }
 });
 
@@ -301,7 +299,7 @@ export default {
 
      ( -> 0+1i )
   **/
-  'i': () => I,
+  i: () => I,
 
   /**
     ## `infinity`
@@ -314,7 +312,7 @@ export default {
     [ 0+1i ]
     ```
   **/
-  'infinity': () => Infinity,
+  infinity: () => Infinity,
   '+': add,
   '-': sub,
   '*': mul,
@@ -334,7 +332,7 @@ export default {
     ```
   **/
   '=': eql,
-  '@': at,  // nth, get
+  '@': at, // nth, get
   choose,
 
   /**
@@ -348,8 +346,9 @@ export default {
     [ -1 ]
     ```
   **/
-  'cmp': typed('cmp', {
-    'BigNumber | Complex, BigNumber | Complex | number': (lhs, rhs) => lhs.cmp(rhs),
+  cmp: typed('cmp', {
+    'BigNumber | Complex, BigNumber | Complex | number': (lhs, rhs) =>
+      lhs.cmp(rhs),
     'Array, Array': (lhs, rhs) => {
       if (eql(lhs, rhs)) {
         return 0;

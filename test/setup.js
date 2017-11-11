@@ -1,7 +1,7 @@
 import {Stack} from '../';
 import {log} from '../src/utils/logger';
 
-process.chdir('..');
+process.chdir('.');
 
 log.level = process.env.NODE_ENV || 'error';
 

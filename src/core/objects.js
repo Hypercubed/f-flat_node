@@ -1,7 +1,7 @@
 // import is from 'fantasy-helpers/src/is';
 import {freeze} from 'icepick';
 
-import {typed} from '../types/index';
+import {typed} from '../types';
 
 const toObject = typed('object', {
   Array: a => {  // hash-map

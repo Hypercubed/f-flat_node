@@ -1,4 +1,4 @@
-import {typed} from '../types/index';
+import {typed} from '../types';
 
 typed.addConversion({
   from: 'string',

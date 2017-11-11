@@ -104,7 +104,7 @@ function convertLiteral (value) {
 
   if (ch === 64) {  // @
     value = value.slice(1);
-    value = parseInt(value) || String(value);  // eslint-disable-line radix
+    value = parseInt(value, 10) || String(value);
     return [value, atAction];
   }
 

@@ -1,10 +1,7 @@
 import erf from 'compute-erf';
 
-import {typed, BigNumber, Complex, Action} from '../types/index';
-import {lexer} from '../utils/index';
-// import {arrayMul} from '../utils';
-
-// const pow = lexer('ln * exp');
+import {typed, BigNumber, Complex, Action} from '../types';
+import {lexer} from '../utils';
 
 export default {  // eslint-disable-line
   'number': x => new BigNumber(x),

@@ -1,8 +1,8 @@
 import fetch from 'isomorphic-fetch';
 import {freeze, slice} from 'icepick';
 
-import {typed, Seq, Action} from '../types/index';
-import {log, generateTemplate} from '../utils/index';
+import {typed, Seq, Action} from '../types';
+import {log, generateTemplate} from '../utils';
 
 const _slice = typed('slice', {
   'Array | string, number | null, number | null': (lhs, b, c) => slice(lhs, b, c === null ? undefined : c),

@@ -1,4 +1,4 @@
-import {typed, Action, Just} from '../types/index';
+import {typed, Action, Just} from '../types';
 
 export default {
   'types': typed.types,

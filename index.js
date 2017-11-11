@@ -1,3 +1,4 @@
 
 require = require('@std/esm')(module);
-module.exports = require('./src/stack').Stack;
+module.exports.Stack = require('./src/stack').Stack;
+
