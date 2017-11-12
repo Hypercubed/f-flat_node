@@ -16,3 +16,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [x] better trace
 - [-] bubble errors up from children (currently in: swallows errors)
 - [ ] Serialize Nan, Infinity, etc.
+- [ ] Dates
+  - [ ] More date base operations
+  - [ ] Add Duration type... example: https://github.com/moment/moment/blob/develop/src/lib/duration/constructor.js

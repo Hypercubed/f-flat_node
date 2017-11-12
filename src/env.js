@@ -175,7 +175,8 @@ export class StackEnv {
             bar.update(self.stack.length / qMax, {
               stack: state.stack.length,
               queue: state.queue.length,
-              depth: state.depth
+              depth: state.depth,
+              lastAction: state.lastAction
             });
           }
         };
@@ -203,6 +204,7 @@ export class StackEnv {
       }
 
       function dispatch (action) {
+        self.lastAction = action;
         if (typeof action === 'undefined') {
           return;
         }

@@ -54,6 +54,14 @@ const add = typed('add', {
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.plus(rhs),
 
   /**
+   * Dates
+   */
+  'Date, number': (lhs, rhs) => new Date(lhs.valueOf() + rhs),
+  'number, Date': (lhs, rhs) => lhs + rhs.valueOf(),
+  'Date, BigNumber': (lhs, rhs) => new Date(rhs.plus(lhs.valueOf())),
+  'BigNumber, Date': (lhs, rhs) => lhs.plus(rhs.valueOf()),
+
+  /**
     - string concatenation
 
     ```

@@ -1,4 +1,4 @@
-import { typed, Action, Just } from '../types';
+import { typed, Action, Just, Seq } from '../types';
 
 export default {
   types: typed.types,
@@ -27,5 +27,8 @@ export default {
   of: (a, b) => (a.constructor ? new a.constructor(b) : undefined),
   empty: a => (a.empty ? a.empty() : new a.constructor()),
   'is?': (a, b) => a === b,
-  'nothing?': a => a === null || typeof a === 'undefined'
+  'nothing?': a => a === null || typeof a === 'undefined',
+
+  date: a => new Date(a),
+  'date-expand': a => new Seq([a.getFullYear(), a.getMonth() + 1, a.getDate()])
 };

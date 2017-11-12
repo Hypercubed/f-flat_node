@@ -8,7 +8,7 @@
     "test": "ava ./test/*-spec.js",
     "lint": "eslint src/** bin/** test/**",
     "check": "npm run coverage && npm run lint",
-    "coverage": "nyc -r lcov -r html -r text ava",
+    "coverage": "nyc -r lcov -r html -r text ava ./test/*-spec.js",
     "start": "node -r @std/esm ./bin/repl.mjs",
     "debugger": "node --inspect -r @std/esm ./bin/repl.mjs"
   },
@@ -38,7 +38,7 @@
     "eslint": "^2.13.1",
     "kneden": "^1.0.4",
     "nock": "^8.0.0",
-    "nyc": "^6.2.1"
+    "nyc": "^11.3.0"
   },
   "@std/esm": {
     "esm": "all",

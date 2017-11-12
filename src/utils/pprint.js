@@ -43,6 +43,8 @@ export const formatValue = typed('formatValue', {
   'Future, any, any': (value, depth, opts) => inspect(value, opts),
   'Object, any, any': formatMap,
 
+  'Date, any, any': (value, depth, opts) => stylize(value, 'name', opts),
+
   'any, any, any': (value, depth, opts) => inspect(value, opts)
 });
 
