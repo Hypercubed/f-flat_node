@@ -1,5 +1,5 @@
 import test from 'ava';
-import {F, fSync} from './setup';
+import { F, fSync } from './setup';
 
 test('setup', t => {
   t.not(new F().eval, undefined);
@@ -19,19 +19,39 @@ test('should be chainable', t => {
 test('should push numeric values', t => {
   t.deepEqual(fSync('1 2 -3'), [1, 2, -3], 'integers');
   t.deepEqual(fSync('1.1 2.2 -3.14'), [1.1, 2.2, -3.14], 'floats');
-  t.deepEqual(fSync('1.1e-1 2.2e+2 -3.14e-1'), [0.11, 220, -0.314], 'expoential');
+  t.deepEqual(
+    fSync('1.1e-1 2.2e+2 -3.14e-1'),
+    [0.11, 220, -0.314],
+    'expoential'
+  );
 });
 
 test('should push hexidecimal numeric values', t => {
   t.deepEqual(fSync('0x5 0x55 0xff'), [5, 85, 255], 'integers');
-  t.deepEqual(fSync('0x5.5 0xff.ff'), [85 * Math.pow(16, -1), 65535 * Math.pow(16, -2)], 'floats');
-  t.deepEqual(fSync('0x1p+1 0xffp-2'), [2, 255 * Math.pow(2, -2)], 'power of two');
+  t.deepEqual(
+    fSync('0x5.5 0xff.ff'),
+    [85 * Math.pow(16, -1), 65535 * Math.pow(16, -2)],
+    'floats'
+  );
+  t.deepEqual(
+    fSync('0x1p+1 0xffp-2'),
+    [2, 255 * Math.pow(2, -2)],
+    'power of two'
+  );
 });
 
 test('should push binary numeric values', t => {
   t.deepEqual(fSync('0b1 0b10 0b11'), [1, 2, 3], 'integers');
-  t.deepEqual(fSync('0b1.1 0b11.11'), [3 * Math.pow(2, -1), 15 * Math.pow(2, -2)], 'floats');
-  t.deepEqual(fSync('0b1p+1 0b11p-2'), [2, 3 * Math.pow(2, -2)], 'power of two');
+  t.deepEqual(
+    fSync('0b1.1 0b11.11'),
+    [3 * Math.pow(2, -1), 15 * Math.pow(2, -2)],
+    'floats'
+  );
+  t.deepEqual(
+    fSync('0b1p+1 0b11p-2'),
+    [2, 3 * Math.pow(2, -2)],
+    'power of two'
+  );
 });
 
 test('should drop swap slip', t => {
@@ -74,19 +94,43 @@ test('should choose', t => {
 
 test('in/fork', t => {
   t.deepEqual(fSync('[ 2 1 + ] in'), [[3]], 'should evaluate list');
-  t.deepEqual(fSync('"before" "a" sto [ a ] in'), [['before']], 'fork should have access to parent scope');
-  t.deepEqual(fSync('"outer" "a" sto [ "inner" "a" sto a ] fork a'), [['inner'], 'outer'], 'fork should isolate child scope');
-  t.deepEqual(fSync('"outer" "a" sto [ "inner" "a" sto a ] in a'), [['inner'], 'inner'], 'in does not isolate child scope');
+  t.deepEqual(
+    fSync('"before" "a" sto [ a ] in'),
+    [['before']],
+    'fork should have access to parent scope'
+  );
+  t.deepEqual(
+    fSync('"outer" "a" sto [ "inner" "a" sto a ] fork a'),
+    [['inner'], 'outer'],
+    'fork should isolate child scope'
+  );
+  t.deepEqual(
+    fSync('"outer" "a" sto [ "inner" "a" sto a ] in a'),
+    [['inner'], 'inner'],
+    'in does not isolate child scope'
+  );
 });
 
 test('clr in in and fork', t => {
   // t.deepEqual(fSync('1 2 [ 2 1 clr 3 ] in'), [[3]], 'should evaluate list');
-  t.deepEqual(fSync('1 2 [ 2 1 clr 3 ] fork'), [1, 2, [3]], 'should evaluate list');
+  t.deepEqual(
+    fSync('1 2 [ 2 1 clr 3 ] fork'),
+    [1, 2, [3]],
+    'should evaluate list'
+  );
 });
 
 test('map', t => {
-  t.deepEqual(fSync('[ 3 2 1 ] [ 2 * ] map'), [[6, 4, 2]], 'should map quotes over quotes');
-  t.deepEqual(fSync('[ -3 -2 -1 ] abs: map'), [[3, 2, 1]], 'should map words over quotes');
+  t.deepEqual(
+    fSync('[ 3 2 1 ] [ 2 * ] map'),
+    [[6, 4, 2]],
+    'should map quotes over quotes'
+  );
+  t.deepEqual(
+    fSync('[ -3 -2 -1 ] abs: map'),
+    [[3, 2, 1]],
+    'should map words over quotes'
+  );
 });
 
 test('should undo on error', t => {
@@ -167,9 +211,21 @@ test('is?', t => {
 test('others2', t => {
   t.deepEqual(fSync('"abc" "b" indexof'), [1], 'indexof');
   t.deepEqual(fSync('"abc" "def" swap'), ['def', 'abc'], 'swap strings');
-  t.deepEqual(fSync('abc: def: swap'), [{type: '@@Action', value: 'def'}, {type: '@@Action', value: 'abc'}], 'swap atoms');
-  t.deepEqual(fSync('abc: dup'), [{type: '@@Action', value: 'abc'}, {type: '@@Action', value: 'abc'}], 'dup atoms');
-  t.deepEqual(fSync('[2 1 +] unstack'), [2, 1, {type: '@@Action', value: '+'}], 'unstack should not eval');
+  t.deepEqual(
+    fSync('abc: def: swap'),
+    [{ type: '@@Action', value: 'def' }, { type: '@@Action', value: 'abc' }],
+    'swap atoms'
+  );
+  t.deepEqual(
+    fSync('abc: dup'),
+    [{ type: '@@Action', value: 'abc' }, { type: '@@Action', value: 'abc' }],
+    'dup atoms'
+  );
+  t.deepEqual(
+    fSync('[2 1 +] unstack'),
+    [2, 1, { type: '@@Action', value: '+' }],
+    'unstack should not eval'
+  );
 });
 
 test('should slice', t => {
@@ -183,7 +239,11 @@ test('should split at', t => {
 });
 
 test('filter and reduce', t => {
-  t.deepEqual(fSync('10 integers [ even? ] filter'), [[2, 4, 6, 8, 10]], 'filter');
+  t.deepEqual(
+    fSync('10 integers [ even? ] filter'),
+    [[2, 4, 6, 8, 10]],
+    'filter'
+  );
   t.deepEqual(fSync('10 integers 0 [ + ] reduce'), [55], 'reduce');
   t.deepEqual(fSync('10 integers 1 [ * ] reduce'), [3628800], 'reduce');
   t.deepEqual(fSync('10 integers [ + ] reduce*'), [55], 'reduce');
@@ -192,7 +252,11 @@ test('filter and reduce', t => {
 
 test('zip, zipwith and dot', t => {
   t.deepEqual(fSync('[ 1 2 3 ] [ 4 5 6 ] zip'), [[1, 4, 2, 5, 3, 6]], 'zip');
-  t.deepEqual(fSync('[ 1 2 3 ] [ 4 5 6 ] [ + ] zipwith in'), [[5, 7, 9]], 'zipwith');
+  t.deepEqual(
+    fSync('[ 1 2 3 ] [ 4 5 6 ] [ + ] zipwith in'),
+    [[5, 7, 9]],
+    'zipwith'
+  );
   t.deepEqual(fSync('[ 1 2 3 ] [ 4 5 6 ] dot'), [32], 'dot');
   t.deepEqual(fSync('[ 1 2 3 4 ] [ 4 5 6 ] dot'), [32], 'dot');
 });
@@ -208,7 +272,7 @@ test('operations with null, cont', t => {
   t.deepEqual(fSync('null 5 *'), [0]);
   t.deepEqual(fSync('5 null *'), [0]);
   t.deepEqual(fSync('null 5 /'), [0]);
-  t.deepEqual(fSync('5 null /'), [null]);  // should be infinity, bad JSON conversion
+  t.deepEqual(fSync('5 null /'), [null]); // should be infinity, bad JSON conversion
 });
 
 test('operations with null, cont2', t => {
@@ -244,7 +308,10 @@ test('errors on async child in eval', t => {
 });
 
 test('can spawn a future in sync', t => {
-  t.deepEqual(fSync('[ 1 2 + 100 sleep ] spawn 3 4 +'), [{type: '@@Future'}, 7]);
+  t.deepEqual(fSync('[ 1 2 + 100 sleep ] spawn 3 4 +'), [
+    { type: '@@Future' },
+    7
+  ]);
 });
 
 /* function delay (ms) {
@@ -258,7 +325,7 @@ test('can spawn a future in sync', t => {
 test('should spawn, returning a future', async t => {
   const f = new F();
   f.eval('[ 100 sleep 10 ! ] spawn 4 5 +');
-  t.deepEqual(f.toArray(), [{type: '@@Future'}, 9]);
+  t.deepEqual(f.toArray(), [{ type: '@@Future' }, 9]);
 
   // await delay(2000);
 
@@ -301,27 +368,27 @@ test('pick, short cuts', t => {
 });
 
 test('pick into object', t => {
-  t.deepEqual(fSync('{ a: { a: 1 } a: @ }'), [{a: 1}]);
-  t.deepEqual(fSync('{ a: 2 } q< { a: q> over @ }'), [{a: 2}]);
-  t.deepEqual(fSync('{ a: 3 } q< { b: q> a: @ }'), [{b: 3}]);
+  t.deepEqual(fSync('{ a: { a: 1 } a: @ }'), [{ a: 1 }]);
+  t.deepEqual(fSync('{ a: 2 } q< { a: q> over @ }'), [{ a: 2 }]);
+  t.deepEqual(fSync('{ a: 3 } q< { b: q> a: @ }'), [{ b: 3 }]);
   // t.deepEqual(fSync('{ a: 23 } { a: } @'), [{a: 23}]);
 });
 
 test('pick into object, shortcuts', t => {
-  t.deepEqual(fSync('{ a: { a: 1 } @a }'), [{a: 1}]);
-  t.deepEqual(fSync('{ a: 3 } q< { b: q> @a }'), [{b: 3}]);
+  t.deepEqual(fSync('{ a: { a: 1 } @a }'), [{ a: 1 }]);
+  t.deepEqual(fSync('{ a: 3 } q< { b: q> @a }'), [{ b: 3 }]);
   // t.deepEqual(fSync('{ a: 23 } { a: } @'), [{a: 23}]);
 });
 
 test('pick into object with default', t => {
-  t.deepEqual(fSync('{ a: { a: 1 } b: @ 2 orelse }'), [{a: 2}]);
-  t.deepEqual(fSync('{ a: 3 } q< { b: q> over @ 5 orelse }'), [{b: 5}]);
-  t.deepEqual(fSync('{ a: 7 } q< { c: q> b: @ 11 orelse }'), [{c: 11}]);
+  t.deepEqual(fSync('{ a: { a: 1 } b: @ 2 orelse }'), [{ a: 2 }]);
+  t.deepEqual(fSync('{ a: 3 } q< { b: q> over @ 5 orelse }'), [{ b: 5 }]);
+  t.deepEqual(fSync('{ a: 7 } q< { c: q> b: @ 11 orelse }'), [{ c: 11 }]);
 });
 
 test('pick into  shortcuts with default', t => {
-  t.deepEqual(fSync('{ a: { a: 1 } @b 2 orelse }'), [{a: 2}]);
-  t.deepEqual(fSync('{ a: 7 } q< { c: q> @b 11 orelse }'), [{c: 11}]);
+  t.deepEqual(fSync('{ a: { a: 1 } @b 2 orelse }'), [{ a: 2 }]);
+  t.deepEqual(fSync('{ a: 7 } q< { c: q> @b 11 orelse }'), [{ c: 11 }]);
 });
 
 test('pick into array', t => {

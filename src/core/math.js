@@ -1,28 +1,31 @@
 import erf from 'compute-erf';
 
-import {typed, BigNumber, Complex, Action} from '../types';
-import {lexer} from '../utils';
+import { typed, BigNumber, Complex, Action } from '../types';
+import { lexer } from '../utils';
 
-export default {  // eslint-disable-line
-  'number': x => new BigNumber(x),
+export default {
+  // eslint-disable-line
+  number: x => new BigNumber(x),
   'number?': typed('number_', {
     'BigNumber | Complex | number': () => true,
-    'any': () => false
+    any: () => false
   }),
-  're': typed('re', {
+  re: typed('re', {
     'BigNumber | number': a => a,
-    'Complex': a => a.re
+    Complex: a => a.re
   }),
-  'im': typed('im', {
-    'BigNumber | number': a => 0,  // eslint-disable-line
-    'Complex': a => a.im
+  im: typed('im', {
+    'BigNumber | number': a => 0, // eslint-disable-line
+    Complex: a => a.im
   }),
   'complex?': typed('complex_', {
-    'Complex': a => !a.im.isZero(),
+    Complex: a => !a.im.isZero(),
     'BigNumber | number | any': () => false
   }),
-  'div': typed('div', {   // integer division
-    'BigNumber | Complex, BigNumber | Complex | number': (a, b) => a.div(b).floor(),
+  div: typed('div', {
+    // integer division
+    'BigNumber | Complex, BigNumber | Complex | number': (a, b) =>
+      a.div(b).floor(),
     'Array | string, number': (a, b) => {
       b = Number(a.length / b) | 0;
       if (b === 0 || b > a.length) {
@@ -31,7 +34,8 @@ export default {  // eslint-disable-line
       return a.slice(0, b);
     }
   }),
-  'rem': typed('rem', {   // remainder
+  rem: typed('rem', {
+    // remainder
     'BigNumber | Complex, BigNumber | Complex | number': (a, b) => a.modulo(b),
     'Array | string, number': (a, b) => {
       b = Number(a.length / b) | 0;
@@ -41,8 +45,10 @@ export default {  // eslint-disable-line
       return a.slice(b);
     }
   }),
-  '%': typed('mod', {'BigNumber | Complex, BigNumber | number': (lhs, rhs) => lhs.modulo(rhs)}),
-  abs: typed('abs', {'BigNumber | Complex': a => a.abs()}),
+  '%': typed('mod', {
+    'BigNumber | Complex, BigNumber | number': (lhs, rhs) => lhs.modulo(rhs)
+  }),
+  abs: typed('abs', { 'BigNumber | Complex': a => a.abs() }),
   cos: a => BigNumber.cos(a),
   sin: a => BigNumber.sin(a),
   tan: a => BigNumber.tan(a),
@@ -65,7 +71,7 @@ export default {  // eslint-disable-line
       return x.sqrt();
     },
     BigNumber: x => {
-      return (x.isNegative()) ? new Complex(x, 0).sqrt() : x.sqrt();
+      return x.isNegative() ? new Complex(x, 0).sqrt() : x.sqrt();
     }
   }),
   max: (a, b, ...c) => BigNumber.max(a, b, ...c),
@@ -82,20 +88,22 @@ export default {  // eslint-disable-line
   spouge: typed('nemes', {
     BigNumber: a => a.spouge()
   }),
-  erf,  // todo: big
+  erf, // todo: big
   ln: typed('ln', {
     'BigNumber | Complex': a => a.ln()
   }),
-  '^': typed('pow', {  // boolean or?
-    'Complex, BigNumber | Complex | number': (a, b) => Action.of([b, a].concat(lexer('ln * exp'))),
-    'BigNumber, Complex': (a, b) => Action.of([b, a].concat(lexer('ln * exp'))),
+  '^': typed('pow', {
+    // boolean or?
+    'Complex, BigNumber | Complex | number': (a, b) =>
+      new Action([b, a].concat(lexer('ln * exp'))),
+    'BigNumber, Complex': (a, b) => new Action([b, a].concat(lexer('ln * exp'))),
     'BigNumber, BigNumber | number': (a, b) => a.pow(b) // ,
-    // 'Array, number': (a, b) => Action.of([a, b, Action.of('pow')])  // this is only integers
+    // 'Array, number': (a, b) => new Action([a, b, new Action('pow')])  // this is only integers
   }),
   // '^': 'swap ln * exp',
-  'rand': Math.random,
+  rand: Math.random,
   'set-precision': x => {
-    BigNumber.config({precision: Number(x)});
+    BigNumber.config({ precision: Number(x) });
   },
   'get-precision': () => BigNumber.precision
 };

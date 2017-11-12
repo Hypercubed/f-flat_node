@@ -1,4 +1,4 @@
-import {transports, Logger} from 'winston';
+import { transports, Logger } from 'winston';
 import Progress from 'progress';
 
 export const log = new Logger({
@@ -11,9 +11,7 @@ export const log = new Logger({
     debug: 5,
     deb: 5
   },
-  transports: [
-    new transports.Console()
-  ]
+  transports: [new transports.Console()]
 });
 
 // log.cli();

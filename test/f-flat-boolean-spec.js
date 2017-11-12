@@ -1,5 +1,5 @@
 import test from 'ava';
-import {fSync} from './setup';
+import { fSync } from './setup';
 
 /* test('should parse', t => {
   var f = F();

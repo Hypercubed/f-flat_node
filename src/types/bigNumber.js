@@ -1,7 +1,7 @@
 import Decimal from 'decimal.js';
 
-import {typed} from './typed';
-import {g, c} from './gamma';
+import { typed } from './typed';
+import { g, c } from './gamma';
 
 export const BigNumber = Decimal.clone({
   precision: 20,
@@ -27,11 +27,11 @@ export const e = Decimal.exp(1);
 BigNumber.prototype.empty = () => zero;
 
 const _valueOf = BigNumber.prototype.valueOf;
-BigNumber.prototype.valueOf = BigNumber.prototype.toJSON = function () {
+BigNumber.prototype.valueOf = BigNumber.prototype.toJSON = function() {
   return Number(_valueOf.apply(this));
 };
 
-BigNumber.prototype.inspect = function () {
+BigNumber.prototype.inspect = function() {
   return this.toString();
 };
 
@@ -42,11 +42,12 @@ BigNumber.prototype.inspect = function () {
   };
 }; */
 
-BigNumber.prototype.fromJSON = function (json) {
+BigNumber.prototype.fromJSON = function(json) {
   return new BigNumber(json);
 };
 
-BigNumber.prototype.gamma = function () {  // more tests
+BigNumber.prototype.gamma = function() {
+  // more tests
   // The Lanczos approximation
   // https://en.wikipedia.org/wiki/Lanczos_approximation
   // G(z+1) = sqrt(2*pi)*(z+g+1/2)^(z+1/2)*exp(-(z+g+1/2))*Ag(z)
@@ -54,7 +55,11 @@ BigNumber.prototype.gamma = function () {  // more tests
   // todo: Memoization?
 
   if (this.lt(0.5)) {
-    return pi.div(this.times(pi).sin().times(one.minus(this).gamma()));
+    return pi.div(
+      this.times(pi)
+        .sin()
+        .times(one.minus(this).gamma())
+    );
   }
 
   const z = this.minus(1);
@@ -69,15 +74,15 @@ BigNumber.prototype.gamma = function () {  // more tests
     }
   }
 
-  const t = z.plus(g + 0.5);  // z+g+1/2
+  const t = z.plus(g + 0.5); // z+g+1/2
 
-  return twoPiSqrt             // sqrt(2*PI)
+  return twoPiSqrt // sqrt(2*PI)
     .times(t.pow(z.plus(0.5))) //  *(z+g+1/2)^(z+0.5)
-    .times(t.neg().exp())      //  *exp(-(z+g+1/2))
-    .times(agz);               //  *Ag(z)
+    .times(t.neg().exp()) //  *exp(-(z+g+1/2))
+    .times(agz); //  *Ag(z)
 };
 
-BigNumber.prototype.nemesClosed = function () {
+BigNumber.prototype.nemesClosed = function() {
   // http://www.ebyte.it/library/downloads/2007_MTH_Nemes_GammaFunction.pdf
 
   const z = this;
@@ -89,7 +94,7 @@ BigNumber.prototype.nemesClosed = function () {
   return a.times(b).times(c);
 };
 
-BigNumber.prototype.spouge = function () {
+BigNumber.prototype.spouge = function() {
   const z = this;
 
   if (z.isNeg()) {
@@ -106,11 +111,14 @@ BigNumber.prototype.spouge = function () {
   const a = z.plus(1 / 2);
   const t = a.plus(g);
 
-  const b = pi.times(2).ln().div(2)
-          .plus(a.times(t.ln()))
-          .minus(t)
-          .plus(Math.log(x))
-          .minus(z.ln());
+  const b = pi
+    .times(2)
+    .ln()
+    .div(2)
+    .plus(a.times(t.ln()))
+    .minus(t)
+    .plus(Math.log(x))
+    .minus(z.ln());
 
   return b.exp();
 };

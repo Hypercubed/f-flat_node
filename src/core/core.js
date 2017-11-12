@@ -1,35 +1,134 @@
 import fetch from 'isomorphic-fetch';
-import {freeze, slice} from 'icepick';
+import { freeze, slice } from 'icepick';
 
-import {typed, Seq, Action} from '../types';
-import {log, generateTemplate} from '../utils';
+import { typed, Seq, Action } from '../types';
+import { log, generateTemplate } from '../utils';
+import { quoteSymbol } from '../constants';
 
 const _slice = typed('slice', {
-  'Array | string, number | null, number | null': (lhs, b, c) => slice(lhs, b, c === null ? undefined : c),
+  'Array | string, number | null, number | null': (lhs, b, c) =>
+    slice(lhs, b, c === null ? undefined : c),
   'Future, any, any': (f, b, c) => f.map(lhs => slice(lhs, b, c)),
-  'any, number | null, number | null': (lhs, b, c) => slice(lhs, [b, c === null ? undefined : c])
+  'any, number | null, number | null': (lhs, b, c) =>
+    slice(lhs, [b, c === null ? undefined : c])
 });
 
 const splitat = typed('splitat', {
-  'Array, number | null': (arr, a) => Seq.of([  // use head and tail?
-    slice(arr, 0, a),
-    slice(arr, a)
-  ]),
+  'Array, number | null': (arr, a) =>
+    new Seq([
+      // use head and tail?
+      slice(arr, 0, a),
+      slice(arr, a)
+    ]),
   'Future, any': (f, a) => f.map(arr => splitat(arr, a))
 });
 
 /**
    # Core Internal Words
 **/
-
 export default {
+  /**
+    ## `q<`
+    moves the top of the stack to the tail of the queue
+
+    ( {any} -> )
+  **/
+  'q<': function(a) {
+    this.queue.push(a);
+  }, // good for yielding, bad for repl
+
+  /**
+    ## `q>`
+    moves the tail of the queue to the top of the stack
+
+    ( -> {any} )
+  **/
+  'q>': function() {
+    return this.queue.pop();
+  },
+
+  /**
+    ## `stack`
+    replaces the stack with a quote containing the current stack
+
+    ( ... -> [ ... ] )
+
+    ```
+    f♭> 1 2 3 stack
+    [ [ 1 2 3 ] ]
+    ```
+  **/
+  stack: function() {
+    return this.stack.splice(0);
+  },
+
+  /**
+    ## `d++`
+    increments the d counter, if d > 0 words are not push to the stack as literals
+
+    ```
+    f♭> d++ drop :d--
+    [ drop ]
+    ```
+  **/
+  'd++': function() {
+    this.depth++;
+  },
+
+  /**
+    ## `d--`
+    decrements the d counter
+  **/
+  'd--': function() {
+    this.depth = Math.max(0, this.depth - 1);
+  },
+
+  /**
+    ## `quote`
+    pushes a quotation maker onto the stack
+
+    ( -> #( )
+  **/
+  quote: quoteSymbol,
+
+  /**
+    ## `dequote`
+    collects stack items upto the last quote marker
+
+    ( #( ... -> [ ... ] )
+  **/
+  dequote: function(s) {
+    const r = [];
+    while (this.stack.length > 0 && s !== quoteSymbol) {
+      r.unshift(s);
+      s = this.stack.pop();
+    }
+    /* istanbul ignore next */
+    return freeze(r);
+  },
+
+  /**
+    ## `depth`
+    pushes the size of the current stack
+
+    ( -> {number} )
+
+    ```
+    f♭> 1 2 3 depth
+    [ 1 2 3 3 ]
+    ```
+  **/
+  depth: function() {
+    return this.stack.length; // ,  or "stack [ unstack ] [ length ] bi"
+  },
+
   /**
      ## `nop`
      no op
 
      ( -> )
   **/
-  'nop': () => {},
+  nop: () => {},
 
   /**
     ## `eval`
@@ -42,9 +141,9 @@ export default {
     [ 2 ]
     ```
   **/
-  'eval': typed('_eval', {
-    Future: f => f.promise.then(a => Action.of(a)),
-    any: a => Action.of(a)
+  eval: typed('_eval', {
+    Future: f => f.promise.then(a => new Action(a)),
+    any: a => new Action(a)
   }),
 
   /**
@@ -58,7 +157,7 @@ export default {
      [ 1 2 ]
      ```
   **/
-  'drop': a => {},  // eslint-disable-line
+  drop: a => {}, // eslint-disable-line
 
   /**
      ## `swap`
@@ -71,7 +170,7 @@ export default {
      [ 1 3 2 ]
      ```
   **/
-  'swap': (a, b) => Seq.of([b, a]),
+  swap: (a, b) => new Seq([b, a]),
 
   /**
      ## `dup`
@@ -84,7 +183,7 @@ export default {
      [ 1 2 3 3 ]
      ```
   **/
-  'dup': a => Seq.of([a, a]),
+  dup: a => new Seq([a, a]),
 
   /**
     ## `unstack`
@@ -97,9 +196,9 @@ export default {
     [ 1 2 * ]
     ```
   **/
-  'unstack': typed('unstack', {
-    Array: a => Seq.of(a),
-    Future: f => f.promise.then(a => Seq.of(a))
+  unstack: typed('unstack', {
+    Array: a => new Seq(a),
+    Future: f => f.promise.then(a => new Seq(a))
   }),
 
   /**
@@ -113,11 +212,11 @@ export default {
      3
      ```
   **/
-  'length': typed('length', {
+  length: typed('length', {
     'Array | string': a => a.length,
-    'Future': f => f.promise.then(a => a.length),
-    'Object': a => Object.keys(a).length,
-    'null': a => 0  // eslint-disable-line
+    Future: f => f.promise.then(a => a.length),
+    Object: a => Object.keys(a).length,
+    null: a => 0 // eslint-disable-line
   }),
 
   /**
@@ -126,7 +225,7 @@ export default {
 
      ( seq from to -> seq )
   **/
-  'slice': _slice,
+  slice: _slice,
 
   /**
      ## `splitat`
@@ -142,10 +241,10 @@ export default {
 
      ( seq item -> number )
   **/
-  'indexof': (a, b) => a.indexOf(b),
+  indexof: (a, b) => a.indexOf(b),
 
   /* 'repeat': (a, b) => {
-    return Action.of(arrayRepeat(a, b));
+    return new Action(arrayRepeat(a, b));
   }, */
 
   /**
@@ -156,7 +255,7 @@ export default {
      [ 1 4 2 5 3 6 ]
      ```
   **/
-  'zip': typed('zip', {
+  zip: typed('zip', {
     'Array, Array': (a, b) => {
       const l = a.length < b.length ? a.length : b.length;
       const r = [];
@@ -170,7 +269,7 @@ export default {
   /**
      ## `zipinto`
   **/
-  'zipinto': typed('zipinto', {
+  zipinto: typed('zipinto', {
     'Array, Array, Array': (a, b, c) => {
       const l = a.length < b.length ? a.length : b.length;
       const r = [];
@@ -185,7 +284,7 @@ export default {
      ## `(`
      pushes a quotation maker onto the stack
   **/
-  '(': ':quote',        // list
+  '(': ':quote', // list
 
   /**
      ## `)`
@@ -197,7 +296,7 @@ export default {
      ## `[`
      pushes a quotation maker onto the stack, increments depth
   **/
-  '[': ':quote :d++',   // quote
+  '[': ':quote :d++', // quote
 
   /**
      ## `]`
@@ -209,7 +308,7 @@ export default {
      ## `{`
      pushes a quotation maker onto the stack
   **/
-  '{': ':quote',        // object
+  '{': ':quote', // object
 
   /**
      ## `}`
@@ -221,7 +320,7 @@ export default {
      ## `template`
      converts a string to a string template
   **/
-  'template': generateTemplate,
+  template: generateTemplate,
 
   /**
      ## `sleep`
@@ -229,7 +328,8 @@ export default {
 
      ( x -> )
   **/
-  'sleep': ms => {  // todo: make cancelable?
+  sleep: ms => {
+    // todo: make cancelable?
     // let timerId;
     const promise = new Promise(resolve => {
       // timerId =
@@ -245,8 +345,8 @@ export default {
 
      ( {url} -> {string} )
   **/
-  'fetch': url => fetch(url)
-    .then(res => {
+  fetch: url =>
+    fetch(url).then(res => {
       return res.text();
     }),
 

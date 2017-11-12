@@ -1,7 +1,7 @@
-import {formatState} from './pprint';
+import { formatState } from './pprint';
 
 export class FFlatError extends Error {
-  constructor (message = 'FFlatError', state = {stack: [], queue: []}) {
+  constructor(message = 'FFlatError', state = { stack: [], queue: [] }) {
     super(message);
 
     // extending Error is weird and does not propagate `message`
@@ -17,13 +17,10 @@ export class FFlatError extends Error {
 
     Reflect.defineProperty(this, 'stack', {
       enumerable: false,
-      value:
-
-`${this.name}: ${this.message}
+      value: `${this.name}: ${this.message}
     stack/queue: ${state.stack.length} / ${state.queue.length}
     state:    ${formatState(state)}
 `
-
     });
   }
 }

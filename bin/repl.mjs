@@ -4,10 +4,10 @@ import repl from 'repl';
 
 import program from 'commander';
 
-import {Stack} from '../src/stack';
+import { Stack } from '../src/stack';
 import pkg from '../package.json';
-import {log} from '../src/utils/logger';
-import {formatValue} from '../src/utils/pprint';
+import { log } from '../src/utils/logger';
+import { formatValue } from '../src/utils/pprint';
 
 const initialPrompt = 'f♭>';
 const inspectOptions = {
@@ -54,25 +54,23 @@ const stackRepl = repl.start({
   useGlobal: false
 });
 
-stackRepl
-  .on('reset', setupStack);
+stackRepl.on('reset', setupStack);
 
 process.on('uncaughtException', () => {
   console.log('The event loop was blocked for longer than 2000 milliseconds');
   process.exit(1);
 });
 
-stackRepl
-  .defineCommand('.', {
-    help: 'print stack',
-    action: function action () {
-      console.log(writer(f));
-      this.displayPrompt();
-    }
-  });
+stackRepl.defineCommand('.', {
+  help: 'print stack',
+  action: function action() {
+    console.log(writer(f));
+    this.displayPrompt();
+  }
+});
 
-function setupStack () {
-  f = new Stack().eval('true auto-undo "Welcome to f♭" println');
+function setupStack() {
+  f = new Stack(); // .eval('true auto-undo "Welcome to f♭" println');
   f.defineAction('prompt', () => {
     return new Promise(resolve => {
       stackRepl.question('', resolve);
@@ -80,7 +78,7 @@ function setupStack () {
   });
 }
 
-function writer (_) {
+function writer(_) {
   // const depth = '>'.repeat(_.depth);
   // stackRepl.setPrompt(`${initialPrompt}${depth} `);
 
@@ -95,7 +93,7 @@ function writer (_) {
 let buffer = '';
 let timeout = null;
 
-function fEval (code, _, __, cb) {
+function fEval(code, _, __, cb) {
   code = code
     .replace(/^\(([\s\S]*)\n\)$/m, '$1')
     .replace(/[\s]/g, ' ')
@@ -126,7 +124,7 @@ function fEval (code, _, __, cb) {
       });
   } */
 
-  function run () {
+  function run() {
     clearTimeout(timeout);
 
     // const qcount = (buffer.match(/\`/g) || []).length;
@@ -135,12 +133,12 @@ function fEval (code, _, __, cb) {
     }
 
     // tripwire.resetTripwire(600000);  // 10 mins max
-
-    f.next(buffer)
-    .then(result => cb(null, result))
-    .catch(err => {
-      cb(err);
-    });
+    f
+      .next(buffer)
+      .then(result => cb(null, result))
+      .catch(err => {
+        cb(err);
+      });
 
     buffer = '';
   }

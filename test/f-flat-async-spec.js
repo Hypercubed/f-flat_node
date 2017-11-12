@@ -1,7 +1,7 @@
 import test from 'ava';
 import nock from 'nock';
 
-import {F, fSync, fAsync} from './setup';
+import { F, fSync, fAsync } from './setup';
 
 const good = {
   id: 123456,
@@ -13,15 +13,35 @@ nock('https://api.github.com/')
   .reply(200, good);
 
 test('yield', t => {
-  t.deepEqual(fSync('[1 2 yield 4 5 yield 6 7] fork'), [1, 2, [4, 5, {type: '@@Action', value: 'yield'}, 6, 7]], 'yield and fork');
-  t.deepEqual(fSync('[1 2 yield 4 5 yield 6 7] fork fork'), [1, 2, 4, 5, [6, 7]], 'yield and fork');
-  t.deepEqual(fSync('[1 2 + yield 4 5 + ] fork'), [3, [4, 5, {type: '@@Action', value: '+'}]], 'yield and fork');
+  t.deepEqual(
+    fSync('[1 2 yield 4 5 yield 6 7] fork'),
+    [1, 2, [4, 5, { type: '@@Action', value: 'yield' }, 6, 7]],
+    'yield and fork'
+  );
+  t.deepEqual(
+    fSync('[1 2 yield 4 5 yield 6 7] fork fork'),
+    [1, 2, 4, 5, [6, 7]],
+    'yield and fork'
+  );
+  t.deepEqual(
+    fSync('[1 2 + yield 4 5 + ] fork'),
+    [3, [4, 5, { type: '@@Action', value: '+' }]],
+    'yield and fork'
+  );
   t.deepEqual(fSync('[1 2 + yield 4 5 + ] fork drop'), [3], 'yield and next');
 });
 
 test('multiple yields', t => {
-  t.deepEqual(fSync('[1 2 + yield 4 5 + yield ] fork fork drop'), [3, 9], 'multiple yields');
-  t.deepEqual(fSync('count* [ fork ] 10 times drop'), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 'multiple yields');
+  t.deepEqual(
+    fSync('[1 2 + yield 4 5 + yield ] fork fork drop'),
+    [3, 9],
+    'multiple yields'
+  );
+  t.deepEqual(
+    fSync('count* [ fork ] 10 times drop'),
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    'multiple yields'
+  );
 });
 
 /* test.cb('eval should yield on async with callback', t => {
@@ -101,7 +121,11 @@ test('should work with async/await', async t => {
 });
 
 test('should fetch', async t => {
-  t.deepEqual(await fAsync('"https://api.github.com/users/Hypercubed/repos" fetch-json'), [good], 'should fetch');
+  t.deepEqual(
+    await fAsync('"https://api.github.com/users/Hypercubed/repos" fetch-json'),
+    [good],
+    'should fetch'
+  );
 });
 
 test('', async t => {
@@ -110,12 +134,19 @@ test('', async t => {
 
 test('multiple async', async t => {
   t.deepEqual(await fAsync('10 100 sleep 20 + 100 sleep 15 +'), [45]);
-  t.deepEqual(await fAsync('10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 +'), [45]);
+  t.deepEqual(await fAsync('10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 +'), [
+    45
+  ]);
 });
 
 test('multiple async in children', async t => {
-  t.deepEqual(await fAsync('[ 10 100 sleep 20 + 100 sleep 15 + ] await'), [[45]]);
-  t.deepEqual(await fAsync('[ 10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 + ] await'), [[45]]);
+  t.deepEqual(await fAsync('[ 10 100 sleep 20 + 100 sleep 15 + ] await'), [
+    [45]
+  ]);
+  t.deepEqual(
+    await fAsync('[ 10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 + ] await'),
+    [[45]]
+  );
 });
 
 test('should await on multiple promises', async t => {
@@ -136,7 +167,8 @@ test('multiple promises', async t => {
   t.deepEqual(f.toArray(), [3628809]);
 });
 
-test('multiple promises correct order', async t => {  // todo
+test('multiple promises correct order', async t => {
+  // todo
   const f = new F();
   f.next('1000 sleep 10 !').then(f => {
     t.deepEqual(f.toArray(), [3628800]);
@@ -151,21 +183,21 @@ test('multiple promises correct order', async t => {  // todo
 });
 
 test('errors on unknown command, async', async t => {
-  t.throws(new F().promise('abc'));
+  await t.throws(new F().promise('abc'));
 });
 
-test('errors on unknown command in child, async', t => {
-  t.throws(new F().promise('[ abc ] in'));
+test('errors on unknown command in child, async', async t => {
+  await t.throws(new F().promise('[ abc ] in'));
 });
 
-test('errors on unknown command in child, async 2', t => {
-  t.throws(new F().promise('[ abc ] await'));
+test('errors on unknown command in child, async 2', async t => {
+  await t.throws(new F().promise('[ abc ] await'));
 });
 
 test('should await on a future', async t => {
   const f = new F();
   f.eval('[ 100 sleep 10 ! ] spawn 4 5 +');
-  t.deepEqual(f.toArray(), [{type: '@@Future'}, 9]);
+  t.deepEqual(f.toArray(), [{ type: '@@Future' }, 9]);
 
   await f.promise('[ await ] dip');
 

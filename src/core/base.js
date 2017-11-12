@@ -1,7 +1,10 @@
 import { freeze, assign, merge, unshift, push, slice } from 'icepick';
+import memoize from 'memoizee';
+import { isFunction } from 'fantasy-helpers/src/is';
 
-import { Action, typed, I } from '../types';
-import { pluck, eql, arrayRepeat, arrayMul } from '../utils';
+import { pluck, formatValue, eql, arrayRepeat, arrayMul } from '../utils';
+import { Seq, Action, typed, I } from '../types';
+import { USE_STRICT } from '../constants';
 
 /**
   ## `+` (add)
@@ -75,7 +78,7 @@ const sub = typed('sub', {
   }, */
   /* 'Array, number': (a, b) => {
     var c = a[a.length - 1];
-    return Action.of([a.slice(0, -1), c, b, Action.of('-'), Action.of('+')]);
+    return new Action([a.slice(0, -1), c, b, new Action('-'), new Action('+')]);
   }, */
 
   /**
@@ -202,7 +205,7 @@ const unshiftFn = typed('unshift', {
   // >>, Danger! No mutations
   /// - unshift/cons
   'any | Action | Object, Array': (lhs, rhs) => unshift(rhs, lhs),
-  'Array, string': (lhs, rhs) => freeze([lhs, Action.of(rhs)]),
+  'Array, string': (lhs, rhs) => freeze([lhs, new Action(rhs)]),
   'Array | Action, Action': (lhs, rhs) => freeze([lhs, rhs]),
   'Future, any': (f, rhs) => f.map(lhs => unshiftFn(lhs, rhs)),
 
@@ -294,6 +297,55 @@ const at = typed('at', {
 
 export default {
   /**
+      ## `<-` (stack)
+      replaces the stack with the item found at the top of the stack
+
+      ( [A] -> A )
+
+      ```
+      f♭> 1 2 [ 3 4 ] <-
+      [ 3 4 ]
+      ```
+    **/
+  '<-': function(s) {
+    this.clear();
+    return new Seq(s);
+  },
+
+  /**
+      ## `->` (queue)
+      replaces the queue with the item found at the top of the stack
+
+      ( [A] -> )
+
+      ```
+      f♭> 1 2 [ 3 4 ] -> 5 6
+      [ 1 2 3 4 ]
+      ```
+    **/
+  '->': function(s) {
+    this.queue.splice(0);
+    this.queue.push(...s);
+  },
+
+  /**
+      ## `undo`
+      restores the stack to state before previous eval
+    **/
+  undo: function() {
+    this.undo().undo();
+  },
+
+  /**
+      ## `auto-undo`
+      set flag to auto-undo on error
+      ( {boolean} -> )
+    **/
+  'auto-undo': function(a) {
+    this.undoable = a;
+  },
+
+  /**
      ## `i`
      push the imaginary number 0+1i
 
@@ -367,15 +419,213 @@ export default {
       }
       return lhs > rhs ? 1 : -1;
     }
-  })
-
-  /*
-  '>': typed('gt', {
-    'BigNumber | Complex, BigNumber | Complex | number': (lhs, rhs) => lhs.gt(rhs),
-    'any, any': (lhs, rhs) => lhs > rhs
   }),
-  '<': typed('lt', {
-    'BigNumber | Complex, BigNumber | Complex | number': (lhs, rhs) => lhs.lt(rhs),
-    'any, any': (lhs, rhs) => lhs < rhs
-  }) */
+
+  /**
+      ## `define`
+      defines a set of words from an object
+
+      ( {object} -> )
+
+      ```
+      f♭> { sqr: "dup *" } define
+      [ ]
+      ```
+    **/
+  define: function(x) {
+    self.defineAction(x);
+  },
+
+  /**
+      ## `sto`
+      stores a quote in the dictionary
+
+      ( [A] {string|atom} -> )
+
+      ```
+      f♭> [ dup * ] "sqr" sto
+      [ ]
+      ```
+    **/
+  sto: function(lhs, rhs) {
+    // consider :=
+    this.dict[rhs] = lhs;
+  },
+
+  /**
+      ## `;`
+      defines a word
+
+      ( {string|atom} [A] -> )
+
+      ```
+      f♭> sqr: [ dup * ] ;
+      [ ]
+      ```
+    **/
+  ';': function(name, cmd) {
+    if (
+      USE_STRICT &&
+      Reflect.apply(Object.prototype.hasOwnProperty, this.dict, [name])
+    ) {
+      throw new Error(`Cannot overrite definitions in strict mode: ${name}`);
+    }
+    if (!isFunction(cmd) && !Action.isAction(cmd)) {
+      cmd = new Action(cmd);
+    }
+    this.defineAction(name, cmd);
+  },
+
+  /**
+      ## `def`
+      defines a word
+
+      ( [A] {string|atom} -> )
+
+      ```
+      f♭> [ dup * ] "sqr" def
+      [ ]
+      ```
+    **/
+  def: function(cmd, name) {
+    // consider def and let, def top level, let local
+    if (
+      USE_STRICT &&
+      Reflect.apply(Object.prototype.hasOwnProperty, this.dict, [name])
+    ) {
+      throw new Error(`Cannot overrite definitions in strict mode: ${name}`);
+    }
+    if (!isFunction(cmd) && !Action.isAction(cmd)) {
+      cmd = new Action(cmd);
+    }
+    this.defineAction(name, cmd);
+  },
+
+  /**
+      ### `memoize`
+      memoize a defined word
+
+      ( {string|atom} -> )
+    **/
+  memoize: function(name, n) {
+    const cmd = this.lookupAction(name);
+    if (cmd) {
+      const fn = (...a) => {
+        const s = this.createChild()
+          .eval([...a])
+          .eval(cmd).stack;
+        return new Seq(s);
+      };
+      this.defineAction(name, memoize(fn, { length: n, primitive: true }));
+    }
+  },
+
+  /**
+      ## `delete`
+      deletes a defined word
+
+      ( {string|atom} -> )
+    **/
+  delete: function(a) {
+    if (USE_STRICT) {
+      throw new Error('Cannot delete definitions in strict mode');
+    }
+    Reflect.deleteProperty(this.dict, a);
+  },
+
+  /**
+      ## `rcl`
+      recalls the definion of a word
+
+      ( {string|atom} -> [A] )
+
+      ```
+      f♭> "sqr" rcl
+      [ [ dup * ] ]
+      ```
+    **/
+  rcl: function(a) {
+    const r = this.lookupAction(a);
+    if (!r) {
+      return null;
+    }
+    if (USE_STRICT && isFunction(r)) {
+      return new Action(r);
+    } // carefull pushing functions to stack
+    return r.value;
+  },
+
+  /**
+      ## `expand`
+      expand a quote
+
+      ( [A] -> [a b c])
+
+      ```
+      f♭> [ sqr ] expand
+      [ [ dup * ] ]
+      ```
+    **/
+  expand: function() {
+    return this.expandAction();
+  },
+
+  /**
+      ## `see`
+      recalls the definition of a word as a formatted string
+
+      ( {string|atom} -> {string} )
+
+      ```
+      f♭> "sqr" see
+      [ '[ dup * ]' ]
+      ```
+    **/
+  see: function(a) {
+    const r = this.lookupAction(a);
+    if (!r) {
+      return null;
+    }
+    return formatValue(r.value, 0, { colors: false, indent: false });
+  },
+
+  /**
+      ## `words`
+      returns a list of defined words
+
+      ( -> {array} )
+    **/
+  words: function() {
+    const result = [];
+    for (const prop in this.dict) {
+      // eslint-disable-line guard-for-in
+      result.push(prop);
+    }
+    return result;
+  },
+
+  /**
+      ## `clr`
+      clears the stack
+
+      ( ... -> )
+
+      ```
+      f♭> 1 2 3 clr
+      [  ]
+      ```
+    **/
+  clr: function() {
+    this.clear();
+  },
+
+  /**
+      ## `\\`
+      push the top of the queue to the stack
+
+      ( -> {any} )
+    **/
+  '\\': function() {
+    return this.queue.shift(); // danger?
+  }
 };

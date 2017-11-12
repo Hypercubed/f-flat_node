@@ -1,5 +1,5 @@
 import test from 'ava';
-import {F, fSync} from './setup';
+import { F, fSync } from './setup';
 
 test('should push lists', t => {
   t.deepEqual(fSync('( 1 ) ( 2 )'), [[1], [2]], 'should push');
@@ -17,7 +17,11 @@ test('should get length', t => {
 
 test('should add', t => {
   t.deepEqual(fSync('(1) (2) +'), [[1, 2]], 'should add');
-  t.deepEqual(fSync('(1 2 3) dup (4 5 6) +'), [[1, 2, 3], [1, 2, 3, 4, 5, 6]], 'should add without mutation');
+  t.deepEqual(
+    fSync('(1 2 3) dup (4 5 6) +'),
+    [[1, 2, 3], [1, 2, 3, 4, 5, 6]],
+    'should add without mutation'
+  );
 });
 
 test('should multiply', t => {
@@ -46,11 +50,16 @@ test('add/sub identities', t => {
   // t.deepEqual(fSync('(1) 2 + 2 - sum', [1]); // ???
 });
 
-test('pow identities', t => {  // right associative
+test('pow identities', t => {
+  // right associative
   t.deepEqual(fSync('(1) 2 pow'), [[1, 1]]);
   t.deepEqual(fSync('(2) 3 pow'), [[2, 2, 2]]);
-  t.deepEqual(fSync('(1 1) 3 pow'), [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]);
-  t.deepEqual(fSync('(1 2) 3 pow'), [[1, 1, 1, 2, 2, 1, 2, 2, 1, 1, 2, 2, 1, 2]]);
+  t.deepEqual(fSync('(1 1) 3 pow'), [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  ]);
+  t.deepEqual(fSync('(1 2) 3 pow'), [
+    [1, 1, 1, 2, 2, 1, 2, 2, 1, 1, 2, 2, 1, 2]
+  ]);
   // t.deepEqual(fSync('(1) 2 + 2 - sum', [1]); // ???
 });
 
@@ -79,12 +88,20 @@ test('should join', t => {
 
 test('should <<', t => {
   t.deepEqual(fSync('( 1 2 3 ) 4 <<'), [[1, 2, 3, 4]], 'should <<');
-  t.deepEqual(fSync('( 1 2 3 ) dup 4 <<'), [[1, 2, 3], [1, 2, 3, 4]], 'should <<, immutable');
+  t.deepEqual(
+    fSync('( 1 2 3 ) dup 4 <<'),
+    [[1, 2, 3], [1, 2, 3, 4]],
+    'should <<, immutable'
+  );
 });
 
 test('should >>', t => {
   t.deepEqual(fSync('4 ( 1 2 3 ) >>'), [[4, 1, 2, 3]], 'should >>');
-  t.deepEqual(fSync('4 ( 1 2 3 ) tuck >>'), [[1, 2, 3], [4, 1, 2, 3]], 'should >>, immutable');
+  t.deepEqual(
+    fSync('4 ( 1 2 3 ) tuck >>'),
+    [[1, 2, 3], [4, 1, 2, 3]],
+    'should >>, immutable'
+  );
 });
 
 test('should @', t => {
@@ -101,6 +118,14 @@ test('should @ from end', t => {
 });
 
 test('should pop and shift without mutation', t => {
-  t.deepEqual(fSync('( 1 2 3 ) dup pop'), [[1, 2, 3], [1, 2]], 'should pop, without mutation');
-  t.deepEqual(fSync('( 1 2 3 ) dup shift'), [[1, 2, 3], [2, 3]], 'should shift, without mutation');
+  t.deepEqual(
+    fSync('( 1 2 3 ) dup pop'),
+    [[1, 2, 3], [1, 2]],
+    'should pop, without mutation'
+  );
+  t.deepEqual(
+    fSync('( 1 2 3 ) dup shift'),
+    [[1, 2, 3], [2, 3]],
+    'should shift, without mutation'
+  );
 });

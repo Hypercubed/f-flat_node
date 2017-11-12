@@ -9,7 +9,8 @@
     "lint": "eslint src/** bin/** test/**",
     "check": "npm run coverage && npm run lint",
     "coverage": "nyc -r lcov -r html -r text ava",
-    "start": "node -r @std/esm ./bin/repl.mjs"
+    "start": "node -r @std/esm ./bin/repl.mjs",
+    "debugger": "node --inspect -r @std/esm ./bin/repl.mjs"
   },
   "author": "J. Harshbarger",
   "license": "MIT",

@@ -1,9 +1,9 @@
 import test from 'ava';
-import {F, fSync} from './setup';
+import { F, fSync } from './setup';
 
 test('should push strings', t => {
   t.deepEqual(fSync('"a" "b"'), ['a', 'b']);
-  t.deepEqual(fSync('\'a\' \'b\''), ['a', 'b']);
+  t.deepEqual(fSync("'a' 'b'"), ['a', 'b']);
   t.deepEqual(fSync('"ab de"'), ['ab de'], 'should push strings with spaces');
   t.deepEqual(fSync('""'), [''], 'should push empty strings');
   t.deepEqual(fSync('"Dog!🐶"'), ['Dog!🐶'], 'should support emoji');
@@ -12,12 +12,15 @@ test('should push strings', t => {
 test('should quickcheck strings', t => {
   t.deepEqual(fSync('[rand-string] [ dup 1 * = ] for-all'), [[]]);
   t.deepEqual(fSync('[rand-string] [ dup 2 * 2 / = ] for-all'), [[]]);
-  t.deepEqual(fSync('[rand-string] [ [length 2 *] [2 * length] bi = ] for-all'), [[]]);
+  t.deepEqual(
+    fSync('[rand-string] [ [length 2 *] [2 * length] bi = ] for-all'),
+    [[]]
+  );
 });
 
 test('should push strings with nested quotes', t => {
-  t.deepEqual(fSync('"ab \'de\' fg"'), ['ab \'de\' fg']);
-  t.deepEqual(fSync('\'ab "de" fg\''), ['ab \"de\" fg']);
+  t.deepEqual(fSync('"ab \'de\' fg"'), ["ab 'de' fg"]);
+  t.deepEqual(fSync('\'ab "de" fg\''), ['ab "de" fg']);
 });
 
 test('should add', t => {
@@ -86,7 +89,11 @@ test('should @ from out of bounds', t => {
 test('should process string templates', t => {
   t.deepEqual(fSync('`-1 sqrt = $( -1 sqrt )`'), ['-1 sqrt = 0+1i']);
   t.deepEqual(fSync('`0.1 0.2 + = $( 0.1 0.2 + )`'), ['0.1 0.2 + = 0.3']);
-  t.deepEqual(fSync('0.1 0.2 q< q< `0.1 0.2 + = $( q> q> + )`'), ['0.1 0.2 + = 0.3']);
-  t.deepEqual(fSync('0.1 0.2 q< q< `(0.1 0.2) = $( q> q> )`'), ['(0.1 0.2) = 0.1,0.2']);
+  t.deepEqual(fSync('0.1 0.2 q< q< `0.1 0.2 + = $( q> q> + )`'), [
+    '0.1 0.2 + = 0.3'
+  ]);
+  t.deepEqual(fSync('0.1 0.2 q< q< `(0.1 0.2) = $( q> q> )`'), [
+    '(0.1 0.2) = 0.1,0.2'
+  ]);
   t.deepEqual(fSync('`$0.1 (0.2) + = $( 0.1 0.2 + )`'), ['$0.1 (0.2) + = 0.3']);
 });

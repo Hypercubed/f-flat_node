@@ -1,6 +1,6 @@
-import {getIn} from 'icepick';
+import { getIn } from 'icepick';
 
-import {typed} from '../types/index';
+import { typed } from '../types/index';
 
 export const arrayRepeat = (a, len) => {
   len = Number(len) | 0;
@@ -32,27 +32,27 @@ export const arrayMul = (lhs, rhs) => {
   return lhs.flatMap(x => [x, ...rhs]);
 }; */
 
-export function pluck (context, path) {
+export function pluck(context, path) {
   return getIn(context, path.split('.'));
 }
 
 /* istanbul ignore next */
-export function noop () {}
+export function noop() {}
 
 /* istanbul ignore next */
-export function throwError (e) {
+export function throwError(e) {
   throw e;
 }
 
-export function isNumeric (n) {
+export function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
-export function isPromise (val) {
+export function isPromise(val) {
   return val && typeof val.then === 'function';
 }
 
-export function isDefined (val) {
+export function isDefined(val) {
   return typeof val !== 'undefined';
 }
 
@@ -79,8 +79,9 @@ const __eql = typed('eql', {
   }
 });
 
-export function eql (a, b) {
-  if (a === b || a == b) {  // eslint-disable-line eqeqeq
+export function eql(a, b) {
+  if (a === b || a == b) {
+    // eslint-disable-line eqeqeq
     return true;
   }
   return __eql(a, b);

@@ -1,5 +1,5 @@
 import test from 'ava';
-import {F, fSync} from './setup';
+import { F, fSync } from './setup';
 
 test('should push quotes', t => {
   t.deepEqual(fSync('[ 1 ] [ 2 ]'), [[1], [2]], 'should push');
@@ -19,7 +19,20 @@ test('should add quotes', t => {
 });
 
 test('should mul quotes', t => {
-  t.deepEqual(fSync('[ 1 2 + ] 2 *'), [[1, 2, {type: '@@Action', value: '+'}, 1, 2, {type: '@@Action', value: '+'}]], 'should multiply');
+  t.deepEqual(
+    fSync('[ 1 2 + ] 2 *'),
+    [
+      [
+        1,
+        2,
+        { type: '@@Action', value: '+' },
+        1,
+        2,
+        { type: '@@Action', value: '+' }
+      ]
+    ],
+    'should multiply'
+  );
 });
 
 test('should test equality', t => {

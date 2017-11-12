@@ -5,10 +5,10 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Replace decimal.js with Dec64?
 - [ ] Pool children env?
 - [ ] Use child process/web workers for children?
-- [ ] Separate state from environment from engine
+- [ ] Separate state from environment from engine?
 - [ ] IO Class?
 - [ ] Session saving
-- [ ] modules/name spaces
+- [ ] modules/name spaces/named imports
 - [x] Undo history
   - [x] undo
   - [ ] redo?
