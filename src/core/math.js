@@ -5,11 +5,6 @@ import { lexer } from '../utils';
 
 export default {
   // eslint-disable-line
-  number: x => new BigNumber(x),
-  'number?': typed('number_', {
-    'BigNumber | Complex | number': () => true,
-    any: () => false
-  }),
   re: typed('re', {
     'BigNumber | number': a => a,
     Complex: a => a.re
@@ -17,10 +12,6 @@ export default {
   im: typed('im', {
     'BigNumber | number': a => 0, // eslint-disable-line
     Complex: a => a.im
-  }),
-  'complex?': typed('complex_', {
-    Complex: a => !a.im.isZero(),
-    'BigNumber | number | any': () => false
   }),
   div: typed('div', {
     // integer division

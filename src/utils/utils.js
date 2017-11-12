@@ -74,6 +74,12 @@ const __eql = typed('eql', {
   'BigNumber | Complex, BigNumber | Complex | number': (a, b) => {
     return a.equals(b);
   },
+  'Date, any': (a, b) => {
+    return +a === +b;
+  },
+  'any, Date': (a, b) => {
+    return +a === +b;
+  },
   'any, any': (a, b) => {
     return a === b;
   }

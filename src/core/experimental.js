@@ -35,7 +35,9 @@ export default {
   },
 
   // 'throw': this.throw,
+  
   clock: () => new Date().getTime(),
+
   // 'js': () => Object.assign({}, (typeof window === 'undefined') ? global : window),
   // 'console': console,
   // 'alert', function alert (a) { window.alert(a); });

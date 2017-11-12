@@ -11,6 +11,7 @@ not: [ false = ] ;
 >: [ cmp 1 = ] ;
 <: [ cmp -1 = ] ;
 >=: [ < not ] ;
+<=: [ > not ] ;
 =<: [ > not ] ;
 !=: [ = not ] ;
 get: [ q< @ dup null? swap q> swap choose ] ;

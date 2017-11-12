@@ -109,6 +109,15 @@ const sub = typed('sub', {
   **/
   'Complex, Complex': (lhs, rhs) => lhs.minus(rhs),
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.minus(rhs),
+
+    /**
+   * Dates
+   */
+  'Date, number': (lhs, rhs) => new Date(lhs.valueOf() - rhs),
+  'number, Date': (lhs, rhs) => rhs.valueOf() - lhs,
+  'Date, BigNumber': (lhs, rhs) => new Date(-rhs.minus(lhs.valueOf())),
+  'BigNumber, Date': (lhs, rhs) => lhs.minus(rhs.valueOf()),
+
   'any, any': (lhs, rhs) => lhs - rhs
 });
 
@@ -426,6 +435,18 @@ export default {
         return 0;
       }
       return lhs > rhs ? 1 : -1;
+    },
+    'Date, any': (lhs, rhs) => {
+      if (+lhs === +rhs) {
+        return 0;
+      }
+      return +lhs > +rhs ? 1 : -1;
+    },
+    'any, Date': (lhs, rhs) => {
+      if (+lhs === +rhs) {
+        return 0;
+      }
+      return +lhs > +rhs ? 1 : -1;
     }
   }),
 

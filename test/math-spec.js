@@ -140,7 +140,7 @@ test('should calculate exact powers', t => {
   t.deepEqual(fSync('e 1 ^'), [Math.E]);
 });
 
-test("should do Knuth's up-arrow notation", t => {
+test('should do Knuth\'s up-arrow notation', t => {
   t.deepEqual(fSync('3 2 ^^^'), [7625597484987]);
 });
 

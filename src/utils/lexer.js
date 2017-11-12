@@ -9,7 +9,7 @@ const atAction = new Action('@');
 const templateAction = new Action('template');
 const evalAction = new Action('eval');
 
-function processNumeric(value) {
+export function processNumeric(value) {
   if (typeof value !== 'string') {
     return NaN;
   }
