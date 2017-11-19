@@ -86,7 +86,7 @@ export function formatState({ stack, queue }, opts = defaultOpts) {
   return `${stack} <=> ${queue}`;
 }
 
-const sRE = /Symbol\(([^\)]*)\).*/g;
+const sRE = /Symbol\(([^)]*)\).*/g;
 
 function formatSymbol(value, opts) {
   value = value.toString().replace(sRE, '#$1');

@@ -1,5 +1,3 @@
-// import {processIdentifier} from './utils';
-// import {isString, isArray} from 'fantasy-helpers/src/is';
 import { lex } from 'literalizer';
 
 import { Action, BigNumber, typed } from '../types/index';
@@ -34,8 +32,8 @@ export const lexer = typed('lexer', {
 
 function innerParse(val) {
   return val
-    .replace(/([\{\}\(\)\[\]])/g, ' $1 ') // add white space around braces
-    .split(/[\,\n\s]+/g) // split on whitespace
+    .replace(/([{}()[\]])/g, ' $1 ') // add white space around braces
+    .split(/[,\n\s]+/g) // split on whitespace
     .reduce((p, c) => (c.length > 0 ? p.concat(convertLiteral(c)) : p), []);
 }
 

@@ -1,10 +1,8 @@
 import { freeze, assign, merge, unshift, push, slice } from 'icepick';
 import memoize from 'memoizee';
-import { isFunction } from 'fantasy-helpers/src/is';
 
-import { pluck, formatValue, eql, arrayRepeat, arrayMul } from '../utils';
+import { pluck, eql, arrayRepeat, arrayMul } from '../utils';
 import { Seq, Action, typed, I } from '../types';
-import { USE_STRICT } from '../constants';
 
 /**
   ## `+` (add)
@@ -111,7 +109,7 @@ const sub = typed('sub', {
   'Complex, Complex': (lhs, rhs) => lhs.minus(rhs),
   'BigNumber, BigNumber | number': (lhs, rhs) => lhs.minus(rhs),
 
-    /**
+  /**
    * Dates
    */
   'Date, number': (lhs, rhs) => new Date(lhs.valueOf() - rhs),
@@ -458,8 +456,8 @@ export default {
 
       ( {string|atom} -> )
     **/
-  memoize: function(name, n) {
-    const cmd = this.lookupAction(name);
+  memoize(name, n) {
+    const cmd = this.dict.get(name);
     if (cmd) {
       const fn = (...a) => {
         const s = this.createChild()

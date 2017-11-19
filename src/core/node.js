@@ -1,11 +1,6 @@
 import { randomBytes } from 'crypto';
-import { extname } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
-import rfr from 'rfr';
-
 import { log } from '../utils';
-
-import { USE_STRICT } from '../constants';
 
 // const stdin = process.stdin;
 const stdout = process.stdout;
@@ -13,7 +8,7 @@ const stdout = process.stdout;
 
 const { URL } = require('url');
 
-function resolve(specifier, parentModuleURL = getURLStringForCwd(), defaultResolver) {
+function resolve(specifier, parentModuleURL = getURLStringForCwd()) {
   return new URL(specifier, parentModuleURL);
 }
 
@@ -78,7 +73,7 @@ export default {
 
   sesssave() {
     log.debug('saving session');
-    fs.writeFileSync(
+    writeFileSync(
       'session',
       JSON.stringify(
         {

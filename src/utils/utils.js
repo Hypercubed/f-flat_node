@@ -1,6 +1,3 @@
-import { setIn, freeze, thaw, merge } from 'icepick';
-import cloneDeep from 'clone-deep';
-
 import { typed, Action } from '../types/index';
 
 export const arrayRepeat = (a, len) => {
@@ -43,7 +40,7 @@ function baseGet(coll, path) {
 
 export const pluck = (context, path) => {
   return baseGet(context, path.split('.'));
-}
+};
 
 export const update = (context, path, value) => { // watch immutability
   path = path.split('.');
@@ -56,7 +53,7 @@ export const update = (context, path, value) => { // watch immutability
     }
     curr[key] = value;
   }, context);
-}
+};
 
 /* istanbul ignore next */
 export function noop() {}
@@ -66,17 +63,9 @@ export function throwError(e) {
   throw e;
 }
 
-export function isNumeric(n) {
+/* export function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
-}
-
-export function isPromise(val) {
-  return val && typeof val.then === 'function';
-}
-
-export function isDefined(val) {
-  return typeof val !== 'undefined';
-}
+} */
 
 const __eql = typed('eql', {
   'Array, Array': (a, b) => {

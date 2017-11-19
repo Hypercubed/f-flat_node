@@ -1,9 +1,9 @@
-import { isFunction } from 'fantasy-helpers/src/is';
+import is from '@sindresorhus/is';
 import { thaw, freeze } from 'icepick';
 import cloneDeep from 'clone-deep';
 
-import { update, pluck, formatValue, eql, arrayRepeat, arrayMul } from '../utils';
-import { Seq, Action, typed, I, Just } from '../types';
+import { formatValue } from '../utils';
+import { Action, Just } from '../types';
 import { USE_STRICT } from '../constants';
 
 // For all deictionay actions, note:
@@ -42,7 +42,7 @@ export const dict = {
     if (typeof r === 'undefined') {
       return null;
     }
-    if (USE_STRICT && isFunction(r)) { // carefull pushing functions to stack, watch immutability
+    if (USE_STRICT && is.function(r)) { // carefull pushing functions to stack, watch immutability
       return new Action(r);
     }
     return Action.isAction(r) ? new Just(r) : freeze(cloneDeep(r));

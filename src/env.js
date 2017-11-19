@@ -1,6 +1,5 @@
 /* global window, global, process, require */
-
-import { isString, isFunction, isObject } from 'fantasy-helpers/src/is';
+import is from '@sindresorhus/is';
 import { functionLength, functionName } from 'fantasy-helpers/src/functions';
 import cloneDeep from 'clone-deep';
 
@@ -11,16 +10,12 @@ import {
   log,
   bar,
   FFlatError,
-  pluck,
-  update,
-  isPromise,
-  isDefined,
   formatState,
   lexer
 } from './utils';
 
-import { typed, Action, Seq, Just, Dictionary } from './types';
-import { USE_STRICT, MAXSTACK, MAXRUN, IDLE, DISPATCHING, YIELDING, ERR, IIF } from './constants';
+import { typed, Action, Seq, Dictionary } from './types';
+import { MAXSTACK, MAXRUN, IDLE, DISPATCHING, YIELDING, ERR, IIF } from './constants';
 
 const nonInteractive = !process || !process.stdin.isTTY;
 
@@ -75,7 +70,7 @@ export class StackEnv {
           return new Seq(self.expandAction(action.value));
         }
         const r = self.dict.get(action.value);
-        return isFunction(r) ? new Seq([action]) : self.expandAction(r);
+        return is.function(r) ? new Seq([action]) : self.expandAction(r);
       },
       'Array': arr => {
         return freeze(arr)
@@ -246,7 +241,7 @@ export class StackEnv {
           return;
         }
 
-        if (isPromise(action)) {  // promise middleware
+        if (is.promise(action)) {  // promise middleware
           self.status = YIELDING;
           return action.then(f => {
             self.status = IDLE;
@@ -266,7 +261,7 @@ export class StackEnv {
             if (Array.isArray(tokenValue)) {
               return self.queueFront(tokenValue);
             }
-            if (!isString(tokenValue)) {
+            if (!is.string(tokenValue)) {
               return stackPush(tokenValue);
             }
             if (tokenValue[0] === IIF && tokenValue.length > 1) {
@@ -277,7 +272,7 @@ export class StackEnv {
 
             if (Action.isAction(lookup)) {
               return self.queueFront(lookup.value);
-            } else if (isFunction(lookup)) {
+            } else if (is.function(lookup)) {
               return dispatchFn(lookup, functionLength(lookup), tokenValue);
             } else if (lookup) {
               return stackPush(cloneDeep(lookup));
@@ -380,12 +375,12 @@ export class StackEnv {
   createChildPromise(a) {
     return this.createChild()
       .promise(a)
-        .then(f => f.stack)
-        .catch(err => {
-          if (err) {
-            this.onError(err);
-          }
-        });
+      .then(f => f.stack)
+      .catch(err => {
+        if (err) {
+          this.onError(err);
+        }
+      });
   }
   
   createChild(initalState) {

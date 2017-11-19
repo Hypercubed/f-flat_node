@@ -1,5 +1,5 @@
 import test from 'ava';
-import { F, fSync } from './setup';
+import { fSync } from './setup';
 
 test('should sto and rcl', t => {
   const action = [1, 2, { type: '@@Action', value: '+' } ];
