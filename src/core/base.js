@@ -23,6 +23,7 @@ const add = typed('add', {
   **/
   'Array, Array': (lhs, rhs) => lhs.concat(rhs),
   'Array, any': (lhs, rhs) => lhs.concat(rhs),
+  'Action, Array': (lhs, rhs) => [lhs, ...rhs],
 
   'Future, any': (f, rhs) => f.map(lhs => lhs.concat(rhs)),
 
@@ -313,6 +314,7 @@ const at = typed('at', {
 });
 
 export default {
+
   /**
       ## `<-` (stack)
       replaces the stack with the item found at the top of the stack
@@ -349,7 +351,7 @@ export default {
       ## `undo`
       restores the stack to state before previous eval
     **/
-  undo: function() {
+  undo () {
     this.undo().undo();
   },
 
@@ -451,86 +453,6 @@ export default {
   }),
 
   /**
-      ## `define`
-      defines a set of words from an object
-
-      ( {object} -> )
-
-      ```
-      f♭> { sqr: "dup *" } define
-      [ ]
-      ```
-    **/
-  define: function(x) {
-    self.defineAction(x);
-  },
-
-  /**
-      ## `sto`
-      stores a quote in the dictionary
-
-      ( [A] {string|atom} -> )
-
-      ```
-      f♭> [ dup * ] "sqr" sto
-      [ ]
-      ```
-    **/
-  sto: function(lhs, rhs) {
-    // consider :=
-    this.dict[rhs] = lhs;
-  },
-
-  /**
-      ## `;`
-      defines a word
-
-      ( {string|atom} [A] -> )
-
-      ```
-      f♭> sqr: [ dup * ] ;
-      [ ]
-      ```
-    **/
-  ';': function(name, cmd) {
-    if (
-      USE_STRICT &&
-      Reflect.apply(Object.prototype.hasOwnProperty, this.dict, [name])
-    ) {
-      throw new Error(`Cannot overrite definitions in strict mode: ${name}`);
-    }
-    if (!isFunction(cmd) && !Action.isAction(cmd)) {
-      cmd = new Action(cmd);
-    }
-    this.defineAction(name, cmd);
-  },
-
-  /**
-      ## `def`
-      defines a word
-
-      ( [A] {string|atom} -> )
-
-      ```
-      f♭> [ dup * ] "sqr" def
-      [ ]
-      ```
-    **/
-  def: function(cmd, name) {
-    // consider def and let, def top level, let local
-    if (
-      USE_STRICT &&
-      Reflect.apply(Object.prototype.hasOwnProperty, this.dict, [name])
-    ) {
-      throw new Error(`Cannot overrite definitions in strict mode: ${name}`);
-    }
-    if (!isFunction(cmd) && !Action.isAction(cmd)) {
-      cmd = new Action(cmd);
-    }
-    this.defineAction(name, cmd);
-  },
-
-  /**
       ### `memoize`
       memoize a defined word
 
@@ -547,90 +469,6 @@ export default {
       };
       this.defineAction(name, memoize(fn, { length: n, primitive: true }));
     }
-  },
-
-  /**
-      ## `delete`
-      deletes a defined word
-
-      ( {string|atom} -> )
-    **/
-  delete: function(a) {
-    if (USE_STRICT) {
-      throw new Error('Cannot delete definitions in strict mode');
-    }
-    Reflect.deleteProperty(this.dict, a);
-  },
-
-  /**
-      ## `rcl`
-      recalls the definion of a word
-
-      ( {string|atom} -> [A] )
-
-      ```
-      f♭> "sqr" rcl
-      [ [ dup * ] ]
-      ```
-    **/
-  rcl: function(a) {
-    const r = this.lookupAction(a);
-    if (!r) {
-      return null;
-    }
-    if (USE_STRICT && isFunction(r)) {
-      return new Action(r);
-    } // carefull pushing functions to stack
-    return r.value;
-  },
-
-  /**
-      ## `expand`
-      expand a quote
-
-      ( [A] -> [a b c])
-
-      ```
-      f♭> [ sqr ] expand
-      [ [ dup * ] ]
-      ```
-    **/
-  expand: function() {
-    return this.expandAction();
-  },
-
-  /**
-      ## `see`
-      recalls the definition of a word as a formatted string
-
-      ( {string|atom} -> {string} )
-
-      ```
-      f♭> "sqr" see
-      [ '[ dup * ]' ]
-      ```
-    **/
-  see: function(a) {
-    const r = this.lookupAction(a);
-    if (!r) {
-      return null;
-    }
-    return formatValue(r.value, 0, { colors: false, indent: false });
-  },
-
-  /**
-      ## `words`
-      returns a list of defined words
-
-      ( -> {array} )
-    **/
-  words: function() {
-    const result = [];
-    for (const prop in this.dict) {
-      // eslint-disable-line guard-for-in
-      result.push(prop);
-    }
-    return result;
   },
 
   /**

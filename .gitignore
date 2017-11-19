@@ -38,3 +38,5 @@ dist/
 .esm-cache/
 
 **/.DS_Store
+
+.vscode

@@ -1,6 +1,18 @@
-'./ff-lib/core.ff' load
-'./ff-lib/suffle.ff' load
-'./ff-lib/math.ff' load
+// Boot strap Fflat
+
+[ action swap sto ] action ';' sto   // definition of define action
+
+load: [ read eval ] ;
+import: [ [ read eval dict defineparent ] >> q< string q> >> fork drop ] ;
+using: [ rcl define ] ;
+
+suffle: './ff-lib/suffle.ff' import
+core: './ff-lib/core.ff' import
+math: './ff-lib/math.ff' import
+sym: './ff-lib/math-sym.ff' import
+combinators: './ff-lib/combinators.ff' import
+
 './ff-lib/usr.ff' load
-'./ff-lib/combinators.ff' load
-'./ff-lib/math-sym.ff' load
+
+
+

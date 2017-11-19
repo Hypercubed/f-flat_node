@@ -1,4 +1,5 @@
 export { default as base } from './base';
+export * from './dict';
 export { default as core } from './core';
 export { default as experimental } from './experimental';
 export { default as math } from './math';

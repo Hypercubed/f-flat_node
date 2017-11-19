@@ -75,11 +75,6 @@ test('should clr', t => {
   t.deepEqual(fSync('1 2 clr 3'), [3]);
 });
 
-test('should sto, def', t => {
-  t.deepEqual(fSync('1 2 "x" sto 3 x x'), [1, 3, 2, 2], 'should sto');
-  t.deepEqual(fSync('[ 2 + ] "x" def 3 x x'), [7], 'should def');
-});
-
 test('should stack unstack', t => {
   t.deepEqual(fSync('1 2 3 stack'), [[1, 2, 3]], 'should stack');
   t.deepEqual(fSync('[ 1 2 3 ] <-'), [1, 2, 3], 'should unstack');
@@ -105,8 +100,8 @@ test('in/fork', t => {
     'fork should isolate child scope'
   );
   t.deepEqual(
-    fSync('"outer" "a" sto [ "inner" "a" sto a ] in a'),
-    [['inner'], 'inner'],
+    fSync('"outer" "a" sto [ "inner" "b" sto a ] in b'),
+    [['outer'], 'inner'],
     'in does not isolate child scope'
   );
 });
@@ -355,7 +350,7 @@ test('pick', t => {
   t.deepEqual(fSync('{a: {b: 5}} a.b: @'), [5]);
   t.deepEqual(fSync('{a: 7} "A" lcase @'), [7]);
   t.deepEqual(fSync('{a: 11} b: @ 13 orelse'), [13]);
-  t.deepEqual(fSync('[ a: @ ] pickfunc: def { a: 17 } pickfunc'), [17]);
+  t.deepEqual(fSync('[ a: @ ] action pickfunc: sto { a: 17 } pickfunc'), [17]);
 });
 
 test('pick, short cuts', t => {
@@ -364,7 +359,7 @@ test('pick, short cuts', t => {
   t.deepEqual(fSync('{a: 3} @b'), [null]);
   t.deepEqual(fSync('{a: {b: 5}} @a.b'), [5]);
   t.deepEqual(fSync('{a: 11} @b 13 orelse'), [13]);
-  t.deepEqual(fSync('[ @a ] pickfunc: def { a: 17 } pickfunc'), [17]);
+  t.deepEqual(fSync('[ @a ] action pickfunc: sto { a: 17 } pickfunc'), [17]);
 });
 
 test('pick into object', t => {
@@ -410,3 +405,4 @@ test('pick from, shortcut', t => {
   t.deepEqual(fSync('[3 5] @1'), [5]);
   t.deepEqual(fSync('([7 11] @0)'), [[7]]);
 });
+

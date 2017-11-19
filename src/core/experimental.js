@@ -89,7 +89,7 @@ export default {
       [ [ 2 ] ]
       ```
     **/
-  fork: function(a) {
+  fork(a) {
     // like in with child scope
     return freeze(this.createChild().eval(a).stack);
   },
@@ -100,7 +100,7 @@ export default {
 
       ( [A] -> {future} )
     **/
-  spawn: function(a) {
+  spawn(a) {
     return new Future(a, this.createChildPromise(a));
   },
 
@@ -129,7 +129,7 @@ export default {
       [ 3 [ 1 2 4 ] ]
       ```
     **/
-  send: function(a) {
+  send(a) {
     if (this.parent) {
       this.parent.stack.push(a);
     }
@@ -164,7 +164,7 @@ export default {
       [ [ 2 3 4 * ] ]
       ```
     **/
-  suspend: function() {
+  suspend() {
     return new Seq(this.queue.splice(0)); // rename stop?
   },
 
@@ -174,7 +174,7 @@ export default {
 
       ( [ A B C ]-> [ [a] [b] [c] ])
     **/
-  all: function(arr) {
+  all(arr) {
     return Promise.all(arr.map(a => this.createChildPromise(a)));
   },
 
@@ -184,7 +184,7 @@ export default {
 
       ( [ A B C ]-> [x])
     **/
-  race: function(arr) {
+  race(arr) {
     return Promise.race(arr.map(a => this.createChildPromise(a)));
   }
 };

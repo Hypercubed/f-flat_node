@@ -89,7 +89,7 @@ export class Action extends Base {
 
   static isAction(item) {
     const Species = this[Symbol.species];
-    return item && item.type && item.type === Species.prototype.type;
+    return !!item && !!item.type && item.type === Species.prototype.type;
   }
 }
 

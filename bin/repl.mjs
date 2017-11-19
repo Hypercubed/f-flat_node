@@ -30,7 +30,7 @@ program
 
 program.parse(process.argv);
 
-let f = new Stack('true auto-undo');
+let f = newStack();
 
 if (program.logLevel) {
   log.level = program.logLevel;
@@ -43,7 +43,9 @@ if (arg !== '') {
   process.exit();
 }
 
-setupStack();
+console.log(`Welcome to F♭ REPL Interpreter
+F♭ Version ${pkg.version} (C) 2000-2017 ${pkg.author}
+`); // Type "help", "copyright", "credits" or "license" for more information.
 
 const stackRepl = repl.start({
   prompt: `${initialPrompt} `,
@@ -54,7 +56,9 @@ const stackRepl = repl.start({
   useGlobal: false
 });
 
-stackRepl.on('reset', setupStack);
+stackRepl.on('reset', () => {
+  f = newStack();
+});
 
 process.on('uncaughtException', () => {
   console.log('The event loop was blocked for longer than 2000 milliseconds');
@@ -69,13 +73,14 @@ stackRepl.defineCommand('.', {
   }
 });
 
-function setupStack() {
-  f = new Stack(); // .eval('true auto-undo "Welcome to f♭" println');
+function newStack() {
+  const f = new Stack().eval('true auto-undo');
   f.defineAction('prompt', () => {
     return new Promise(resolve => {
       stackRepl.question('', resolve);
     });
   });
+  return f.createChild();
 }
 
 function writer(_) {

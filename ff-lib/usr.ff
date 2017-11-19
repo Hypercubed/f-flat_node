@@ -1,3 +1,7 @@
+suffle: using
+math: using
+core: using
+
 // functional
 chain: [ over nothing? not swap when ] ;
 fmap: [ eval ] ;

@@ -2,6 +2,7 @@
 
 import { isString, isFunction, isObject } from 'fantasy-helpers/src/is';
 import { functionLength, functionName } from 'fantasy-helpers/src/functions';
+import cloneDeep from 'clone-deep';
 
 import MiniSignal from 'mini-signals';
 import { freeze } from 'icepick';
@@ -11,14 +12,15 @@ import {
   bar,
   FFlatError,
   pluck,
+  update,
   isPromise,
   isDefined,
   formatState,
   lexer
 } from './utils';
 
-import { Action, Seq } from './types';
-import { MAXSTACK, MAXRUN, IDLE, DISPATCHING, YIELDING, ERR, IIF } from './constants';
+import { typed, Action, Seq, Just, Dictionary } from './types';
+import { USE_STRICT, MAXSTACK, MAXRUN, IDLE, DISPATCHING, YIELDING, ERR, IIF } from './constants';
 
 const nonInteractive = !process || !process.stdin.isTTY;
 
@@ -29,47 +31,82 @@ export class StackEnv {
     this.completed = new MiniSignal();
     this.previousPromise = Promise.resolve();
 
-    const defaultState = {
+    Object.assign(this, {
       queue: [],
       stack: [],
       prevState: null,
-      dict: {},
       depth: 0,
       silent: false,
       undoable: true,
       parent: null,
       nextAction: null,
-      module: undefined
-    };
+      module: undefined,
+    }, initalState);
 
-    Object.assign(this, defaultState, initalState);
-  }
+    this.dict = new Dictionary(this.parent ? this.parent.dict : undefined);
 
-  defineAction(name, fn) {
-    if (isObject(name) && !Action.isAction(name)) {
-      for (const key in name) {
-        if (name.hasOwnProperty(key)) {
-          this.defineAction(key, name[key]);
+    const self = this;
+
+    this.defineAction = typed({
+      'Function': fn => {
+        const name = functionName(fn);
+        return self.defineAction(name, fn);
+      },
+      'Object': obj => {
+        for (const key in obj) {
+          if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            self.defineAction(key, obj[key]);
+          }
         }
+        return self;
+      },
+      'Action | string, string': (name, fn) => {
+        fn = new Action(lexer(fn));
+        return self.defineAction(name, fn);
+      },
+      'Action | string, any': (name, fn) => {
+        return self.dict.set(name, fn);
       }
-      return this;
-    }
-    if (arguments.length === 1) {
-      fn = name;
-      name = functionName(fn);
-    }
-    if (typeof fn === 'string') {
-      fn = new Action(lexer(fn));
-    }
-    /* if (USE_STRICT && state.dict.hasOwnProperty(name)) {
-      throw new Error('Cannot overrite definitions in strict mode');
-    } */
-    name = String(name).toLowerCase();
-    this.dict[name] = freeze(fn);
-    if (isDefined(this.module)) {
-      this.dict[this.module][name] = freeze(fn);
-    }
-    return this;
+    });
+
+    this.expandAction = typed({
+      'Action': action => {
+        if (Array.isArray(action.value)) {
+          return new Seq(self.expandAction(action.value));
+        }
+        const r = self.dict.get(action.value);
+        return isFunction(r) ? new Seq([action]) : self.expandAction(r);
+      },
+      'Array': arr => {
+        return freeze(arr)
+          .map(i => self.expandAction(i))
+          .reduce((p, n) => {
+            if (Seq.isSeq(n)) {
+              p.push(...n.value);
+            } else {
+              p.push(n);
+            }
+            
+            return p;
+          }, []);
+      },
+      'BigNumber': any => any,
+      'Object': obj => {
+        const r = {};
+        for (const key in obj) {
+          if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            const n = self.expandAction(obj[key]);
+            if (Seq.isSeq(n)) {
+              r[key] = n.value.length === 1 ? n.value[0] : n.value;
+            } else {
+              r[key] = n;
+            }
+          }
+        }
+        return r;
+      },
+      'any': any => any
+    });
   }
 
   promise(s) {
@@ -196,7 +233,7 @@ export class StackEnv {
           throw new FFlatError('MAXSTACK exceeded', this);
         }
       }
-      tick.dispatch(this);
+      return tick.dispatch(this);
 
       function stackPush (...a) {
         // if (USE_STRICT) a.map(Object.freeze);
@@ -236,14 +273,14 @@ export class StackEnv {
               tokenValue = tokenValue.slice(1);
             }
 
-            const lookup = self.lookupAction(tokenValue);
+            const lookup = self.dict.get(tokenValue);
 
             if (Action.isAction(lookup)) {
               return self.queueFront(lookup.value);
             } else if (isFunction(lookup)) {
               return dispatchFn(lookup, functionLength(lookup), tokenValue);
             } else if (lookup) {
-              return stackPush(lookup);
+              return stackPush(cloneDeep(lookup));
             }
             // throw new Error(`${action} is not defined`);
             throw new FFlatError(`${action} is not defined`, self);
@@ -316,45 +353,16 @@ export class StackEnv {
     return this;
   }
 
-  lookupAction(path) {
-    if (Action.isAction(path)) {
-      return this.lookupAction(path.value);
+  exportAction() {
+    if (this.parent) {
+      /* const expanded = {};
+      for (const key in this.dict) {
+        if (Object.prototype.hasOwnProperty.call(this.dict, key)) {
+          expanded[key] = this.expandAction(this.dict[key]);
+        }
+      } */
+      this.parent.defineAction(this.dict);
     }
-
-    if (typeof path !== 'string') {
-      return undefined;
-    }
-    log.debug('lookup', path);
-    const r = pluck(this.dict, path);
-    if (r) {
-      log.debug('lookup found', r.inspect ? r.inspect() : r.toString(), Action.isAction(r));
-    }
-    return r;
-  }
-
-  expandAction (a) {  // use typed?
-    if (Array.isArray(a)) {
-      return freeze(a).map(i => this.expandAction(i))
-        .reduce((p, n) => {
-          if (Seq.isSeq(n)) {
-            p.push(...n.value);
-          } else {
-            p.push(n);
-          }
-          return p;
-        }, []);
-    }
-
-    if (Action.isAction(a)) {
-      // console.log('expand Action', a, typeof a);
-      if (Array.isArray(a.value)) {
-        return new Seq(this.expandAction(a.value));
-      }
-      const r = this.lookupAction(a.value);
-      return Action.isAction(r) ? this.expandAction(r) : new Seq([a]);
-    }
-
-    return a;
   }
 
   clear() {
@@ -380,9 +388,8 @@ export class StackEnv {
         });
   }
   
-  createChild (initalState) {
+  createChild(initalState) {
     return new StackEnv({
-      dict: Object.create(this.dict),
       parent: this,
       ...initalState
     });

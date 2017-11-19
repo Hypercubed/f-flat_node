@@ -1,6 +1,7 @@
-import { getIn } from 'icepick';
+import { setIn, freeze, thaw, merge } from 'icepick';
+import cloneDeep from 'clone-deep';
 
-import { typed } from '../types/index';
+import { typed, Action } from '../types/index';
 
 export const arrayRepeat = (a, len) => {
   len = Number(len) | 0;
@@ -32,8 +33,29 @@ export const arrayMul = (lhs, rhs) => {
   return lhs.flatMap(x => [x, ...rhs]);
 }; */
 
-export function pluck(context, path) {
-  return getIn(context, path.split('.'));
+function baseGet(coll, path) {
+  return (path || []).reduce((curr, key) => {
+    if (!curr) return;
+    curr = Action.isAction(curr) ? curr.value : curr;
+    return curr[key];
+  }, coll);
+}
+
+export const pluck = (context, path) => {
+  return baseGet(context, path.split('.'));
+}
+
+export const update = (context, path, value) => { // watch immutability
+  path = path.split('.');
+  if (path.length === 1) {
+    return context[path] = value;
+  }
+  path.reduce((curr, key, currentIndex) => {
+    if (currentIndex < path.length - 1) {
+      return curr[key];
+    }
+    curr[key] = value;
+  }, context);
 }
 
 /* istanbul ignore next */

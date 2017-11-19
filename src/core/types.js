@@ -21,10 +21,8 @@ export default {
     Complex: a => !a.im.isZero(),
     'BigNumber | number | any': () => false
   }),
-  string: typed('string', {
-    Array: String,
-    any: String
-  }),
+  action: a => new Seq([new Action(a)]),
+  string: a => String(a),
   valueof: x => x.valueOf(),
   // number: x => processNumeric(String(x.valueOf())),
   itoa: x => String.fromCharCode(x),
@@ -43,7 +41,6 @@ export default {
   empty: a => (a.empty ? a.empty() : new a.constructor()),
   'is?': (a, b) => a === b,
   'nothing?': a => a === null || typeof a === 'undefined',
-
   date: a => new Date(a),
   now: () => new Date(),
   'date-expand': a => new Seq([a.getFullYear(), a.getMonth() + 1, a.getDate()])

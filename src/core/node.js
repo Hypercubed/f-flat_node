@@ -1,6 +1,6 @@
-import crypto from 'crypto';
-import path from 'path';
-import fs from 'fs';
+import { randomBytes } from 'crypto';
+import { extname } from 'path';
+import { readFileSync, writeFileSync } from 'fs';
 import rfr from 'rfr';
 
 import { log } from '../utils';
@@ -9,6 +9,39 @@ import { USE_STRICT } from '../constants';
 
 // const stdin = process.stdin;
 const stdout = process.stdout;
+
+
+const { URL } = require('url');
+
+function resolve(specifier, parentModuleURL = getURLStringForCwd(), defaultResolver) {
+  return new URL(specifier, parentModuleURL);
+}
+
+function getURLStringForCwd() {
+  try {
+    return getURLFromFilePath(`${process.cwd()}/`).href;
+  } catch (e) {
+    e.stack;
+    // If the current working directory no longer exists.
+    if (e.code === 'ENOENT') {
+      return undefined;
+    }
+    throw e;
+  }
+}
+
+// We percent-encode % character when converting from file path to URL,
+// as this is the only character that won't be percent encoded by
+// default URL percent encoding when pathname is set.
+const percentRegEx = /%/g;
+function getURLFromFilePath(filepath) {
+  const tmp = new URL('file://');
+  if (filepath.includes('%'))
+    filepath = filepath.replace(percentRegEx, '%25');
+  tmp.pathname = filepath;
+  return tmp;
+}
+
 
 export default {
   os: () => process.platform,
@@ -31,31 +64,19 @@ export default {
     process.exit(0);
   },
   'rand-u32': function randU32() {
-    return crypto.randomBytes(4).readUInt32BE(0, true);
+    return randomBytes(4).readUInt32BE(0, true);
   },
   env: () => process.env,
   cls: '"\u001B[2J\u001B[0;0f" println',
 
-  load: function(name) {
-    // todo: catch error, make async? use System?
-    const ext = path.extname(name);
-    if (ext === '.ff') {
-      log.debug('loading', name);
-      const code = fs.readFileSync(name, 'utf8');
-      this.run(code);
-      return;
-    }
-    if (ext === '.json' || !USE_STRICT) {
-      // note: json files are a subset of ff files
-      if (name.indexOf('./') > -1) {
-        return rfr(name);
-      }
-      return require(name);
-    }
-    return undefined;
+  resolve: name => resolve(name).href,
+
+  read: (name) => {
+    name = resolve(name);
+    return readFileSync(name, 'utf8');
   },
 
-  sesssave: function() {
+  sesssave() {
     log.debug('saving session');
     fs.writeFileSync(
       'session',

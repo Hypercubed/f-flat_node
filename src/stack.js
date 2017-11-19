@@ -4,6 +4,7 @@ import { USE_STRICT } from './constants';
 import { StackEnv } from './env';
 
 import {
+  dict,
   base,
   objects,
   core,
@@ -40,6 +41,7 @@ export function createRootEnv () {
   });
 
   env.defineAction(base);
+  env.defineAction(dict);
   env.defineAction(objects);
   env.defineAction(core);
   env.defineAction(math);
@@ -47,7 +49,7 @@ export function createRootEnv () {
   env.defineAction(experimental);
   env.defineAction(node);
 
-  env.eval('\'./ff-lib/boot.ff\' load');
+  env.eval('\'./ff-lib/boot.ff\' read eval');
 
   return env;
 }

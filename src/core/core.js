@@ -58,13 +58,13 @@ export default {
     [ [ 1 2 3 ] ]
     ```
   **/
-  stack: function() {
+  stack () {
     return this.stack.splice(0);
   },
 
   /**
     ## `d++`
-    increments the d counter, if d > 0 words are not push to the stack as literals
+    increments the depth counter.  If depth > 0, words are not push to the stack as literals
 
     ```
     f♭> d++ drop :d--
@@ -97,7 +97,7 @@ export default {
 
     ( #( ... -> [ ... ] )
   **/
-  dequote: function(s) {
+  dequote (s) {
     const r = [];
     while (this.stack.length > 0 && s !== quoteSymbol) {
       r.unshift(s);
@@ -118,7 +118,7 @@ export default {
     [ 1 2 3 3 ]
     ```
   **/
-  depth: function() {
+  depth () {
     return this.stack.length; // ,  or "stack [ unstack ] [ length ] bi"
   },
 
@@ -345,10 +345,7 @@ export default {
 
      ( {url} -> {string} )
   **/
-  fetch: url =>
-    fetch(url).then(res => {
-      return res.text();
-    }),
+  fetch: url => fetch(url).then(res => res.text()),
 
   /**
      ## `get-log-level`
