@@ -114,7 +114,7 @@ export class Seq extends Just {
 }
 
 export class Future extends Base {
-  constructor(public action: any, public promise: Promise<any>) {
+  constructor(public action: Action | undefined, public promise: Promise<any>) {
     super(undefined);
 
     if (typeof promise !== 'undefined') {
@@ -134,7 +134,7 @@ export class Future extends Base {
     return this.isResolved() ? 'resolved' : 'pending';
   }
 
-  resolve(p): any {
+  resolve(p: any): any {
     if (this.isResolved()) {
       return;
     }

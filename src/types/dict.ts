@@ -1,4 +1,4 @@
-import { pluck, update } from '../utils';
+import { pluck, update, remove } from '../utils';
 import { USE_STRICT } from '../constants';
 import * as cloneDeep from 'clone-deep';
 
@@ -6,28 +6,29 @@ export class Dictionary {
 
   store: any;
 
-  constructor(parent) {
+  constructor(parent?: Dictionary) {
     this.store = Object.create(parent ? parent.store : null);
   }
 
-  get(path) {
+  get(path: string) {
     path = String(path).toLowerCase();
     return pluck(this.store, path);
   }
 
-  set(path, value) {
+  set(path: string, value: any) {
     path = String(path).toLowerCase();
-    if (USE_STRICT && Object.prototype.hasOwnProperty.call(this.store, path)) { // todo: this needs to move down to avoid overiding any thing
+    if (USE_STRICT && Object.prototype.hasOwnProperty.call(this.store, path)) { // this only check one level!
       throw new Error(`Cannot overrite definitions in strict mode: ${path}`);
     }
     update(this.store, path, value);
   }
 
-  delete(path) {
-    /* if (USE_STRICT) {
+  delete(path: string) {
+    if (USE_STRICT) {
       throw new Error('Cannot delete definitions in strict mode');
-    } */
-    update(this.store, path, undefined);
+    }
+    path = String(path).toLowerCase();
+    remove(this.store, path, undefined);
   }
 
   allKeys() {

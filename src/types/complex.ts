@@ -2,15 +2,15 @@ import { typed } from './typed';
 import { BigNumber, zero, twoPiSqrt } from './bigNumber';
 import { g, c } from './gamma';
 
-const precision = Math.pow(10, -BigNumber.precision + 5);
+const precision = Math.pow(10, -<number>BigNumber.precision + 5);
 
 export class Complex {
   static type = '@@complex';
 
-  re: any;
-  im: any;
+  re: BigNumber;
+  im: BigNumber;
 
-  constructor(re, im = 0) {
+  constructor(re: number | BigNumber | Complex, im: number | BigNumber = 0) {
     if (re instanceof Complex) {
       return re;
     }
@@ -20,11 +20,11 @@ export class Complex {
     Object.freeze(this);
   }
 
-  empty() {
+  empty(): BigNumber {
     return zero;
   }
 
-  toString() {
+  toString(): string {
     let s = this.re.toString();
     if (this.im.isZero()) {
       return s;
@@ -35,7 +35,7 @@ export class Complex {
     return `${s}${this.im.toString()}i`;
   }
 
-  toJSON() {
+  toJSON(): {} {
     return {
       // type: Complex.type,
       re: this.re.valueOf(), // fix this, should store full precision
@@ -43,47 +43,47 @@ export class Complex {
     };
   }
 
-  inspect() {
+  inspect(): string {
     return this.toString();
   }
 
-  equals(rhs) {
+  equals(rhs: Complex): boolean {
     return this.re.equals(rhs.re) && this.im.equals(rhs.im);
   }
 
-  dotProduct(rhs) {
+  dotProduct(rhs: Complex): BigNumber {
     return this.re.times(rhs.re).plus(this.im.times(rhs.im));
   }
 
-  _y(rhs) {
+  _y(rhs: Complex): BigNumber {
     return this.im.times(rhs.re).minus(this.re.times(rhs.im));
   }
 
-  abs() {
+  abs(): BigNumber {
     return this.dotProduct(this).sqrt();
   }
 
-  modulo(c) {
+  modulo(c): Complex {
     c = new Complex(c);
     return new Complex(this.re.modulo(c.re), this.im.modulo(c.im));
   }
 
-  round() {
+  round(): Complex {
     return new Complex(this.re.round(), this.im.round());
   }
 
-  angle() {
-    return BigNumber.atan2(this.im, this.re);
+  angle(): BigNumber {
+    return (BigNumber as any).atan2(this.im, this.re);
   }
 
-  times(rhs) {
+  times(rhs: Complex): Complex {
     rhs = new Complex(rhs);
     const re = this.re.times(rhs.re).minus(this.im.times(rhs.im));
     const im = this.re.times(rhs.im).plus(this.im.times(rhs.re));
     return new Complex(re, im);
   }
 
-  div(rhs) {
+  div(rhs: Complex): Complex {
     rhs = new Complex(rhs);
     let re;
     let im;
@@ -99,21 +99,21 @@ export class Complex {
     return new Complex(re, im);
   }
 
-  plus(rhs) {
+  plus(rhs: Complex | number): Complex {
     rhs = new Complex(rhs);
     const re = this.re.plus(rhs.re);
     const im = this.im.plus(rhs.im);
     return new Complex(re, im);
   }
 
-  minus(rhs) {
+  minus(rhs: Complex | number): Complex {
     rhs = new Complex(rhs);
     const re = this.re.minus(rhs.re);
     const im = this.im.minus(rhs.im);
     return new Complex(re, im);
   }
 
-  cmp(rhs) {
+  cmp(rhs: Complex): number {
     rhs = new Complex(rhs);
     if (this.equals(rhs)) {
       return 0;
@@ -121,19 +121,19 @@ export class Complex {
     return this.abs().cmp(rhs.abs());
   }
 
-  lt(rhs) {
+  lt(rhs: Complex): boolean {
     return this.cmp(rhs) < 0;
   }
 
-  gt(rhs) {
+  gt(rhs: Complex): boolean {
     return this.cmp(rhs) > 0;
   }
 
-  gte(rhs) {
+  gte(rhs: Complex): boolean {
     return this.cmp(rhs) >= 0;
   }
 
-  lte(rhs) {
+  lte(rhs: Complex): boolean {
     return this.cmp(rhs) <= 0;
   }
 
@@ -149,38 +149,38 @@ export class Complex {
     return arguments[args.indexOf(max)];
   }*/
 
-  exp() {
+  exp(): Complex {
     const r = this.re.exp();
-    const im = r.times(new BigNumber(this.im).sin());
-    const re = r.times(new BigNumber(this.im).cos()); // bug in Decimal.js causes t.im to mutate after cosine
+    const im = r.times((new BigNumber(this.im) as any).sin());
+    const re = r.times((new BigNumber(this.im) as any).cos()); // bug in Decimal.js causes t.im to mutate after cosine
     return new Complex(re, im);
   }
 
-  neg() {
+  neg(): Complex {
     return new Complex(-this.re, -this.im);
   }
 
-  floor() {
+  floor(): Complex {
     return new Complex(this.re.floor(), this.im.floor());
   }
 
-  ceil() {
+  ceil(): Complex {
     return new Complex(this.re.ceil(), this.im.ceil());
   }
 
-  normalize() {
+  normalize(): any {
     if (
       this.im
         .div(this.re)
         .abs()
         .lessThan(precision)
     ) {
-      return this.abs() * BigNumber.sign(this.re);
+      return this.abs().times((BigNumber as any).sign(this.re));
     }
     return this;
   }
 
-  sqrt() {
+  sqrt(): Complex {
     const r = this.abs();
 
     let re;
@@ -209,26 +209,26 @@ export class Complex {
     return new Complex(re, this.im.gte(0) ? im : -im);
   }
 
-  ln() {
+  ln(): Complex {
     // natural log
-    return new Complex(this.abs().ln(), this.angle());
+    return new Complex(<any>this.abs().ln(), this.angle());
   }
 
-  pow(y) {
+  pow(y): Complex {
     // x^y = exp(log(x)*y)
     return this.ln()
       .times(y)
       .exp();
   }
 
-  gamma() {
+  gamma(): Complex {
     // The Lanczos approximation
     // https://en.wikipedia.org/wiki/Lanczos_approximation
     // G(z+1) = sqrt(2*pi)*(z+g+1/2)^(z+1/2)*exp(-(z+g+1/2))*Ag(z)
     // Ag(z) = c0 + sum(k=1..N, ck/(z+k))
 
     if (this.im.isZero()) {
-      return this.re.gamma();
+      return (this.re as any).gamma();
     }
 
     const z = this.minus(1);
@@ -241,11 +241,11 @@ export class Complex {
       if (den.isZero()) {
         agre = c[i] < 0 ? -Infinity : Infinity;
       } else {
-        agre = npi.re
+        agre = <any>npi.re
           .times(c[i])
           .div(den)
           .plus(agre); //  Ag += c(k)/(z+k)
-        agim = npi.im
+        agim = <any>npi.im
           .times(-c[i])
           .div(den)
           .plus(agim);

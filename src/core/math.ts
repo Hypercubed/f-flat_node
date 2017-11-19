@@ -40,13 +40,13 @@ export default {
     'BigNumber | Complex, BigNumber | number': (lhs, rhs) => lhs.modulo(rhs)
   }),
   abs: typed('abs', { 'BigNumber | Complex': a => a.abs() }),
-  cos: a => BigNumber.cos(a),
-  sin: a => BigNumber.sin(a),
-  tan: a => BigNumber.tan(a),
-  acos: a => BigNumber.acos(a),
-  asin: a => BigNumber.asin(a),
-  atan: a => BigNumber.atan(a),
-  atan2: (a, b) => BigNumber.atan2(a, b),
+  cos: a => (BigNumber as any).cos(a),
+  sin: a => (BigNumber as any).sin(a),
+  tan: a => (BigNumber as any).tan(a),
+  acos: a => (BigNumber as any).acos(a),
+  asin: a => (BigNumber as any).asin(a),
+  atan: a => (BigNumber as any).atan(a),
+  atan2: (a, b) => (BigNumber as any).atan2(a, b),
   round: typed('round', {
     'BigNumber | Complex': a => a.round()
   }),

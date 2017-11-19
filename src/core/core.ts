@@ -4,6 +4,7 @@ import { freeze, slice } from 'icepick';
 import { typed, Seq, Action } from '../types';
 import { log, generateTemplate } from '../utils';
 import { quoteSymbol } from '../constants';
+import { StackEnv } from '../env';
 
 const _slice = typed('slice', {
   'Array | string, number | null, number | null': (lhs, b, c) =>
@@ -33,7 +34,7 @@ export default {
 
     ( {any} -> )
   **/
-  'q<': function(a) {
+  'q<': function(this: StackEnv, a: any): void {
     this.queue.push(a);
   }, // good for yielding, bad for repl
 
@@ -43,7 +44,7 @@ export default {
 
     ( -> {any} )
   **/
-  'q>': function() {
+  'q>': function(this: StackEnv): any {
     return this.queue.pop();
   },
 
@@ -58,7 +59,7 @@ export default {
     [ [ 1 2 3 ] ]
     ```
   **/
-  stack () {
+  stack (this: StackEnv): any[] {
     return this.stack.splice(0);
   },
 
@@ -71,7 +72,7 @@ export default {
     [ drop ]
     ```
   **/
-  'd++': function() {
+  'd++': function(this: StackEnv) {
     this.depth++;
   },
 
@@ -79,7 +80,7 @@ export default {
     ## `d--`
     decrements the d counter
   **/
-  'd--': function() {
+  'd--': function(this: StackEnv) {
     this.depth = Math.max(0, this.depth - 1);
   },
 
@@ -97,7 +98,7 @@ export default {
 
     ( #( ... -> [ ... ] )
   **/
-  dequote (s) {
+  dequote (this: StackEnv, s: any): any[] {
     const r: any[] = [];
     while (this.stack.length > 0 && s !== quoteSymbol) {
       r.unshift(s);
@@ -118,7 +119,7 @@ export default {
     [ 1 2 3 3 ]
     ```
   **/
-  depth () {
+  depth (this: StackEnv): number {
     return this.stack.length; // ,  or "stack [ unstack ] [ length ] bi"
   },
 
@@ -256,7 +257,7 @@ export default {
      ```
   **/
   zip: typed('zip', {
-    'Array, Array': (a, b) => {
+    'Array, Array': (a: any[], b: any[]): any[] => {
       const l = a.length < b.length ? a.length : b.length;
       const r: any[] = [];
       for (let i = 0; i < l; i++) {
@@ -270,7 +271,7 @@ export default {
      ## `zipinto`
   **/
   zipinto: typed('zipinto', {
-    'Array, Array, Array': (a, b, c) => {
+    'Array, Array, Array': (a: any[], b: any[], c: any[]): any[] => {
       const l = a.length < b.length ? a.length : b.length;
       const r: any[] = [];
       for (let i = 0; i < l; i++) {
@@ -328,12 +329,12 @@ export default {
 
      ( x -> )
   **/
-  sleep: ms => {
+  sleep: (ms: number): Promise<any> => {
     // todo: make cancelable?
     // let timerId;
     const promise = new Promise(resolve => {
       // timerId =
-      setTimeout(resolve, ms);
+      global.setTimeout(resolve, ms);
     });
     // promise.__cancel__ = () => clearTimeout(timerId);
     return promise;
@@ -345,7 +346,7 @@ export default {
 
      ( {url} -> {string} )
   **/
-  fetch: url => fetch(url).then(res => res.text()),
+  fetch: (url: string): string => fetch(url).then(res => res.text()),
 
   /**
      ## `get-log-level`
@@ -361,7 +362,7 @@ export default {
 
     ( {string} -> )
   **/
-  'set-log-level': a => {
+  'set-log-level': (a: string): void => {
     log.level = a;
   }
 };

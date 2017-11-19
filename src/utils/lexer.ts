@@ -7,7 +7,7 @@ const atAction = new Action('@');
 const templateAction = new Action('template');
 const evalAction = new Action('eval');
 
-export function processNumeric(value: string) {
+export function processNumeric(value: string): any {
   if (typeof value !== 'string') {
     return NaN;
   }
@@ -23,7 +23,7 @@ export function processNumeric(value: string) {
 }
 
 /* two pass lexing using getify/literalizer */
-export const lexer = typed('lexer', {
+export const lexer: (x: any) => any[] = typed('lexer', {
   Array: (arr: any[]) => arr,
   string: (text: string) =>
     lex(text).reduce((a, b) => a.concat(processLexerTokens(b)), []), // flatmap

@@ -1,5 +1,7 @@
 import { randomBytes } from 'crypto';
 import { readFileSync, writeFileSync } from 'fs';
+
+import { StackEnv } from '../env';
 import { log } from '../utils';
 
 // const stdin = process.stdin;
@@ -7,11 +9,11 @@ const stdout = <any>process.stdout;
 
 const { URL } = require('url');
 
-function resolve(specifier, parentModuleURL = getURLStringForCwd()) {
+function resolve(specifier: string, parentModuleURL = getURLStringForCwd()) {
   return new URL(specifier, parentModuleURL);
 }
 
-function getURLStringForCwd() {
+function getURLStringForCwd(): string | undefined {
   try {
     return getURLFromFilePath(`${process.cwd()}/`).href;
   } catch (e) {
@@ -28,7 +30,7 @@ function getURLStringForCwd() {
 // as this is the only character that won't be percent encoded by
 // default URL percent encoding when pathname is set.
 const percentRegEx = /%/g;
-function getURLFromFilePath(filepath) {
+function getURLFromFilePath(filepath: string) {
   const tmp = new URL('file://');
   if (filepath.includes('%'))
     filepath = filepath.replace(percentRegEx, '%25');
@@ -62,14 +64,14 @@ export default {
   env: () => process.env,
   cls: '"\u001B[2J\u001B[0;0f" println',
 
-  resolve: name => resolve(name).href,
+  resolve: (name: string) => resolve(name).href,
 
-  read: (name) => {
+  read: (name: string): string => {
     name = resolve(name);
     return readFileSync(name, 'utf8');
   },
 
-  sesssave() {
+  sesssave(this: StackEnv) {
     log.debug('saving session');
     writeFileSync(
       'session',

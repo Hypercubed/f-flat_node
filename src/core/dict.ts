@@ -4,6 +4,7 @@ import { thaw, freeze } from 'icepick';
 import { formatValue } from '../utils';
 import { Action, Just } from '../types';
 import { USE_STRICT } from '../constants';
+import { StackEnv } from '../env';
 
 const cloneDeep = require('clone-deep');
 
@@ -23,7 +24,7 @@ export const dict = {
     [ ]
     ```
   **/
-  sto(lhs, rhs) {
+  sto(this: StackEnv, lhs, rhs) {
     this.dict.set(rhs, cloneDeep(lhs));
   },
 
@@ -38,7 +39,7 @@ export const dict = {
     [ [ dup * ] ]
     ```
   **/
-  rcl(a) {
+  rcl(this: StackEnv, a) {
     const r = this.dict.get(a);
     if (typeof r === 'undefined') {
       return null;
@@ -55,17 +56,18 @@ export const dict = {
 
     ( {string|atom} -> )
   **/
-  delete(path) {
-    this.dict.deleted(path);
+  delete(this: StackEnv, path) {
+    this.dict.delete(path);
   },
 
   /**
-    ## `delete`
-    deletes a defined word
+    ## `defineParent`
+    defines a word (or dict) in the parent
 
     ( {string|atom} -> )
   **/
-  defineParent(name, fn) {
+  defineParent(this: StackEnv, name, fn) {
+    fn = thaw(fn);
     if (this.parent) {
       this.parent.defineAction(name, fn);
     }
@@ -82,7 +84,7 @@ export const dict = {
       [ ]
       ```
     **/
-  define(x) {
+  define(this: StackEnv, x) {
     this.defineAction(cloneDeep(thaw(x)));
   },
 
@@ -97,7 +99,7 @@ export const dict = {
       [ [ dup * ] ]
       ```
     **/
-  expand(x) {
+  expand(this: StackEnv, x) {
     return this.expandAction(x);
   },
 
@@ -112,7 +114,7 @@ export const dict = {
       [ '[ dup * ]' ]
       ```
     **/
-  see(a) {
+  see(this: StackEnv, a) {
     const r = this.dict.get(a);
     if (typeof r === 'undefined') {
       return null;
@@ -125,7 +127,7 @@ export const dict = {
           returns a list of defined words
           ( -> {array} )
         **/
-  words() {
+  words(this: StackEnv) {
     return this.dict.allKeys();
   },
 
@@ -134,7 +136,7 @@ export const dict = {
         returns a list of locals words
         ( -> {array} )
       **/
-  locals() {
+  locals(this: StackEnv) {
     return this.dict.keys();
   },
 
@@ -143,7 +145,7 @@ export const dict = {
         returns the local dictionary
         ( -> {array} )
       **/
-  dict() {
+  dict(this: StackEnv) {
     return freeze(this.dict.toObject());
   }
 };

@@ -55,6 +55,23 @@ export const update = (context: Object, path: string, value: any) => { // watch 
   }, context);
 };
 
+export const remove = (context: Object, path: string, value: any) => { // watch immutability
+  const pathArr = path.split('.');
+  if (pathArr.length === 1) {
+    return context[path] = value;
+  }
+  pathArr.reduce((curr, key, currentIndex) => {
+    if (currentIndex < pathArr.length - 1) {
+      return curr[key];
+    }
+    try {
+      delete curr[key];
+    } catch (e) {
+      curr[key] = undefined;
+    }
+  }, context);
+};
+
 /* istanbul ignore next */
 export function noop() {}
 

@@ -64,7 +64,7 @@ export class StackEnv {
         return self.defineAction(name, act);
       },
       'Action | string, any': (name: Action | string, fn) => {
-        return self.dict.set(name, fn);
+        return self.dict.set(String(name), fn);
       }
     });
 
@@ -331,14 +331,14 @@ export class StackEnv {
     }
   }
 
-  enqueue(s: string) {
+  enqueue(s: any) {
     if (s) {
       this.queue.push(...lexer(s));
     }
     return this;
   }
 
-  eval(s: string) {
+  eval(s: any) {
     this.enqueue(s);
     let finished = false;
     this.completed.once(err => {

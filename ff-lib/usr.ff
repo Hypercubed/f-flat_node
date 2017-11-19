@@ -1,6 +1,6 @@
 suffle: using
-math: using
 core: using
+math: using
 
 // functional
 chain: [ over nothing? not swap when ] ;
@@ -35,7 +35,6 @@ inline: [ dup rcl expand swap def ] ;
 // control
 runn: [ [ -- dup -1 > ] [ [ run ] dip ] while drop ] ;
 times: [ runn drop ] ;
-branch: [ choose eval ] ;
 ifte: [ slipd branch ] ;
 if: [ slip when ] ;
 when: [ () branch ] ;

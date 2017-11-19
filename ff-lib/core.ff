@@ -16,3 +16,5 @@ get: [ q< @ dup null? swap q> swap choose ] ;
 zipwith: [ zipinto in ] ;
 yield: [ return suspend ] ;
 delay: [ [ sleep ] >> slip eval ] ;
+
+branch: [ choose eval ] ;

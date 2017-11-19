@@ -3,7 +3,7 @@ import { freeze } from 'icepick';
 import { typed } from '../types';
 
 const toObject = typed('object', {
-  Array: a => {
+  Array: (a: any[]) => {
     // hash-map
     const r = {};
     const l = a.length;
@@ -32,8 +32,8 @@ export default {
     Object: a => true, // eslint-disable-line no-unused-vars
     any: a => false // eslint-disable-line no-unused-vars
   }),
-  'contains?': (a, b) => b in a, // object by keys, array by values
-  keys: o => freeze(Object.keys(o)),
-  vals: o => freeze(Object.values(o)),
+  'contains?': (a: {}, b: any) => b in a, // object by keys, array by values
+  keys: (o: {}) => freeze(Object.keys(o)),
+  vals: (o: {}) => freeze(Object.values(o)),
   assign: '{} [ + ] reduce'
 };

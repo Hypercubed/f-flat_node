@@ -1,11 +1,12 @@
 import { freeze } from 'icepick';
 
 import { typed, Future, Seq } from '../types';
+import { StackEnv } from '../env';
 
 typed.addConversion({
   from: 'string',
   to: 'RegExp',
-  convert: str => {
+  convert: (str: string) => {
     const match = str.match(new RegExp('^/(.*?)/([gimy]*)$'));
     return match ? new RegExp(match[1], match[2]) : new RegExp(str);
   }
@@ -14,29 +15,29 @@ typed.addConversion({
 export default {
   /**
       ## `set-module`
-    **/
-  'set-module': function(a) {
+    **
+  'set-module': function(this: StackEnv, a) {
     this.module = a;
     this.dict[a] = {}; // maybe should be root?
   },
 
   /**
       ## `get-module`
-    **/
+    **
   'get-module': function() {
     return this.module;
   },
 
   /**
       ## `unset-module`
-    **/
+    **
   'unset-module': function() {
     Reflect.deleteProperty(this, 'module');
-  },
+  }, */
 
   // 'throw': this.throw,
-  
-  clock: () => new Date().getTime(),
+
+  clock: (): number => new Date().getTime(),
 
   // 'js': () => Object.assign({}, (typeof window === 'undefined') ? global : window),
   // 'console': console,
@@ -46,7 +47,7 @@ export default {
 
   stringify: JSON.stringify, // global.JSON.stringify
 
-  'parse-json': a => JSON.parse(a), // global.JSON.parse
+  'parse-json': (a: string) => JSON.parse(a), // global.JSON.parse
 
   /* 'call': function call (a, b) {
     return Reflect.apply(a, null, [b]);
@@ -63,19 +64,19 @@ export default {
   }),
 
   match: typed('match', {
-    'string, RegExp': (lhs, rhs) => lhs.match(rhs)
+    'string, RegExp': (lhs: string, rhs: RegExp) => lhs.match(rhs)
   }),
 
   'test?': typed('test', {
-    'string, RegExp': (lhs, rhs) => rhs.test(lhs)
+    'string, RegExp': (lhs: string, rhs: RegExp) => rhs.test(lhs)
   }),
 
   replace: typed('replace', {
-    'string, RegExp, string': (str, reg, rep) => str.replace(reg, rep)
+    'string, RegExp, string': (str: string, reg: RegExp, rep: string) => str.replace(reg, rep)
   }),
 
   '||>': typed('ap', {
-    'Array, Function': (a, b) => Reflect.apply(b, null, a)
+    'Array, Function': (a: any[], b: Function) => Reflect.apply(b, null, a)
   }),
 
   /**
@@ -89,7 +90,7 @@ export default {
       [ [ 2 ] ]
       ```
     **/
-  fork(a) {
+  fork(this: StackEnv, a: any): any[] {
     // like in with child scope
     return freeze(this.createChild().eval(a).stack);
   },
@@ -100,7 +101,7 @@ export default {
 
       ( [A] -> {future} )
     **/
-  spawn(a) {
+  spawn(this: StackEnv, a: any): Future {
     return new Future(a, this.createChildPromise(a));
   },
 
@@ -110,7 +111,7 @@ export default {
 
       ( [A] -> [a] )
     **/
-  ['await']: function(a) {
+  ['await']: function(this: StackEnv, a: any): Promise<any> {
     // rollup complains on await
     if (Future.isFuture(a)) {
       return a.promise;
@@ -129,7 +130,7 @@ export default {
       [ 3 [ 1 2 4 ] ]
       ```
     **/
-  send(a) {
+  send(this: StackEnv, a: any): void {
     if (this.parent) {
       this.parent.stack.push(a);
     }
@@ -146,7 +147,7 @@ export default {
       [ 1 2 3 [ 4 ] ]
       ```
     **/
-  'return': function() {
+  'return': function(this: StackEnv): void {
     // 'stack send'?
     if (this.parent) {
       this.parent.stack.push(...this.stack.splice(0));
@@ -164,7 +165,7 @@ export default {
       [ [ 2 3 4 * ] ]
       ```
     **/
-  suspend() {
+  suspend(this: StackEnv): Seq {
     return new Seq(this.queue.splice(0)); // rename stop?
   },
 
@@ -174,7 +175,7 @@ export default {
 
       ( [ A B C ]-> [ [a] [b] [c] ])
     **/
-  all(arr) {
+  all(this: StackEnv, arr: any[]): Promise<any> {
     return Promise.all(arr.map(a => this.createChildPromise(a)));
   },
 
@@ -184,7 +185,7 @@ export default {
 
       ( [ A B C ]-> [x])
     **/
-  race(arr) {
+  race(this: StackEnv, arr: any[]): Promise<any> {
     return Promise.race(arr.map(a => this.createChildPromise(a)));
   }
 };

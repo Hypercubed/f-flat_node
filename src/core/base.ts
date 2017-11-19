@@ -3,6 +3,7 @@ import memoize from 'memoizee';
 
 import { pluck, eql, arrayRepeat, arrayMul } from '../utils';
 import { Seq, Action, typed, I } from '../types';
+import { StackEnv } from '../env';
 
 /**
   ## `+` (add)
@@ -324,7 +325,7 @@ export default {
       [ 3 4 ]
       ```
     **/
-  '<-': function(s) {
+  '<-': function(this: StackEnv, s: any): Seq {
     this.clear();
     return new Seq(s);
   },
@@ -340,7 +341,7 @@ export default {
       [ 1 2 3 4 ]
       ```
     **/
-  '->': function(s) {
+  '->': function(this: StackEnv, s: any): void {
     this.queue.splice(0);
     this.queue.push(...s);
   },
@@ -349,7 +350,7 @@ export default {
       ## `undo`
       restores the stack to state before previous eval
     **/
-  undo () {
+  undo (this: StackEnv): void {
     this.undo().undo();
   },
 
@@ -358,7 +359,7 @@ export default {
       set flag to auto-undo on error
       ( {boolean} -> )
     **/
-  'auto-undo': function(a) {
+  'auto-undo': function(this: StackEnv, a: boolean): void {
     this.undoable = a;
   },
 
@@ -456,7 +457,7 @@ export default {
 
       ( {string|atom} -> )
     **/
-  memoize(name, n) {
+  memoize(this: StackEnv, name: string, n: number): void {
     const cmd = this.dict.get(name);
     if (cmd) {
       const fn = (...a) => {
@@ -480,7 +481,7 @@ export default {
       [  ]
       ```
     **/
-  clr: function() {
+  clr: function(this: StackEnv): void {
     this.clear();
   },
 
@@ -490,7 +491,7 @@ export default {
 
       ( -> {any} )
     **/
-  '\\': function() {
+  '\\': function(this: StackEnv): any {
     return this.queue.shift(); // danger?
   }
 };
