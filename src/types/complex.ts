@@ -5,6 +5,11 @@ import { g, c } from './gamma';
 const precision = Math.pow(10, -BigNumber.precision + 5);
 
 export class Complex {
+  static type = '@@complex';
+
+  re: any;
+  im: any;
+
   constructor(re, im = 0) {
     if (re instanceof Complex) {
       return re;
@@ -32,7 +37,7 @@ export class Complex {
 
   toJSON() {
     return {
-      type: this.type,
+      // type: Complex.type,
       re: this.re.valueOf(), // fix this, should store full precision
       im: this.im.valueOf()
     };
@@ -255,10 +260,14 @@ export class Complex {
       .times(t.neg().exp()) //  *exp(-(z+g+1/2))
       .times(new Complex(agre, agim)); //  *Ag(z)
   }
+
+  static of(re, im) {
+    return new Complex(re, im);
+  }
 }
 
-Complex.type = '@@complex';
-Complex.of = (re, im) => new Complex(re, im);
+// Complex.type = '@@complex';
+// Complex.of = (re, im) => new Complex(re, im);
 
 export const I = new Complex(0, 1);
 

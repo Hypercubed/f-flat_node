@@ -14,7 +14,7 @@ import {
   node
 } from './core';
 
-let rootStack;
+let rootStack: StackEnv;
 
 function getRootEnv () {
   if (!rootStack) {
@@ -34,7 +34,7 @@ const root = (/* istanbul ignore next */ function (that) {
   return that;
 })(this);
 
-export function createRootEnv () {
+export function createRootEnv(): StackEnv {
   const env = new StackEnv({   // root
     dict: Object.create(root),
     silent: false
@@ -49,12 +49,10 @@ export function createRootEnv () {
   env.defineAction(experimental);
   env.defineAction(node);
 
-  env.eval('\'./ff-lib/boot.ff\' read eval');
-
-  return env;
+  return env.eval('\'./ff-lib/boot.ff\' read eval');
 }
 
-export function Stack (s = '', root) {
+export function Stack(s = '', root?) {
   if (typeof root === 'undefined') {
     root = getRootEnv();
   }

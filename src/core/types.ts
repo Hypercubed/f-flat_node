@@ -30,7 +30,7 @@ export default {
   atob: x => new Buffer(x, 'base64').toString('binary'),
   btoa: x => new Buffer(x, 'binary').toString('base64'),
   boolean: Boolean,
-  ':': a => Just.of(new Action(a)),
+  ':': a => new Just(new Action(a)),
   array: n => new Array(n),
   integer: a => a | 0,
   'null?': 'null =',

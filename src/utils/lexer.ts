@@ -7,7 +7,7 @@ const atAction = new Action('@');
 const templateAction = new Action('template');
 const evalAction = new Action('eval');
 
-export function processNumeric(value) {
+export function processNumeric(value: string) {
   if (typeof value !== 'string') {
     return NaN;
   }
@@ -24,13 +24,13 @@ export function processNumeric(value) {
 
 /* two pass lexing using getify/literalizer */
 export const lexer = typed('lexer', {
-  Array: arr => arr,
-  string: text =>
+  Array: (arr: any[]) => arr,
+  string: (text: string) =>
     lex(text).reduce((a, b) => a.concat(processLexerTokens(b)), []), // flatmap
-  any: text => [text]
+  any: (text: any) => [text]
 });
 
-function innerParse(val) {
+function innerParse(val: string) {
   return val
     .replace(/([{}()[\]])/g, ' $1 ') // add white space around braces
     .split(/[,\n\s]+/g) // split on whitespace
@@ -54,12 +54,12 @@ function processLexerTokens({ type, val }) {
   }
 }
 
-function convertString(val) {
+function convertString(val: string): string {
   const v = val.slice(1, -1);
   return val.charCodeAt(0) === 34 ? unescapeString(v) : v;
 }
 
-function convertLiteral(value) {
+function convertLiteral(value: any): any {
   const id = value.toLowerCase().trim();
 
   if (id.length <= 0) {

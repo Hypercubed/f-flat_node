@@ -1,8 +1,10 @@
 import { pluck, update } from '../utils';
 import { USE_STRICT } from '../constants';
-import cloneDeep from 'clone-deep';
+import * as cloneDeep from 'clone-deep';
 
 export class Dictionary {
+
+  store: any;
   
   constructor(parent) {
     this.store = Object.create(parent ? parent.store : null);
@@ -29,7 +31,7 @@ export class Dictionary {
   }
 
   allKeys() {
-    const keys = [];
+    const keys: string[] = [];
     for (const prop in this.store) {
       // eslint-disable-line guard-for-in
       keys.push(prop);

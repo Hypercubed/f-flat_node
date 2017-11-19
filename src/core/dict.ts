@@ -1,10 +1,11 @@
 import is from '@sindresorhus/is';
 import { thaw, freeze } from 'icepick';
-import cloneDeep from 'clone-deep';
 
 import { formatValue } from '../utils';
 import { Action, Just } from '../types';
 import { USE_STRICT } from '../constants';
+
+const cloneDeep = require('clone-deep');
 
 // For all deictionay actions, note:
 // * The dictionary is mutable
@@ -42,7 +43,7 @@ export const dict = {
     if (typeof r === 'undefined') {
       return null;
     }
-    if (USE_STRICT && is.function(r)) { // carefull pushing functions to stack, watch immutability
+    if (USE_STRICT && is.function_(r)) { // carefull pushing functions to stack, watch immutability
       return new Action(r);
     }
     return Action.isAction(r) ? new Just(r) : freeze(cloneDeep(r));
@@ -122,7 +123,6 @@ export const dict = {
   /**
           ## `words`
           returns a list of defined words
-    
           ( -> {array} )
         **/
   words() {
@@ -132,7 +132,6 @@ export const dict = {
   /**
         ## `locals`
         returns a list of locals words
-    
         ( -> {array} )
       **/
   locals() {
@@ -142,7 +141,6 @@ export const dict = {
   /**
         ## `dict`
         returns the local dictionary
-    
         ( -> {array} )
       **/
   dict() {

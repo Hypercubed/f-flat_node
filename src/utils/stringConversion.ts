@@ -1,4 +1,4 @@
-import punycode from 'punycode';
+import * as punycode from 'punycode';
 
 import { Action } from '../types/index';
 
@@ -6,8 +6,8 @@ const cap = '%-cap-%';
 const caplen = cap.length;
 const re = new RegExp(`(${cap}\\$\\(.*\\))`, 'g');
 
-export function generateTemplate(template) {
-  const r = [''];
+export function generateTemplate(template: string) {
+  const r: any[] = [''];
 
   template
     .replace(/\$\(.*\)/g, x => cap + x)
@@ -26,14 +26,14 @@ export function generateTemplate(template) {
   return r;
 }
 
-export function unescapeString(string) {
-  return unicodeEscape(convertjEsc2Char(String(string), true));
+export function unescapeString(x: string) {
+  return unicodeEscape(convertjEsc2Char(String(x), true));
 }
 
 // following code from https://mathiasbynens.be/notes/javascript-encoding#comment-8
-function unicodeEscape(string) {
+function unicodeEscape(x: string) {
   // note: this will match `u{123}` (with leading `\`) as well
-  return string.replace(/\\u\{([0-9a-fA-F]{1,8})\}/g, ($0, $1) => {
+  return x.replace(/\\u\{([0-9a-fA-F]{1,8})\}/g, ($0, $1) => {
     return punycode.ucs2.encode([parseInt($1, 16)]);
   });
 }
@@ -48,11 +48,11 @@ function unicodeEscape(string) {
   http://rishida.net/ in your code.
  */
 
-function dec2hex(textString) {
-  return (textString + 0).toString(16).toUpperCase();
+function dec2hex(x: number) {
+  return (x + 0).toString(16).toUpperCase();
 }
 
-function hex2char(hex) {
+function hex2char(hex: string) {
   // converts a single hex number to a character
   // note that no checking is performed to ensure that this is just a hex number, eg. no spaces etc
   // hex: string, the hex codepoint to be converted
@@ -72,7 +72,7 @@ function hex2char(hex) {
   return result;
 }
 
-function convertjEsc2Char(str, shortEscapes) {
+function convertjEsc2Char(str: string, shortEscapes: boolean) {
   // converts a string containing JavaScript or Java escapes to a string of characters
   // str: string, the input
   // shortEscapes: boolean, if true the function will convert \b etc to characters
@@ -89,7 +89,7 @@ function convertjEsc2Char(str, shortEscapes) {
 
   // convert \b etc to characters, if flag set
   if (shortEscapes) {
-    //str = str.replace(/\\0/g, '\0');
+    // str = str.replace(/\\0/g, '\0');
     str = str.replace(/\\b/g, '\b');
     str = str.replace(/\\t/g, '\t');
     str = str.replace(/\\n/g, '\n');

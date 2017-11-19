@@ -1,11 +1,14 @@
 import { typed } from './typed';
 
 export class Base {
+  value: any;
+  type: string;
+
   constructor(value) {
     this.value = value;
   }
 
-  toString() {
+  toString(): string {
     return String(this.value);
   }
 
@@ -18,32 +21,32 @@ export class Base {
     return this.value;
   }
 
-  inspect() {
+  inspect(): string {
     return this.value.inspect ? this.value.inspect() : String(this.value);
   }
 
-  toJSON() {
+  toJSON(): {type: string, value: any} {
     return {
       type: this.type,
       value: this.value
     };
   }
 
-  equals(b) {
+  equals(b: any): boolean {
     return typeof this.value.equals === 'function'
       ? this.value.equals(b.value)
       : this.value === b.value;
   }
 
-  extract() {
+  extract(): any {
     return this.value;
   }
 
-  static get [Symbol.species]() {
+  static get [Symbol.species](): any {
     return this;
   }
 
-  static isA(item) {
+  static isA(item): boolean {
     const Species = this[Symbol.species];
     return item && item.type && item.type === Species.prototype.type;
   }
@@ -51,23 +54,23 @@ export class Base {
 
 // some base immutable types
 export class Just extends Base {
-  constructor(value) {
+  constructor(value: any) {
     super(value);
     Object.freeze(this);
   }
 
-  get type() {
+  get type(): string {
     return '@@Just';
   }
 
-  static isJust(item) {
+  static isJust(item: any): boolean {
     const Species = this[Symbol.species];
     return item && item.type && item.type === Species.prototype.type;
   }
 }
 
 export class Action extends Base {
-  constructor(value) {
+  constructor(value: any) {
     // todo type check?
     super(value);
     if (typeof this.value === 'string') {
@@ -76,45 +79,43 @@ export class Action extends Base {
     Object.freeze(this);
   }
 
-  inspect() {
+  inspect(): string {
     if (typeof this.value === 'string') {
       return this.value;
     }
     return this.value.inspect ? this.value.inspect() : `${this.value}:`;
   }
 
-  get type() {
+  get type(): string {
     return '@@Action';
   }
 
-  static isAction(item) {
+  static isAction(item: any): boolean {
     const Species = this[Symbol.species];
     return !!item && !!item.type && item.type === Species.prototype.type;
   }
 }
 
 export class Seq extends Just {
-  constructor(value) {
+  constructor(value: any[]) {
     // todo type check
     super(value);
     Object.freeze(this);
   }
 
-  get type() {
+  get type(): string {
     return '@@Seq';
   }
 
-  static isSeq(item) {
+  static isSeq(item): boolean {
     const Species = this[Symbol.species];
     return item && item.type && item.type === Species.prototype.type;
   }
 }
 
 export class Future extends Base {
-  constructor(action, promise) {
+  constructor(public action: any, public promise: Promise<any>) {
     super(undefined);
-
-    this.action = action;
 
     if (typeof promise !== 'undefined') {
       this.promise = promise;
@@ -125,15 +126,15 @@ export class Future extends Base {
     }
   }
 
-  isResolved() {
+  isResolved(): boolean {
     return this.value !== undefined;
   }
 
-  state() {
+  state(): string {
     return this.isResolved() ? 'resolved' : 'pending';
   }
 
-  resolve(p) {
+  resolve(p): any {
     if (this.isResolved()) {
       return;
     }
@@ -144,22 +145,22 @@ export class Future extends Base {
     return this.value;
   }
 
-  toString() {
-    return this.inspect;
+  toString(): string {
+    return this.inspect();
   }
 
-  near() {
+  near(): any {
     return this.isResolved() ? this.value : this.action;
   }
 
-  inspect() {
+  inspect(): string {
     const state = this.state();
     let near = this.near();
     near = near.inspect ? near.inspect() : String(near);
     return `[Future:${state} [${near}]]`;
   }
 
-  toJSON() {
+  toJSON(): {type: any, value: any} {
     return {
       type: this.type,
       value: this.value
@@ -168,7 +169,7 @@ export class Future extends Base {
     };
   }
 
-  extract() {
+  extract(): any {
     if (!this.isResolved()) {
       // error?
       return undefined;
@@ -176,15 +177,15 @@ export class Future extends Base {
     return this.value;
   }
 
-  map(fn) {
+  map(fn): Future {
     return new Future(this.action, this.promise.then(fn));
   }
 
-  get type() {
+  get type(): string {
     return '@@Future';
   }
 
-  static isFuture(item) {
+  static isFuture(item): boolean {
     return item && item.type && item.type === '@@Future';
   }
 }

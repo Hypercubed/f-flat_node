@@ -3,8 +3,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import { log } from '../utils';
 
 // const stdin = process.stdin;
-const stdout = process.stdout;
-
+const stdout = <any>process.stdout;
 
 const { URL } = require('url');
 
@@ -36,7 +35,6 @@ function getURLFromFilePath(filepath) {
   tmp.pathname = filepath;
   return tmp;
 }
-
 
 export default {
   os: () => process.platform,

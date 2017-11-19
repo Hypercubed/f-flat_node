@@ -1,5 +1,5 @@
-import { Stack } from '../';
-import { log } from '../src/utils/logger';
+import { Stack } from '../dist/stack';
+import { log } from '../dist/utils/logger';
 
 process.chdir('.');
 

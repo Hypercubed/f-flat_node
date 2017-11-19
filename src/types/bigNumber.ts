@@ -1,4 +1,4 @@
-import Decimal from 'decimal.js';
+import * as Decimal from 'decimal.js';
 
 import { typed } from './typed';
 import { g, c } from './gamma';

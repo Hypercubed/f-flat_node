@@ -1,4 +1,4 @@
-import fetch from 'isomorphic-fetch';
+import * as fetch from 'isomorphic-fetch';
 import { freeze, slice } from 'icepick';
 
 import { typed, Seq, Action } from '../types';
@@ -98,7 +98,7 @@ export default {
     ( #( ... -> [ ... ] )
   **/
   dequote (s) {
-    const r = [];
+    const r: any[] = [];
     while (this.stack.length > 0 && s !== quoteSymbol) {
       r.unshift(s);
       s = this.stack.pop();
@@ -258,7 +258,7 @@ export default {
   zip: typed('zip', {
     'Array, Array': (a, b) => {
       const l = a.length < b.length ? a.length : b.length;
-      const r = [];
+      const r: any[] = [];
       for (let i = 0; i < l; i++) {
         r.push(a[i], b[i]);
       }
@@ -272,7 +272,7 @@ export default {
   zipinto: typed('zipinto', {
     'Array, Array, Array': (a, b, c) => {
       const l = a.length < b.length ? a.length : b.length;
-      const r = [];
+      const r: any[] = [];
       for (let i = 0; i < l; i++) {
         r.push(a[i], b[i], ...c);
       }

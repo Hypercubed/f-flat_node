@@ -1,10 +1,11 @@
 /* global window, global, process, require */
-import is from '@sindresorhus/is';
 import { functionLength, functionName } from 'fantasy-helpers/src/functions';
-import cloneDeep from 'clone-deep';
+import * as cloneDeep from 'clone-deep';
 
-import MiniSignal from 'mini-signals';
+import * as MiniSignal from 'mini-signals';
 import { freeze } from 'icepick';
+
+const is = require('@sindresorhus/is');
 
 import {
   log,
@@ -20,34 +21,37 @@ import { MAXSTACK, MAXRUN, IDLE, DISPATCHING, YIELDING, ERR, IIF } from './const
 const nonInteractive = !process || !process.stdin.isTTY;
 
 export class StackEnv {
+  status = IDLE;
+  completed = new MiniSignal();
+  previousPromise: Promise<any> = Promise.resolve();
+
+  queue: any[] = [];
+  stack: any[] = [];
+  prevState: any | Object = null;
+  depth = 0;
+  silent = false;
+  undoable = true;
+  parent: StackEnv;
+  nextAction = null;
+  module = undefined;
+
+  defineAction: Function;
+  expandAction: Function;
+  dict: Dictionary;
 
   constructor (initalState = /* istanbul ignore next */ {}) {
-    this.status = IDLE;
-    this.completed = new MiniSignal();
-    this.previousPromise = Promise.resolve();
-
-    Object.assign(this, {
-      queue: [],
-      stack: [],
-      prevState: null,
-      depth: 0,
-      silent: false,
-      undoable: true,
-      parent: null,
-      nextAction: null,
-      module: undefined,
-    }, initalState);
+    Object.assign(this, initalState);
 
     this.dict = new Dictionary(this.parent ? this.parent.dict : undefined);
 
     const self = this;
 
     this.defineAction = typed({
-      'Function': fn => {
+      'Function': (fn: Function) => {
         const name = functionName(fn);
         return self.defineAction(name, fn);
       },
-      'Object': obj => {
+      'Object': (obj: Object) => {
         for (const key in obj) {
           if (Object.prototype.hasOwnProperty.call(obj, key)) {
             self.defineAction(key, obj[key]);
@@ -55,24 +59,24 @@ export class StackEnv {
         }
         return self;
       },
-      'Action | string, string': (name, fn) => {
-        fn = new Action(lexer(fn));
-        return self.defineAction(name, fn);
+      'Action | string, string': (name: Action | string, fn: string) => {
+        const act = new Action(lexer(fn));
+        return self.defineAction(name, act);
       },
-      'Action | string, any': (name, fn) => {
+      'Action | string, any': (name: Action | string, fn) => {
         return self.dict.set(name, fn);
       }
     });
 
     this.expandAction = typed({
-      'Action': action => {
+      'Action': (action: Action) => {
         if (Array.isArray(action.value)) {
           return new Seq(self.expandAction(action.value));
         }
         const r = self.dict.get(action.value);
         return is.function(r) ? new Seq([action]) : self.expandAction(r);
       },
-      'Array': arr => {
+      'Array': (arr: any[]) => {
         return freeze(arr)
           .map(i => self.expandAction(i))
           .reduce((p, n) => {
@@ -81,12 +85,11 @@ export class StackEnv {
             } else {
               p.push(n);
             }
-            
             return p;
           }, []);
       },
-      'BigNumber': any => any,
-      'Object': obj => {
+      'BigNumber': x => x,
+      'Object': (obj: Object) => {
         const r = {};
         for (const key in obj) {
           if (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -100,11 +103,11 @@ export class StackEnv {
         }
         return r;
       },
-      'any': any => any
+      'any': x => x
     });
   }
 
-  promise(s) {
+  promise(s: string): Promise<StackEnv> {
     return new Promise((resolve, reject) => {
       this.completed.once(err => {
         if (err) {
@@ -117,14 +120,14 @@ export class StackEnv {
     });
   }
 
-  next(s) {
+  next(s: string) {
     const invoke = () => this.promise(s);
     const next = this.previousPromise.then(invoke, invoke);
     this.previousPromise = next;
     return next;
   }
 
-  run(s) {
+  run(s?: string) {
     const self = this;
 
     if (s) {
@@ -179,7 +182,7 @@ export class StackEnv {
       let c = 0;
       return function () {
         if (c++ > MAXRUN) {
-          throw new FFlatError('MAXRUN exceeded', self);
+          throw new FFlatError('MAXRUN exceeded', (self as any));
         }
       };
     }
@@ -325,14 +328,14 @@ export class StackEnv {
     }
   }
 
-  enqueue(s) {
+  enqueue(s: string) {
     if (s) {
       this.queue.push(...lexer(s));
     }
     return this;
   }
 
-  eval(s) {
+  eval(s: string) {
     this.enqueue(s);
     let finished = false;
     this.completed.once(err => {
@@ -343,7 +346,7 @@ export class StackEnv {
     });
     this.run();
     if (!finished) {
-      throw new FFlatError('Do Not Release Zalgo', this);
+      throw new FFlatError('Do Not Release Zalgo', <any>this);
     }
     return this;
   }
@@ -364,7 +367,7 @@ export class StackEnv {
     this.stack.splice(0);
   }
 
-  queueFront(s) {
+  queueFront(s: string) {
     this.queue.unshift(...lexer(s));
   }
 
@@ -372,18 +375,18 @@ export class StackEnv {
     return JSON.parse(JSON.stringify(this.stack));
   }
 
-  createChildPromise(a) {
+  createChildPromise(a: string) {
     return this.createChild()
       .promise(a)
-      .then(f => f.stack)
+      .then((f: any) => f.stack)
       .catch(err => {
         if (err) {
           this.onError(err);
         }
       });
   }
-  
-  createChild(initalState) {
+
+  createChild(initalState = {}) {
     return new StackEnv({
       parent: this,
       ...initalState
@@ -401,7 +404,7 @@ export class StackEnv {
     return this;
   }
 
-  onCompleted () {
+  onCompleted() {
     if (this.status === DISPATCHING) {
       this.status = IDLE;
     }
@@ -410,7 +413,7 @@ export class StackEnv {
     }
   }
 
-  onError(err) {
+  onError(err: Error) {
     if (this.undoable) {
       this.undo();
     }

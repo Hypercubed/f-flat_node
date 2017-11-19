@@ -1,7 +1,7 @@
-import erf from 'compute-erf';
-
 import { typed, BigNumber, Complex, Action } from '../types';
 import { lexer } from '../utils';
+
+const erf = require('compute-erf');
 
 export default {
   // eslint-disable-line

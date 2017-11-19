@@ -5,11 +5,11 @@
   "main": "index.js",
   "bin": "./src/repl.js",
   "scripts": {
-    "test": "ava ./test/*-spec.js",
+    "test": "tsc && ava ./test/*-spec.js",
     "lint": "eslint src/** bin/** test/**",
     "check": "npm run coverage && npm run lint",
     "coverage": "nyc -r lcov -r html -r text ava ./test/*-spec.js",
-    "start": "node -r @std/esm ./bin/repl.mjs",
+    "start": "ts-node ./bin/repl.ts",
     "debugger": "node --inspect -r @std/esm ./bin/repl.mjs"
   },
   "author": "J. Harshbarger",
@@ -36,11 +36,16 @@
     "winston": "^2.2.0"
   },
   "devDependencies": {
+    "@types/node": "^8.0.53",
     "ava": "^0.23.0",
     "eslint": "^4.11.0",
     "kneden": "^1.0.4",
     "nock": "^8.0.0",
-    "nyc": "^11.3.0"
+    "nyc": "^11.3.0",
+    "ts-node": "^3.3.0",
+    "tslib": "^1.8.0",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.1"
   },
   "@std/esm": {
     "esm": "all",

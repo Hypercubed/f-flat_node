@@ -1,13 +1,14 @@
 /* global process */
 
-import repl from 'repl';
+import * as repl from 'repl';
 
-import program from 'commander';
+import * as program from 'commander';
 
 import { Stack } from '../src/stack';
-import pkg from '../package.json';
 import { log } from '../src/utils/logger';
 import { formatValue } from '../src/utils/pprint';
+
+const pkg = require('../package.json');
 
 const initialPrompt = 'f♭>';
 const inspectOptions = {
@@ -74,13 +75,14 @@ stackRepl.defineCommand('.', {
 });
 
 function newStack() {
-  const f = new Stack().eval('true auto-undo');
+  const f = Stack()
+    .eval('true auto-undo');
   f.defineAction('prompt', () => {
     return new Promise(resolve => {
       stackRepl.question('', resolve);
     });
   });
-  return f.createChild();
+  return f.createChild(undefined);
 }
 
 function writer(_) {
@@ -96,7 +98,7 @@ function writer(_) {
 }
 
 let buffer = '';
-let timeout = null;
+let timeout: any = null;
 
 function fEval(code, _, __, cb) {
   code = code
@@ -109,8 +111,8 @@ function fEval(code, _, __, cb) {
   }
 
   buffer += `${code}\n`;
-  clearTimeout(timeout);
-  timeout = setTimeout(run, 60);
+  global.clearTimeout(<any>timeout);
+  timeout = global.setTimeout(run, 60);
 
   /* const qcount = (code.match(/\`/g) || []).length;
 
@@ -130,7 +132,7 @@ function fEval(code, _, __, cb) {
   } */
 
   function run() {
-    clearTimeout(timeout);
+    global.clearTimeout(timeout);
 
     // const qcount = (buffer.match(/\`/g) || []).length;
     if (!buffer.length) {

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "target": "es6",
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "importHelpers": true,
+    "listFiles": false,
+    "traceResolution": false,
+    "pretty": true,
+    "lib": ["es2015", "es2017", "dom"],
+    "types": ["node"],
+    "allowJs": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": [
+    "node_modules"
+  ],
+  "compileOnSave": false
+}

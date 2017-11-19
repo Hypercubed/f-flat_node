@@ -1,5 +1,6 @@
 import { transports, Logger } from 'winston';
-import Progress from 'progress';
+
+const ProgressBar = require('progress');
 
 export const log = new Logger({
   levels: {
@@ -15,9 +16,9 @@ export const log = new Logger({
 });
 
 // log.cli();
-log.level = process.env.NODE_ENV || 'warn';
+log.level = (process.env as any).NODE_ENV || 'warn';
 
-export const bar = new Progress(':elapsed s [:bar] S::stack Q::queue ::lastAction', {
+export const bar = new ProgressBar(':elapsed s [:bar] S::stack Q::queue ::lastAction', {
   complete: '=',
   incomplete: ' ',
   total: 100,

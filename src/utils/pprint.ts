@@ -1,6 +1,7 @@
 import { inspect } from 'util';
 import fixedWidthString from 'fixed-width-string';
-import { stripColor, supportsColor, default as chalk } from 'chalk';
+import { stripColor, supportsColor } from 'chalk';
+import * as chalk from 'chalk';
 
 import { typed } from '../types/index';
 
@@ -28,7 +29,7 @@ const defaultOpts = {
   indent: false
 };
 
-export const formatValue = typed('formatValue', {
+export const formatValue: Function = typed('formatValue', {
   'Symbol, any, any': (value, depth, opts) => formatSymbol(value, opts),
 
   'BigNumber | Complex | number, any, any': (value, depth, opts) =>
@@ -48,39 +49,39 @@ export const formatValue = typed('formatValue', {
   'any, any, any': (value, depth, opts) => inspect(value, opts)
 });
 
-function formatString(value, opts) {
-  value = JSON.stringify(value)
+function formatString(value: any, opts = { colors: false }): string {
+  const x = JSON.stringify(value)
     .replace(/^"|"$/g, '')
     .replace(/'/g, '\\\'')
     .replace(/\\"/g, '"');
-  return stylize(`'${value}'`, 'string', opts);
+  return stylize(`'${x}'`, 'string', opts);
 }
 
-const strLen = str => stripColor(str).length + 1;
+const strLen = (str: string): number => stripColor(str).length + 1;
 
-function lpad(str, n = 40) {
+function lpad(str: string, n = 40): string {
   str = str.replace(/[\s\n]+/gm, ' ');
   return fixedWidthString(str, n, { align: 'right' });
 }
 
-function rtrim(str, n = 40) {
+function rtrim(str: string, n = 40): string {
   str = str.replace(/[\s\n]+/gm, ' ');
   return fixedWidthString(str, n);
 }
 
-function stylize(value, styleType, opts) {
-  value = value.toString();
+function stylize(value: any, styleType: string, opts = { colors: false }): string {
+  const str = value.toString();
   if (opts.colors) {
     const style = styles[styleType];
     if (style) {
-      return style(value);
+      return style(str);
     }
   }
-  return value;
+  return str;
 }
 
-export function formatState({ stack, queue }, opts = defaultOpts) {
-  const n = process.stdout.columns / 2 - 5;
+export function formatState({ stack, queue }, opts = defaultOpts): string {
+  const n = (process.stdout && process.stdout.columns) ? process.stdout.columns / 2 - 5 : 35;
   stack = lpad(formatArray(stack, 0, opts, '  '), n);
   queue = rtrim(formatArray(queue, 0, opts, '  '), n);
   return `${stack} <=> ${queue}`;
@@ -88,17 +89,17 @@ export function formatState({ stack, queue }, opts = defaultOpts) {
 
 const sRE = /Symbol\(([^)]*)\).*/g;
 
-function formatSymbol(value, opts) {
-  value = value.toString().replace(sRE, '#$1');
-  return stylize(value, 'symbol', opts);
+function formatSymbol(value: any, opts): string {
+  const str = value.toString().replace(sRE, '#$1');
+  return stylize(str, 'symbol', opts);
 }
 
-function formatArray(obj, depth, opts, braces = '[]') {
-  obj = obj.map(x => formatValue(x, depth + 1, opts).replace(/\n/g, '\n  '));
-  return reduceToSingleString(obj, braces, opts);
+function formatArray(obj: any, depth: number, opts: any, braces = '[]'): string {
+  const str = obj.map(x => formatValue(x, depth + 1, opts).replace(/\n/g, '\n  '));
+  return reduceToSingleString(str, braces, opts);
 }
 
-function reduceToSingleString(output, braces, opts) {
+function reduceToSingleString(output: any[], braces: string, opts: any): string {
   const length = output.reduce((prev, cur) => prev + strLen(cur), 0);
 
   if (length > 60 && opts.indent) {
@@ -108,8 +109,8 @@ function reduceToSingleString(output, braces, opts) {
   return `${braces[0]} ${output.join(' ')} ${braces[1]}`;
 }
 
-function formatMap(value, depth, opts) {
-  const output = [];
+function formatMap(value: Object, depth: number, opts: { colors: boolean }): string {
+  const output: string[] = [];
   const keys = Object.keys(value);
   keys.forEach(key => {
     output.push(formatProperty(key, value[key], depth + 1, opts));
@@ -117,9 +118,9 @@ function formatMap(value, depth, opts) {
   return reduceToSingleString(output, '{}', opts);
 }
 
-function formatProperty(key, value, depth, opts) {
-  key = stylize(String(key), 'name', opts);
-  value = formatValue(value, depth + 1, opts).replace(/\n/g, '\n  ');
+function formatProperty(key: any, value: any, depth: number, opts: { colors: boolean }): string {
+  const skey = stylize(String(key), 'name', opts);
+  const svalue = formatValue(value, depth + 1, opts).replace(/\n/g, '\n  ');
 
-  return `${key}: ${value}`;
+  return `${skey}: ${svalue}`;
 }
