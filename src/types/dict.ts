@@ -5,7 +5,7 @@ import * as cloneDeep from 'clone-deep';
 export class Dictionary {
 
   store: any;
-  
+
   constructor(parent) {
     this.store = Object.create(parent ? parent.store : null);
   }

@@ -1,5 +1,5 @@
 import { inspect } from 'util';
-import fixedWidthString from 'fixed-width-string';
+import * as fixedWidthString from 'fixed-width-string';
 import { stripColor, supportsColor } from 'chalk';
 import * as chalk from 'chalk';
 

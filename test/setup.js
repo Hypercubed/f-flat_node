@@ -1,6 +1,8 @@
 import { Stack } from '../dist/stack';
 import { log } from '../dist/utils/logger';
 
+export * from '../dist/types';
+
 process.chdir('.');
 
 log.level = process.env.NODE_ENV || 'error';

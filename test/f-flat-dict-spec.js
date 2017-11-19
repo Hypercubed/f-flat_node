@@ -29,20 +29,30 @@ test('should return null on undefined', t => {
   t.deepEqual(fSync('x.y.z: rcl'), [null]);
 });
 
-test('expand', t => {
+test('expand on internal actions', t => {
   const evalAction = { type: '@@Action', value: 'eval' };
-  const slipAction = [
+
+  t.deepEqual(fSync('eval: expand'), [evalAction]);
+  t.deepEqual(fSync('[ eval ] action expand'), [evalAction]);
+  t.deepEqual(fSync('[ eval ] expand'), [[evalAction]]);
+  t.deepEqual(fSync('{ x: eval: } expand'), [{ x: evalAction }]);
+  t.deepEqual(fSync('{ x: [ eval ] action } expand'), [{ x: evalAction }]);
+  t.deepEqual(fSync('{ x: [ eval ] } expand'), [{ x: [evalAction] }]);
+});
+
+test('expand on defined actions', t => {
+  const slipAction = { type: '@@Action', value: [
     { type: '@@Action', value: 'q<' },
     { type: '@@Action', value: 'eval' },
     { type: '@@Action', value: 'q>' }
-  ];
+  ]};
 
-  t.deepEqual(fSync('eval: expand'), [evalAction]);
-  t.deepEqual(fSync('[ eval ] expand'), [[evalAction]]);
-  t.deepEqual(fSync('{ x: eval: } expand'), [{ x: evalAction }]);
-  t.deepEqual(fSync('slip: expand'), slipAction);
-  t.deepEqual(fSync('[ slip ] expand'), [slipAction]);
+  t.deepEqual(fSync('slip: expand'), [slipAction]);
+  t.deepEqual(fSync('[ slip ] action expand'), [slipAction]);
+  t.deepEqual(fSync('[ slip ] expand'), [[slipAction]]);
   t.deepEqual(fSync('{ x: slip: } expand'), [{ x: slipAction }]);
+  t.deepEqual(fSync('{ x: [ slip ] action } expand'), [{ x: slipAction }]);
+  t.deepEqual(fSync('{ x: [ slip ] } expand'), [{ x: [ slipAction ] }]);
 });
 
 test('in/fork', t => {

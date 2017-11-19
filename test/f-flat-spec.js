@@ -1,5 +1,5 @@
 import test from 'ava';
-import { F, fSync } from './setup';
+import { F, fSync, Action } from './setup';
 
 test('setup', t => {
   t.not(new F().eval, undefined);
@@ -404,5 +404,18 @@ test('pick from, shortcut', t => {
   t.deepEqual(fSync('[1 2] @0'), [1]);
   t.deepEqual(fSync('[3 5] @1'), [5]);
   t.deepEqual(fSync('([7 11] @0)'), [[7]]);
+});
+
+test('actions', t => {
+  const ev = new Action('eval').toJSON();
+  const sl = new Action('slip').toJSON();
+  t.deepEqual(fSync('eval:'), [ev]);
+  t.deepEqual(fSync('eval: action'), [ev]);
+  t.deepEqual(fSync('[ eval ] action'), [ev]);  // todo: This is open the array
+  t.deepEqual(fSync('[ 1 2 eval ] action'), [new Action([1, 2, ev]).toJSON()]);
+  t.deepEqual(fSync('slip:'), [sl]);
+  t.deepEqual(fSync('slip: action'), [sl]);
+  t.deepEqual(fSync('[ slip ] action'), [sl]);
+  t.deepEqual(fSync('[ 1 2 slip ] action'), [new Action([1, 2, sl]).toJSON()]);
 });
 

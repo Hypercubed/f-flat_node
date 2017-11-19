@@ -15,7 +15,7 @@ import {
   lexer
 } from './utils';
 
-import { typed, Action, Seq, Dictionary } from './types';
+import { typed, Action, Seq, Just, Dictionary } from './types';
 import { MAXSTACK, MAXRUN, IDLE, DISPATCHING, YIELDING, ERR, IIF } from './constants';
 
 const nonInteractive = !process || !process.stdin.isTTY;
@@ -71,7 +71,7 @@ export class StackEnv {
     this.expandAction = typed({
       'Action': (action: Action) => {
         if (Array.isArray(action.value)) {
-          return new Seq(self.expandAction(action.value));
+          return new Seq([new Action(self.expandAction(action.value))]);
         }
         const r = self.dict.get(action.value);
         return is.function(r) ? new Seq([action]) : self.expandAction(r);
@@ -238,7 +238,7 @@ export class StackEnv {
         self.stack.push(...a);
       }
 
-      function dispatch (action) {
+      function dispatch (action: any) {
         self.lastAction = action;
         if (typeof action === 'undefined') {
           return;
@@ -256,42 +256,45 @@ export class StackEnv {
           return stackPush(action);
         }
 
-        let tokenValue = action.value;
-
         switch (action.type) {
-        case '@@Action':
-          if (isImmediate(action)) {
+          case '@@Seq':
+            return stackPush(...action.value);
+          case '@@Just':
+            return stackPush(action.value);
+          case '@@Future':
+            return action.isResolved() ? stackPush(...action.value) : stackPush(action);
+          case '@@Action':
+            if (!isImmediate(action)) {
+              return stackPush(action);
+            }
+
+            let tokenValue = action.value;
+
             if (Array.isArray(tokenValue)) {
               return self.queueFront(tokenValue);
             }
+
             if (!is.string(tokenValue)) {
               return stackPush(tokenValue);
             }
+
             if (tokenValue[0] === IIF && tokenValue.length > 1) {
               tokenValue = tokenValue.slice(1);
             }
 
             const lookup = self.dict.get(tokenValue);
-
+            if (is.undefined(lookup)) {
+              throw new FFlatError(`${action} is not defined`, self);
+            }
             if (Action.isAction(lookup)) {
               return self.queueFront(lookup.value);
-            } else if (is.function(lookup)) {
-              return dispatchFn(lookup, functionLength(lookup), tokenValue);
-            } else if (lookup) {
-              return stackPush(cloneDeep(lookup));
             }
-            // throw new Error(`${action} is not defined`);
-            throw new FFlatError(`${action} is not defined`, self);
-          }
-          return stackPush(action);
-        case '@@Seq':
-          return stackPush(...tokenValue);
-        case '@@Just':
-          return stackPush(tokenValue);
-        case '@@Future':
-          return action.isResolved() ? stackPush(...tokenValue) : stackPush(action);
-        default:
-          return stackPush(action);
+            if (is.function(lookup)) {
+              return dispatchFn(lookup, functionLength(lookup), tokenValue);
+            }
+            return stackPush(cloneDeep(lookup));
+          default:
+            return stackPush(action);
         }
       }
 

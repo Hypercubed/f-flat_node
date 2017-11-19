@@ -1,5 +1,16 @@
 import { typed, Action, Just, Seq, BigNumber } from '../types';
 
+const action = typed('action', {  // todo: this should be part of teh Action constructor
+  Action: x => x,
+  Array: x => {
+    if (x.length === 1 && Action.isAction(x[0])) {
+      return x[0];
+    }
+    return new Action(x);
+  },
+  any: x => new Action(x)
+});
+
 export default {
   types: typed.types,
   type: typed('type', {
@@ -21,7 +32,7 @@ export default {
     Complex: a => !a.im.isZero(),
     'BigNumber | number | any': () => false
   }),
-  action: a => new Seq([new Action(a)]),
+  action: x => new Just(action(x)),
   string: a => String(a),
   valueof: x => x.valueOf(),
   // number: x => processNumeric(String(x.valueOf())),

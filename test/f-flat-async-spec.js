@@ -31,7 +31,7 @@ test('yield', t => {
   t.deepEqual(fSync('[1 2 + yield 4 5 + ] fork drop'), [3], 'yield and next');
 });
 
-test('multiple yields', t => {
+/* test('multiple yields', t => {
   t.deepEqual(
     fSync('[1 2 + yield 4 5 + yield ] fork fork drop'),
     [3, 9],
@@ -42,7 +42,7 @@ test('multiple yields', t => {
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     'multiple yields'
   );
-});
+}); */
 
 /* test.cb('eval should yield on async with callback', t => {
   t.plan(2);
