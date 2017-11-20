@@ -10,7 +10,7 @@
     "check": "npm run coverage && npm run lint",
     "coverage": "nyc -r lcov -r html -r text ava ./test/*-spec.js",
     "start": "ts-node ./bin/repl.ts",
-    "debugger": "node --inspect -r @std/esm ./bin/repl.mjs"
+    "debugger": "ts-node --inspect ./bin/repl.ts"
   },
   "author": "J. Harshbarger",
   "license": "MIT",

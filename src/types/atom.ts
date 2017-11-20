@@ -1,4 +1,5 @@
 import { typed } from './typed';
+import { quoteSymbol } from '../constants';
 
 export class Base {
   value: any;
@@ -9,20 +10,27 @@ export class Base {
   }
 
   toString(): string {
-    return String(this.value);
+    return this.value.toString();
   }
 
-  [Symbol.toPrimitive](hint) {
+  [Symbol.toPrimitive](hint?: string) {
+
     if (hint === 'string') {
+      if (Array.isArray(this.value)) {
+        return this.value.map(x => String(x)).join(',');
+      }
       return String(this.value);
-    } else if (hint === 'number') {
+    }
+    if (hint === 'number') {
       return Number(this.value);
     }
     return this.value;
   }
 
   inspect(): string {
-    return this.value.inspect ? this.value.inspect() : String(this.value);
+    return (this.value && this.value.inspect) ?
+      this.value.inspect() :
+      String(this.value);
   }
 
   toJSON(): {type: string, value: any} {
@@ -83,7 +91,11 @@ export class Action extends Base {
     if (typeof this.value === 'string') {
       return this.value;
     }
-    return this.value.inspect ? this.value.inspect() : `${this.value}:`;
+    if (typeof this.value === 'undefined') {
+      return 'undefined';
+    }
+    console.log(typeof this.value);
+    return this.value.inspect ? this.value.inspect() : this.value.toString();
   }
 
   get type(): string {
