@@ -8,7 +8,7 @@ export class Dictionary {
   using: {};
 
   constructor(public parent?: Dictionary) {
-    this.using = Object.create(parent ? parent.store : null);
+    this.using = <any>Object.create(parent ? parent.store : null);
     this.store = Object.create(this.using);
   }
 
