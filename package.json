@@ -3,14 +3,14 @@
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
-  "bin": "./src/repl.js",
+  "bin": "./bin/repl.js",
   "scripts": {
     "test": "tsc && ava ./test/*-spec.js",
     "lint": "tslint src/** bin/** test/**",
     "check": "npm run coverage && npm run lint",
     "coverage": "nyc -r lcov -r html -r text ava ./test/*-spec.js",
-    "start": "ts-node ./bin/repl.ts",
-    "debugger": "ts-node --inspect ./bin/repl.ts"
+    "start": "tsc && node ./bin/repl.js",
+    "debugger": "tsc && ts-node --inspect ./bin/repl.ts"
   },
   "author": "J. Harshbarger",
   "license": "MIT",

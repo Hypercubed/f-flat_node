@@ -1,12 +1,13 @@
+#!/usr/bin/env node
+
 /* global process */
 
-import * as repl from 'repl';
+const repl = require('repl');
+const program = require('commander');
 
-import * as program from 'commander';
-
-import { Stack } from '../src/stack';
-import { log } from '../src/utils/logger';
-import { formatValue } from '../src/utils/pprint';
+const { Stack } = require('../dist/stack');
+const { log } = require('../dist/utils/logger');
+const { formatValue } = require('../dist/utils/logger');
 
 const pkg = require('../package.json');
 
@@ -98,7 +99,7 @@ function writer(_) {
 }
 
 let buffer = '';
-let timeout: any = null;
+let timeout = null;
 
 function fEval(code, _, __, cb) {
   code = code
@@ -111,7 +112,7 @@ function fEval(code, _, __, cb) {
   }
 
   buffer += `${code}\n`;
-  global.clearTimeout(<any>timeout);
+  global.clearTimeout(timeout);
   timeout = global.setTimeout(run, 60);
 
   /* const qcount = (code.match(/\`/g) || []).length;
