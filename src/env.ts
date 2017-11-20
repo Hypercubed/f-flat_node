@@ -74,6 +74,9 @@ export class StackEnv {
           return new Seq([new Action(self.expandAction(action.value))]);
         }
         const r = self.dict.get(action.value);
+        if (is.undefined(r) && action.value[0] !== IIF) {
+          throw new Error(`Cannot expand, action undefined: ${action.value}`);
+        }
         return is.function(r) ? new Seq([action]) : self.expandAction(r);
       },
       'Array': (arr: any[]) => {
@@ -103,6 +106,7 @@ export class StackEnv {
         }
         return r;
       },
+      'null': () => new Just(null),
       'any': x => x
     });
   }

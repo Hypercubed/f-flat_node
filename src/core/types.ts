@@ -44,7 +44,7 @@ export default {
   ':': a => new Just(new Action(a)),
   array: n => new Array(n),
   integer: a => a | 0,
-  'null?': 'null =',
+  // 'null?': 'null =',
   nan: NaN,
   'string?': 'type "string" =',
   'boolean?': 'type "boolean" =',

@@ -1,13 +1,16 @@
-// Boot strap Fflat
+/* Bootstrap F-flat */
 
-[ action swap sto ] action ';' sto   // definition of define action
+// Defintion of define action, Converts the quote to aan action and stores
+[ action swap sto ] action ';' sto 
 
+// Loads a file on the stack as a string and evaluates the content
 load: [ read eval ] ;
-import: [ [ read eval dict defineparent ] >> q< string q> >> fork drop ] ;
-using: [ rcl define ] ;
 
-suffle: './ff-lib/suffle.ff' import
+// Loads and executes a file in a child, expands out defintions, and defines a module
+import: [ [ load dict expand defineparent ] >> q< string q> >> fork drop ] ;
+
 core: './ff-lib/core.ff' import
+shuffle: './ff-lib/shuffle.ff' import
 math: './ff-lib/math.ff' import
 sym: './ff-lib/math-sym.ff' import
 combinators: './ff-lib/combinators.ff' import

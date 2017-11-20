@@ -5,6 +5,7 @@ import { formatValue } from '../utils';
 import { Action, Just } from '../types';
 import { USE_STRICT } from '../constants';
 import { StackEnv } from '../env';
+import { pluck, update, remove } from '../utils';
 
 const cloneDeep = require('clone-deep');
 
@@ -71,6 +72,11 @@ export const dict = {
     if (this.parent) {
       this.parent.defineAction(name, fn);
     }
+  },
+
+  using(this: StackEnv, name) {
+    const r = this.dict.get(name);
+    Object.assign(this.dict.using, r);
   },
 
   /**

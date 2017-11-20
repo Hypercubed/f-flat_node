@@ -1,3 +1,6 @@
+core: using
+shuffle: using
+
 // lazy constants
 e:  [ 1 exp ] ;             // Euler's number
 pi: [ -1 acos ] ;           // pi
@@ -11,12 +14,6 @@ sqrt2: [ 2 sqrt ] ;         // square root of 2
 sqrt1_2: [ 1 2 / sqrt ] ;   // square root of 1/2
 radians: [ pi 180 / ] ;
 
-// incrementors
---: [ 1 - ] ;
-++: [ 1 + ] ;
-pred: [ dup -- ] ;
-succ: [ dup ++ ] ;
-
 // Log errfn
 erfc: [ 1 swap erf - ] ;
 log: [ ln ln10 / ] ;
@@ -24,12 +21,10 @@ log: [ ln ln10 / ] ;
 // Misc
 +-: [ [ + ] [ - ] bi2 ] ;
 -+: [ [ - ] [ + ] bi2 ] ;
-neg: [ 0 swap - ] ;
 inv: [ 1 swap / ] ;
 sq: [ dup * ] ;
 sum-of-squares: [ 0 [ sq + ] reduce ] ;
 square-of-sum: [ sum sq ] ;
-dot: [ [ * ] zipwith sum ] ;
 
 // angles
 toradians: [ radians * ] ;
@@ -51,7 +46,23 @@ divisor?: [ % zero? ] ;
 even?: [ 2 divisor? ] ;
 odd?: [ even? not ] ;
 simple?: [ [ even? ] [ 3 divisor? ] [ 5 divisor? ] tri + + ] ;
+
+// sequences
+find-next: [ [ ++ dup ] swap + [ not ] + loop ] ;
+next-odd: [ [ odd? ] find-next ] ;
+next-even: [ [ even? ] find-next ] ;
+countup: [ over - [ succ ] swap ] ;
+countdown: [ dupd - [ pred ] swap ] ;
+range*: [ 2dup < [ countup ] [ countdown ] branch repn ] ;
+range: [ [ range* ] >> appl ] ;
+count: [ 1 swap range* ] ;
+
+// primes
+prime?*: [ 2 [ 2dup 2 ^ > [ 2dup % 0 > ] dip swap * ] [ ++ ] while 2 ^ < ] ;
+prime?: [ dup 7 < [ [ 2 = ] [ 3 = ] [ 5 = ] tri + + ] [ dup simple? [ drop false ] [ prime?* ] branch ] branch ] ;
 mersenne?: [ 2 swap ^ 1 - prime? ] ;
+next-prime: [ dup 2 < [ drop 2 ] [ next-odd [ dup prime? ] [ 2 + ] until ] branch ] ;
+nth-prime: [ [ 0 [ next-prime ] ] dip times ] ;
 
 // Kunth
 ^^^: [ -- dup [ [ dup ] swap times [ ^^ ] ] dip times ] ;
@@ -69,3 +80,6 @@ y!: [ [ [ over zero? ] [ drop ++ ] [ [ pred ] dip eval * ] ifte ] y eval ] ;
 // Prob
 npr: [ [ [ ! ] keep ] dip - ! / ] ;
 ncr: [ [ npr ] keep ! / round ] ;
+
+// reduce
+product: [ [ * ] reduce* ] ;

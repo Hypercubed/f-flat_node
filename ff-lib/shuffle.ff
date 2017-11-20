@@ -1,21 +1,17 @@
+core: using
+
 /* Shuffle words
    Many words derived from (Joy)[http://tunes.org/~iepos/joy.html] and Factor(http://factorcode.org/). */
 
 2drop: [ drop drop ] ;
 
 m: [ dup eval ] ;           // [a] -> [a] a
-run: [ dup slip ] ;         // [a] -> a [a]
-
-slip: [ q< eval q> ] ;      // [b] [a] -> b [a]
-dip: [ swap slip ] ;        // [b] [a] -> a [b]
 
 2dup: [ over over ] ;       // [b] [a] -> [b] [a] [b] [a]
-sip: [ over slip ] ;        // [b] [a] -> [b] a [b]    (aka keep)
-keep: [ over slip ] ;       // [b] [a] -> [b] a [b]    (aka sip)
-sipd: [ q< sip q> ] ;       // [b] [a] -> [b] a [b]    (aka sip)
+
 keep2: [ q< 2dup q> dive ] ;  // [c] [b] [a] -> [c] [b] a [c] [b]   (aka 2keep)
-over: [ dupd swap ] ;       // [b] [a] -> [b] [a] [b]  (aka peek)
-dupd: [ q< dup q> ] ;     // [b] [a] -> [b] [b] [a]  (aka w)
+
+
 dropd: [ q< drop q> ] ;   // [b] [a] -> [a]          (aka nip)
 nip: [ swap drop ] ;        // [b] [a] -> [a]
 tuck: [ swap over ] ;       // [b] [a] -> [a] [b] [a]
@@ -31,14 +27,13 @@ flip: [ swapd bury ] ;      // [c] [b] [a] -> [a] [b] [c]
 rot: [ bury swap ] ;        // [c] [b] [a] -> [a] [b] [c]
 
 repn: [ runn drop ] ;
-dipd: [ q< dip q> ] ;     // [d] [c] [b] [a] -> [d] b [c] [a]
+
 dive: [ swap dipd ] ;       // [c] [b] [a] -> a [c] [b]   (aka dip2)
 dip2: [ swap dipd ] ; // [c] [b] [a] -> a [c] [b]
 
-bi: [ sipd eval ] ;  // [c] [b] [a] -> [c] b [c] a
 bi2: [ q< keep2 q> eval ] ;  // [d] [c] [b] [a] -> [d] [c] b [d] [c] a
 bi*: [ dipd eval ] ;        // [d] [c] [b] [a] -> [d] b [c] a
 bi@: [ dup bi* ] ;          // [c] [b] [a] -> [c] a [c] a
 tri: [ q< sipd sip q> eval ] ;   // [d] [c] [b] [a] -> [d] c [d] b [d] a
-do: [ dup dipd ] ;
-slipd: [ q< q< eval q> q> ] ;
+
+

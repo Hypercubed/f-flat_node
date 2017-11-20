@@ -1,23 +1,14 @@
-suffle: using
 core: using
+shuffle: using
 math: using
-
-// functional
-chain: [ over nothing? not swap when ] ;
-fmap: [ eval ] ;
-map-reduce: [ [ map ] dip reduce* ] ;
-reduce: [ [ * ] >> dip swap eval ] ;
-reduce*: [ [ [ first ] [ rest ] bi ] dip foreach ] ;
-filter: [ [ keepif ] >> map ] ;
 
 // Misc
 compose: [ + ] ;
 prepose: [ swap + ] ;
-appl: [ >> in ] ;
+
 with: [ [ swap [ swap ] ] dip + >> ] ;
 eval2: [ slip eval ] ;
 replicate: [ [ unit ] dip * ] ;
-y: [ [ dup >> ] swap + dup >> ] ;
 nth: [ -- @ ] ;
 
 // timing
@@ -31,39 +22,6 @@ timing: [ timing: set-log-level ] ;
 
 // dictionary
 inline: [ dup rcl expand swap def ] ;
-
-// control
-runn: [ [ -- dup -1 > ] [ [ run ] dip ] while drop ] ;
-times: [ runn drop ] ;
-ifte: [ slipd branch ] ;
-if: [ slip when ] ;
-when: [ () branch ] ;
-guard: [ [ keep ] >> dip branch ] ;
-orelse: [ [ null? not ] guard ] ;
-keepif: [ over unit if ] ;
-loop: [ [ eval ] keep 'loop' >> when ] ;
-while: [ swap do + [ loop ] >> when ] ;
-until: [ [ [ not ] + ] dip while ] ;
-forever: [ [ eval ] keep 'forever' >> eval ] ;
-
-// aggregates
-unit: [ () >> ] ;
-cons: [ >> ] ;
-pair: [ unit >> ] ;
-car: [ 0 @ ] ;
-cdr: [ shift ] ;
-first: [ 0 @ ] ;
-last: [ -1 @ ] ;
-rest: [ shift ] ;
-head: [ 0 swap slice ] ;
-tail: [ neg null slice ] ;
-startswith: [ dup length [ head ] >> dip = ] ;
-endswith: [ dup length [ tail ] >> dip = ] ;
-contains: [ indexof 1 > ] ;
-pad-left: [ over * [ swap + ] >> dip tail ] ;
-lreverse: [ [ unit ] [ swap + ] map-reduce ] ;
-sreverse: [ lreverse sum ] ;
-reverse: [ dup string? [ sreverse ] [ lreverse ] branch ] ;
 
 // quick check
 for-all: [ [ [ 100 times ] >> in ] dip [ not ] + filter ] ;
@@ -102,17 +60,7 @@ rand-string: [ [ rand-char ] rand-seq sum ] ;
 rand-bool: [ rand-u32 even? ] ;
 
 // math-ish
-sum: [ [ + ] reduce* ] ;
-product: [ [ * ] reduce* ] ;
-countup: [ over - [ succ ] swap ] ;
-countdown: [ dupd - [ pred ] swap ] ;
-range*: [ 2dup < [ countup ] [ countdown ] branch repn ] ;
-range: [ [ range* ] >> appl ] ;
-count: [ 1 swap range* ] ;
 integers: [ [ count ] appl ] ;
-find-next: [ [ ++ dup ] swap + [ not ] + loop ] ;
-next-odd: [ [ odd? ] find-next ] ;
-next-even: [ [ even? ] find-next ] ;
 divisors: [ [ 2 [ 2dup 2 ^ > ] [ 2dup divisor? [ tuck / over ] [ next-odd ] branch ] while drop ] appl ] ;
 next-fib: [ 2dup + ] ;
 fib: [ ( 0 1 [ next-fib ] ) dip -- repn drop ] ;
@@ -121,12 +69,6 @@ next-collatz: [ dup even? [ 2 / ] [ 3 * 1 + ] branch ] ;
 divrem: [ [ div ] [ rem ] bi2 ] ;
 gcd: [ [ dup 0 > ] [ dup bury rem ] while drop ] ;
 lcm: [ 2dup [ [ * abs ] dip ] dip gcd / ] ;
-
-// primes
-prime?: [ dup 7 < [ [ 2 = ] [ 3 = ] [ 5 = ] tri + + ] [ dup simple? [ drop false ] [ prime?* ] branch ] branch ] ;
-prime?*: [ 2 [ 2dup 2 ^ > [ 2dup % 0 > ] dip swap * ] [ ++ ] while 2 ^ < ] ;
-next-prime: [ dup 2 < [ drop 2 ] [ next-odd [ dup prime? ] [ 2 + ] until ] branch ] ;
-nth-prime: [ [ 0 [ next-prime ] ] dip times ] ;
 
 // inquisitive
 either?: [ bi@ + ] ;
@@ -137,7 +79,6 @@ between?: [ swap dupd < bury < * ] ;
 char?: [ [ lcase-char? ] [ ucase-char? ] bi or ] ;
 
 // dates
-
 zeller-congruence: [
   [
     dup 2 =<
@@ -158,3 +99,5 @@ wednesday?: [ day 'Wed' = ] ;
 thursday?: [ day 'Thu' = ] ;
 friday?: [ day 'Fri' = ] ;
 saturday?: [ day 'Sat' = ] ;
+
+dot: [ [ * ] zipwith sum ] ;

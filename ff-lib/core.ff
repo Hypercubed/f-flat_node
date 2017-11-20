@@ -1,6 +1,26 @@
+// (: quote: action sto
+
+// Shuffle words
+slip: [ q< eval q> ] ;      // [b] [a] -> b [a]
+run: [ dup slip ] ;         // [a] -> a [a]
+dip: [ swap slip ] ;        // [b] [a] -> a [b]
+dipd: [ q< dip q> ] ;     // [d] [c] [b] [a] -> [d] b [c] [a]
+sip: [ over slip ] ;        // [b] [a] -> [b] a [b]    (aka keep)
+keep: [ over slip ] ;       // [b] [a] -> [b] a [b]    (aka sip)
+over: [ dupd swap ] ;       // [b] [a] -> [b] [a] [b]  (aka peek)
+dupd: [ q< dup q> ] ;     // [b] [a] -> [b] [b] [a]  (aka w)
+bi: [ sipd eval ] ;  // [c] [b] [a] -> [c] b [c] a
+sipd: [ q< sip q> ] ;       // [b] [a] -> [b] a [b]    (aka sip)
+slipd: [ q< q< eval q> q> ] ;
+do: [ dup dipd ] ;
+
+// math
+neg: [ 0 swap - ] ;
+sum: [ [ + ] reduce* ] ;
+
 map: [ * in ] ;
 foreach: [ * eval ] ;
-in: [ ( swap eval ) ] ;
+in: [ quote swap eval dequote ] ; // causes trouble with compiled imports
 
 pop: [ 0 -1 slice ] ;
 shift: [ 1 null slice ] ;
@@ -18,3 +38,55 @@ yield: [ return suspend ] ;
 delay: [ [ sleep ] >> slip eval ] ;
 
 branch: [ choose eval ] ;
+runn: [ [ -- dup -1 > ] [ [ run ] dip ] while drop ] ;
+
+// aggregates
+unit: [ [ ] >> ] ;
+cons: [ >> ] ;
+pair: [ unit >> ] ;
+car: [ 0 @ ] ;
+cdr: [ shift ] ;
+first: [ 0 @ ] ;
+last: [ -1 @ ] ;
+rest: [ shift ] ;
+head: [ 0 swap slice ] ;
+tail: [ neg null slice ] ;
+startswith: [ dup length [ head ] >> dip = ] ;
+endswith: [ dup length [ tail ] >> dip = ] ;
+contains: [ indexof 1 > ] ;
+pad-left: [ over * [ swap + ] >> dip tail ] ;
+lreverse: [ [ unit ] [ swap + ] map-reduce ] ;
+sreverse: [ lreverse sum ] ;
+reverse: [ dup string? [ sreverse ] [ lreverse ] branch ] ;
+
+// functional
+chain: [ over nothing? not swap when ] ;
+fmap: [ eval ] ;
+reduce*: [ [ [ first ] [ rest ] bi ] dip foreach ] ;
+map-reduce: [ [ map ] dip reduce* ] ;
+reduce: [ [ * ] >> dip swap eval ] ;
+filter: [ [ keepif ] >> map ] ;
+
+// incrementors
+--: [ 1 - ] ;
+++: [ 1 + ] ;
+pred: [ dup -- ] ;
+succ: [ dup ++ ] ;
+
+// control
+times: [ runn drop ] ;
+ifte: [ slipd branch ] ;
+if: [ slip when ] ;
+when: [ [ ] branch ] ;
+guard: [ [ keep ] >> dip branch ] ;
+orelse: [ [ null? not ] guard ] ;
+keepif: [ over unit if ] ;
+loop: [ [ eval ] keep 'loop' >> when ] ;
+while: [ swap do + [ loop ] >> when ] ;
+until: [ [ [ not ] + ] dip while ] ;
+forever: [ [ eval ] keep 'forever' >> eval ] ;
+
+appl: [ >> in ] ;
+y: [ [ dup >> ] swap + dup >> ] ;
+
+null?: [ null = ] ;

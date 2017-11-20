@@ -1,3 +1,6 @@
+core: using
+shuffle: using
+
 _x: [ dup eval ] ;
 _i: [ eval ] ;
 _?: [ dup [ [ '_?' eval ] >> ] dip ] ;

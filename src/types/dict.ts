@@ -4,10 +4,12 @@ import * as cloneDeep from 'clone-deep';
 
 export class Dictionary {
 
-  store: any;
+  store: {};
+  using: {};
 
-  constructor(parent?: Dictionary) {
-    this.store = Object.create(parent ? parent.store : null);
+  constructor(public parent?: Dictionary) {
+    this.using = Object.create(parent ? parent.store : null);
+    this.store = Object.create(this.using);
   }
 
   get(path: string) {
