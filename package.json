@@ -6,7 +6,7 @@
   "bin": "./src/repl.js",
   "scripts": {
     "test": "tsc && ava ./test/*-spec.js",
-    "lint": "eslint src/** bin/** test/**",
+    "lint": "tslint src/** bin/** test/**",
     "check": "npm run coverage && npm run lint",
     "coverage": "nyc -r lcov -r html -r text ava ./test/*-spec.js",
     "start": "ts-node ./bin/repl.ts",
@@ -15,8 +15,8 @@
   "author": "J. Harshbarger",
   "license": "MIT",
   "dependencies": {
-    "@sindresorhus/is": "^0.5.0",
-    "@std/esm": "^0.13.0",
+    "@sindresorhus/is": "^0.6.0",
+    "@std/esm": "^0.16.0",
     "@types/decimal.js": "0.0.31",
     "babel-register": "^6.26.0",
     "chalk": "^1.1.3",
@@ -32,15 +32,12 @@
     "memoizee": "^0.3.9",
     "mini-signals": "^1.1.1",
     "progress": "^1.1.8",
-    "rfr": "^1.2.3",
     "typed-function": "^0.10.6",
     "winston": "^2.2.0"
   },
   "devDependencies": {
     "@types/node": "^8.0.53",
     "ava": "^0.23.0",
-    "eslint": "^4.11.0",
-    "kneden": "^1.0.4",
     "nock": "^8.0.0",
     "nyc": "^11.3.0",
     "ts-node": "^3.3.0",
