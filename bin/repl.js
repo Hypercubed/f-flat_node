@@ -6,8 +6,7 @@ const repl = require('repl');
 const program = require('commander');
 
 const { Stack } = require('../dist/stack');
-const { log } = require('../dist/utils/logger');
-const { formatValue } = require('../dist/utils/logger');
+const { log, formatValue } = require('../dist/utils');
 
 const pkg = require('../package.json');
 

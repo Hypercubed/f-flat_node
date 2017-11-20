@@ -2,50 +2,37 @@
 
 F♭ (pronounced F-flat) is a toy language.
 
-F♭ is a dynamically typed array-oriented concatenative language like Forth and Joy. F♭ is meant to be used interactively, for example in a CLI REPL, , like R or the command shell, or in a stack based calculator.  This constraint dictates many of the language features.
-
-## Project Goals
-
-* conceptually simple
-* interactive first
-  * minimal hidden state
-  * easy to type and read
-  * reads left to right, top to bottom
-  * whitespace not significant syntax
-  * no lambdas/parameters
-  * interactive development
-  * case insensitive
-* flat concatenative language
-  * name code not values
-  * multiple return values
-  * concatenation is composition/pipeline style
-  * no unnecessary parentheses.
-* no surprises
-  * immutable data
-  * decimal and complex numbers
-  * percent values
-  * both double and single quotes
-  * returns error objects
-* pure functions
-* host language interface
-* Session saving (TBD)
-  * undo/redo
-  * state is serializable
-* modules and namespaces (TBD)
-* closure
+F♭ is a dynamically typed array-oriented concatenative language like Forth, Joy, and [others](http://www.concatenative.org/). F♭ is meant to be used interactively, for example in a CLI REPL, like R or the command shell, or in a stack based calculator.  This constraint dictates many of the language features.
 
 ## Features
 
-* Flat functional [concatenative language](http://concatenative.org/wiki/view/Front%20Page), words denote functions, concatenation is composition.
-* Arbitrary-precision decimal and complex number type.
-* JSON format is a valid f-flat programs. (But not all f-flat programs are JSON).
+### Flat functional [concatenative language](http://concatenative.org/wiki/view/Front%20Page)
+
+### Stack based
+
+### RPN
+
+### Dynamic Types
+
+### Arbitrary-precision decimal and complex number type.
+
+### JSON format is a valid f-flat programs.
+
+## Why?
+
+* Designing a programming language in another language is a great way to learn about programming languages in general and the host language in particular.
+
+* Concatenative languages, with inherent functional composition, are a great way to explore functional programming and mathematics.  Higher order functions (including math functions) are composed of smaller functions.
+
+* Because 0.1 + 0.2 = 0.3 and sqrt of -1 is not "not a number".
 
 ## Example
 
 [![asciicast](https://asciinema.org/a/39282.png)](https://asciinema.org/a/39282)
 
 ```forth
-** Welcome to f♭ **
+Welcome to F♭ REPL Interpreter
+F♭ Version 0.0.0 (C) 2000-2017 J. Harshbarger
 
 f♭> 0.1 0.2 +
 [ 0.3 ]
@@ -100,15 +87,81 @@ f♭> { last: 'von Thun' }
 
 f♭> +
 [ { first: 'Manfred', last: 'von Thun' } ]
+
+f♭> clr
+[  ]
+
+f♭> [ 1 2 3 ]
+[ [ 1 2 3 ] ]
+
+f♭> dup
+[ [ 1 2 3 ] [ 1 2 3 ] ]
+
+f♭> [ 2 * ]
+[ [ 1 2 3 ] [ 1 2 3 ] [ 2 * ] ]
+
+f♭> map
+[ [ 1 2 3 ] [ 2 4 6 ] ]
+
+f♭> +
+[ [ 1 2 3 2 4 6 ] ]
+
+f♭> +
+[ [ 1 2 3 2 4 6 ] ]
+
+f♭> clr
+[  ]
+
+f♭> dbl-sqr-cat: [ dup [ 2 * ] map + ] ;
+[  ]
+
+f♭> [ 1 2 3 ]
+[ [ 1 2 3 ] ]
+
+f♭>  dbl-sqr-cat
+[ [ 1 2 3 2 4 6 ] ]
+
+f♭> 'dbl-sqr-cat' see
+[ '[ dup [ 2 * ] map + ]' ]
+
+f♭> drop
+[  ]
+
+f♭> dbl-sqr-cat: expand
+[ dup,2,*,*,Symbol((),swap,eval,dequote,+ ]
+
 ```
 
-Why?
+See other examples and guides [here](./docs/).
 
-* Designing a programming language in another language is a great way to learn about programming languages in general and the host language in particular.
+## Project Goals
 
-* Concatenative languages, with inherent functional composition, are a great way to explore functional programming and mathematics.  Higher order functions (including math functions) are composed of smaller functions.
-
-* Because 0.1 + 0.2 = 0.3 and sqrt of -1 is not "not a number".
+* conceptually simple
+* interactive first
+  * minimal hidden state
+  * easy to type and read
+  * reads left to right, top to bottom
+  * whitespace not significant syntax
+  * no lambdas/parameters
+  * interactive development
+  * case insensitive
+* flat concatenative language
+  * name code not values
+  * multiple return values
+  * concatenation is composition/pipeline style
+  * no unnecessary parentheses
+* no surprises
+  * immutable data
+  * arbitrary-precision decimal and complex numbers
+  * percent values
+  * both double and single quotes
+  * returns error objects (TBD)
+* pure functions
+* host language interface (TBD)
+* Session saving (TBD)
+  * undo/redo
+  * state is serializable (TBD)
+* modules, namespaces, and "closures"
 
 ## Influences
 
