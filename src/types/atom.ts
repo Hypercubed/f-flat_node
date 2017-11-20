@@ -10,11 +10,13 @@ export class Base {
   }
 
   toString(): string {
-    return this.value.toString();
+    if (Array.isArray(this.value)) {
+      return this.value.map(x => String(x)).join(',');
+    }
+    return String(this.value);
   }
 
   [Symbol.toPrimitive](hint?: string) {
-
     if (hint === 'string') {
       if (Array.isArray(this.value)) {
         return this.value.map(x => String(x)).join(',');
@@ -94,8 +96,7 @@ export class Action extends Base {
     if (typeof this.value === 'undefined') {
       return 'undefined';
     }
-    console.log(typeof this.value);
-    return this.value.inspect ? this.value.inspect() : this.value.toString();
+    return this.value.inspect ? this.value.inspect() : String(this.value);
   }
 
   get type(): string {

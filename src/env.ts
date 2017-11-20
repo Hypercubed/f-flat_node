@@ -92,6 +92,7 @@ export class StackEnv {
           }, []);
       },
       'BigNumber': x => x,
+      'null': () => null,
       'Object': (obj: Object) => {
         const r = {};
         for (const key in obj) {
@@ -106,7 +107,6 @@ export class StackEnv {
         }
         return r;
       },
-      'null': () => new Just(null),
       'any': x => x
     });
   }

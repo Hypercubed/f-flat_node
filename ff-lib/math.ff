@@ -83,3 +83,4 @@ ncr: [ [ npr ] keep ! / round ] ;
 
 // reduce
 product: [ [ * ] reduce* ] ;
+dot: [ [ * ] zipwith sum ] ;

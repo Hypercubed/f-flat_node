@@ -100,4 +100,3 @@ thursday?: [ day 'Thu' = ] ;
 friday?: [ day 'Fri' = ] ;
 saturday?: [ day 'Sat' = ] ;
 
-dot: [ [ * ] zipwith sum ] ;
