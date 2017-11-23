@@ -48,8 +48,8 @@ spawnsplit: [ spawn2 eval2 ] ;
 spawn2: [ [ spawn ] dip spawn ] ;
 
 // fetch
-fetch-json: [ fetch parse-json ] ;
-site-size: [ fetch length ] ;
+fetch-json: [ read parse-json ] ;
+site-size: [ read length ] ;
 site-war: [ dup [ [ site-size ] >> ] map all zip object ] ;
 
 // random
@@ -99,4 +99,6 @@ wednesday?: [ day 'Wed' = ] ;
 thursday?: [ day 'Thu' = ] ;
 friday?: [ day 'Fri' = ] ;
 saturday?: [ day 'Sat' = ] ;
+
+cls: [ "\u001B[2J\u001B[0;0f" println ] ;
 

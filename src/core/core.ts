@@ -1,8 +1,8 @@
 import * as fetch from 'isomorphic-fetch';
-import { freeze, slice } from 'icepick';
+import { slice, splice, pop } from 'icepick';
 
-import { typed, Seq, Action } from '../types';
-import { log, generateTemplate } from '../utils';
+import { typed, Seq, Action, StackValue, StackArray, Future } from '../types';
+import { log, generateTemplate, toObject } from '../utils';
 import { quoteSymbol } from '../constants';
 import { StackEnv } from '../env';
 
@@ -24,315 +24,383 @@ const splitat = typed('splitat', {
   'Future, any': (f, a) => f.map(arr => splitat(arr, a))
 });
 
+function dequoteStack(env: StackEnv, s: StackValue) {
+  const r: StackArray = [];
+  while (env.stack.length > 0 && s !== quoteSymbol) {
+    r.unshift(s);
+    s = env.stack[env.stack.length - 1];
+    env.stack = pop(env.stack);
+  }
+  return r;
+}
+
 /**
-   # Core Internal Words
-**/
+ * # Internal Core Words
+ */
 export default {
   /**
-    ## `q<`
-    moves the top of the stack to the tail of the queue
-
-    ( {any} -> )
-  **/
-  'q<': function(this: StackEnv, a: any): void {
+   * ## `q<`
+   * moves the top of the stack to the tail of the queue
+   *
+   * ( {any} -> )
+   *
+   * ```
+   * f♭> 1 2 4 q< 3
+   * [ 1 2 3 4 ]
+   * ```
+   */
+  'q<': function(this: StackEnv, a: StackValue): void {
     this.queue.push(a);
   }, // good for yielding, bad for repl
 
   /**
-    ## `q>`
-    moves the tail of the queue to the top of the stack
-
-    ( -> {any} )
-  **/
-  'q>': function(this: StackEnv): any {
+   * ## `q>`
+   * moves the tail of the queue to the top of the stack
+   *
+   * ( -> {any} )
+   *
+   * ```
+   * f♭> 1 2 q> 4 3
+   * [ 1 2 3 4 ]
+   * ```
+   */
+  'q>': function(this: StackEnv): StackValue {
     return this.queue.pop();
   },
 
   /**
-    ## `stack`
-    replaces the stack with a quote containing the current stack
-
-    ( ... -> [ ... ] )
-
-    ```
-    f♭> 1 2 3 stack
-    [ [ 1 2 3 ] ]
-    ```
-  **/
-  stack (this: StackEnv): any[] {
-    return this.stack.splice(0);
+   * ## `stack`
+   * replaces the stack with a quote containing the current stack
+   *
+   * ( ... -> [ ... ] )
+   *
+   * ```
+   * f♭> 1 2 3 stack
+   * [ [ 1 2 3 ] ]
+   * ```
+   */
+  stack (this: StackEnv): StackArray {
+    const s = this.stack.slice();
+    this.stack = splice(this.stack, 0);
+    return s;
   },
 
-  /**
-    ## `d++`
-    increments the depth counter.  If depth > 0, words are not push to the stack as literals
-
-    ```
-    f♭> d++ drop :d--
-    [ drop ]
-    ```
-  **/
+  /*
+   * ## `d++`
+   * increments the depth counter.  If depth > 0, words are not push to the stack as literals
+   *
+   * ```
+   * f♭> d++ drop :d--
+   * [ drop ]
+   * ```
+   /
   'd++': function(this: StackEnv) {
     this.depth++;
-  },
+  }, */
 
-  /**
-    ## `d--`
-    decrements the d counter
-  **/
+  /*
+   * ## `d--`
+   * decrements the d counter
+   /
   'd--': function(this: StackEnv) {
     this.depth = Math.max(0, this.depth - 1);
-  },
+  }, */
 
-  /**
-    ## `quote`
-    pushes a quotation maker onto the stack
+  /*
+   * ## `quote`
+   * pushes a quotation maker onto the stack
+   *
+   * ( -> #( )
+   /
+  quote: quoteSymbol, */
 
-    ( -> #( )
-  **/
-  quote: quoteSymbol,
-
-  /**
-    ## `dequote`
-    collects stack items upto the last quote marker
-
-    ( #( ... -> [ ... ] )
-  **/
-  dequote (this: StackEnv, s: any): any[] {
-    const r: any[] = [];
+  /*
+   * ## `dequote`
+   * collects stack items upto the last quote marker
+   *
+   * ( #( ... -> [ ... ] )
+   /
+  dequote (this: StackEnv, s: StackValue): StackArray {
+    const r: StackArray = [];
     while (this.stack.length > 0 && s !== quoteSymbol) {
       r.unshift(s);
-      s = this.stack.pop();
+      s = this.stack[this.stack.length - 1];
+      this.stack = pop(this.stack);
     }
-    /* istanbul ignore next */
-    return freeze(r);
-  },
+    return r;
+  }, */
 
   /**
-    ## `depth`
-    pushes the size of the current stack
-
-    ( -> {number} )
-
-    ```
-    f♭> 1 2 3 depth
-    [ 1 2 3 3 ]
-    ```
-  **/
+   * ## `depth`
+   * pushes the size of the current stack
+   *
+   * ( -> {number} )
+   *
+   * ```
+   * f♭> 0 1 2 depth
+   * [ 0 1 2 3 ]
+   * ```
+   */
   depth (this: StackEnv): number {
     return this.stack.length; // ,  or "stack [ unstack ] [ length ] bi"
   },
 
   /**
-     ## `nop`
-     no op
-
-     ( -> )
-  **/
-  nop: () => {},
+   * ## `nop`
+   * no op
+   *
+   * ( -> )
+   */
+  nop: (): void => {},
 
   /**
-    ## `eval`
-    evaluate quote or string
-
-    ( [A] -> a )
-
-    ```
-    f♭> [ 1 2 * ] eval
-    [ 2 ]
-    ```
-  **/
+   * ## `eval`
+   * evaluate quote or string
+   *
+   * ( [A] -> a )
+   *
+   * ```
+   * f♭> [ 1 2 * ] eval
+   * [ 2 ]
+   * ```
+   */
   eval: typed('_eval', {
-    Future: f => f.promise.then(a => new Action(a)),
+    Future: (f: Future) => f.promise.then(a => new Action(a)),
     any: a => new Action(a)
   }),
 
   /**
-     ## `drop`
-     drops the item on the bottom of the stack
-
-     ( x -> )
-
-     ```
-     > 1 2 3 drop
-     [ 1 2 ]
-     ```
-  **/
-  drop: a => {}, // eslint-disable-line
-
-  /**
-     ## `swap`
-     swaps the items on the bottom of the stack
-
-     ( x y -- y x )
-
-     ```
-     > 1 2 3 swap
-     [ 1 3 2 ]
-     ```
-  **/
-  swap: (a, b) => new Seq([b, a]),
+   * ## `drop`
+   * drops the item on the bottom of the stack
+   *
+   * ( x -> )
+   *
+   * ```
+   * > 1 2 3 drop
+   * [ 1 2 ]
+   * ```
+   */
+  drop: (a: StackValue) => {}, // eslint-disable-line
 
   /**
-     ## `dup`
-     duplicates the item on the bottom of the stack
-
-     ( x -- x x )
-
-     ```
-     > 1 2 3 dup
-     [ 1 2 3 3 ]
-     ```
-  **/
-  dup: a => new Seq([a, a]),
+   * ## `swap`
+   * swaps the items on the bottom of the stack
+   *
+   * ( x y -- y x )
+   *
+   * ```
+   * > 1 2 3 swap
+   * [ 1 3 2 ]
+   * ```
+   */
+  swap: (a: StackValue, b: StackValue) => new Seq([b, a]),
 
   /**
-    ## `unstack`
-    push items in a quote to the stack without evaluation
+   * ## `dup`
+   * duplicates the item on the bottom of the stack
+   *
+   * ( x -- x x )
+   *
+   * ```
+   * > 1 2 3 dup
+   * [ 1 2 3 3 ]
+   * ```
+   */
+  dup: (a: StackValue) => new Seq([a, a]),
 
-    ( [A B C] -> A B C)
-
-    ```
-    f♭> [ 1 2 * ] unstack
-    [ 1 2 * ]
-    ```
-  **/
+  /**
+   * ## `unstack`
+   * push items in a quote to the stack without evaluation
+   *
+   * ( [A B C] -> A B C)
+   *
+   * ```
+   * f♭> [ 1 2 * ] unstack
+   * [ 1 2 * ]
+   * ```
+   */
   unstack: typed('unstack', {
-    Array: a => new Seq(a),
-    Future: f => f.promise.then(a => new Seq(a))
+    Array: (a: StackArray) => new Seq(a),
+    Future: (f: Future) => f.promise.then(a => new Seq(a))
   }),
 
   /**
-     ## `length`
-     Outputs the length of the Array, string, or object.
-
-     ( {seq} -> {number} )
-
-     ```
-     > [ 1 2 3 ] length
-     3
-     ```
-  **/
+   * ## `length`
+   * Outputs the length of the Array, string, or object.
+   *
+   * ( {seq} -> {number} )
+   *
+   * ```
+   * > [ 1 2 3 ] length
+   * 3
+   * ```
+   */
   length: typed('length', {
     'Array | string': a => a.length,
-    Future: f => f.promise.then(a => a.length),
-    Object: a => Object.keys(a).length,
-    null: a => 0 // eslint-disable-line
+    Future: (f: Future) => f.promise.then(a => a.length),
+    Object: (a: {}) => Object.keys(a).length,
+    null: (a: null) => 0 // eslint-disable-line
   }),
 
   /**
-     ## `slice`
-     a shallow copy of a portion of an array or string
-
-     ( seq from to -> seq )
-  **/
+   * ## `slice`
+   * a shallow copy of a portion of an array or string
+   *
+   * ( seq from to -> seq )
+   */
   slice: _slice,
 
   /**
-     ## `splitat`
-     splits a array or string
-
-     ( seq at -> seq )
-  **/
+   * ## `splitat`
+   * splits a array or string
+   *
+   * ( seq at -> seq )
+   *
+   * ```
+   * f♭> [ 1 2 3 4 ] 2 4 slice
+   * [ [ 3 4 ] ]
+   * ```
+   */
   splitat,
 
   /**
-     ## `indexof`
-     returns the position of the first occurrence of a specified value in a sequence
-
-     ( seq item -> number )
-  **/
-  indexof: (a, b) => a.indexOf(b),
+   * ## `indexof`
+   * returns the position of the first occurrence of a specified value in a sequence
+   *
+   * ( seq item -> number )
+   *
+   * ```
+   * f♭> [ '1' '2' '3' '4' ] '2' indexof
+   * [ 1 ]
+   * ```
+   */
+  indexof: (a: StackArray, b: number | string) => a.indexOf(b), // doesn't work with bignumber!!!
 
   /* 'repeat': (a, b) => {
     return new Action(arrayRepeat(a, b));
   }, */
 
   /**
-     ## `zip`
-
-     ```
-     f♭> [ 1 2 3 ] [ 4 5 6 ] zip
-     [ 1 4 2 5 3 6 ]
-     ```
-  **/
+   * ## `zip`
+   *
+   * ```
+   * f♭> [ 1 2 3 ] [ 4 5 6 ] zip
+   * [ 1 4 2 5 3 6 ]
+   * ```
+   */
   zip: typed('zip', {
-    'Array, Array': (a: any[], b: any[]): any[] => {
+    'Array, Array': (a: StackArray[], b: StackArray[]): StackArray[] => {
       const l = a.length < b.length ? a.length : b.length;
-      const r: any[] = [];
+      const r: StackArray[] = [];
       for (let i = 0; i < l; i++) {
         r.push(a[i], b[i]);
       }
-      return freeze(r);
+      return r;
     }
   }),
 
   /**
-     ## `zipinto`
-  **/
+   * ## `zipinto`
+   *
+   * ```
+   * f♭> [ 1 2 3 ] [ 4 5 6 ] [ 7 8 9 ] zipinto
+   * [ [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] ]
+   * ```
+   */
   zipinto: typed('zipinto', {
-    'Array, Array, Array': (a: any[], b: any[], c: any[]): any[] => {
+    'Array, Array, Array': (a: StackArray[], b: StackArray[], c: StackArray[]): StackArray[] => {
       const l = a.length < b.length ? a.length : b.length;
-      const r: any[] = [];
+      const r: StackArray[] = [];
       for (let i = 0; i < l; i++) {
         r.push(a[i], b[i], ...c);
       }
-      return freeze(r);
+      return r;
     }
   }),
 
   /**
-     ## `(`
-     pushes a quotation maker onto the stack
-  **/
-  '(': ':quote', // list
+   * ## `(` (immediate quote)
+   * pushes a quotation maker onto the stack
+   *
+   * ( -> #( )
+   */
+  '(': quoteSymbol,
+  // '(': ':quote', // list
 
   /**
-     ## `)`
-     collects stack items upto the last quote marker
-  **/
-  ')': ':dequote',
+   * ## `)` (immediate dequote)
+   * collects stack items upto the last quote marker
+   *
+   * ( #( ... -> [ ... ] )
+   */
+  ')': function(this: StackEnv, s: StackValue) {
+    return dequoteStack(this, s);
+  },
 
   /**
-     ## `[`
-     pushes a quotation maker onto the stack, increments depth
-  **/
-  '[': ':quote :d++', // quote
+   * ## `[` (lazy quote)
+   * pushes a quotation maker onto the stack, increments depth
+   *
+   * ( -> #( )
+   */
+  '[': function(this: StackEnv) {
+    this.depth++;
+    return quoteSymbol;
+  },
 
   /**
-     ## `]`
-     decrements depth, collects stack items upto the last quote marker
-  **/
-  ']': ':d-- :dequote',
+   * ## `]` (lazy dequote)
+   * decrements depth, collects stack items upto the last quote marker
+   *
+   * ( #( ... -> [ ... ] )
+   */
+  ']': function(this: StackEnv, s: StackValue) {
+    this.depth--;
+    return dequoteStack(this, s);
+  },
 
   /**
-     ## `{`
-     pushes a quotation maker onto the stack
-  **/
-  '{': ':quote', // object
+   * ## `{` (immediate object quote)
+   * pushes a quotation maker onto the stack
+   *
+   * ( -> #( )
+   */
+  '{': quoteSymbol, // object
 
   /**
-     ## `}`
-     collects stack items upto the last quote marker, converts to an object
-  **/
-  '}': ':dequote :object',
+   * ## `}` (immediate object dequote)
+   * collects stack items upto the last quote marker, converts to an object
+   *
+   * ( #( ... -> [ ... ] )
+   */
+  '}': function(this: StackEnv, s: StackValue) {
+    const r = dequoteStack(this, s);
+    return toObject(r);
+  },
 
   /**
-     ## `template`
-     converts a string to a string template
-  **/
+   * ## `template`
+   * converts a string to a string template
+   *
+   * ( {string} -> {quote} )
+   *
+   * ```
+   * f♭> 'hello $(world)' template
+   * [ [ '' 'hello ' + '(world)' eval string + '' + ] ]
+   * ```
+   */
   template: generateTemplate,
 
   /**
-     ## `sleep`
-     wait x milliseconds
-
-     ( x -> )
-  **/
-  sleep: (ms: number): Promise<any> => {
+   * ## `sleep`
+   * wait x milliseconds
+   *
+   * ( x -> )
+   */
+  sleep(ms: number): Promise<void> {
     // todo: make cancelable?
     // let timerId;
-    const promise = new Promise(resolve => {
+    const promise = new Promise<void>(resolve => {
       // timerId =
       global.setTimeout(resolve, ms);
     });
@@ -341,27 +409,19 @@ export default {
   },
 
   /**
-     ## `fetch`
-     fetch a url as a string
-
-     ( {url} -> {string} )
-  **/
-  fetch: (url: string): string => fetch(url).then(res => res.text()),
-
-  /**
-     ## `get-log-level`
-     gets the current logging level
-
-     ( -> {string} )
-  **/
+   * ## `get-log-level`
+   * gets the current logging level
+   *
+   * ( -> {string} )
+   */
   'get-log-level': () => log.level,
 
   /**
-    ## `set-log-level`
-    sets the current logging level
-
-    ( {string} -> )
-  **/
+   * ## `set-log-level`
+   * sets the current logging level
+   *
+   * ( {string} -> )
+   */
   'set-log-level': (a: string): void => {
     log.level = a;
   }

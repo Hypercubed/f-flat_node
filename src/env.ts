@@ -3,7 +3,7 @@ import { functionLength, functionName } from 'fantasy-helpers/src/functions';
 import * as cloneDeep from 'clone-deep';
 
 import * as MiniSignal from 'mini-signals';
-import { freeze } from 'icepick';
+import { freeze, thaw, splice, push, merge } from 'icepick';
 
 const is = require('@sindresorhus/is');
 
@@ -15,7 +15,7 @@ import {
   lexer
 } from './utils';
 
-import { typed, Action, Seq, Just, Dictionary } from './types';
+import { typed, Action, Seq, Just, Dictionary, StackValue, StackArray } from './types';
 import { MAXSTACK, MAXRUN, IDLE, DISPATCHING, YIELDING, ERR, IIF } from './constants';
 
 const nonInteractive = !process || !process.stdin.isTTY;
@@ -26,12 +26,13 @@ export class StackEnv {
   previousPromise: Promise<any> = Promise.resolve();
 
   queue: any[] = [];
-  stack: any[] = [];
+  stack: StackArray = freeze([]);
   prevState: any | Object = null;
   depth = 0;
   silent = false;
   undoable = true;
   parent: StackEnv;
+  lastAction = null;
   nextAction = null;
   module = undefined;
 
@@ -44,7 +45,7 @@ export class StackEnv {
 
     this.dict = new Dictionary(this.parent ? this.parent.dict : undefined);
 
-    const self = this;
+    const self: StackEnv = this;
 
     this.defineAction = typed({
       'Function': (fn: Function) => {
@@ -111,7 +112,7 @@ export class StackEnv {
     });
   }
 
-  promise(s: string): Promise<StackEnv> {
+  promise(s: StackValue): Promise<StackEnv> {
     return new Promise((resolve, reject) => {
       this.completed.once(err => {
         if (err) {
@@ -124,14 +125,14 @@ export class StackEnv {
     });
   }
 
-  next(s: string) {
+  next(s: StackValue): Promise<StackEnv> {
     const invoke = () => this.promise(s);
     const next = this.previousPromise.then(invoke, invoke);
     this.previousPromise = next;
     return next;
   }
 
-  run(s?: string) {
+  run(s?: StackValue): StackEnv {
     const self = this;
 
     if (s) {
@@ -148,7 +149,7 @@ export class StackEnv {
     this.prevState = {
       depth: this.depth,
       prevState: this.prevState,
-      stack: this.stack.slice(),
+      stack: this.stack,  // note: stack is immutable, this is a point in time copy.
       queue: []
     };
 
@@ -182,7 +183,7 @@ export class StackEnv {
 
     return this;
 
-    function _detectLongRunning () {
+    function _detectLongRunning(): Function {
       let c = 0;
       return function () {
         if (c++ > MAXRUN) {
@@ -191,7 +192,7 @@ export class StackEnv {
       };
     }
 
-    function _getBeforeEach () {
+    function _getBeforeEach(): Function {
       const showTrace = (log.level.toString() === 'trace');
       const showBar = !nonInteractive || !self.silent && (log.level.toString() === 'warn');
 
@@ -203,7 +204,7 @@ export class StackEnv {
         let qMax = self.stack.length + self.queue.length;
         let c = 0;
 
-        return function (state) {
+        return function (state: StackEnv) {
           c++;
           if (c % 1000 === 0) {
             const q = state.stack.length + state.queue.length;
@@ -223,7 +224,7 @@ export class StackEnv {
       return function () {};
     }
 
-    function _runLoop () {
+    function _runLoop (this: StackEnv): boolean {
       const self = this;
 
       tick.dispatch(this);
@@ -237,12 +238,11 @@ export class StackEnv {
       }
       return tick.dispatch(this);
 
-      function stackPush (...a) {
-        // if (USE_STRICT) a.map(Object.freeze);
-        self.stack.push(...a);
+      function stackPush (...a: StackValue[]) {
+        self.stack = freeze([...self.stack, ...a]);
       }
 
-      function dispatch (action: any) {
+      function dispatch (action: any): any {
         self.lastAction = action;
         if (typeof action === 'undefined') {
           return;
@@ -291,10 +291,10 @@ export class StackEnv {
               throw new FFlatError(`${action} is not defined`, self);
             }
             if (Action.isAction(lookup)) {
-              return self.queueFront(lookup.value);
+              return self.queueFront((lookup as Action).value);
             }
             if (is.function(lookup)) {
-              return dispatchFn(lookup, functionLength(lookup), tokenValue);
+              return dispatchFn((lookup as Function), functionLength(lookup), tokenValue);
             }
             return stackPush(cloneDeep(lookup));
           default:
@@ -302,27 +302,32 @@ export class StackEnv {
         }
       }
 
-      function dispatchFn (fn, args, name) {
+      function dispatchFn (fn: Function, args: number, name: string): void {
         if (typeof args === 'undefined') {
           args = functionLength(fn);
         }
         if (args < 1 || args <= self.stack.length) {
-          args = args > 0 ? self.stack.splice(-args) : [];
+          let argArray: StackArray = [];
+          if (args > 0) {
+            argArray = self.stack.slice(-args);
+            self.stack = splice(self.stack, -args);
+          }
 
-          const r = fn.apply(self, args);
+          const r = fn.apply(self, argArray);
           if (r instanceof Action) {
             self.queueFront(r.value);
           } else if (typeof r !== 'undefined') {
             dispatch(r);
           }
-        } else {
-          args = self.stack.splice(0);
-          args.push(new Action(name));
-          stackPush(args);
+          return;
         }
+        const argArray = self.stack.slice(0);
+        self.stack = splice(self.stack, 0);
+        argArray.push(new Action(name));
+        stackPush(argArray);
       }
 
-      function isImmediate (c) {
+      function isImmediate (c: Action): boolean {
         return (
           self.depth < 1 ||                // in immediate state
           '[]{}'.indexOf(c.value) > -1 ||   // these quotes are always immediate
@@ -335,14 +340,14 @@ export class StackEnv {
     }
   }
 
-  enqueue(s: any) {
+  enqueue(s: StackValue): StackEnv {
     if (s) {
       this.queue.push(...lexer(s));
     }
     return this;
   }
 
-  eval(s: any) {
+  eval(s: StackValue): StackEnv {
     this.enqueue(s);
     let finished = false;
     this.completed.once(err => {
@@ -358,7 +363,7 @@ export class StackEnv {
     return this;
   }
 
-  exportAction() {
+  exportAction(): StackEnv {
     if (this.parent) {
       /* const expanded = {};
       for (const key in this.dict) {
@@ -368,21 +373,24 @@ export class StackEnv {
       } */
       this.parent.defineAction(this.dict);
     }
+    return this;
   }
 
-  clear() {
-    this.stack.splice(0);
+  clear(): StackEnv {
+    this.stack = splice(this.stack, 0);
+    return this;
   }
 
-  queueFront(s: string) {
+  queueFront(s: StackValue): StackEnv {
     this.queue.unshift(...lexer(s));
+    return this;
   }
 
-  toArray () {
+  toArray(): any[] {
     return JSON.parse(JSON.stringify(this.stack));
   }
 
-  createChildPromise(a: string) {
+  createChildPromise(a: StackValue): Promise<StackValue[]> {
     return this.createChild()
       .promise(a)
       .then((f: any) => f.stack)
@@ -393,25 +401,18 @@ export class StackEnv {
       });
   }
 
-  createChild(initalState = {}) {
+  createChild(initalState = {}): StackEnv {
     return new StackEnv({
       parent: this,
       ...initalState
     });
   }
 
-  undo() {
-    if (this.prevState) {
-      const p = this.prevState;
-
-      this.queue = [];
-      this.stack = p.stack;
-      this.prevState = p.prevState;
-    }
-    return this;
+  undo(): StackEnv {
+    return Object.assign(this, this.prevState || {});
   }
 
-  onCompleted() {
+  onCompleted(): void {
     if (this.status === DISPATCHING) {
       this.status = IDLE;
     }
@@ -420,7 +421,7 @@ export class StackEnv {
     }
   }
 
-  onError(err: Error) {
+  onError(err: Error): void {
     if (this.undoable) {
       this.undo();
     }

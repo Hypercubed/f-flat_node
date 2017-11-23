@@ -1,6 +1,13 @@
 import { typed } from './typed';
 import { quoteSymbol } from '../constants';
 
+function toString(x: any) {
+  if (Array.isArray(x)) {
+    return `[ ${x.map(x => toString(x)).join(' ')} ]`;
+  }
+  return String(x);
+}
+
 export class Base {
   value: any;
   type: string;
@@ -10,18 +17,12 @@ export class Base {
   }
 
   toString(): string {
-    if (Array.isArray(this.value)) {
-      return this.value.map(x => String(x)).join(',');
-    }
-    return String(this.value);
+    return toString(this.value);
   }
 
   [Symbol.toPrimitive](hint?: string) {
     if (hint === 'string') {
-      if (Array.isArray(this.value)) {
-        return this.value.map(x => String(x)).join(',');
-      }
-      return String(this.value);
+      return toString(this.value);
     }
     if (hint === 'number') {
       return Number(this.value);
@@ -83,9 +84,6 @@ export class Action extends Base {
   constructor(value: any) {
     // todo type check?
     super(value);
-    if (typeof this.value === 'string') {
-      this.value = this.value.toLowerCase();
-    }
     Object.freeze(this);
   }
 

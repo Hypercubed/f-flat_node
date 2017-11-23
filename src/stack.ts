@@ -2,6 +2,7 @@
 
 import { USE_STRICT } from './constants';
 import { StackEnv } from './env';
+import { join } from 'path';
 
 import {
   dict,
@@ -49,7 +50,8 @@ export function createRootEnv(): StackEnv {
   env.defineAction(experimental);
   env.defineAction(node);
 
-  return env.eval('\'./ff-lib/boot.ff\' read eval');
+  const bootFile = join(__dirname, '../ff-lib/boot.ff');
+  return env.eval(`'${bootFile}' dup '__filename' sto read eval`);
 }
 
 export function Stack(s = '', root?) {

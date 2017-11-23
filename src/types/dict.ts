@@ -1,6 +1,7 @@
-import { pluck, update, remove } from '../utils';
+import { freeze, assocIn, getIn } from 'icepick';
+
+import { StackValue } from './stackValue';
 import { USE_STRICT } from '../constants';
-import * as cloneDeep from 'clone-deep';
 
 export class Dictionary {
 
@@ -12,41 +13,54 @@ export class Dictionary {
     this.store = Object.create(this.using);
   }
 
-  get(path: string) {
-    path = String(path).toLowerCase();
-    return pluck(this.store, path);
+  get(key: string): StackValue {
+    const path = String(key).toLowerCase().split('.');
+    return <StackValue>getIn(this.store, path);
   }
 
-  set(path: string, value: any) {
-    path = String(path).toLowerCase();
-    if (USE_STRICT && Object.prototype.hasOwnProperty.call(this.store, path)) { // this only check one level!
-      throw new Error(`Cannot overrite definitions in strict mode: ${path}`);
+  set(key: string, value: StackValue): void {
+    const path = String(key).toLowerCase().split('.');
+    const firstKey = <string>path.shift();
+    if (USE_STRICT && Object.prototype.hasOwnProperty.call(this.store, firstKey)) {
+      throw new Error(`Cannot overrite definitions in strict mode: ${firstKey}`);
     }
-    update(this.store, path, value);
-  }
-
-  delete(path: string) {
-    if (USE_STRICT) {
-      throw new Error('Cannot delete definitions in strict mode');
+    if (path.length === 0) {
+      if (typeof value === 'undefined') {
+        this.store[firstKey] = undefined;
+        return;
+      }
+      this.store[firstKey] = freeze(value);
+      return;
     }
-    path = String(path).toLowerCase();
-    remove(this.store, path, undefined);
+    this.store[firstKey] = assocIn(this.store[firstKey] || {}, path, value);
   }
 
-  allKeys() {
+  delete(key: string): void {
+    const path = String(key).toLowerCase().split('.');
+    const firstKey = <string>path.shift();
+    if (USE_STRICT && Object.prototype.hasOwnProperty.call(this.store, firstKey)) {
+      throw new Error(`Cannot delete definitions in strict mode: ${firstKey}`);
+    }
+    if (path.length === 0) {
+      this.store[firstKey] = undefined;
+      return;
+    }
+    this.store[firstKey] = assocIn(this.store[firstKey] || {}, path, undefined);
+  }
+
+  allKeys(): string[] {
     const keys: string[] = [];
-    for (const prop in this.store) {
-      // eslint-disable-line guard-for-in
+    for (const prop in this.store) { // eslint-disable-line guard-for-in
       keys.push(prop);
     }
     return keys;
   }
 
-  keys() {
+  keys(): string[] {
     return Object.keys(this.store);
   }
 
-  toObject() {
-    return cloneDeep(this.store);
+  toObject(): {} {
+    return {...this.store};
   }
 }

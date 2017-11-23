@@ -158,7 +158,7 @@ See other examples and guides [here](./docs/).
   * returns error objects (TBD)
 * pure functions
 * host language interface (TBD)
-* Session saving (TBD)
+* session saving (TBD)
   * undo/redo
   * state is serializable (TBD)
 * modules, namespaces, and "closures"

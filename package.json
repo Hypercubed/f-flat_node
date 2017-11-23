@@ -5,6 +5,7 @@
   "main": "index.js",
   "bin": "./bin/repl.js",
   "scripts": {
+    "build": "tsc && node ./scripts/generate-docs.js",
     "test": "tsc && ava ./test/*-spec.js",
     "lint": "tslint src/** bin/** test/**",
     "check": "npm run coverage && npm run lint",
@@ -40,6 +41,7 @@
     "ava": "^0.23.0",
     "nock": "^8.0.0",
     "nyc": "^11.3.0",
+    "parse-comments": "^0.4.3",
     "ts-node": "^3.3.0",
     "tslib": "^1.8.0",
     "tslint": "^5.8.0",

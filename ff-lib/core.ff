@@ -1,4 +1,6 @@
-// (: quote: action sto
+/**
+ * # Core defined words
+ */
 
 // Shuffle words
 slip: [ q< eval q> ] ;      // [b] [a] -> b [a]
@@ -20,7 +22,7 @@ sum: [ [ + ] reduce* ] ;
 
 map: [ * in ] ;
 foreach: [ * eval ] ;
-in: [ quote swap eval dequote ] ; // causes trouble with compiled imports
+in: [ ( swap eval ) ] ;
 
 pop: [ 0 -1 slice ] ;
 shift: [ 1 null slice ] ;
@@ -89,4 +91,23 @@ forever: [ [ eval ] keep 'forever' >> eval ] ;
 appl: [ >> in ] ;
 y: [ [ dup >> ] swap + dup >> ] ;
 
+// types
+types: [
+    'number'
+    'string'
+    'boolean'
+    'array'
+    'date'
+    'object'
+    'null'
+    'undefined'
+    'symbol'
+    'complex'
+    'action'
+    'future' ] ;
+
 null?: [ null = ] ;
+action?: [ type 'action' = ] ;
+string?: [ type 'string' = ] ;
+boolean?: [ type 'boolean' = ] ;
+array?: [ type 'array' = ] ;

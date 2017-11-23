@@ -1,20 +1,9 @@
-import { freeze } from 'icepick';
-
 import { typed } from '../types';
+import { toObject } from '../utils';
 
-const toObject = typed('object', {
-  Array: (a: any[]) => {
-    // hash-map
-    const r = {};
-    const l = a.length;
-    for (let i = 0; l - i > 1; i++) {
-      Object.assign(r, { [a[i++]]: a[i] });
-    }
-    return r;
-  },
-  any: Object
-});
-
+/**
+ * # Internal Object Words
+ */
 export default {
   /* 'group': typed('group', {  // move
     Array: a => {
@@ -26,14 +15,38 @@ export default {
       return r;
     }
   }), */
+
+  /**
+   * ## `object`
+   */
   object: toObject,
+
+  /**
+   * ## `object?`
+   */
   'object?': typed('object_', {
     'Array | null | number | Complex': a => false, // eslint-disable-line no-unused-vars
     Object: a => true, // eslint-disable-line no-unused-vars
     any: a => false // eslint-disable-line no-unused-vars
   }),
+
+  /**
+   * ## `contains?`
+   */
   'contains?': (a: {}, b: any) => b in a, // object by keys, array by values
-  keys: (o: {}) => freeze(Object.keys(o)),
-  vals: (o: {}) => freeze(Object.values(o)),
+
+  /**
+   * ## `keys`
+   */
+  keys: (o: {}) => Object.keys(o),
+
+  /**
+   * ## `vals`
+   */
+  vals: (o: {}) => Object.values(o),
+
+  /**
+   * ## `assign`
+   */
   assign: '{} [ + ] reduce'
 };

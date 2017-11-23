@@ -1,4 +1,8 @@
-core: using
+/**
+ * # Mathematics lib
+ */
+ 
+ core: using
 shuffle: using
 
 // lazy constants

@@ -350,7 +350,7 @@ test('pick', t => {
   t.deepEqual(fSync('{a: {b: 5}} a.b: @'), [5]);
   t.deepEqual(fSync('{a: 7} "A" lcase @'), [7]);
   t.deepEqual(fSync('{a: 11} b: @ 13 orelse'), [13]);
-  t.deepEqual(fSync('[ a: @ ] action pickfunc: sto { a: 17 } pickfunc'), [17]);
+  t.deepEqual(fSync('[ a: @ ] : pickfunc: sto { a: 17 } pickfunc'), [17]);
 });
 
 test('pick, short cuts', t => {
@@ -359,7 +359,7 @@ test('pick, short cuts', t => {
   t.deepEqual(fSync('{a: 3} @b'), [null]);
   t.deepEqual(fSync('{a: {b: 5}} @a.b'), [5]);
   t.deepEqual(fSync('{a: 11} @b 13 orelse'), [13]);
-  t.deepEqual(fSync('[ @a ] action pickfunc: sto { a: 17 } pickfunc'), [17]);
+  t.deepEqual(fSync('[ @a ] : pickfunc: sto { a: 17 } pickfunc'), [17]);
 });
 
 test('pick into object', t => {
@@ -410,12 +410,39 @@ test('actions', t => {
   const ev = new Action('eval').toJSON();
   const sl = new Action('slip').toJSON();
   t.deepEqual(fSync('eval:'), [ev]);
-  t.deepEqual(fSync('eval: action'), [ev]);
-  t.deepEqual(fSync('[ eval ] action'), [ev]);  // todo: This is open the array
-  t.deepEqual(fSync('[ 1 2 eval ] action'), [new Action([1, 2, ev]).toJSON()]);
+  t.deepEqual(fSync('eval: :'), [ev]);
+  t.deepEqual(fSync('[ eval ] :'), [ev]);  // todo: This is open the array
+  t.deepEqual(fSync('[ 1 2 eval ] :'), [new Action([1, 2, ev]).toJSON()]);
   t.deepEqual(fSync('slip:'), [sl]);
-  t.deepEqual(fSync('slip: action'), [sl]);
-  t.deepEqual(fSync('[ slip ] action'), [sl]);
-  t.deepEqual(fSync('[ 1 2 slip ] action'), [new Action([1, 2, sl]).toJSON()]);
+  t.deepEqual(fSync('slip: :'), [sl]);
+  t.deepEqual(fSync('[ slip ] :'), [sl]);
+  t.deepEqual(fSync('[ 1 2 slip ] :'), [new Action([1, 2, sl]).toJSON()]);
 });
 
+// immutable tests
+
+test('immutable array actions', t => {
+  t.deepEqual(fSync('[ 1 ] dup 2 <<'), [[1], [1, 2]]);
+  t.deepEqual(fSync('[ 1 ] dup 2 swap >>'), [[1], [2, 1]]);
+  t.deepEqual(fSync('[ 1 ] dup [ 2 ] +'), [[1], [1, 2]]);
+});
+
+test('immutable object actions', t => {
+  const first = 'Manfred';
+  const last = 'Von Thun';
+  t.deepEqual(fSync('{ first: "Manfred" } dup { last: "Von Thun" } +'), [{ first }, { first, last }]);
+  t.deepEqual(fSync('{ first: "Manfred" } dup { last: "Von Thun" } <<'), [{ first }, { first, last }]);
+  t.deepEqual(fSync('{ first: "Manfred" } dup { last: "Von Thun" } >>'), [{ first }, { first, last }]);
+});
+
+test('immutable sto', t => {
+  const first = 'Manfred';
+  const last = 'Von Thun';
+  t.deepEqual(fSync(`
+    { } name: sto
+    name
+    name { first: "Manfred" } <<
+    name { last: "Von Thun" } <<
+    name
+  `), [{ }, { first }, { last }, { }]);
+});

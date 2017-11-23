@@ -1,13 +1,13 @@
 import { lex } from 'literalizer';
 
-import { Action, BigNumber, typed } from '../types/index';
+import { Action, BigNumber, typed, StackValue, StackArray } from '../types/index';
 import { unescapeString } from './stringConversion';
 
 const atAction = new Action('@');
 const templateAction = new Action('template');
 const evalAction = new Action('eval');
 
-export function processNumeric(value: string): any {
+export function processNumeric(value: string): BigNumber | number {
   if (typeof value !== 'string') {
     return NaN;
   }
@@ -23,21 +23,21 @@ export function processNumeric(value: string): any {
 }
 
 /* two pass lexing using getify/literalizer */
-export const lexer: (x: any) => any[] = typed('lexer', {
-  Array: (arr: any[]) => arr,
+export const lexer: (x: StackValue) => StackArray = typed('lexer', {
+  Array: (arr: StackArray) => arr,
   string: (text: string) =>
     lex(text).reduce((a, b) => a.concat(processLexerTokens(b)), []), // flatmap
-  any: (text: any) => [text]
+  any: (text: StackValue) => [text]
 });
 
-function innerParse(val: string) {
+function innerParse(val: string): StackArray {
   return val
     .replace(/([{}()[\]])/g, ' $1 ') // add white space around braces
     .split(/[,\n\s]+/g) // split on whitespace
-    .reduce((p, c) => (c.length > 0 ? p.concat(convertLiteral(c)) : p), []);
+    .reduce((p, c) => (c.length > 0 ? p.concat(convertLiteral(c)) : p), ([] as StackArray));
 }
 
-function processLexerTokens({ type, val }) {
+function processLexerTokens({ type, val }): StackValue | undefined {
   switch (type) {
   case 0: // general
   case 4: // regex
@@ -59,7 +59,7 @@ function convertString(val: string): string {
   return val.charCodeAt(0) === 34 ? unescapeString(v) : v;
 }
 
-function convertLiteral(value: any): any {
+function convertLiteral(value: any): StackValue | undefined {
   const id = value.toLowerCase().trim();
 
   if (id.length <= 0) {
@@ -71,9 +71,9 @@ function convertLiteral(value: any): any {
   if (ch === 45 || ch === 46 || (ch >= 0x30 && ch <= 0x39)) {
     // -.0-9
     const n = processNumeric(id);
-    if (!isNaN(n)) {
+    if (!isNaN(<any>n)) {
       // number
-      return n;
+      return <any>n;
     }
   }
 

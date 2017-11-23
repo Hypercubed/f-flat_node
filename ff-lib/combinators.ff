@@ -1,3 +1,7 @@
+/**
+ * # Classic combinators
+ */
+ 
 core: using
 shuffle: using
 

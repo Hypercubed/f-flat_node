@@ -2,13 +2,25 @@
 
 _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
-- [ ] Replace decimal.js with Dec64?
+# Todo next:
+
+- [ ] More tests for stack object immutablity
+- [ ] Use URLs as module id
+- [ ] Split action object
+  - [ ] Action -> Words / Actions
+  - [ ] Seq -> Sentence
+- [ ] Test all internal words
+- [ ] Test `usr.ff` and cwd
+
+# Todo:
+
+- [ ] Replace decimal.js?
 - [ ] Pool children env?
 - [ ] Use child process/web workers for children?
-- [ ] Separate state from environment from engine?
+- [ ] Separate state from environment and engine?
 - [ ] IO Class?
 - [ ] Session saving
-- [ ] modules/name spaces/named imports
+- [x] modules/name spaces/named imports
 - [x] Undo history
   - [x] undo
   - [ ] redo?

@@ -1,5 +1,10 @@
 import { randomBytes } from 'crypto';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, readFile, existsSync } from 'fs';
+import { dirname, join } from 'path';
+import * as fetch from 'isomorphic-fetch';
+import { promisify } from 'util';
+
+const readFileAsync = promisify(readFile);
 
 import { StackEnv } from '../env';
 import { log } from '../utils';
@@ -38,39 +43,103 @@ function getURLFromFilePath(filepath: string) {
   return tmp;
 }
 
+
+/**
+ * # Internal Node Words
+ */
 export default {
+
+  /**
+   * ## `os`
+   */
   os: () => process.platform,
+
+
+  /**
+   * ## `cwd`
+   */
+  cwd: () => process.cwd(),
+
+  /**
+   * ## `println`
+   */
   println: (a, ...b) => {
     stdout.clearLine();
     stdout.cursorTo(0);
     console.log(a, ...b);
   },
+
+  /**
+   * ## `print`
+   */
   print: (a, ...b) => {
     stdout.clearLine();
     stdout.cursorTo(0);
     stdout.write(String([a, ...b]));
   },
+
+  /**
+   * ## `?`
+   */
   '?': (a, ...b) => {
     stdout.clearLine();
     stdout.cursorTo(0);
     console.info(a, ...b);
   },
+
+  /**
+   * ## `bye`
+   */
   bye: () => {
     process.exit(0);
   },
+
+  /**
+   * ## `rand-u32`
+   */
   'rand-u32': function randU32() {
     return randomBytes(4).readUInt32BE(0, true);
   },
-  env: () => process.env,
-  cls: '"\u001B[2J\u001B[0;0f" println',
 
+  /**
+   * ## `env`
+   */
+  env: () => process.env,
+
+  /**
+   * ## `dirname`
+   */
+  dirname: (name: string) => dirname(name),
+
+  /**
+   * ## `path-join`
+   */
+  'path-join': (args: string[]) => join(...args),
+
+  /**
+   * ## `resolve`
+   */
   resolve: (name: string) => resolve(name).href,
 
-  read: (name: string): string => {
-    name = resolve(name);
-    return readFileSync(name, 'utf8');
+  /**
+   * # fs.existsSync
+   */
+  exists: (name: string) => existsSync(name),
+
+  /**
+   * ## `read`
+   */
+  read(name: string): string {
+    const url = resolve(name);
+    if (url.protocol === 'file:') {
+      return readFileSync(url, 'utf8');
+    }
+    return fetch(url.href).then(res => res.text());
   },
 
+  /**
+   * ## `sesssave`
+   */
   sesssave(this: StackEnv) {
     log.debug('saving session');
     writeFileSync(
