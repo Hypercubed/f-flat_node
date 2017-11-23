@@ -134,8 +134,8 @@ export default {
    */
   ['await']: function(this: StackEnv, a: StackValue): Promise<any> {
     // rollup complains on await
-    if (Future.isFuture(a)) {
-      return (a as Future).promise;
+    if (a instanceof Future) {
+      return a.promise;
     }
     return this.createChildPromise(a);
   },

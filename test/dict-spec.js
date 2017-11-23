@@ -1,22 +1,24 @@
 import test from 'ava';
-import { F, fSync } from './setup';
+import { F, fSync, Action } from './setup';
 
 test('should sto and rcl', t => {
-  const action = [1, 2, { type: '@@Action', value: '+' } ];
+  const plus = new Action('+').toJSON();
+  const action = new Action([1, 2, plus ]).toJSON();
   t.deepEqual(fSync('1 2 "x" sto 3 x x'), [1, 3, 2, 2], 'should sto a value');
   t.deepEqual(fSync('1 2 x: sto 3 x x'), [1, 3, 2, 2], 'should sto a value');
-  t.deepEqual(fSync('[ 1 2 + ] x: sto 3 x: rcl x: rcl'), [3, action, action], 'should sto an array');
-  t.deepEqual(fSync('[ 1 2 + ] : x: sto 3 x: rcl x: rcl'), [3, { type: '@@Action', value: action }, { type: '@@Action', value: action }], 'should sto an action');
+  t.deepEqual(fSync('[ 1 2 + ] x: sto 3 x: rcl x: rcl'), [3, [1, 2, plus ], [1, 2, plus ]], 'should sto an array');
+  t.deepEqual(fSync('[ 1 2 + ] : x: sto 3 x: rcl x: rcl'), [3, action, action], 'should sto an action');
   t.deepEqual(fSync('[ 1 2 + ] : x: sto 3 x x'), [3, 3, 3], 'should execute actions');
 });
 
 test('should sto and rcl nested props', t => {
-  const action = [1, 2, { type: '@@Action', value: '+' } ];
+  const plus = new Action('+').toJSON();
+  const action = new Action([1, 2, plus ]).toJSON();
   t.deepEqual(fSync('{ x: 123 } test: sto test'), [{ x: 123 }], 'should sto an object');
   t.deepEqual(fSync('{ x: 123 } test: sto test.x: rcl'), [123], 'should rcl a value in a stored object');
   t.deepEqual(fSync('123 test.x: sto test.x: rcl'), [123], 'should create objects');
   t.deepEqual(fSync('456 test.x.y: sto test.x: rcl'), [{y: 456}], 'should create objects');
-  t.deepEqual(fSync('{ x: [ 1 2 + ] : } test: sto test.x: rcl'), [{ type: '@@Action', value: action }], 'should sto and rcl an action in a stored object');
+  t.deepEqual(fSync('{ x: [ 1 2 + ] : } test: sto test.x: rcl'), [action], 'should sto and rcl an action in a stored object');
 });
 
 test('should sto and rcl nested properties in a fork', t => {
@@ -84,7 +86,7 @@ test('should return null on undefined', t => { // maybe should be undefined?
 });
 
 test('create actions', t => {
-  const evalAction = { type: '@@Action', value: 'eval' };
+  const evalAction = new Action('eval').toJSON();
 
   t.deepEqual(fSync('"eval" :'), [evalAction]);
   t.deepEqual(fSync('eval:'), [evalAction]);
@@ -92,7 +94,7 @@ test('create actions', t => {
 });
 
 test('should expand internal actions', t => {
-  const evalAction = { type: '@@Action', value: 'eval' };
+  const evalAction = new Action('eval').toJSON();
 
   t.deepEqual(fSync('eval: expand'), [evalAction]);
   t.deepEqual(fSync('[ eval ] : expand'), [evalAction]);
@@ -103,11 +105,14 @@ test('should expand internal actions', t => {
 });
 
 test('should expand defined actions', t => {
-  const slipAction = { type: '@@Action', value: [
-    { type: '@@Action', value: 'q<' },
-    { type: '@@Action', value: 'eval' },
-    { type: '@@Action', value: 'q>' }
-  ]};
+  const qi = new Action('q<').toJSON();
+  const evalAction = new Action('eval').toJSON();
+  const qo = new Action('q>').toJSON();
+  const slipAction = new Action([
+    qi,
+    evalAction,
+    qo
+  ]).toJSON();
 
   t.deepEqual(fSync('slip: expand'), [slipAction]);
   t.deepEqual(fSync('[ slip ] : expand'), [slipAction]);

@@ -28,55 +28,6 @@ export const arrayMul = (lhs: any[], rhs: any) => {
   return acc;
 };
 
-/* export const listMul = (lhs, rhs) => {
-  return lhs.flatMap(x => [x, ...rhs]);
-}; */
-
-/* function baseGet(coll: Object, path: string[]) {
-  return (path || []).reduce((curr: any, key: string) => {
-    if (!curr) return;
-    // curr = Action.isAction(curr) ? curr.value : curr;
-    return curr[key];
-  }, coll);
-} */
-
-/* export const pluck = (context: Object, path: string) => {
-  return getIn(context, path.split('.'));
-}; */
-
-/* export const update = (coll: Object, path: string, value: any, overwrite = true) => { // watch immutability
-  const pathArr = path.split('.');
-  if (pathArr.length === 1) {
-    return coll[path] = value;
-  }
-  const firstKey = <string>pathArr.shift();
-  coll[firstKey] = assocIn(coll[firstKey], pathArr, value);
-
-  /* pathArr.reduce((curr, key, currentIndex) => {
-    if (currentIndex < pathArr.length - 1) {
-      return curr[key];
-    }
-    curr[key] = value;
-  }, coll); /
-};
-
-export const remove = (context: Object, path: string, value: any) => { // watch immutability
-  const pathArr = path.split('.');
-  if (pathArr.length === 1) {
-    return context[path] = value;
-  }
-  pathArr.reduce((curr, key, currentIndex) => {
-    if (currentIndex < pathArr.length - 1) {
-      return curr[key];
-    }
-    try {
-      delete curr[key];
-    } catch (e) {
-      curr[key] = undefined;
-    }
-  }, context);
-}; */
-
 const __eql = typed('deepEquals', {
   'Array, Array': (a: any[], b: any[]): boolean => {
     if (a.length !== b.length) {

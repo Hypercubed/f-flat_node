@@ -66,8 +66,8 @@ test('should test gt', t => {
 
 test('should eval strings', t => {
   const f = new F();
-  t.deepEqual(f.eval('"1 2 +"').toArray(), ['1 2 +']);
-  t.deepEqual(f.eval('eval').toArray(), [3]);
+  t.deepEqual(f.eval('"1 2 +"').toJSON(), ['1 2 +']);
+  t.deepEqual(f.eval('eval').toJSON(), [3]);
 });
 
 test('should @', t => {

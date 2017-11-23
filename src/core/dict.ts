@@ -47,7 +47,7 @@ export const dict = {
     if (USE_STRICT && is.function_(r)) { // carefull pushing functions to stack, watch immutability
       return new Action(r);
     }
-    return Action.isAction(r) ? new Just(r) : r;
+    return r instanceof Action ? new Just(r) : r;
   },
 
   /**

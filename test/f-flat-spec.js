@@ -1,6 +1,8 @@
 import test from 'ava';
 import { F, fSync, Action } from './setup';
 
+const future = { '@@Future': { '$undefined':true } };
+
 test('setup', t => {
   t.not(new F().eval, undefined);
   t.not(new F().promise, undefined);
@@ -11,9 +13,9 @@ test('setup', t => {
 
 test('should be chainable', t => {
   const f = new F('1').eval('2 3');
-  t.deepEqual(f.toArray(), [1, 2, 3]);
+  t.deepEqual(f.toJSON(), [1, 2, 3]);
   f.eval('4 +');
-  t.deepEqual(f.toArray(), [1, 2, 7]);
+  t.deepEqual(f.toJSON(), [1, 2, 7]);
 });
 
 test('should push numeric values', t => {
@@ -67,7 +69,7 @@ test('should dup', t => {
 
 test('should dup clone', t => {
   const f = new F().eval('[ 1 2 3 ] dup');
-  t.deepEqual(f.toArray(), [[1, 2, 3], [1, 2, 3]]);
+  t.deepEqual(f.toJSON(), [[1, 2, 3], [1, 2, 3]]);
   t.is(f.stack[0], f.stack[1]);
 });
 
@@ -130,26 +132,26 @@ test('map', t => {
 
 test('should undo on error', t => {
   const f = new F('1 2').eval();
-  t.deepEqual(f.toArray(), [1, 2]);
+  t.deepEqual(f.toJSON(), [1, 2]);
 
   t.throws(() => f.eval('+ whatwhat'));
-  t.deepEqual(f.toArray(), [1, 2]);
+  t.deepEqual(f.toJSON(), [1, 2]);
 });
 
 test('should undo', t => {
   const f = new F('1').eval();
 
   f.eval('2');
-  t.deepEqual(f.toArray(), [1, 2]);
+  t.deepEqual(f.toJSON(), [1, 2]);
 
   f.eval('+');
-  t.deepEqual(f.toArray(), [3]);
+  t.deepEqual(f.toJSON(), [3]);
 
   f.eval('undo');
-  t.deepEqual(f.toArray(), [1, 2]);
+  t.deepEqual(f.toJSON(), [1, 2]);
 
   f.eval('undo');
-  t.deepEqual(f.toArray(), [1]);
+  t.deepEqual(f.toJSON(), [1]);
 });
 
 test('apply', t => {
@@ -204,21 +206,25 @@ test('is?', t => {
 });
 
 test('others2', t => {
+  const def = new Action('def').toJSON();
+  const abc = new Action('abc').toJSON();
+  const plus = new Action('+').toJSON();
+
   t.deepEqual(fSync('"abc" "b" indexof'), [1], 'indexof');
   t.deepEqual(fSync('"abc" "def" swap'), ['def', 'abc'], 'swap strings');
   t.deepEqual(
     fSync('abc: def: swap'),
-    [{ type: '@@Action', value: 'def' }, { type: '@@Action', value: 'abc' }],
+    [def, abc],
     'swap atoms'
   );
   t.deepEqual(
     fSync('abc: dup'),
-    [{ type: '@@Action', value: 'abc' }, { type: '@@Action', value: 'abc' }],
+    [abc, abc],
     'dup atoms'
   );
   t.deepEqual(
     fSync('[2 1 +] unstack'),
-    [2, 1, { type: '@@Action', value: '+' }],
+    [2, 1, plus],
     'unstack should not eval'
   );
 });
@@ -304,7 +310,7 @@ test('errors on async child in eval', t => {
 
 test('can spawn a future in sync', t => {
   t.deepEqual(fSync('[ 1 2 + 100 sleep ] spawn 3 4 +'), [
-    { type: '@@Future' },
+    future,
     7
   ]);
 });
@@ -320,12 +326,12 @@ test('can spawn a future in sync', t => {
 test('should spawn, returning a future', async t => {
   const f = new F();
   f.eval('[ 100 sleep 10 ! ] spawn 4 5 +');
-  t.deepEqual(f.toArray(), [{ type: '@@Future' }, 9]);
+  t.deepEqual(f.toJSON(), [future, 9]);
 
   // await delay(2000);
 
-  // t.deepEqual(f.toArray(), [{type: '@@Future', value: [3628800]}, 9]);
-  // t.deepEqual(f.eval('await slip').toArray(), [3628800, 9]);
+  // t.deepEqual(f.toJSON(), [{type: '@@Future', value: [3628800]}, 9]);
+  // t.deepEqual(f.eval('await slip').toJSON(), [3628800, 9]);
 });
 
 test('regular expressions, test', t => {

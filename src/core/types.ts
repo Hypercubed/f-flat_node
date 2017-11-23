@@ -3,7 +3,7 @@ import { typed, Action, Just, Seq, BigNumber, Complex } from '../types';
 const action = typed('action', {  // todo: this should be part of the Action constructor
   Action: x => x,
   Array: x => {
-    if (x.length === 1 && Action.isAction(x[0])) {
+    if (x.length === 1 && x[0] instanceof Action) {
       return x[0];
     }
     return new Action(x);

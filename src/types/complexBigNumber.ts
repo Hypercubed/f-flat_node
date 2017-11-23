@@ -37,9 +37,10 @@ export class Complex {
 
   toJSON(): {} {
     return {
-      // type: Complex.type,
-      re: this.re.valueOf(), // fix this, should store full precision
-      im: this.im.valueOf()
+      '@@Complex': {
+        re: this.re.toJSON(), // fix this, should store full precision
+        im: this.im.toJSON()
+      }
     };
   }
 
@@ -264,12 +265,14 @@ export class Complex {
   static of(re, im) {
     return new Complex(re, im);
   }
+
+  static I = new Complex(0, 1);
 }
 
 // Complex.type = '@@complex';
 // Complex.of = (re, im) => new Complex(re, im);
 
-export const I = new Complex(0, 1);
+export const I = Complex.I;
 
 typed.addType({
   name: 'Complex',

@@ -72,14 +72,14 @@ test('should test equality', t => {
 
 test('should eval lists', t => {
   const f = new F();
-  t.deepEqual(f.eval('( 1 2 )').toArray(), [[1, 2]]);
-  t.deepEqual(f.eval('eval').toArray(), [1, 2]);
+  t.deepEqual(f.eval('( 1 2 )').toJSON(), [[1, 2]]);
+  t.deepEqual(f.eval('eval').toJSON(), [1, 2]);
 });
 
 test('should zip lists', t => {
   const f = new F();
-  t.deepEqual(f.eval('( 1 2 3 ) ( 4 )').toArray(), [[1, 2, 3], [4]]);
-  t.deepEqual(f.eval('*').toArray(), [[1, 4, 2, 4, 3, 4]]);
+  t.deepEqual(f.eval('( 1 2 3 ) ( 4 )').toJSON(), [[1, 2, 3], [4]]);
+  t.deepEqual(f.eval('*').toJSON(), [[1, 4, 2, 4, 3, 4]]);
 });
 
 test('should join', t => {

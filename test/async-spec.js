@@ -1,7 +1,9 @@
 import test from 'ava';
 import nock from 'nock';
 
-import { F, fSync, fAsync } from './setup';
+import { F, fSync, fAsync, Action } from './setup';
+
+const future = { '@@Future': { '$undefined':true } };
 
 const good = {
   id: 123456,
@@ -13,9 +15,11 @@ nock('https://api.github.com/')
   .reply(200, good);
 
 test('yield', t => {
+  const yieldAction = new Action('yield').toJSON();
+  const plus = new Action('+').toJSON();
   t.deepEqual(
     fSync('[1 2 yield 4 5 yield 6 7] fork'),
-    [1, 2, [4, 5, { type: '@@Action', value: 'yield' }, 6, 7]],
+    [1, 2, [4, 5, yieldAction, 6, 7]],
     'yield and fork'
   );
   t.deepEqual(
@@ -25,7 +29,7 @@ test('yield', t => {
   );
   t.deepEqual(
     fSync('[1 2 + yield 4 5 + ] fork'),
-    [3, [4, 5, { type: '@@Action', value: '+' }]],
+    [3, [4, 5, plus]],
     'yield and fork'
   );
   t.deepEqual(fSync('[1 2 + yield 4 5 + ] fork drop'), [3], 'yield and next');
@@ -47,11 +51,11 @@ test('yield', t => {
 /* test.cb('eval should yield on async with callback', t => {
   t.plan(2);
   var f = F('10 !').eval('100 sleep 4 5 + +', done);
-  t.deepEqual(f.toArray(), [3628800]);
+  t.deepEqual(f.toJSON(), [3628800]);
 
   function done (err, f) {
     if (err) throw err;
-    t.deepEqual(f.toArray(), [3628809]);
+    t.deepEqual(f.toJSON(), [3628809]);
     t.end();
   }
 });
@@ -59,30 +63,30 @@ test('yield', t => {
 test.cb('constructor should yield on async with callback', t => {
   t.plan(2);
   var f = F('10 ! 100 sleep 4 5 + +', done);
-  t.deepEqual(f.toArray(), [3628800]);
+  t.deepEqual(f.toJSON(), [3628800]);
 
   function done (err, f) {
     if (err) throw err;
-    t.deepEqual(f.toArray(), [3628809]);
+    t.deepEqual(f.toJSON(), [3628809]);
     t.end();
   }
 }); */
 
 test('should delay', async t => {
   const f = await new F().promise('[ 10 ! ] 100 delay 4 5 + +');
-  t.deepEqual(f.toArray(), [3628809]);
+  t.deepEqual(f.toJSON(), [3628809]);
 });
 
 /* test('should fork', async t => {
   const f = await new F().promise('[ 100 sleep 10 ! ] fork 4 5 +');
-  t.deepEqual(f.toArray(), [[], 9]);
+  t.deepEqual(f.toJSON(), [[], 9]);
 
   function done (err, f) {
     if (err) throw err;
-    t.deepEqual(f.toArray(), [[], 9]);
+    t.deepEqual(f.toJSON(), [[], 9]);
 
     setTimeout(function () {
-      t.deepEqual(f.toArray(), [[ 3628800 ], 9]);
+      t.deepEqual(f.toJSON(), [[ 3628800 ], 9]);
       t.end();
     }, 200);
   }
@@ -90,29 +94,29 @@ test('should delay', async t => {
 
 test('should await', async t => {
   const f = await new F().promise('1 [ 100 sleep 10 ! ] await 4 5 +');
-  t.deepEqual(f.toArray(), [1, [3628800], 9]);
+  t.deepEqual(f.toJSON(), [1, [3628800], 9]);
 });
 
 test('all', async t => {
   const f = await new F().promise('[ 100 sleep 10 ! ] dup pair all');
-  t.deepEqual(f.toArray(), [[[3628800], [3628800]]]);
+  t.deepEqual(f.toJSON(), [[[3628800], [3628800]]]);
 });
 
 test('should generate promise 1', t => {
   return new F().promise('100 sleep 10 !').then(f => {
-    t.deepEqual(f.toArray(), [3628800]);
+    t.deepEqual(f.toJSON(), [3628800]);
   });
 });
 
 /* test('should generate promise 2', t => {
   return F('100 sleep 10 !').promise().then((f) => {
-    t.deepEqual(f.toArray(), [3628800]);
+    t.deepEqual(f.toJSON(), [3628800]);
   });
 }); */
 
 test('should resolve promise even on sync', async t => {
   return new F().promise('10 !').then(f => {
-    t.deepEqual(f.toArray(), [3628800]);
+    t.deepEqual(f.toJSON(), [3628800]);
   });
 });
 
@@ -152,34 +156,34 @@ test('multiple async in children', async t => {
 test('should await on multiple promises', async t => {
   const f = new F();
   await f.promise('100 sleep 10 !');
-  t.deepEqual(f.toArray(), [3628800]);
+  t.deepEqual(f.toJSON(), [3628800]);
   await f.promise('100 sleep 9 +');
-  t.deepEqual(f.toArray(), [3628809]);
+  t.deepEqual(f.toJSON(), [3628809]);
 });
 
 test('multiple promises', async t => {
   const f = new F();
   f.promise('1000 sleep 10 !');
-  t.deepEqual(f.toArray(), []);
+  t.deepEqual(f.toJSON(), []);
   f.promise('1000 sleep 9 +');
-  t.deepEqual(f.toArray(), []);
+  t.deepEqual(f.toJSON(), []);
   await f.promise();
-  t.deepEqual(f.toArray(), [3628809]);
+  t.deepEqual(f.toJSON(), [3628809]);
 });
 
 test('multiple promises correct order', async t => {
   // todo
   const f = new F();
   f.next('1000 sleep 10 !').then(f => {
-    t.deepEqual(f.toArray(), [3628800]);
+    t.deepEqual(f.toJSON(), [3628800]);
   });
-  t.deepEqual(f.toArray(), []);
+  t.deepEqual(f.toJSON(), []);
   f.next('10 sleep 9 +').then(f => {
-    t.deepEqual(f.toArray(), [3628809]);
+    t.deepEqual(f.toJSON(), [3628809]);
   });
-  t.deepEqual(f.toArray(), []);
+  t.deepEqual(f.toJSON(), []);
   await f.next();
-  t.deepEqual(f.toArray(), [3628809]);
+  t.deepEqual(f.toJSON(), [3628809]);
 });
 
 test('errors on unknown command, async', async t => {
@@ -197,10 +201,10 @@ test('errors on unknown command in child, async 2', async t => {
 test('should await on a future', async t => {
   const f = new F();
   f.eval('[ 100 sleep 10 ! ] spawn 4 5 +');
-  t.deepEqual(f.toArray(), [{ type: '@@Future' }, 9]);
+  t.deepEqual(f.toJSON(), [future, 9]);
 
   await f.promise('[ await ] dip');
 
-  t.deepEqual(f.toArray(), [[3628800], 9]);
-  t.deepEqual(f.eval('slip').toArray(), [3628800, 9]);
+  t.deepEqual(f.toJSON(), [[3628800], 9]);
+  t.deepEqual(f.eval('slip').toJSON(), [3628800, 9]);
 });
