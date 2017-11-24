@@ -9,6 +9,7 @@
 * [Data Stuctures](data-stuctures.md)
 * [Expressions / Evaluation](expressions-evaluation.md)
 * [Compared to JavaScript](compare.md)
+* [Compared to JSON](compared-to-json.md)
 * Internal Words
   * [Core](core.md)
   * [Base](base.md)
@@ -19,6 +20,7 @@
   * [Types](types.md)
   * [Experimental](experimental.md)
 * [Examples](examples.md)
-  * [Fridge, The Game](fridge-the-game.md)
-  * [Concurrency](concurrency.md)
+  * [Project Euler Solutions](examples/euler.md)
+  * [Fridge, The Game](examples/fridge-the-game.md)
+  * [Site Wars](examples/concurrency.md)
 
