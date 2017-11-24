@@ -6,11 +6,11 @@ Please see Jon Purdy's [Why Concatenative Programming Matters](http://evincarofa
 
 ## Why F♭ is interesting
 
-### Write once, read many dictionary
+### Hierarchical Write once, read many dictionary
 
 ### Immutability
 
-All items on the stack and stored in the dictioary are immutable using [structural sharing](https://medium.com/@dtinth/immutable-js-persistent-data-structures-and-structural-sharing-6d163fbd73d2) at the object and array level.
+All items on the stack or in the dictionary are immutable using [structural sharing](https://medium.com/@dtinth/immutable-js-persistent-data-structures-and-structural-sharing-6d163fbd73d2) at the object and array level.  This avoids unwanted side effects, makes object stores memory efficient, and enables easy back tracings.
 
 ### Arbitrary-precision decimal and complex number types
 

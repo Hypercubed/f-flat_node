@@ -6,9 +6,10 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 - [ ] More tests for stack object immutablity
 - [ ] Use URLs as module id
-- [ ] Split action object
-  - [ ] Action -> Words / Actions
-  - [ ] Seq -> Sentence
+- [ ] Better types
+  - [ ] Just -> ReturnValue
+  - [ ] Seq -> ReturnSequence
+  - [ ] Action -> Words / Sentence
 - [ ] Test all internal words
 - [ ] Test `usr.ff` and cwd
 
