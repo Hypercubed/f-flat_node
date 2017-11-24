@@ -278,6 +278,7 @@ const div = typed('div', {
  * ## `>>`
  * right shift
  *
+ * ```
  * ( x y -> z) 3 ]
  * ```
  */
