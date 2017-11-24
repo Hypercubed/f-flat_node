@@ -2,7 +2,7 @@
 
 ## Get F♭
 
-F♭ is an experiment. Currently, it can be only be used by cloning the github repo.
+F♭ code can be found at https://github.com/Hypercubed/f-flat_node.  Currently, it can be only be used by cloning the github repo.
 
 ```bash
 git clone https://github.com/Hypercubed/f-flat_node.git
