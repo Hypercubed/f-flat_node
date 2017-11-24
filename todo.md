@@ -32,3 +32,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Dates
   - [ ] More date base operations
   - [ ] Add Duration type... example: https://github.com/moment/moment/blob/develop/src/lib/duration/constructor.js
+- Improved `@`
+  - [ ] [ ... ] [ x y z ] @ => [ ... ][x][y][z]
+  - [ ] { ... } 'x.y.z' @ => [ ... ][x][y][z]
