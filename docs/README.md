@@ -1,5 +1,16 @@
 # Introduction
 
+## Get F♭
+
+F♭ is an experiment. Currently, it can be only be used by cloning the github repo.
+
+```bash
+git clone https://github.com/Hypercubed/f-flat_node.git
+cd f-flat_node
+npm install
+npm start
+```
+
 ## Guiding principles
 
 - interactive first
