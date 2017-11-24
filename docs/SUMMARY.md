@@ -27,5 +27,4 @@
   * [Objects](api/objects.md)
   * [Types](api/types.md)
   * [Experimental](api/experimental.md)
-* [Examples](examples/README.md)
 
