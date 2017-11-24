@@ -30,4 +30,5 @@
 * [Examples](examples.md)
 * [Site War](site-war.md)
 * [Project Euler Solutions](project-euler-solutions.md)
+* [The Fridge Game](the-fridge-game.md)
 
