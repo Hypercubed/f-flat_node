@@ -1,10 +1,10 @@
-## Hello world
+# Hello world
 
 JavaScript  | F-Flat
 ---|---
 `console.log("Hello World!")` | `"Hello World!" println`
 
-## Literals
+# Literals
 
 JavaScript  | F-Flat
 ---|---
@@ -18,21 +18,21 @@ JavaScript  | F-Flat
 `true` | `true`
 `[1,2,3]` | `[1 2 3]` (commas are options)
 
-## Arrays / Lists
+# Arrays / Lists
 
 JavaScript  | F-Flat
 ---|---
 `[3,4]` | `[ 3 4 ]`
 `[3,4][0]` | `[ 3 4 ] 0 @`
 
-## Objects / Records
+# Objects / Records
 
 JavaScript  | F-Flat
 ---|---
 `{ x: 3, y: 4 }` | `{ x: 3, y: 4 }` (commas are options)
 `({ x: 3, y: 4 }).x` | `{ x: 3, y: 4 } x: @`
 
-## Functions
+# Functions
 
 JavaScript  | F-Flat
 ---|---
@@ -45,13 +45,13 @@ JavaScript  | F-Flat
 `[1,2,3].map(Math.sqrt)` | `[1 2 3] sqrt: map`
 `[{ x: 3, y: 4 }, ... ].map(p => p.x)` | `[{ x: 3 y: 4 }  ... ] [ @x ] map`
 
-## Control Flow
+# Control Flow
 
 JavaScript  | F-Flat
 ---|---
 `3 > 2 ? '😺' : '🐶'` | `3 2 > '😺' '🐶' choose`
 
-## Strings
+# Strings
 
 JavaScript  | F-Flat
 ---|---
@@ -59,7 +59,7 @@ JavaScript  | F-Flat
 `'abc'.length` | `'abc' length`
 `'abc' + 123` | `'abc' 123 +`
 
-## Others
+# Others
 
 JavaScript  | F-Flat
 ---|---

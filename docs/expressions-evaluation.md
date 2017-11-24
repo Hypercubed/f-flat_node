@@ -1,4 +1,4 @@
-## Expressions / Evaluation
+# Expressions / Evaluation
 
 Expressions use postfix operators, unlike many other languages. Expressions are evaluated immediately unless they follow an unpair in square brackets (`[`) or the word is has the colon suffix.. In general all words should follow the Object(s)-Verb pattern.
 
