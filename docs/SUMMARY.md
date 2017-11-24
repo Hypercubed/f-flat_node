@@ -28,7 +28,4 @@
   * [Types](api/types.md)
   * [Experimental](api/experimental.md)
 * [Examples](examples/README.md)
-  * [Project Euler Solutions](examples/euler.md)
-  * [Fridge, The Game](examples/fridge-the-game.md)
-  * [Site Wars](examples/concurrency.md)
 
