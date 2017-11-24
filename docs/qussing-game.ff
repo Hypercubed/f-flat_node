@@ -1,5 +1,0 @@
-"Guess the number!" println
-"Please input your guess." println
-prompt
-
-"You guessed: " swap + println

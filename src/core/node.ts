@@ -122,7 +122,7 @@ export default {
   resolve: (name: string) => resolve(name).href,
 
   /**
-   * # fs.existsSync
+   * ## `exists`
    */
   exists: (name: string) => existsSync(name),
 

@@ -422,7 +422,7 @@ f♭> { first: 'Manfred' } { last: 'von Thun' } <<
 [ { first: 'Manfred' last: 'von Thun' } ]
 ```
 
-- Light shift
+- left shift
 
 ```
 f♭> 64 2 <<
@@ -714,7 +714,7 @@ returns the local dictionary
 
 ## `resolve`
 
-# fs.existsSync
+## `exists`
 
 ## `read`
 

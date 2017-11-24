@@ -356,7 +356,7 @@ const pushFn = typed('push', {
   'Object, Object': (lhs, rhs) => merge(lhs, rhs),
 
   /**
-   * - Light shift
+   * - left shift
    *
    * ```
    * f♭> 64 2 <<

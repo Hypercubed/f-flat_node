@@ -4,6 +4,8 @@
 
 Please see Jon Purdy's [Why Concatenative Programming Matters](http://evincarofautumn.blogspot.com/2012/02/why-concatenative-programming-matters.html).
 
+## Why stack-based
+
 ## Why F♭ is interesting
 
 ### Hierarchical Write once, read many dictionary
