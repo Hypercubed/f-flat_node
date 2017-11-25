@@ -13,6 +13,10 @@ export function fSync(a) {
   return new Stack().eval(a).toJSON();
 }
 
+export function fSyncString(a) {
+  return new Stack().eval(a).stack.toString();
+}
+
 export async function fAsync(a) {
   const f = await new Stack().promise(a);
   return f.toJSON();

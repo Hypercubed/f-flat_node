@@ -29,10 +29,12 @@ export const zero = new BigNumber(0);
 export const one = new BigNumber(1);
 export const e = Decimal.exp(1);
 
-BigNumber.prototype.empty = () => zero;
+const P = BigNumber.prototype;
 
-const _valueOf = BigNumber.prototype.valueOf;
-BigNumber.prototype.valueOf = BigNumber.prototype.toJSON = function() {
+P.empty = () => zero;
+
+const _valueOf = P.valueOf;
+P.valueOf = P.toJSON = function() {
   return Number(_valueOf.apply(this));
 };
 

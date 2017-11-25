@@ -17,7 +17,7 @@ const md = files.map(file => {
   const str = read(file);
   const comments = extract(str);
   const md = process(comments);
-  write(md, file.replace('ts', 'md'));
+  write(md, file.replace('.ts', '.md'));
 }).join('\n');
 
 function process(comments) {

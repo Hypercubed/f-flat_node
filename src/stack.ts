@@ -50,7 +50,7 @@ export function createRootEnv(): StackEnv {
   env.defineAction(experimental);
   env.defineAction(node);
 
-  const bootFile = join(__dirname, '../ff-lib/boot.ff');
+  const bootFile = join(__dirname, '../src/ff-lib/boot.ff');
   return env.eval(`'${bootFile}' dup '__filename' sto read eval`);
 }
 

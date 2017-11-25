@@ -2,7 +2,7 @@ import { assign, merge, unshift, push, slice, getIn } from 'icepick';
 import memoize from 'memoizee';
 
 import { deepEquals, arrayRepeat, arrayMul } from '../utils';
-import { Seq, Action, typed, I, StackValue, Future, Complex, BigNumber } from '../types';
+import { Seq, Action, typed, I, StackValue, Future, Complex, BigNumber, complexInfinity } from '../types';
 import { StackEnv } from '../env';
 
 /**
@@ -159,9 +159,7 @@ const mul = typed('mul', {
    *```
    */
   'Array, Array | Action | Function': arrayMul,
-  'string, Array | Action | Function': (lhs, rhs) =>
-    arrayMul(lhs.split(''), rhs),
-
+  'string, Array | Action | Function': (lhs, rhs) => arrayMul(lhs.split(''), rhs),
   'Future, any': (f, rhs) => f.map(lhs => mul(lhs, rhs)),
 
   /**
@@ -203,9 +201,9 @@ const mul = typed('mul', {
    * [ 6 ]
    * ```
    */
-  'Complex, Complex': (lhs, rhs) => lhs.times(rhs).normalize(),
-  'BigNumber, BigNumber | number': (lhs, rhs) => lhs.times(rhs),
-  'number | null, number | null': (lhs, rhs) => lhs * rhs
+  'Complex, Complex': (lhs: Complex, rhs: Complex) => lhs.times(rhs).normalize(),
+  'BigNumber, BigNumber | number': (lhs: BigNumber, rhs: BigNumber) => lhs.times(rhs),
+  'number | null, number | null': (lhs: number, rhs: number) => lhs * rhs
 });
 
 /**
@@ -270,7 +268,10 @@ const div = typed('div', {
    * ```
    */
   'Complex, Complex': (lhs, rhs) => lhs.div(rhs),
-  'BigNumber, BigNumber | number': (lhs, rhs) => lhs.div(rhs),
+  'BigNumber, BigNumber | number': (lhs, rhs) => {
+    if (+rhs === 0 && +lhs !== 0) return complexInfinity;
+    return lhs.div(rhs);
+  },
   'number | null, number | null': (lhs, rhs) => lhs / rhs
 });
 

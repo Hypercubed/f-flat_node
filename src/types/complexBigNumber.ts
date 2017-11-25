@@ -64,6 +64,46 @@ export class Complex {
     return this.dotProduct(this).sqrt();
   }
 
+  sin() {
+    const halfI = new Complex(0, 1 / 2);
+    const eix = this.times(I).exp();
+    const enix = this.times(I).times(new Complex(-1, 0)).exp();
+    return halfI.times(enix).minus(halfI.times(eix));
+  }
+
+  cos() {
+    const half = new Complex(1 / 2, 0);
+    const enix = this.times(I).times(new Complex(-1, 0)).exp();
+    const eix = this.times(I).exp();
+    return half.times(enix).plus(half.times(eix));
+  }
+
+  tan() {
+    const half = new Complex(1 / 2, 0);
+    const enix = this.times(I).times(new Complex(-1, 0)).exp();
+    const eix = this.times(I).exp();
+    return this.sin().div(this.cos());
+  }
+
+  asin() {
+    const one = new Complex(1, 0);
+    const log = one.minus(this.times(this)).sqrt().plus(this.times(I)).ln();
+    return I.times(one.neg()).times(log);
+  }
+
+  acos() {
+    const one = new Complex(1, 0);
+    const log = one.minus(this.times(this)).sqrt().plus(this.times(I)).ln();
+    return I.times(log).plus(new Complex(Math.PI / 2, 0));
+  }
+
+  atan() {
+    const halfI = new Complex(0, 1 / 2);
+    const ipz = I.plus(this);
+    const imz = I.minus(this);
+    return halfI.times(ipz.div(imz).ln());
+  }
+
   modulo(c): Complex {
     c = new Complex(c);
     return new Complex(this.re.modulo(c.re), this.im.modulo(c.im));

@@ -20,9 +20,9 @@
 
 ## `tan`
 
-## `acos`
-
 ## `asin`
+
+## `acos`
 
 ## `atan`
 

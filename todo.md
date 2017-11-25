@@ -5,9 +5,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 # Bugs
 
 - Zero math, ComplexInfinity, Indeterminate, Undefined (http://www.wolframalpha.com/input/?i=ComplexInfinity)
-  - [ ] 1 0 / = -1 0 / --> ComplexInfinity
+  - [x] 1 0 / = -1 0 / --> ComplexInfinity
   - [ ] ComplexInfinity 2 + --> ComplexInfinity
-  - [ ] ComplexInfinity ComplexInfinity / ComplexInfinity --> Indeterminate
+  - [ ] \ComplexInfinity / ComplexInfinity --> Indeterminate
   - [ ] ComplexInfinity sin --> Indeterminate
   - [ ] ComplexInfinity asin --> pi / 2
   - [ ] 1 ComplexInfinity / --> 0
@@ -30,6 +30,12 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Todo:
 
+- [ ] Trig functions on complex
+  - [x] sin, cos, tan
+  - [x] sinh, cosh, tanh
+  - [x] asin, acos, atan
+  - [x] asin, acos with real values > 1 are complex
+  - [ ] asin and acos of complex infinities
 - [ ] Replace decimal.js?
 - [ ] Ratios
 - [ ] Pool children env?

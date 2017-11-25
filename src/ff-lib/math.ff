@@ -35,10 +35,11 @@ toradians: [ radians * ] ;
 todegrees: [ radians / ] ;
 
 // hyperbolic trig
-acosh: [ dup dup * -- sqrt + ln ] ;
 cosh: [ exp dup inv + 2 / ] ;
 sinh: [ exp dup inv - 2 / ] ;
 tanh: [ 2 * exp pred swap ++ / ] ;
+asinh: [ dup dup * ++ sqrt + ln ] ;
+acosh: [ dup dup * -- sqrt + ln ] ;
 atanh: [ 1 swap dup [ + 1 ] dip - / ln 0.5 * ] ;
 
 // inquisitive

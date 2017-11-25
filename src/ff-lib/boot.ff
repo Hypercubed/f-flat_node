@@ -56,7 +56,7 @@ math: 'math.ff' require-module
 sym: 'math-sym.ff' require-module
 combinators: 'combinators.ff' require-module
 
-'./ff-lib/usr.ff' if-exists-load
+'./src/ff-lib/usr.ff' if-exists-load
 
 
 

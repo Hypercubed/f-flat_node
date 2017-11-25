@@ -9,7 +9,7 @@ test('should perform basic arithmetic', t => {
 });
 
 test('should div by zero, returns infinity', t => {
-  t.deepEqual(new F().eval('1 0 /').stack[0].valueOf(), Infinity);
+  t.deepEqual(new F().eval('1 0 /').stack[0].type, 'ComplexInfinity');
 });
 
 test('should quickcheck integer arithmetic', t => {

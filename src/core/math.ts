@@ -1,4 +1,4 @@
-import { typed, BigNumber, Complex, Action } from '../types';
+import { typed, BigNumber, Complex, Action, indeterminate } from '../types';
 import { lexer } from '../utils';
 
 const erf = require('compute-erf');
@@ -12,6 +12,7 @@ export default {
    */
   re: typed('re', {
     'BigNumber | number': a => a,
+    'ComplexInfinity': a => indeterminate,
     Complex: a => a.re
   }),
 
@@ -20,6 +21,7 @@ export default {
    */
   im: typed('im', {
     'BigNumber | number': a => 0,
+    'ComplexInfinity': a => indeterminate,
     Complex: a => a.im
   }),
 
@@ -66,37 +68,66 @@ export default {
   /**
    * ## `abs`
    */
-  abs: typed('abs', { 'BigNumber | Complex': a => a.abs() }),
+  abs: typed('abs', {
+    'BigNumber | Complex': a => a.abs(),
+    'ComplexInfinity': a => Infinity
+  }),
 
   /**
    * ## `cos`
    */
-  cos: a => (BigNumber as any).cos(a),
+  cos: typed('cos', {
+    'Complex': a => a.cos(),
+    'BigNumber | number': a => (BigNumber as any).cos(a)
+  }),
 
   /**
    * ## `sin`
    */
-  sin: a => (BigNumber as any).sin(a),
+  sin: typed('sin', {
+    'Complex': a => a.sin(),
+    'BigNumber | number': a => (BigNumber as any).sin(a)
+  }),
 
   /**
    * ## `tan`
    */
-  tan: a => (BigNumber as any).tan(a),
-
-  /**
-   * ## `acos`
-   */
-  acos: a => (BigNumber as any).acos(a),
+  tan: typed('tan', {
+    'Complex': a => a.tan(),
+    'BigNumber | number': a => (BigNumber as any).tan(a)
+  }),
 
   /**
    * ## `asin`
    */
-  asin: a => (BigNumber as any).asin(a),
+  asin: typed('asin', {
+    'Complex': a => a.asin(),
+    'BigNumber | number': a => {
+      if (a === Infinity || a === -Infinity) return new Complex(0, -a);
+      if (a > 1) return new Complex(a).asin();
+      return (BigNumber as any).asin(a);
+    }
+  }),
+
+  /**
+   * ## `acos`
+   */
+  acos: typed('acos', {
+    'Complex': a => a.acos(),
+    'BigNumber | number': a => {
+      if (a === Infinity || a === -Infinity) return new Complex(0, a);
+      if (a > 1) return new Complex(a).acos();
+      return (BigNumber as any).acos(a);
+    }
+  }),
 
   /**
    * ## `atan`
    */
-  atan: a => (BigNumber as any).atan(a),
+  atan: typed('atan', {
+    'Complex': a => a.atan(),
+    'BigNumber | number': a => (BigNumber as any).atan(a)
+  }),
 
   /**
    * ## `atan2`
