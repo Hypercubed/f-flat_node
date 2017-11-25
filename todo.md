@@ -35,7 +35,11 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [x] sinh, cosh, tanh
   - [x] asin, acos, atan
   - [x] asin, acos with real values > 1 are complex
-  - [ ] asin and acos of complex infinities
+  - [x] asin and acos of complex infinities
+- [ ] Infinity and complex numbers
+  - [ ] Infinity in a complex number is a ComplexInfinity
+  - [ ] Multiplications: https://locklessinc.com/articles/complex_multiplication/
+  - [ ] Divsion: https://arxiv.org/pdf/1210.4539.pdf
 - [ ] Replace decimal.js?
 - [ ] Ratios
 - [ ] Pool children env?

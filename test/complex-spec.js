@@ -139,7 +139,7 @@ test('trig', t => {
 
 test('inverse trig', t => {
   t.deepEqual(fSyncString('i asin'), '0+0.88137358701954302521i');
-  t.deepEqual(fSyncString('i acos'), '1.5707963267948966-0.88137358701954302521i');
+  t.deepEqual(fSyncString('i acos'), '1.5707963267948966193-0.88137358701954302525i');
   t.deepEqual(fSyncString('i 2 / atan'), '0+0.5493061443340548457i')
 });
 
@@ -157,7 +157,7 @@ test('inverse hyper tridg', t => {
 
 test('trig out of range', t => {
   t.deepEqual(fSyncString('2 asin'), '1.5707963267948966192-1.3169578969248167086i');
-  t.deepEqual(fSyncString('2 acos'), '-1.92e-17+1.3169578969248167086i');
+  t.deepEqual(fSyncString('2 acos'), '5e-20+1.3169578969248167087i');
 });
 
 test('asin and acos of infinity', t => {
@@ -166,8 +166,9 @@ test('asin and acos of infinity', t => {
   t.deepEqual(fSyncString('infinity acos'), '0+Infinityi');
   t.deepEqual(fSyncString('infinity -1 * acos'), '0-Infinityi');
 
-  // t.deepEqual(fSyncString('infinity i * asin'), '0+Infinityi');
-  // t.deepEqual(fSyncString('infinity i * acos'), '0-Infinityi');
+  t.deepEqual(fSyncString('infinity i * asin'), '0+Infinityi');
+  t.deepEqual(fSyncString('infinity i * acos'), '0-Infinityi');
+  t.deepEqual(fSyncString('infinity i * atan'), '1.5707963267948966193');
 });
 
 

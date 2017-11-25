@@ -1,8 +1,45 @@
 import { typed } from './typed';
-import { BigNumber, zero, twoPiSqrt } from './bigNumber';
+import { BigNumber, zero, pi, twoPiSqrt } from './bigNumber';
 import { g, c } from './gamma';
 
 const precision = Math.pow(10, -<number>BigNumber.precision + 5);
+
+function isinf(u: BigNumber) {
+  return !u.isFinite();
+}
+
+function copysign(u: number, v: BigNumber) {
+  const sign = (v as any).isPositive() ? +1 : -1;
+  return new BigNumber(u).times(sign);
+}
+
+function dplus(a: BigNumber, b: BigNumber) {
+  let re;
+  if (isinf(a) || isinf(b)) {
+    a = copysign(isinf(a) ? 1 : 0, a);
+    b = copysign(isinf(b) ? 1 : 0, b);
+    re = a.plus(b);
+    re = re.isZero() ? new BigNumber(0) : re.times(Infinity);
+  } else {
+    re = a.plus(b);
+  }
+
+  return re;
+}
+
+function dminus(a: BigNumber, b: BigNumber) {
+  let re;
+  if (isinf(a) || isinf(b)) {
+    a = copysign(isinf(a) ? 1 : 0, a);
+    b = copysign(isinf(b) ? 1 : 0, b);
+    re = a.minus(b);
+    re = re.isZero() ? new BigNumber(0) : re.times(Infinity);
+  } else {
+    re = a.minus(b);
+  }
+
+  return re;
+}
 
 export class Complex {
   static type = '@@complex';
@@ -92,16 +129,16 @@ export class Complex {
   }
 
   acos() {
-    const one = new Complex(1, 0);
-    const log = one.minus(this.times(this)).sqrt().plus(this.times(I)).ln();
-    return I.times(log).plus(new Complex(Math.PI / 2, 0));
+    const cpi = new Complex(pi);
+    return cpi.minus(this.asin().times(2)).times(1 / 2);
   }
 
   atan() {
-    const halfI = new Complex(0, 1 / 2);
-    const ipz = I.plus(this);
-    const imz = I.minus(this);
-    return halfI.times(ipz.div(imz).ln());
+    const one = new Complex(1);
+    const ix = I.times(this);
+    const a = one.minus(ix).ln();
+    const b = one.plus(ix).ln();
+    return a.minus(b).times(I.times(1 / 2));
   }
 
   modulo(c): Complex {
@@ -117,11 +154,62 @@ export class Complex {
     return (BigNumber as any).atan2(this.im, this.re);
   }
 
-  times(rhs: Complex): Complex {
-    rhs = new Complex(rhs);
-    const re = this.re.times(rhs.re).minus(this.im.times(rhs.im));
-    const im = this.re.times(rhs.im).plus(this.im.times(rhs.re));
-    return new Complex(re, im);
+  times(rhs: Complex | number): Complex {
+    rhs = new Complex(<any>rhs);
+
+    let a = this.re;
+    let b = this.im;
+    let c = rhs.re;
+    let d = rhs.im;
+
+    const ac = a.times(c);
+    const bd = b.times(d);
+    const bc = b.times(c);
+    const ad = a.times(d);
+
+    let x = ac.minus(bd);
+    let y = a.plus(b).times(c.plus(d)).minus(ac).minus(bd); // ad.plus(bc);
+
+    let recalc = false;
+
+    if (isinf(a) || isinf(b)) { // lhs is infinite.
+      a = copysign(isinf(a) ? 1 : 0, a);
+      b = copysign(isinf(b) ? 1 : 0, b);
+      if (c.isNaN()) c = copysign(0, c);
+      if (c.isNaN()) d = copysign(0, d);
+      recalc = true;
+    }
+
+    if (isinf(c) || isinf(d)) { // rhs is infinite.
+      c = copysign(isinf(c) ? 1 : 0, c);
+      d = copysign(isinf(d) ? 1 : 0, d);
+      if (a.isNaN()) a = copysign(0, a);
+      if (b.isNaN()) b = copysign(0, b);
+      recalc = true;
+    }
+
+    if (!recalc && (isinf(ac) || isinf(bd) || isinf(ad) || isinf(bc))) { // Recover infinities from overflow by changing NaNs to 0.
+      if (a.isNaN()) a = copysign(0, a);
+      if (b.isNaN()) b = copysign(0, b);
+      if (c.isNaN()) c = copysign(0, c);
+      if (d.isNaN()) d = copysign(0, d);
+      recalc = true;
+    }
+
+    if (recalc) {
+      const ac = a.times(c);
+      const bd = b.times(d);
+      const bc = b.times(c);
+      const ad = a.times(d);
+
+      x = ac.minus(bd);
+      y = a.plus(b).times(c.plus(d)).minus(ac).minus(bd); // ad.plus(bc);
+
+      x = x.isZero() ? x : x.times(Infinity);
+      y = y.isZero() ? y : y.times(Infinity);
+    }
+
+    return new Complex(x, y);
   }
 
   div(rhs: Complex): Complex {
@@ -137,20 +225,28 @@ export class Complex {
       re = this.dotProduct(rhs).div(den);
       im = this._y(rhs).div(den);
     }
+
+    // if (re.isNaN()) re = copysign(0, re);
+    // if (im.isNaN()) im = copysign(0, re);
+
     return new Complex(re, im);
   }
 
   plus(rhs: Complex | number): Complex {
     rhs = new Complex(rhs);
-    const re = this.re.plus(rhs.re);
-    const im = this.im.plus(rhs.im);
+
+    const re = dplus(this.re, rhs.re);
+    const im = dplus(this.im, rhs.im);
+
     return new Complex(re, im);
   }
 
   minus(rhs: Complex | number): Complex {
     rhs = new Complex(rhs);
-    const re = this.re.minus(rhs.re);
-    const im = this.im.minus(rhs.im);
+
+    const re = dminus(this.re, rhs.re);
+    const im = dminus(this.im, rhs.im);
+
     return new Complex(re, im);
   }
 
@@ -300,6 +396,14 @@ export class Complex {
       .times(twoPiSqrt) //  *sqrt(2*PI)
       .times(t.neg().exp()) //  *exp(-(z+g+1/2))
       .times(new Complex(agre, agim)); //  *Ag(z)
+  }
+
+  isNaN() {
+    return this.re.isNaN() || this.im.isNaN();
+  }
+
+  isFinite() {
+    return this.re.isFinite() && this.im.isFinite();
   }
 
   static of(re, im) {
