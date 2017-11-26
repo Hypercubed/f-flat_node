@@ -9,11 +9,9 @@ shuffle: using
 acos: [ asin 2 * pi swap - 1 2 / * ] ;
 // atan: [ dup dup * 1 + sqrt / asin ] ;
 
-// constants
-1 atan 4 * pi: sto
-1 exp e: sto         // Euler's number
-
 // lazy constants
+pi: [ 1 atan 4 * ] ;
+e: [ 1 exp ] ;              // Euler's number
 ln2: [ 2 ln ] ;             // natural logarithm of 2
 ln10: [ 10 ln ] ;           // natural logarithm of 10
 log2e: [ 1 ln2 / ] ;        // base 2 logarithm of E
