@@ -13,32 +13,47 @@ function copysign(u: number, v: BigNumber) {
   return new BigNumber(u).times(sign);
 }
 
-function dplus(a: BigNumber, b: BigNumber) {
-  let re;
+// We have special artimitic for complex numebrs to handel NaN and infinities
+function dplus(a: BigNumber | number, b: BigNumber | number) {
+  a = BigNumber(a);
+  b = BigNumber(b);
   if (isinf(a) || isinf(b)) {
     a = copysign(isinf(a) ? 1 : 0, a);
     b = copysign(isinf(b) ? 1 : 0, b);
-    re = a.plus(b);
-    re = re.isZero() ? new BigNumber(0) : re.times(Infinity);
-  } else {
-    re = a.plus(b);
+    const re = a.plus(b);
+    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
   }
-
-  return re;
+  return a.plus(b);
 }
 
-function dminus(a: BigNumber, b: BigNumber) {
-  let re;
+function dminus(a: BigNumber, b: BigNumber): BigNumber {
   if (isinf(a) || isinf(b)) {
     a = copysign(isinf(a) ? 1 : 0, a);
     b = copysign(isinf(b) ? 1 : 0, b);
-    re = a.minus(b);
-    re = re.isZero() ? new BigNumber(0) : re.times(Infinity);
-  } else {
-    re = a.minus(b);
+    const re = a.minus(b);
+    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
   }
+  return a.minus(b);
+}
 
-  return re;
+function ddiv(a: BigNumber, b: BigNumber): BigNumber {
+  if (isinf(a) || isinf(b)) {
+    a = copysign(a.isZero() ? 0 : 1, a);
+    b = copysign(b.isZero() ? 0 : 1, b);
+    const re = a.div(b);
+    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
+  }
+  return a.div(b);
+}
+
+function dtimes(a: BigNumber, b: BigNumber): BigNumber {
+  if (isinf(a) || isinf(b)) {
+    a = copysign(a.isZero() ? 0 : 1, a);
+    b = copysign(b.isZero() ? 0 : 1, b);
+    const re = a.times(b);
+    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
+  }
+  return a.times(b);
 }
 
 export class Complex {
@@ -53,6 +68,13 @@ export class Complex {
     }
     this.re = new BigNumber(re);
     this.im = new BigNumber(im);
+
+    /* if (this.re.isNaN() && this.im.isNaN()) {
+      this.im = zero;
+    } else {
+      if (this.re.isNaN()) this.re = zero;
+      if (this.im.isNaN()) this.im = zero;
+    } */
 
     Object.freeze(this);
   }
@@ -98,47 +120,68 @@ export class Complex {
   }
 
   abs(): BigNumber {
-    return this.dotProduct(this).sqrt();
+    // Numerical recipes in C (2nd ed.): the art of scientific computing, eq 5.4.4
+    const a = this.re;
+    const b = this.im;
+
+    const aa = a.abs();
+    const bb = b.abs();
+
+    if (aa.gte(bb)) {
+      const boa = ddiv(b, a);
+      const u = dplus(dtimes(boa, boa), 1); // b.div(a).pow(2).plus(1);
+      return dtimes(aa, u.sqrt());
+    }
+
+    const aob = ddiv(a, b);
+    const u = dplus(dtimes(aob, aob), 1); // a.div(b).pow(2).plus(1);
+    return dtimes(bb, u.sqrt());
   }
 
   sin() {
-    const halfI = new Complex(0, 1 / 2);
     const eix = this.times(I).exp();
-    const enix = this.times(I).times(new Complex(-1, 0)).exp();
-    return halfI.times(enix).minus(halfI.times(eix));
+    const enix = this.times(I).times(-1).exp();
+    return eix.minus(enix).div(2).div(I);
   }
 
   cos() {
-    const half = new Complex(1 / 2, 0);
-    const enix = this.times(I).times(new Complex(-1, 0)).exp();
     const eix = this.times(I).exp();
-    return half.times(enix).plus(half.times(eix));
+    const enix = this.times(I).times(-1).exp();
+    return eix.plus(enix).div(2);
   }
 
   tan() {
-    const half = new Complex(1 / 2, 0);
-    const enix = this.times(I).times(new Complex(-1, 0)).exp();
-    const eix = this.times(I).exp();
-    return this.sin().div(this.cos());
+    const s = this.im.isNeg() ? -1 : 1;
+    const e2iz = this.times(I).times(2 * s).exp();
+    const u = e2iz.minus(1);
+    const v = e2iz.plus(1);
+    return u.div(v.times(I)).times(s);
   }
 
   asin() {
     const one = new Complex(1, 0);
     const log = one.minus(this.times(this)).sqrt().plus(this.times(I)).ln();
-    return I.times(one.neg()).times(log);
+    return I.times(-1).times(log);
   }
 
   acos() {
-    const cpi = new Complex(pi);
-    return cpi.minus(this.asin().times(2)).times(1 / 2);
+    return this.asin().times(2).minus(pi).times(1 / 2);
   }
 
   atan() {
     const one = new Complex(1);
+    if (!this.re.isFinite()) {
+      return (this.re as any).atan();
+    }
+    if (!this.im.isFinite()) {
+      return (this.im as any).atan();
+    }
+
     const ix = I.times(this);
-    const a = one.minus(ix).ln();
-    const b = one.plus(ix).ln();
-    return a.minus(b).times(I.times(1 / 2));
+    const omx = one.minus(ix);
+    const opx = one.plus(ix);
+    const u = omx.div(opx);
+    return u.ln().times(I).times(1 / 2);
   }
 
   modulo(c): Complex {
@@ -150,11 +193,11 @@ export class Complex {
     return new Complex(this.re.round(), this.im.round());
   }
 
-  angle(): BigNumber {
+  arg(): BigNumber {
     return (BigNumber as any).atan2(this.im, this.re);
   }
 
-  times(rhs: Complex | number): Complex {
+  times(rhs: Complex | BigNumber | number): Complex {
     rhs = new Complex(<any>rhs);
 
     let a = this.re;
@@ -167,11 +210,12 @@ export class Complex {
     const bc = b.times(c);
     const ad = a.times(d);
 
-    let x = ac.minus(bd);
-    let y = a.plus(b).times(c.plus(d)).minus(ac).minus(bd); // ad.plus(bc);
+    let x = dminus(ac, bd); // ac.minus(bd);
+    let y = dminus(dminus(dplus(a, b).times(dplus(c, d)), ac), bd); // a.plus(b).times(c.plus(d)).minus(ac).minus(bd); // ad.plus(bc);
 
     let recalc = false;
 
+    // handle infinity, see https://locklessinc.com/articles/complex_multiplication/
     if (isinf(a) || isinf(b)) { // lhs is infinite.
       a = copysign(isinf(a) ? 1 : 0, a);
       b = copysign(isinf(b) ? 1 : 0, b);
@@ -203,7 +247,7 @@ export class Complex {
       const ad = a.times(d);
 
       x = ac.minus(bd);
-      y = a.plus(b).times(c.plus(d)).minus(ac).minus(bd); // ad.plus(bc);
+      y = dminus(dminus(dplus(a, b).times(dplus(c, d)), ac), bd); // a.plus(b).times(c.plus(d)).minus(ac).minus(bd); // ad.plus(bc);
 
       x = x.isZero() ? x : x.times(Infinity);
       y = y.isZero() ? y : y.times(Infinity);
@@ -212,24 +256,31 @@ export class Complex {
     return new Complex(x, y);
   }
 
-  div(rhs: Complex): Complex {
+  div(rhs: Complex | number): Complex {
+    // Numerical recipes in C (2nd ed.): the art of scientific computing, eq 5.4.5
     rhs = new Complex(rhs);
-    let re;
-    let im;
 
-    const den = rhs.dotProduct(rhs);
-    if (den.isZero()) {
-      re = this.re.isZero() ? 0 : this.re.div(0);
-      im = this.im.isZero() ? 0 : this.im.div(0);
+    let a = this.re;
+    let b = this.im;
+    let c = rhs.re;
+    let d = rhs.im;
+
+    const cc = c.abs();
+    const dd = d.abs();
+
+    let u, v, w;
+    if (cc.gte(dd)) {
+      const doc = ddiv(d, c);
+      u = dplus(a, dtimes(b, doc)); // a.plus(b.times(doc));
+      v = dminus(b, dtimes(a, doc)); // b.minus(a.times(doc));
+      w = dplus(c, dtimes(d, doc)); // c.plus(d.times(doc));
     } else {
-      re = this.dotProduct(rhs).div(den);
-      im = this._y(rhs).div(den);
+      const cod = ddiv(c, d);
+      u = dplus(dtimes(a, cod), b); // a.times(cod).plus(b);
+      v = dminus(dtimes(b, cod), a); // b.times(cod).minus(a);
+      w = dplus(dtimes(c, cod), d); // c.times(cod).plus(d);
     }
-
-    // if (re.isNaN()) re = copysign(0, re);
-    // if (im.isNaN()) im = copysign(0, re);
-
-    return new Complex(re, im);
+    return new Complex(ddiv(u, w), ddiv(v, w));
   }
 
   plus(rhs: Complex | number): Complex {
@@ -237,6 +288,10 @@ export class Complex {
 
     const re = dplus(this.re, rhs.re);
     const im = dplus(this.im, rhs.im);
+
+    if (isinf(re)) {
+      return new Complex((re as any).isPos() ? Infinity : -Infinity, 0);
+    }
 
     return new Complex(re, im);
   }
@@ -246,6 +301,10 @@ export class Complex {
 
     const re = dminus(this.re, rhs.re);
     const im = dminus(this.im, rhs.im);
+
+    if (isinf(re)) {
+      return new Complex((re as any).isPos() ? Infinity : -Infinity, 0);
+    }
 
     return new Complex(re, im);
   }
@@ -288,13 +347,33 @@ export class Complex {
 
   exp(): Complex {
     const r = this.re.exp();
-    const im = r.times((new BigNumber(this.im) as any).sin());
-    const re = r.times((new BigNumber(this.im) as any).cos()); // bug in Decimal.js causes t.im to mutate after cosine
-    return new Complex(re, im);
+    const i = new BigNumber(this.im);
+    let im = r.times((i as any).sin());
+    let re = r.times((i as any).cos()); // bug in Decimal.js causes t.im to mutate after cosine
+    return new Complex(re, im).fixNaN();
+  }
+
+  fixNaN() {
+    let re = this.re;
+    let im = this.im;
+    if (re.isNaN() && im.isNaN()) {
+      return new Complex(NaN, 0);
+    }
+    if (re.isNaN()) {
+      return new Complex(zero, im);
+    }
+    if (im.isNaN()) {
+      return new Complex(re, zero);
+    }
+    return this;
   }
 
   neg(): Complex {
     return new Complex(-this.re, -this.im);
+  }
+
+  conj(): Complex {
+    return new Complex(this.re, -this.im);
   }
 
   floor(): Complex {
@@ -318,37 +397,68 @@ export class Complex {
   }
 
   sqrt(): Complex {
-    const r = this.abs();
+    // Numerical recipes in C (2nd ed.): the art of scientific computing, eq 5.4.6
 
-    let re;
-    let im;
+    const c = this.re;
+    const d = this.im;
 
-    const two = new BigNumber(2.0);
-
-    if (this.re.gte(0)) {
-      re = two
-        .times(r.plus(this.re))
-        .sqrt()
-        .div(2);
-    } else {
-      re = this.im.abs().div(two.times(r.minus(this.re)).sqrt());
+    if (c.isZero() && d.isZero()) {
+      return new Complex(0, 0);
     }
 
-    if (this.re.lte(0)) {
-      im = two
-        .times(r.minus(this.re))
-        .sqrt()
-        .div(2);
+    const absc = c.abs();
+    const absd = d.abs();
+
+    let w;
+
+    if (absc.gte(absd)) {
+      const doc = d.div(c);
+      const docdoc = doc.times(doc);
+      w = absc.sqrt().times(
+        dplus(
+          dplus(docdoc, 1).sqrt(),
+          1
+        ).times(1 / 2).sqrt()
+      );
     } else {
-      im = this.im.abs().div(two.times(r.plus(this.re)).sqrt());
+      const cod = c.div(d);
+      const codcod = cod.times(cod);
+      const abscod = cod.abs();
+      w = absd.sqrt().times(
+        dplus(
+          dplus(codcod, 1).sqrt(),
+          abscod
+        ).times(1 / 2).sqrt()
+      );
     }
 
-    return new Complex(re, this.im.gte(0) ? im : -im);
+    if (w.isZero()) {
+      return new Complex(0, 0);
+    }
+
+    if (c.gte(0)) {
+      return new Complex(w, d.div(w.times(2)));
+    }
+
+    const u = absd.div(w.times(2));
+
+    if (d.gte(0)) {
+      return new Complex(u, w);
+    }
+
+    return new Complex(u, -w);
   }
 
   ln(): Complex {
-    // natural log
-    return new Complex(<any>this.abs().ln(), this.angle());
+    // natural
+    const u = this.abs().ln();
+    const v = this.arg();
+
+    if (isinf(u)) {
+      return new Complex((u as any).isPos() ? Infinity : -Infinity, 0);
+    }
+
+    return new Complex(u, v);
   }
 
   pow(y): Complex {

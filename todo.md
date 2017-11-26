@@ -4,18 +4,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Bugs
 
-- Zero math, ComplexInfinity, Indeterminate, Undefined (http://www.wolframalpha.com/input/?i=ComplexInfinity)
-  - [x] 1 0 / = -1 0 / --> ComplexInfinity
-  - [ ] ComplexInfinity 2 + --> ComplexInfinity
-  - [ ] \ComplexInfinity / ComplexInfinity --> Indeterminate
-  - [ ] ComplexInfinity sin --> Indeterminate
-  - [ ] ComplexInfinity asin --> pi / 2
-  - [ ] 1 ComplexInfinity / --> 0
-  - [x] 1 infinity / --> 0
-  - [ ] infinity / 0 --> ComplexInfinity
-  - [ ] infinity / infinity --> undefined
-  - [ ] 0 0 / --> undefined
-  - [ ] 0 0 ^ --> undefined
+- [ ] 1 acos = 0 (precision issue)
+- [ ] precision in complex calculations
+- [ ] ComplexInfinity, Indeterminate, Undefined (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 
 # Todo next:
 
@@ -38,8 +29,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [x] asin and acos of complex infinities
 - [ ] Infinity and complex numbers
   - [ ] Infinity in a complex number is a ComplexInfinity
-  - [ ] Multiplications: https://locklessinc.com/articles/complex_multiplication/
-  - [ ] Divsion: https://arxiv.org/pdf/1210.4539.pdf
+  - [x] Multiplications: https://locklessinc.com/articles/complex_multiplication/
+  - [x] Divsion: https://arxiv.org/pdf/1210.4539.pdf
 - [ ] Replace decimal.js?
 - [ ] Ratios
 - [ ] Pool children env?

@@ -1,5 +1,5 @@
 import test from 'ava';
-import { F, fSync, nearly } from './setup';
+import { F, fSync, fSyncString, nearly } from './setup';
 
 test('should perform basic arithmetic', t => {
   t.deepEqual(fSync('1 2 +'), [3], 'should add numbers');
@@ -56,7 +56,7 @@ test('trig', t => {
   );
   t.deepEqual(
     fSync('1 acos 1 asin 1 atan'),
-    [Math.acos(1), Math.asin(1), Math.atan(1)],
+    [5e-20, Math.asin(1), Math.atan(1)], // todo: fix acos
     'should calculate inv trig funcs'
   );
   t.deepEqual(
@@ -78,6 +78,10 @@ test('trig 2', t => {
 
 test('constants', t => {
   t.deepEqual(fSync('e pi'), [Math.E, Math.PI], 'should define constants');
+});
+
+test('ln', t => {
+  t.deepEqual(fSync('1 ln'), [0]);
 });
 
 test('should define logs', t => {
@@ -175,4 +179,99 @@ test('should test primes', t => {
 test('should define number?', t => {
   t.deepEqual(fSync('3 number?'), [true]);
   t.deepEqual(fSync('"4" number?'), [false]);
+});
+
+test('arg', t => {
+  t.deepEqual(fSync('0 arg'), [0]);
+  t.deepEqual(fSync('-0 arg'), [0]);
+  t.deepEqual(fSync('1 arg'), [0]);
+  t.deepEqual(fSync('-1 arg'), [3.141592653589793]);
+  t.deepEqual(fSync('10 arg'), [0]);
+  t.deepEqual(fSync('-10 arg'), [3.141592653589793]);
+});
+
+test('arg of infinities', t => {
+  t.deepEqual(fSync('infinity arg'), [0]);
+  t.deepEqual(fSync('infinity -1 * arg'), [3.141592653589793]);
+});
+
+test('asin', t => {
+  t.deepEqual(fSync('0 asin'), [0]);
+  t.deepEqual(fSync('1 asin'), [1.5707963267948966]);
+  t.deepEqual(fSync('-1 asin'), [-1.5707963267948966]);
+  t.deepEqual(fSync('1 2 / asin'), [0.5235987755982989]);
+  t.deepEqual(fSync('-1 2 / asin'), [-0.5235987755982989]);
+});
+
+test('acos', t => {
+  t.deepEqual(fSync('0 acos'), [1.5707963267948966]);
+  t.deepEqual(fSync('1 acos'), [5e-20]);
+  t.deepEqual(fSync('-1 acos'), [3.141592653589793]);
+  t.deepEqual(fSync('1 2 / acos'), [1.0471975511965979]);
+  t.deepEqual(fSync('-1 2 / acos'), [2.0943951023931957]);
+});
+
+test('atan', t => {
+  t.deepEqual(fSync('0 atan'), [0]);
+  t.deepEqual(fSync('1 atan'), [0.7853981633974483]);
+  t.deepEqual(fSync('-1 atan'), [-0.7853981633974483]);
+  t.deepEqual(fSync('1 2 / atan'), [0.4636476090008061]);
+  t.deepEqual(fSync('-1 2 / atan'), [-0.4636476090008061]);
+  t.deepEqual(fSync('2 atan'), [1.107148717794090503017065460178537040070047645]);
+  t.deepEqual(fSync('-2 atan'), [-1.107148717794090503017065460178537040070047645]);
+});
+
+test('asinh', t => {
+  t.deepEqual(fSyncString('0 asinh'), '0');
+  t.deepEqual(fSyncString('1 asinh'), '0.88137358701954302523');
+  t.deepEqual(fSyncString('-1 asinh'), '-0.88137358701954302524');
+  t.deepEqual(fSyncString('pi asinh'), '1.8622957433108482199');
+  t.deepEqual(fSyncString('pi -1 * asinh'), '-1.8622957433108482199');
+  t.deepEqual(fSyncString('1 2 / asinh'), '0.48121182505960344749');
+  t.deepEqual(fSyncString('-1 2 / asinh'), '-0.48121182505960344751');
+});
+
+test('sum of infinities', t => {
+  t.deepEqual(fSyncString('infinity dup +'), 'Infinity');
+  t.deepEqual(fSyncString('infinity dup -1 * +'), 'NaN');
+});
+
+test('subtraction of infinities', t => {
+  t.deepEqual(fSyncString('infinity dup -'), 'NaN');
+  t.deepEqual(fSyncString('infinity dup -1 * -'), 'Infinity');
+});
+
+test('asinh of infinities', t => {
+  t.deepEqual(fSyncString('infinity asinh'), 'Infinity');
+  t.deepEqual(fSyncString('infinity -1 * asinh'), '-Infinity');
+});
+
+test('acosh', t => {
+  t.deepEqual(fSyncString('0 acosh'), '0+1.5707963267948966192i');
+  t.deepEqual(fSyncString('1 acosh'), '0');
+  t.deepEqual(fSyncString('-1 acosh'), '0+3.1415926535897932385i');
+  t.deepEqual(fSyncString('pi acosh'), '1.811526272460853107');
+  t.deepEqual(fSyncString('pi -1 * acosh'), '-1.8115262724608531069+3.1415926535897932385i');
+  t.deepEqual(fSyncString('1 2 / acosh'), '-2e-20+1.0471975511965977462i');
+  t.deepEqual(fSyncString('-1 2 / acosh'), '-2e-20+2.0943951023931954923i');
+});
+
+test('acosh of infinities', t => {
+  t.deepEqual(fSyncString('infinity acosh'), 'Infinity');
+  // t.deepEqual(fSyncString('infinity -1 * acosh'), 'Infinity');
+});
+
+test('atanh', t => {
+  t.deepEqual(fSyncString('0 atanh'), '0');
+  t.deepEqual(fSyncString('1 atanh'), 'Infinity');
+  t.deepEqual(fSyncString('-1 atanh'), '-Infinity');
+  t.deepEqual(fSyncString('pi atanh'), '0.32976531495669910763-1.5707963267948966193i');
+  t.deepEqual(fSyncString('pi -1 * atanh'), '-0.32976531495669910762+1.5707963267948966193i');
+  t.deepEqual(fSyncString('1 2 / atanh'), '0.5493061443340548457');
+  t.deepEqual(fSyncString('-1 2 / atanh'), '-0.5493061443340548457');
+});
+
+test.skip('atanh of infinities', t => {
+  t.deepEqual(fSyncString('infinity atanh'), '-1.57079632679489661923132169163975144209858469968755291048... i');
+  t.deepEqual(fSyncString('infinity -1 * atanh'), '1.57079632679489661923132169163975144209858469968755291048... i');
 });

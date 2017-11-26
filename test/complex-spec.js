@@ -131,44 +131,131 @@ test('should test inequality', t => {
   t.deepEqual(fSync('2 i * 1 i * >'), [true]);
 });
 
-test('trig', t => {
-  t.deepEqual(fSyncString('i sin'), '0+1.1752011936438014569i');
-  t.deepEqual(fSyncString('i cos'), '1.5430806348152437785');
-  t.deepEqual(fSyncString('i tan'), '0+0.76159415595576488814i');
+test('ln of neg values return complex', t => {
+  t.deepEqual(fSyncString('0 ln'), '-Infinity');
+  t.deepEqual(fSyncString('-1 ln'), '0+3.1415926535897932385i');
 });
 
-test('inverse trig', t => {
-  t.deepEqual(fSyncString('i asin'), '0+0.88137358701954302521i');
-  t.deepEqual(fSyncString('i acos'), '1.5707963267948966193-0.88137358701954302525i');
+test('abs of complex', t => {
+  t.deepEqual(fSyncString('i abs'), '1');
+  t.deepEqual(fSyncString('i -1 * abs'), '1');
+  t.deepEqual(fSyncString('i 10 * abs'), '10');
+  t.deepEqual(fSyncString('i -10 * abs'), '10');
+});
+
+test('exp of complex', t => {
+  t.deepEqual(fSyncString('i exp'), '0.5403023058681397174+0.84147098480789650665i');
+  t.deepEqual(fSyncString('i -1 * exp'), '0.5403023058681397174-0.84147098480789650665i');
+});
+
+test('ln of complex', t => {
+  t.deepEqual(fSyncString('i ln'), '0+1.5707963267948966192i');
+  t.deepEqual(fSyncString('i -1 * ln'), '0-1.5707963267948966192i');
+});
+
+test('trig of complex', t => {
+  t.deepEqual(fSyncString('i sin'), '0+1.1752011936438014569i');
+  t.deepEqual(fSyncString('i cos'), '1.5430806348152437785');
+  t.deepEqual(fSyncString('i tan'), '0+0.76159415595576488812i');
+});
+
+test('inverse trig of complex', t => {
+  t.deepEqual(fSyncString('i asin'), '0+0.88137358701954302524i');
+  t.deepEqual(fSyncString('i acos'), '1.5707963267948966193-0.8813735870195430253i');
   t.deepEqual(fSyncString('i 2 / atan'), '0+0.5493061443340548457i')
 });
 
-test('hyper trig', t => {
-  t.deepEqual(fSyncString('i sinh'), '-5e-21+0.84147098480789650665i');
-  t.deepEqual(fSyncString('i cosh'), '0.5403023058681397174-5e-21i');
-  t.deepEqual(fSyncString('i tanh'), '8.5637970520368994024e-21+1.5574077246549022305i');
+test('hyper trig of complex', t => {
+  t.deepEqual(fSyncString('i sinh'), '5e-21+0.84147098480789650665i');
+  t.deepEqual(fSyncString('i cosh'), '0.5403023058681397174+1e-20i');
+  t.deepEqual(fSyncString('i tanh'), '7.7870386232745111526e-21+1.5574077246549022305i');
 });
 
-test('inverse hyper tridg', t => {
+test('inverse hyper trig of complex', t => {
   t.deepEqual(fSyncString('i asinh'), '0+1.5707963267948966192i');
   t.deepEqual(fSyncString('i acosh'), '0.88137358701954302523+1.5707963267948966192i');
   t.deepEqual(fSyncString('i atanh'), '0+0.7853981633974483096i');
 });
 
-test('trig out of range', t => {
+test('trig out of range returns complex values', t => {
   t.deepEqual(fSyncString('2 asin'), '1.5707963267948966192-1.3169578969248167086i');
+  t.deepEqual(fSyncString('-2 asin'), '-1.5707963267948966192+1.3169578969248167085i');
   t.deepEqual(fSyncString('2 acos'), '5e-20+1.3169578969248167087i');
+  t.deepEqual(fSyncString('-2 acos'), '3.1415926535897932385-1.3169578969248167085i');
 });
 
-test('asin and acos of infinity', t => {
+test('abs of complex infinities', t => {
+  t.deepEqual(fSyncString('i infinity * abs'), 'Infinity');
+  t.deepEqual(fSyncString('i -1 * infinity * abs'), 'Infinity');
+});
+
+test('inverse trig functions on infinities', t => {
   t.deepEqual(fSyncString('infinity asin'), '0-Infinityi');
   t.deepEqual(fSyncString('infinity -1 * asin'), '0+Infinityi');
+
   t.deepEqual(fSyncString('infinity acos'), '0+Infinityi');
   t.deepEqual(fSyncString('infinity -1 * acos'), '0-Infinityi');
 
-  t.deepEqual(fSyncString('infinity i * asin'), '0+Infinityi');
-  t.deepEqual(fSyncString('infinity i * acos'), '0-Infinityi');
-  t.deepEqual(fSyncString('infinity i * atan'), '1.5707963267948966193');
+  t.deepEqual(fSyncString('infinity atan'), '1.5707963267948966192');
+  t.deepEqual(fSyncString('infinity -1 * atan'), '-1.5707963267948966192');
 });
 
+test('div and mul complex infinity', t => {
+  t.deepEqual(fSyncString('infinity i * 1 *'), '0+Infinityi');
+  t.deepEqual(fSyncString('infinity i * 1 /'), '0+Infinityi');
+  t.deepEqual(fSyncString('infinity i * 2 *'), '0+Infinityi');
+  t.deepEqual(fSyncString('infinity i * 2 /'), '0+Infinityi');
+});
 
+test('exp of complex infinity', t => {
+  t.deepEqual(fSyncString('infinity i * exp'), 'NaN');
+  t.deepEqual(fSyncString('infinity i * -1 * exp'), 'NaN');
+});
+
+test('arg of complex infinity', t => {
+  t.deepEqual(fSyncString('infinity i * arg'), '1.5707963267948966192');
+  t.deepEqual(fSyncString('infinity i * -1 * arg'), '-1.5707963267948966192');
+});
+
+test('infinity plus complex', t => {
+  t.deepEqual(fSyncString('infinity i +'), 'Infinity');
+  t.deepEqual(fSyncString('infinity i -'), 'Infinity');
+});
+
+test('ln of complex infinity', t => {
+  t.deepEqual(fSyncString('infinity i * ln'), 'Infinity');
+  t.deepEqual(fSyncString('infinity i * -1 * ln'), 'Infinity');
+});
+
+test('trig functions on complex infinities', t => {
+  t.deepEqual(fSyncString('infinity i * sin'), '0+Infinityi');
+  t.deepEqual(fSyncString('infinity -1 * i * sin'), '0-Infinityi');
+
+  t.deepEqual(fSyncString('infinity i * cos'), 'Infinity');
+  t.deepEqual(fSyncString('infinity -1 * i * cos'), 'Infinity');
+
+  t.deepEqual(fSyncString('infinity i * tan'), '0+1i');
+  t.deepEqual(fSyncString('infinity -1 * i * tan'), '0-1i');
+});
+
+test('inverse trig functions on complex infinities', t => {
+  t.deepEqual(fSyncString('infinity i * asin'), '0+Infinityi');
+  t.deepEqual(fSyncString('infinity i * -1 * asin'), '0-Infinityi');
+
+  t.deepEqual(fSyncString('infinity i * acos'), '0-Infinityi');
+  t.deepEqual(fSyncString('infinity i * -1 * acos'), '0+Infinityi');
+
+  t.deepEqual(fSyncString('infinity i * atan'), '1.5707963267948966192');
+  t.deepEqual(fSyncString('infinity i * -1 * atan'), '-1.5707963267948966192');
+});
+
+test('hyperbolic inverse trig functions on complex infinities', t => {
+  t.deepEqual(fSyncString('infinity i * asinh'), 'Infinity');
+  t.deepEqual(fSyncString('infinity i * -1 * asinh'), '-Infinity');
+
+  t.deepEqual(fSyncString('infinity i * acosh'), 'Infinity');
+  t.deepEqual(fSyncString('infinity i * acosh'), 'Infinity');
+
+  // t.deepEqual(fSyncString('infinity i * atanh'), '0+1.5707963267948966193i');
+  // t.deepEqual(fSyncString('infinity i * atanh'), '0-1.5707963267948966193i');
+});

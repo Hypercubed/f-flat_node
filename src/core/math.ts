@@ -1,4 +1,4 @@
-import { typed, BigNumber, Complex, Action, indeterminate } from '../types';
+import { typed, BigNumber, Complex, Action, indeterminate, pi } from '../types';
 import { lexer } from '../utils';
 
 const erf = require('compute-erf');
@@ -23,6 +23,16 @@ export default {
     'BigNumber | number': a => 0,
     'ComplexInfinity': a => indeterminate,
     Complex: a => a.im
+  }),
+
+  /**
+   * ## `im`
+   */
+  arg: typed('arg', {
+    'BigNumber': a => (a.isPos() || a.isZero()) ? 0 : pi,
+    'number': a => a >= 0 ? 0 : pi,
+    'ComplexInfinity': a => indeterminate,
+    Complex: a => a.arg()
   }),
 
   /**
@@ -104,24 +114,24 @@ export default {
     'Complex': a => a.asin(),
     'BigNumber | number': a => {
       if (a === Infinity || a === -Infinity) return new Complex(0, -a);
-      if (a > 1) return new Complex(a).asin();
+      if (a > 1 || a < -1) return new Complex(a).asin();
       return (BigNumber as any).asin(a);
     }
   }),
 
-  /**
+  /*
    * ## `acos`
-   */
-  acos: typed('acos', {
+   /
+  / acos: typed('acos', {
     'Complex': a => a.acos(),
     'BigNumber | number': a => {
       if (a === Infinity || a === -Infinity) return new Complex(0, a);
       if (a > 1) return new Complex(a).acos();
       return (BigNumber as any).acos(a);
     }
-  }),
+  }), */
 
-  /**
+  /*
    * ## `atan`
    */
   atan: typed('atan', {
@@ -215,7 +225,11 @@ export default {
    * ## `ln`
    */
   ln: typed('ln', {
-    'BigNumber | Complex': a => a.ln()
+    'Complex': a => a.ln(),
+    'BigNumber | number': a => {
+      if (a <= 0) return new Complex(a).ln();
+      return new BigNumber(a).ln();
+    }
   }),
 
   /**

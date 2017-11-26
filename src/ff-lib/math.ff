@@ -2,12 +2,18 @@
  * # Mathematics lib
  */
  
- core: using
+core: using
 shuffle: using
 
+// inverse trig
+acos: [ asin 2 * pi swap - 1 2 / * ] ;
+// atan: [ dup dup * 1 + sqrt / asin ] ;
+
+// constants
+1 atan 4 * pi: sto
+1 exp e: sto         // Euler's number
+
 // lazy constants
-e:  [ 1 exp ] ;             // Euler's number
-pi: [ -1 acos ] ;           // pi
 ln2: [ 2 ln ] ;             // natural logarithm of 2
 ln10: [ 10 ln ] ;           // natural logarithm of 10
 log2e: [ 1 ln2 / ] ;        // base 2 logarithm of E
@@ -38,9 +44,12 @@ todegrees: [ radians / ] ;
 cosh: [ exp dup inv + 2 / ] ;
 sinh: [ exp dup inv - 2 / ] ;
 tanh: [ 2 * exp pred swap ++ / ] ;
-asinh: [ dup dup * ++ sqrt + ln ] ;
-acosh: [ dup dup * -- sqrt + ln ] ;
-atanh: [ 1 swap dup [ + 1 ] dip - / ln 0.5 * ] ;
+
+// inverse hyperbolic trig
+complex: [ 0 i * + ] ;
+asinh: [ complex dup dup * ++ sqrt + ln ] ;
+acosh: [ complex dup dup * -- sqrt + ln ] ;
+atanh: [ complex 1 swap dup [ + 1 ] dip - / ln 0.5 * ] ;
 
 // inquisitive
 integer?: [ dup [ floor = ] [ im 0 = ] bi * ] ;
