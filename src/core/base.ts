@@ -1,7 +1,7 @@
 import { assign, merge, unshift, push, slice, getIn } from 'icepick';
 import memoize from 'memoizee';
 
-import { deepEquals, arrayRepeat, arrayMul } from '../utils';
+import { deepEquals, arrayRepeat, arrayMul, and, nand, or, xor, not } from '../utils';
 import { Seq, Action, typed, I, StackValue, Future, Complex, BigNumber, complexInfinity } from '../types';
 import { StackEnv } from '../env';
 
@@ -38,7 +38,8 @@ const add = typed('add', {
    * [ true ]
    * ```
    */
-  'boolean, boolean': (lhs: boolean, rhs: boolean): boolean => lhs || rhs,
+  'boolean, boolean | number': or,
+  'number, boolean': or,
 
   /**
    * - object assign/assoc
@@ -104,14 +105,14 @@ const sub = typed('sub', {
   }, */
 
   /**
-   * - boolean or
+   * - boolean xor
    *
    * ```
    * f♭> true true -
    * [ false ]
    *```
    */
-  'boolean, boolean': (lhs: boolean, rhs: boolean) => (lhs || rhs) && !(lhs && rhs), // boolean xor
+  'boolean, boolean': xor,
 
   /**
    * - arithmetic subtraction
@@ -122,7 +123,10 @@ const sub = typed('sub', {
    * ```
    */
   'Complex, Complex': (lhs: Complex, rhs: Complex) => lhs.minus(rhs),
-  'BigNumber, BigNumber | number': (lhs: BigNumber, rhs: BigNumber) => lhs.minus(rhs),
+  'BigNumber, BigNumber | number': (lhs: BigNumber, rhs: BigNumber) => {
+    if (lhs.isNaN(), lhs.isNaN()) return NaN;
+    return lhs.minus(rhs);
+  },
 
   /**
    * - date subtraction
@@ -180,7 +184,8 @@ const mul = typed('mul', {
    * [ true ]
    *```
    */
-  'boolean, boolean': (lhs, rhs) => lhs && rhs,
+  'boolean, boolean | number': and,
+  'number, boolean': and,
 
   /**
    * - repeat sequence
@@ -225,7 +230,8 @@ const div = typed('div', {
    * [ false ]
    *```
    */
-  'boolean, boolean': (lhs, rhs) => !(lhs && rhs), // boolean nand
+  'boolean, boolean | number': nand,
+  'number, boolean': nand,
 
   /**
    * - string split
@@ -456,6 +462,26 @@ export default {
   '<<': pushFn,
   '@': at, // nth, get
   choose,
+
+  /**
+   * ## `~` (not)
+   */
+  '~': typed('not', {
+    /**
+     * - boolean (indeterminate) not
+     *
+     * ```
+     * f♭> true ~
+     * [ false ]
+     * ```
+     *
+     * ```
+     * f♭> NaN ~
+     * [ NaN ]
+     * ```
+     */
+    'boolean | number': not
+  }),
 
   /**
    * ## `<-` (stack)

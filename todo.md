@@ -19,20 +19,43 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Test all internal words
 - [ ] Test `usr.ff` and cwd
 
+# New Words
+
+- [ ] fld, cld: https://docs.julialang.org/en/stable/stdlib/math/#Base.fld
+- [ ] isfinite, isinf, isnan
+- [ ] sign, ispos, isneg
+- [ ]  >> and >>> ?
+- [ ] sinpi, cospi?
+- [ ] conj
+
+# Docs
+
+- [ ] REPL intro
+- [ ] "complile"
+- [ ] Module loader, expanding functions, circular references.
+- [ ] Defined words
+- [ ] Child stacks, forks, etc.
+- [ ] Async
+- [ ] Dictionary "scope"
+
 # Todo:
 
+- [ ] Improve errors (FF errors should not have a JS stack)
 - [ ] Trig functions on complex
   - [x] sin, cos, tan
   - [x] sinh, cosh, tanh
   - [x] asin, acos, atan
   - [x] asin, acos with real values > 1 are complex
   - [x] asin and acos of complex infinities
+  - [ ] atan2?
+  - [ ] other derived words: sec, cot, etc.
 - [ ] Infinity and complex numbers
   - [ ] Infinity in a complex number is a ComplexInfinity
   - [x] Multiplications: https://locklessinc.com/articles/complex_multiplication/
   - [x] Divsion: https://arxiv.org/pdf/1210.4539.pdf
-- [ ] Replace decimal.js?
-- [ ] Ratios
+  - [ ] shorthand for complex values? i.e. '1+2i'?
+  - [ ] Pretty printing complex values: '5e-20+2i' -> '2i'
+- [ ] Investigate alternatives to decimal.js? Rational Numbers?
 - [ ] Pool children env?
 - [ ] Use child process/web workers for children?
 - [ ] Separate state from environment and engine?
@@ -54,3 +77,4 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - Improved `@`
   - [ ] [ ... ] [ x y z ] @ => [ ... ][x][y][z]
   - [ ] { ... } 'x.y.z' @ => [ ... ][x][y][z]
+  - [ ] JS FFI?

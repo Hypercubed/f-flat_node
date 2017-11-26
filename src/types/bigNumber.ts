@@ -149,3 +149,14 @@ typed.addConversion({
     return x.valueOf();
   }
 });
+
+typed.addType({
+  name: 'notanumber',
+  test: x => {
+    console.log('test', x);
+    if (x instanceof BigNumber) {
+      return x.isNaN();
+    }
+    return Number.isNaN(x);
+  }
+});

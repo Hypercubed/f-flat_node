@@ -53,7 +53,7 @@ f♭> "abc" "xyz" +
 ( x y -> z)
 
 
-- boolean or
+- boolean xor
 
 ```
 f♭> true true -
@@ -250,6 +250,20 @@ f♭> [ 1 2 3 ] 1 @
 ```
 f♭> { first: 'Manfred' last: 'von Thun' } 'first' @
 [ 'Manfred' ]
+```
+
+## `~` (not)
+
+- boolean (indeterminate) not
+
+```
+f♭> true ~
+[ false ]
+```
+
+```
+f♭> NaN ~
+[ NaN ]
 ```
 
 ## `<-` (stack)

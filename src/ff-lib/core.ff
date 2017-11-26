@@ -27,13 +27,12 @@ in: [ ( swap eval ) ] ;
 pop: [ 0 -1 slice ] ;
 shift: [ 1 null slice ] ;
 
-not: [ false = ] ;
 >: [ cmp 1 = ] ;
 <: [ cmp -1 = ] ;
->=: [ < not ] ;
-<=: [ > not ] ;
-=<: [ > not ] ;
-!=: [ = not ] ;
+>=: [ < ~ ] ;
+<=: [ > ~ ] ;
+=<: [ > ~ ] ;
+!=: [ = ~ ] ;
 get: [ q< @ dup null? swap q> swap choose ] ;
 zipwith: [ zipinto in ] ;
 yield: [ return suspend ] ;
@@ -62,7 +61,7 @@ sreverse: [ lreverse sum ] ;
 reverse: [ dup string? [ sreverse ] [ lreverse ] branch ] ;
 
 // functional
-chain: [ over nothing? not swap when ] ;
+chain: [ over nothing? ~ swap when ] ;
 fmap: [ eval ] ;
 reduce*: [ [ [ first ] [ rest ] bi ] dip foreach ] ;
 map-reduce: [ [ map ] dip reduce* ] ;
@@ -81,11 +80,11 @@ ifte: [ slipd branch ] ;
 if: [ slip when ] ;
 when: [ [ ] branch ] ;
 guard: [ [ keep ] >> dip branch ] ;
-orelse: [ [ null? not ] guard ] ;
+orelse: [ [ null? ~ ] guard ] ;
 keepif: [ over unit if ] ;
 loop: [ [ eval ] keep 'loop' >> when ] ;
 while: [ swap do + [ loop ] >> when ] ;
-until: [ [ [ not ] + ] dip while ] ;
+until: [ [ [ ~ ] + ] dip while ] ;
 forever: [ [ eval ] keep 'forever' >> eval ] ;
 
 appl: [ >> in ] ;

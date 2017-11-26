@@ -24,7 +24,7 @@ timing: [ timing: set-log-level ] ;
 inline: [ dup rcl expand swap def ] ;
 
 // quick check
-for-all: [ [ [ 100 times ] >> in ] dip [ not ] + filter ] ;
+for-all: [ [ [ 100 times ] >> in ] dip [ ~ ] + filter ] ;
 check-for-all: [ for-all dup empty? [ '+++ OK, passed 100 tests.' println drop ] [ [ ' Failed!' + println ] map ] branch ] ;
 
 // strings

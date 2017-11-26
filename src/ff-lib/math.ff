@@ -56,11 +56,11 @@ negitive?: [ 0 < ] ;
 zero?: [ 0 = ] ;
 divisor?: [ % zero? ] ;
 even?: [ 2 divisor? ] ;
-odd?: [ even? not ] ;
+odd?: [ even? ~ ] ;
 simple?: [ [ even? ] [ 3 divisor? ] [ 5 divisor? ] tri + + ] ;
 
 // sequences
-find-next: [ [ ++ dup ] swap + [ not ] + loop ] ;
+find-next: [ [ ++ dup ] swap + [ ~ ] + loop ] ;
 next-odd: [ [ odd? ] find-next ] ;
 next-even: [ [ even? ] find-next ] ;
 countup: [ over - [ succ ] swap ] ;
