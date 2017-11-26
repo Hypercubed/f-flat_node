@@ -85,51 +85,6 @@ export default {
     return s;
   },
 
-  /*
-   * ## `d++`
-   * increments the depth counter.  If depth > 0, words are not push to the stack as literals
-   *
-   * ```
-   * f♭> d++ drop :d--
-   * [ drop ]
-   * ```
-   /
-  'd++': function(this: StackEnv) {
-    this.depth++;
-  }, */
-
-  /*
-   * ## `d--`
-   * decrements the d counter
-   /
-  'd--': function(this: StackEnv) {
-    this.depth = Math.max(0, this.depth - 1);
-  }, */
-
-  /*
-   * ## `quote`
-   * pushes a quotation maker onto the stack
-   *
-   * ( -> #( )
-   /
-  quote: quoteSymbol, */
-
-  /*
-   * ## `dequote`
-   * collects stack items upto the last quote marker
-   *
-   * ( #( ... -> [ ... ] )
-   /
-  dequote (this: StackEnv, s: StackValue): StackArray {
-    const r: StackArray = [];
-    while (this.stack.length > 0 && s !== quoteSymbol) {
-      r.unshift(s);
-      s = this.stack[this.stack.length - 1];
-      this.stack = pop(this.stack);
-    }
-    return r;
-  }, */
-
   /**
    * ## `depth`
    * pushes the size of the current stack

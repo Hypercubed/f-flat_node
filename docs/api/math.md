@@ -4,6 +4,8 @@
 
 ## `im`
 
+## `im`
+
 ## `div`
 
 - integer division
@@ -23,7 +25,6 @@
 ## `asin`
 
 ## `acos`
-
 ## `atan`
 
 ## `atan2`

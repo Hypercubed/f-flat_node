@@ -30,23 +30,6 @@ f♭> 1 2 3 stack
 [ [ 1 2 3 ] ]
 ```
 
-## `d++`
-increments the depth counter.  If depth > 0, words are not push to the stack as literals
-
-```
-f♭> d++ drop :d--
-[ drop ]
-```
-## `d--`
-decrements the d counter
-## `quote`
-pushes a quotation maker onto the stack
-
-( -> #( )
-## `dequote`
-collects stack items upto the last quote marker
-
-( #( ... -> [ ... ] )
 ## `depth`
 pushes the size of the current stack
 

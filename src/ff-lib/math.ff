@@ -9,7 +9,7 @@ shuffle: using
 acos: [ asin 2 * pi swap - 1 2 / * ] ;
 // atan: [ dup dup * 1 + sqrt / asin ] ;
 
-// lazy constants
+// lazy constants to match precision
 pi: [ 1 atan 4 * ] ;
 e: [ 1 exp ] ;              // Euler's number
 ln2: [ 2 ln ] ;             // natural logarithm of 2
