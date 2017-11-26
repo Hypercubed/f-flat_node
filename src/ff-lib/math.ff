@@ -48,8 +48,8 @@ tanh: [ 2 * exp pred swap ++ / ] ;
 // inverse hyperbolic trig
 complex: [ 0 i * + ] ;
 asinh: [ complex dup dup * ++ sqrt + ln ] ;
-acosh: [ complex dup dup * -- sqrt + ln ] ;
-atanh: [ complex 1 swap dup [ + 1 ] dip - / ln 0.5 * ] ;
+acosh: [ complex dup -- sqrt over 1 + sqrt * + ln ] ;
+atanh: [ i * atan i / ] ;
 
 // inquisitive
 integer?: [ dup [ floor = ] [ im 0 = ] bi * ] ;

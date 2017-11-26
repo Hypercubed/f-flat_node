@@ -173,8 +173,8 @@ test('hyper trig of complex', t => {
 
 test('inverse hyper trig of complex', t => {
   t.deepEqual(fSyncString('i asinh'), '0+1.5707963267948966192i');
-  t.deepEqual(fSyncString('i acosh'), '0.88137358701954302523+1.5707963267948966192i');
-  t.deepEqual(fSyncString('i atanh'), '0+0.7853981633974483096i');
+  t.deepEqual(fSyncString('i acosh'), '0.88137358701954302519+1.5707963267948966192i');
+  t.deepEqual(fSyncString('i atanh'), '0+0.78539816339744830962i');
 });
 
 test('trig out of range returns complex values', t => {
@@ -256,6 +256,6 @@ test('hyperbolic inverse trig functions on complex infinities', t => {
   t.deepEqual(fSyncString('infinity i * acosh'), 'Infinity');
   t.deepEqual(fSyncString('infinity i * acosh'), 'Infinity');
 
-  // t.deepEqual(fSyncString('infinity i * atanh'), '0+1.5707963267948966193i');
-  // t.deepEqual(fSyncString('infinity i * atanh'), '0-1.5707963267948966193i');
+  t.deepEqual(fSyncString('infinity i * atanh'), '0+1.5707963267948966192i');
+  t.deepEqual(fSyncString('infinity i * -1 * atanh'), '0-1.5707963267948966192i');
 });

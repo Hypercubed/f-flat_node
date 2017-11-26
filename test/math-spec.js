@@ -251,27 +251,27 @@ test('acosh', t => {
   t.deepEqual(fSyncString('1 acosh'), '0');
   t.deepEqual(fSyncString('-1 acosh'), '0+3.1415926535897932385i');
   t.deepEqual(fSyncString('pi acosh'), '1.811526272460853107');
-  t.deepEqual(fSyncString('pi -1 * acosh'), '-1.8115262724608531069+3.1415926535897932385i');
+  t.deepEqual(fSyncString('pi -1 * acosh'), '1.811526272460853107+3.1415926535897932385i');
   t.deepEqual(fSyncString('1 2 / acosh'), '-2e-20+1.0471975511965977462i');
   t.deepEqual(fSyncString('-1 2 / acosh'), '-2e-20+2.0943951023931954923i');
 });
 
 test('acosh of infinities', t => {
   t.deepEqual(fSyncString('infinity acosh'), 'Infinity');
-  // t.deepEqual(fSyncString('infinity -1 * acosh'), 'Infinity');
+  t.deepEqual(fSyncString('infinity -1 * acosh'), 'Infinity');
 });
 
 test('atanh', t => {
   t.deepEqual(fSyncString('0 atanh'), '0');
   t.deepEqual(fSyncString('1 atanh'), 'Infinity');
   t.deepEqual(fSyncString('-1 atanh'), '-Infinity');
-  t.deepEqual(fSyncString('pi atanh'), '0.32976531495669910763-1.5707963267948966193i');
-  t.deepEqual(fSyncString('pi -1 * atanh'), '-0.32976531495669910762+1.5707963267948966193i');
+  t.deepEqual(fSyncString('pi atanh'), '0.3297653149566991076-1.5707963267948966193i');
+  t.deepEqual(fSyncString('pi -1 * atanh'), '-0.3297653149566991076+1.5707963267948966193i');
   t.deepEqual(fSyncString('1 2 / atanh'), '0.5493061443340548457');
   t.deepEqual(fSyncString('-1 2 / atanh'), '-0.5493061443340548457');
 });
 
-test.skip('atanh of infinities', t => {
-  t.deepEqual(fSyncString('infinity atanh'), '-1.57079632679489661923132169163975144209858469968755291048... i');
-  t.deepEqual(fSyncString('infinity -1 * atanh'), '1.57079632679489661923132169163975144209858469968755291048... i');
+test('atanh of infinities', t => {
+  t.deepEqual(fSyncString('infinity atanh'), '0-1.5707963267948966192i');
+  t.deepEqual(fSyncString('infinity -1 * atanh'), '0+1.5707963267948966192i');
 });
