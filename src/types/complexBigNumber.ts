@@ -4,58 +4,6 @@ import { g, c } from './gamma';
 
 const precision = Math.pow(10, -<number>BigNumber.precision + 5);
 
-function isinf(u: BigNumber) {
-  return !u.isFinite();
-}
-
-function copysign(u: number, v: BigNumber) {
-  const sign = (v as any).isPositive() ? +1 : -1;
-  return new BigNumber(u).times(sign);
-}
-
-// We have special artimitic for complex numebrs to handel NaN and infinities
-function dplus(a: BigNumber | number, b: BigNumber | number) {
-  a = BigNumber(a);
-  b = BigNumber(b);
-  if (isinf(a) || isinf(b)) {
-    a = copysign(isinf(a) ? 1 : 0, a);
-    b = copysign(isinf(b) ? 1 : 0, b);
-    const re = a.plus(b);
-    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
-  }
-  return a.plus(b);
-}
-
-function dminus(a: BigNumber, b: BigNumber): BigNumber {
-  if (isinf(a) || isinf(b)) {
-    a = copysign(isinf(a) ? 1 : 0, a);
-    b = copysign(isinf(b) ? 1 : 0, b);
-    const re = a.minus(b);
-    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
-  }
-  return a.minus(b);
-}
-
-function ddiv(a: BigNumber, b: BigNumber): BigNumber {
-  if (isinf(a) || isinf(b)) {
-    a = copysign(a.isZero() ? 0 : 1, a);
-    b = copysign(b.isZero() ? 0 : 1, b);
-    const re = a.div(b);
-    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
-  }
-  return a.div(b);
-}
-
-function dtimes(a: BigNumber, b: BigNumber): BigNumber {
-  if (isinf(a) || isinf(b)) {
-    a = copysign(a.isZero() ? 0 : 1, a);
-    b = copysign(b.isZero() ? 0 : 1, b);
-    const re = a.times(b);
-    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
-  }
-  return a.times(b);
-}
-
 export class Complex {
   static type = '@@complex';
 
@@ -69,12 +17,17 @@ export class Complex {
     this.re = new BigNumber(re);
     this.im = new BigNumber(im);
 
-    /* if (this.re.isNaN() && this.im.isNaN()) {
-      this.im = zero;
-    } else {
-      if (this.re.isNaN()) this.re = zero;
-      if (this.im.isNaN()) this.im = zero;
-    } */
+    if (this.re.isNaN() && this.im.isNaN()) {  // NaN+NaNi -> NaN
+      this.im = copysign(0, this.im);
+      Object.freeze(this);
+      return;
+    }
+
+    if (this.re.isNaN()) this.re = copysign(0, this.re);  // NaN+bi -> NaNi
+    if (this.im.isNaN()) this.im = copysign(0, this.im);  // a+NaNi -> NaN
+
+    if (isinf(this.re)) this.im = copysign(0, this.im);  // inf+bi -> +-Inf
+    if (isinf(this.im)) this.re = copysign(0, this.re);  // a+infi -> +-Infi
 
     Object.freeze(this);
   }
@@ -200,58 +153,19 @@ export class Complex {
   times(rhs: Complex | BigNumber | number): Complex {
     rhs = new Complex(<any>rhs);
 
-    let a = this.re;
-    let b = this.im;
-    let c = rhs.re;
-    let d = rhs.im;
+    const a = this.re;
+    const b = this.im;
+    const c = rhs.re;
+    const d = rhs.im;
 
-    const ac = a.times(c);
-    const bd = b.times(d);
-    const bc = b.times(c);
-    const ad = a.times(d);
+    const ac = dtimes(a, c);
+    const bd = dtimes(b, d);
+    const bc = dtimes(b, c);
+    const ad = dtimes(a, d);
 
-    let x = dminus(ac, bd); // ac.minus(bd);
-    let y = dminus(dminus(dplus(a, b).times(dplus(c, d)), ac), bd); // a.plus(b).times(c.plus(d)).minus(ac).minus(bd); // ad.plus(bc);
-
-    let recalc = false;
-
-    // handle infinity, see https://locklessinc.com/articles/complex_multiplication/
-    if (isinf(a) || isinf(b)) { // lhs is infinite.
-      a = copysign(isinf(a) ? 1 : 0, a);
-      b = copysign(isinf(b) ? 1 : 0, b);
-      if (c.isNaN()) c = copysign(0, c);
-      if (c.isNaN()) d = copysign(0, d);
-      recalc = true;
-    }
-
-    if (isinf(c) || isinf(d)) { // rhs is infinite.
-      c = copysign(isinf(c) ? 1 : 0, c);
-      d = copysign(isinf(d) ? 1 : 0, d);
-      if (a.isNaN()) a = copysign(0, a);
-      if (b.isNaN()) b = copysign(0, b);
-      recalc = true;
-    }
-
-    if (!recalc && (isinf(ac) || isinf(bd) || isinf(ad) || isinf(bc))) { // Recover infinities from overflow by changing NaNs to 0.
-      if (a.isNaN()) a = copysign(0, a);
-      if (b.isNaN()) b = copysign(0, b);
-      if (c.isNaN()) c = copysign(0, c);
-      if (d.isNaN()) d = copysign(0, d);
-      recalc = true;
-    }
-
-    if (recalc) {
-      const ac = a.times(c);
-      const bd = b.times(d);
-      const bc = b.times(c);
-      const ad = a.times(d);
-
-      x = ac.minus(bd);
-      y = dminus(dminus(dplus(a, b).times(dplus(c, d)), ac), bd); // a.plus(b).times(c.plus(d)).minus(ac).minus(bd); // ad.plus(bc);
-
-      x = x.isZero() ? x : x.times(Infinity);
-      y = y.isZero() ? y : y.times(Infinity);
-    }
+    const x = dminus(ac, bd);
+    const u = dtimes(dplus(a, b), dplus(c, d));
+    const y = dminus(dminus(u, ac), bd);
 
     return new Complex(x, y);
   }
@@ -260,52 +174,40 @@ export class Complex {
     // Numerical recipes in C (2nd ed.): the art of scientific computing, eq 5.4.5
     rhs = new Complex(rhs);
 
-    let a = this.re;
-    let b = this.im;
-    let c = rhs.re;
-    let d = rhs.im;
+    const a = this.re;
+    const b = this.im;
+    const c = rhs.re;
+    const d = rhs.im;
 
     const cc = c.abs();
     const dd = d.abs();
 
     let u, v, w;
     if (cc.gte(dd)) {
-      const doc = ddiv(d, c);
-      u = dplus(a, dtimes(b, doc)); // a.plus(b.times(doc));
-      v = dminus(b, dtimes(a, doc)); // b.minus(a.times(doc));
-      w = dplus(c, dtimes(d, doc)); // c.plus(d.times(doc));
+      const den = ddiv(d, c);
+      u = dplus(a, dtimes(b, den)); // a.plus(b.times(den));
+      v = dminus(b, dtimes(a, den)); // b.minus(a.times(den));
+      w = dplus(c, dtimes(d, den)); // c.plus(d.times(den));
     } else {
-      const cod = ddiv(c, d);
-      u = dplus(dtimes(a, cod), b); // a.times(cod).plus(b);
-      v = dminus(dtimes(b, cod), a); // b.times(cod).minus(a);
-      w = dplus(dtimes(c, cod), d); // c.times(cod).plus(d);
+      const den = ddiv(c, d);
+      u = dplus(dtimes(a, den), b); // a.times(den).plus(b);
+      v = dminus(dtimes(b, den), a); // b.times(den).minus(a);
+      w = dplus(dtimes(c, den), d); // c.times(den).plus(d);
     }
     return new Complex(ddiv(u, w), ddiv(v, w));
   }
 
   plus(rhs: Complex | number): Complex {
     rhs = new Complex(rhs);
-
     const re = dplus(this.re, rhs.re);
     const im = dplus(this.im, rhs.im);
-
-    if (isinf(re)) {
-      return new Complex((re as any).isPos() ? Infinity : -Infinity, 0);
-    }
-
     return new Complex(re, im);
   }
 
   minus(rhs: Complex | number): Complex {
     rhs = new Complex(rhs);
-
     const re = dminus(this.re, rhs.re);
     const im = dminus(this.im, rhs.im);
-
-    if (isinf(re)) {
-      return new Complex((re as any).isPos() ? Infinity : -Infinity, 0);
-    }
-
     return new Complex(re, im);
   }
 
@@ -350,22 +252,7 @@ export class Complex {
     const i = new BigNumber(this.im);
     let im = r.times((i as any).sin());
     let re = r.times((i as any).cos()); // bug in Decimal.js causes t.im to mutate after cosine
-    return new Complex(re, im).fixNaN();
-  }
-
-  fixNaN() {
-    let re = this.re;
-    let im = this.im;
-    if (re.isNaN() && im.isNaN()) {
-      return new Complex(NaN, 0);
-    }
-    if (re.isNaN()) {
-      return new Complex(zero, im);
-    }
-    if (im.isNaN()) {
-      return new Complex(re, zero);
-    }
-    return this;
+    return new Complex(re, im);
   }
 
   neg(): Complex {
@@ -550,3 +437,55 @@ typed.addConversion({
     return new Complex(x, 0);
   }
 });
+
+function isinf(u: BigNumber) {
+  return !u.isFinite();
+}
+
+function copysign(u: number, v: BigNumber) {
+  const sign = (v as any).isPositive() ? +1 : -1;
+  return new BigNumber(u).times(sign);
+}
+
+// We have special artimitic for complex numebrs to handel NaN and infinities
+function dplus(a: BigNumber | number, b: BigNumber | number) {
+  a = BigNumber(a);
+  b = BigNumber(b);
+  if (isinf(a) || isinf(b)) {
+    a = copysign(isinf(a) ? 1 : 0, a);
+    b = copysign(isinf(b) ? 1 : 0, b);
+    const re = a.plus(b);
+    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
+  }
+  return a.plus(b);
+}
+
+function dminus(a: BigNumber, b: BigNumber): BigNumber {
+  if (isinf(a) || isinf(b)) {
+    a = copysign(isinf(a) ? 1 : 0, a);
+    b = copysign(isinf(b) ? 1 : 0, b);
+    const re = a.minus(b);
+    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
+  }
+  return a.minus(b);
+}
+
+function ddiv(a: BigNumber, b: BigNumber): BigNumber {
+  if (isinf(a) || isinf(b)) {
+    a = copysign(a.isZero() ? 0 : 1, a);
+    b = copysign(b.isZero() ? 0 : 1, b);
+    const re = a.div(b);
+    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
+  }
+  return a.div(b);
+}
+
+function dtimes(a: BigNumber, b: BigNumber): BigNumber {
+  if (isinf(a) || isinf(b)) {
+    a = copysign(a.isZero() ? 0 : 1, a);
+    b = copysign(b.isZero() ? 0 : 1, b);
+    const re = a.times(b);
+    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
+  }
+  return a.times(b);
+}

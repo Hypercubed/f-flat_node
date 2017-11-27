@@ -1,7 +1,9 @@
 import { freeze, splice, push } from 'icepick';
+import { writeFileSync } from 'fs';
 
 import { typed, Future, Seq, StackValue, StackArray, Action } from '../types';
 import { StackEnv } from '../env';
+import { log } from '../utils';
 
 typed.addConversion({
   from: 'string',
@@ -16,23 +18,6 @@ typed.addConversion({
  * # Internal Experimental Words
  */
 export default {
-  /*
-  'set-module': function(this: StackEnv, a) {
-    this.module = a;
-    this.dict[a] = {}; // maybe should be root?
-  },
-
-  'get-module': function() {
-    return this.module;
-  },
-
-  /**
-  'unset-module': function() {
-    Reflect.deleteProperty(this, 'module');
-  }, */
-
-  // 'throw': this.throw,
-
   /**
    * ## `clock`
    */
@@ -53,16 +38,6 @@ export default {
    * ## `parse-json`
    */
   'parse-json': (a: string) => JSON.parse(a), // global.JSON.parse
-
-  /* 'call': function call (a, b) {
-    return Reflect.apply(a, null, [b]);
-  },
-  'apply': function apply (a, b) {
-    return Reflect.apply(a, null, b);
-  },
-  '|>': function call (a, b) {
-    return Reflect.apply(b, null, [a]);
-  },  // danger */
 
   /**
    * ## `regexp`
@@ -99,22 +74,6 @@ export default {
   '||>': typed('ap', {
     'Array, Function': (a: any[], b: Function) => Reflect.apply(b, null, a)
   }),
-
-  /**
-   * ## `fork`
-   * evalues the quote in a child environment
-   *
-   * ( [A] -> [a] )
-   *
-   * ```
-   * f♭> [ 1 2 * ] fork
-   * [ [ 2 ] ]
-   * ```
-   */
-  fork(this: StackEnv, a: StackValue): StackArray {
-    // like in with child scope
-    return this.createChild().eval(a).stack;
-  },
 
   /**
    * ## `spawn`
@@ -210,5 +169,24 @@ export default {
    */
   race(this: StackEnv, arr: StackArray): Promise<StackArray> {
     return Promise.race(arr.map(a => this.createChildPromise(a)));
+  },
+
+  /**
+   * ## `sesssave`
+   */
+  sesssave(this: StackEnv) {
+    log.debug('saving session');
+    writeFileSync(
+      'session',
+      JSON.stringify(
+        {
+          dict: this.dict,
+          stack: this.stack
+        },
+        null,
+        2
+      ),
+      'utf8'
+    );
   }
 };

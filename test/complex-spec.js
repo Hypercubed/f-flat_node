@@ -41,6 +41,11 @@ test('should perform basic arithmetic, cont', t => {
   t.deepEqual(fSync('i dup *'), [-1], 'should square complex');
 });
 
+test('should calculate complex conj', t => {
+  t.deepEqual(fSync('2 3 i * + conj'), [new Complex(2, -3).toJSON()]);
+  t.deepEqual(fSync('2 -3 i * + conj'), [new Complex(2, 3).toJSON()]);
+});
+
 test('should evaluate Euler\'s Formula', t => {
   t.deepEqual(fSync('i pi * exp 1 + re'), [0]);
   t.truthy(nearly(new F().eval('i pi * exp 1 + im').toArray()[0], [0]));

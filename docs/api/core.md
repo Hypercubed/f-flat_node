@@ -55,6 +55,17 @@ f♭> [ 1 2 * ] eval
 [ 2 ]
 ```
 
+## `fork`
+
+evalues the quote in a child environment
+
+( [A] -> [a] )
+
+```
+f♭> [ 1 2 * ] fork
+[ [ 2 ] ]
+```
+
 ## `drop`
 drops the item on the bottom of the stack
 

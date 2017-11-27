@@ -9,6 +9,9 @@ const erf = require('compute-erf');
 export default {
   /**
    * ## `re`
+   *
+   * Real part of a value
+   *
    */
   re: typed('re', {
     'BigNumber | number': a => a,
@@ -18,6 +21,9 @@ export default {
 
   /**
    * ## `im`
+   *
+   * Imaginary part of a value
+   *
    */
   im: typed('im', {
     'BigNumber | number': a => 0,
@@ -26,7 +32,10 @@ export default {
   }),
 
   /**
-   * ## `im`
+   * ## `arg`
+   *
+   * Argument (polar angle) of a complex number
+   *
    */
   arg: typed('arg', {
     'BigNumber': a => (a.isPos() || a.isZero()) ? 0 : pi,
@@ -38,7 +47,7 @@ export default {
   /**
    * ## `div`
    *
-   * - integer division
+   * Integer division
    */
   div: typed('div', {
     // integer division
@@ -54,11 +63,13 @@ export default {
   }),
 
   /**
-   * ## `rem`
+   * ## `%` (modulo)
+   *
+   * Remainder after division
+   *
    */
-  rem: typed('rem', {
-    // remainder
-    'BigNumber | Complex, BigNumber | Complex | number': (a, b) => a.modulo(b),
+  '%': typed('rem', {
+    'BigNumber | Complex, BigNumber | number': (lhs, rhs) => lhs.modulo(rhs),
     'Array | string, number': (a, b) => {
       b = Number(a.length / b) | 0;
       if (b === 0 || b > a.length) {
@@ -69,14 +80,10 @@ export default {
   }),
 
   /**
-   * ## `mod`
-   */
-  '%': typed('mod', {
-    'BigNumber | Complex, BigNumber | number': (lhs, rhs) => lhs.modulo(rhs)
-  }),
-
-  /**
    * ## `abs`
+   *
+   * Absolute value and complex magnitude
+   *
    */
   abs: typed('abs', {
     'BigNumber | Complex': a => a.abs(),
@@ -85,6 +92,9 @@ export default {
 
   /**
    * ## `cos`
+   *
+   * Cosine of argument in radians
+   *
    */
   cos: typed('cos', {
     'Complex': a => a.cos(),
@@ -93,6 +103,9 @@ export default {
 
   /**
    * ## `sin`
+   *
+   * Sine of argument in radians
+   *
    */
   sin: typed('sin', {
     'Complex': a => a.sin(),
@@ -101,6 +114,9 @@ export default {
 
   /**
    * ## `tan`
+   *
+   * Tangent of argument in radians
+   *
    */
   tan: typed('tan', {
     'Complex': a => a.tan(),
@@ -109,6 +125,9 @@ export default {
 
   /**
    * ## `asin`
+   *
+   * Inverse sine in radians
+   *
    */
   asin: typed('asin', {
     'Complex': a => a.asin(),
@@ -120,19 +139,10 @@ export default {
   }),
 
   /*
-   * ## `acos`
-   /
-  / acos: typed('acos', {
-    'Complex': a => a.acos(),
-    'BigNumber | number': a => {
-      if (a === Infinity || a === -Infinity) return new Complex(0, a);
-      if (a > 1) return new Complex(a).acos();
-      return (BigNumber as any).acos(a);
-    }
-  }), */
-
-  /*
    * ## `atan`
+   *
+   * Inverse tangent in radians
+   *
    */
   atan: typed('atan', {
     'Complex': a => a.atan(),
@@ -141,11 +151,17 @@ export default {
 
   /**
    * ## `atan2`
+   *
+   * Four-quadrant inverse tangent
+   *
    */
   atan2: (a, b) => (BigNumber as any).atan2(a, b),
 
   /**
    * ## `round`
+   *
+   * Round to nearest decimal or integer
+   *
    */
   round: typed('round', {
     'BigNumber | Complex': a => a.round()
@@ -153,6 +169,9 @@ export default {
 
   /**
    * ## `floor`
+   *
+   * Round toward negative infinity
+   *
    */
   floor: typed('floor', {
     'BigNumber | Complex': a => a.floor() // ,
@@ -161,6 +180,9 @@ export default {
 
   /**
    * ## `ceil`
+   *
+   * Round toward positive infinity
+   *
    */
   ceil: typed('ceil', {
     'BigNumber | Complex': a => a.ceil()
@@ -168,6 +190,8 @@ export default {
 
   /**
    * ## `sqrt`
+   *
+   * Square root
    */
   sqrt: typed('sqrt', {
     Complex: x => {
@@ -179,17 +203,36 @@ export default {
   }),
 
   /**
+   * ## `conj`
+   *
+   * Complex conjugate
+   *
+   */
+  conj: typed('conj', {
+    'Complex': a => a.conj()
+  }),
+
+  /**
    * ## `max`
+   *
+   * Largest value
+   *
    */
   max: (a, b, ...c) => BigNumber.max(a, b, ...c),
 
   /**
    * ## `min`
+   *
+   * Smallest value
+   *
    */
   min: (a, b, ...c) => BigNumber.min(a, b, ...c),
 
   /**
    * ## `exp`
+   *
+   * Exponential
+   *
    */
   exp: typed('exp', {
     'BigNumber | Complex': x => x.exp()
@@ -197,6 +240,9 @@ export default {
 
   /**
    * ## `gamma`
+   *
+   * Gamma function
+   *
    */
   gamma: typed('gamma', {
     'BigNumber | Complex': a => a.gamma()
@@ -204,6 +250,9 @@ export default {
 
   /**
    * ## `nemes`
+   *
+   * Nemes Gamma Function
+   *
    */
   nemes: typed('nemes', {
     BigNumber: a => a.nemesClosed()
@@ -211,18 +260,27 @@ export default {
 
   /**
    * ## `spouge`
+   *
+   * Sponge function
+   *
    */
-  spouge: typed('nemes', {
+  spouge: typed('spouge', {
     BigNumber: a => a.spouge()
   }),
 
   /**
    * ## `erf`
+   *
+   * Error function
+   *
    */
-  erf, // todo: big
+  erf, // todo: BigNumber. Complex
 
   /**
    * ## `ln`
+   *
+   * Natural logarithm
+   *
    */
   ln: typed('ln', {
     'Complex': a => a.ln(),
@@ -234,6 +292,10 @@ export default {
 
   /**
    * ## `^` (pow)
+   *
+   * pow function
+   * returns the base to the exponent power, that is, base^exponent
+   *
    */
   '^': typed('pow', {
     // boolean or?
@@ -246,14 +308,27 @@ export default {
 
   /**
    * ## `rand`
+   *
+   * pseudo-random number in the range [0, 1)
+   *
    */
   rand: Math.random,
+
+  /**
+   * ## `set-precision`
+   *
+   * Sets the internal decimal precision
+   *
+   */
   'set-precision': x => {
     BigNumber.config({ precision: Number(x) });
   },
 
   /**
    * ## `get-precision`
+   *
+   * Gets the internal decimal precision
+   *
    */
   'get-precision': () => BigNumber.precision
 };

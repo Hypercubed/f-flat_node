@@ -125,6 +125,22 @@ export default {
   }),
 
   /**
+   * ## `fork`
+   *
+   * evalues the quote in a child environment
+   *
+   * ( [A] -> [a] )
+   *
+   * ```
+   * f♭> [ 1 2 * ] fork
+   * [ [ 2 ] ]
+   * ```
+   */
+  fork(this: StackEnv, a: StackValue): StackArray {
+    return this.createChild().eval(a).stack;
+  },
+
+  /**
    * ## `drop`
    * drops the item on the bottom of the stack
    *

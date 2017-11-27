@@ -51,17 +51,26 @@ export default {
 
   /**
    * ## `os`
+   *
+   * returns a string identifying the operating system platform on which the Node.js process is running
+   * see https://nodejs.org/api/process.html#process_process_platform
    */
   os: () => process.platform,
 
 
   /**
    * ## `cwd`
+   *
+   * returns the current working directory of the process
+   *
    */
   cwd: () => process.cwd(),
 
   /**
    * ## `println`
+   *
+   * Prints the value followed by (newline)
+   *
    */
   println: (a, ...b) => {
     stdout.clearLine();
@@ -71,6 +80,9 @@ export default {
 
   /**
    * ## `print`
+   *
+   * Prints the value
+   *
    */
   print: (a, ...b) => {
     stdout.clearLine();
@@ -80,6 +92,9 @@ export default {
 
   /**
    * ## `?`
+   *
+   * Prints the value followed by (newline)
+   *
    */
   '?': (a, ...b) => {
     stdout.clearLine();
@@ -88,14 +103,20 @@ export default {
   },
 
   /**
-   * ## `bye`
+   * ## `exit`
+   *
+   * terminate the process synchronously with an a status code
+   *
    */
-  bye: () => {
-    process.exit(0);
+  exit: a => {
+    process.exit(Number(a));
   },
 
   /**
    * ## `rand-u32`
+   *
+   * Generates cryptographically strong pseudo-random UInt32 value
+   *
    */
   'rand-u32': function randU32() {
     return randomBytes(4).readUInt32BE(0, true);
@@ -103,31 +124,52 @@ export default {
 
   /**
    * ## `env`
+   *
+   * returns an object containing the user environment
+   * See https://nodejs.org/api/process.html#process_process_env
+   *
    */
   env: () => process.env,
 
   /**
    * ## `dirname`
+   *
+   * returns the directory name of a path, similar to the Unix dirname command. 
+   * See https://nodejs.org/api/path.html#path_path_dirname_path
+   *
    */
   dirname: (name: string) => dirname(name),
 
   /**
    * ## `path-join`
+   *
+   * joins all given path segments together using the platform specific separator as a delimiter
+   * See https://nodejs.org/api/path.html#path_path_join_paths
+   *
    */
   'path-join': (args: string[]) => join(...args),
 
   /**
    * ## `resolve`
+   *
+   * returns a URL href releative to teh current base
+   *
    */
   resolve: (name: string) => resolve(name).href,
 
   /**
    * ## `exists`
+   *
+   * Returns true if the file exists, false otherwise.
+   *
    */
   exists: (name: string) => existsSync(name),
 
   /**
    * ## `read`
+   *
+   * Pushes teh content of a fiel as a utf8 string
+   *
    */
   read(name: string): string {
     const url = resolve(name);
@@ -135,24 +177,5 @@ export default {
       return readFileSync(url, 'utf8');
     }
     return fetch(url.href).then(res => res.text());
-  },
-
-  /**
-   * ## `sesssave`
-   */
-  sesssave(this: StackEnv) {
-    log.debug('saving session');
-    writeFileSync(
-      'session',
-      JSON.stringify(
-        {
-          dict: this.dict,
-          stack: this.stack
-        },
-        null,
-        2
-      ),
-      'utf8'
-    );
   }
 };

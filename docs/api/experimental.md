@@ -17,16 +17,6 @@ convert string to RegExp
 
 ## `||>` (apply)
 
-## `fork`
-evalues the quote in a child environment
-
-( [A] -> [a] )
-
-```
-f♭> [ 1 2 * ] fork
-[ [ 2 ] ]
-```
-
 ## `spawn`
 evalues the quote in a child environment, returns a future
 
@@ -76,3 +66,5 @@ executes each element in a child environment
 executes each element in a child environment, returns first to finish
 
 ( [ A B C ]-> [x])
+
+## `sesssave`
