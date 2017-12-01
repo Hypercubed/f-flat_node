@@ -19,20 +19,20 @@ test('yield', t => {
   const plus = new Action('+').toJSON();
   t.deepEqual(
     fSync('[1 2 yield 4 5 yield 6 7] fork'),
-    [1, 2, [4, 5, yieldAction, 6, 7]],
+    [[1, 2], [4, 5, yieldAction, 6, 7]],
     'yield and fork'
   );
   t.deepEqual(
     fSync('[1 2 yield 4 5 yield 6 7] fork fork'),
-    [1, 2, 4, 5, [6, 7]],
+    [[1, 2], [4, 5], [6, 7]],
     'yield and fork'
   );
   t.deepEqual(
     fSync('[1 2 + yield 4 5 + ] fork'),
-    [3, [4, 5, plus]],
+    [ [3], [4, 5, plus]],
     'yield and fork'
   );
-  t.deepEqual(fSync('[1 2 + yield 4 5 + ] fork drop'), [3], 'yield and next');
+  t.deepEqual(fSync('[1 2 + yield 4 5 + ] fork drop'), [[3]], 'yield and next');
 });
 
 /* test('multiple yields', t => {

@@ -245,7 +245,7 @@ export default {
    * [ 1 ]
    * ```
    */
-  indexof: (a: StackArray, b: number | string) => a.indexOf(b), // doesn't work with bignumber!!!
+  indexof: (a: StackArray, b: number | string) => a.indexOf(b), // doesn't work with Decimal!!!
 
   /* 'repeat': (a, b) => {
     return new Action(arrayRepeat(a, b));

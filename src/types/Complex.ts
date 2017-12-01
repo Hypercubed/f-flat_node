@@ -1,21 +1,19 @@
 import { typed } from './typed';
-import { BigNumber, zero, pi, twoPiSqrt } from './bigNumber';
+import { Decimal, gammaDecimal, zero, pi, twoPiSqrt } from './Decimal';
 import { g, c } from './gamma';
 
-const precision = Math.pow(10, -<number>BigNumber.precision + 5);
+const precision = Math.pow(10, -<number>Decimal.precision + 5);
 
 export class Complex {
-  static type = '@@complex';
+  re: Decimal;
+  im: Decimal;
 
-  re: BigNumber;
-  im: BigNumber;
-
-  constructor(re: number | BigNumber | Complex, im: number | BigNumber = 0) {
+  constructor(re: number | Decimal | Complex, im: number | Decimal = 0) {
     if (re instanceof Complex) {
       return re;
     }
-    this.re = new BigNumber(re);
-    this.im = new BigNumber(im);
+    this.re = new Decimal(re);
+    this.im = new Decimal(im);
 
     if (this.re.isNaN() && this.im.isNaN()) {  // NaN+NaNi -> NaN
       this.im = copysign(0, this.im);
@@ -32,7 +30,7 @@ export class Complex {
     Object.freeze(this);
   }
 
-  empty(): BigNumber {
+  empty(): Decimal {
     return zero;
   }
 
@@ -64,15 +62,15 @@ export class Complex {
     return this.re.equals(rhs.re) && this.im.equals(rhs.im);
   }
 
-  dotProduct(rhs: Complex): BigNumber {
+  dotProduct(rhs: Complex): Decimal {
     return this.re.times(rhs.re).plus(this.im.times(rhs.im));
   }
 
-  _y(rhs: Complex): BigNumber {
+  _y(rhs: Complex): Decimal {
     return this.im.times(rhs.re).minus(this.re.times(rhs.im));
   }
 
-  abs(): BigNumber {
+  abs(): Decimal {
     // Numerical recipes in C (2nd ed.): the art of scientific computing, eq 5.4.4
     const a = this.re;
     const b = this.im;
@@ -146,11 +144,11 @@ export class Complex {
     return new Complex(this.re.round(), this.im.round());
   }
 
-  arg(): BigNumber {
-    return (BigNumber as any).atan2(this.im, this.re);
+  arg(): Decimal {
+    return (Decimal as any).atan2(this.im, this.re);
   }
 
-  times(rhs: Complex | BigNumber | number): Complex {
+  times(rhs: Complex | Decimal | number): Complex {
     rhs = new Complex(<any>rhs);
 
     const a = this.re;
@@ -237,19 +235,19 @@ export class Complex {
 
   /* min (...args) {
     args = args.map(x => x.abs());
-    const min = BigNumber.min.apply(BigNumber, args);
+    const min = Decimal.min.apply(Decimal, args);
     return arguments[args.indexOf(min)];
   }
 
   max (...args) {
     args = args.map(x => x.abs());
-    const max = BigNumber.max.apply(BigNumber, args);
+    const max = Decimal.max.apply(Decimal, args);
     return arguments[args.indexOf(max)];
   }*/
 
   exp(): Complex {
     const r = this.re.exp();
-    const i = new BigNumber(this.im);
+    const i = new Decimal(this.im);
     let im = r.times((i as any).sin());
     let re = r.times((i as any).cos()); // bug in Decimal.js causes t.im to mutate after cosine
     return new Complex(re, im);
@@ -278,7 +276,7 @@ export class Complex {
         .abs()
         .lessThan(precision)
     ) {
-      return this.abs().times((BigNumber as any).sign(this.re));
+      return this.abs().times((Decimal as any).sign(this.re));
     }
     return this;
   }
@@ -362,7 +360,7 @@ export class Complex {
     // Ag(z) = c0 + sum(k=1..N, ck/(z+k))
 
     if (this.im.isZero()) {
-      return (this.re as any).gamma();
+      return gammaDecimal(this.re);
     }
 
     const z = this.minus(1);
@@ -431,61 +429,61 @@ typed.addConversion({
 });
 
 typed.addConversion({
-  from: 'BigNumber',
+  from: 'Decimal',
   to: 'Complex',
   convert: x => {
     return new Complex(x, 0);
   }
 });
 
-function isinf(u: BigNumber) {
+function isinf(u: Decimal) {
   return !u.isFinite();
 }
 
-function copysign(u: number, v: BigNumber) {
+function copysign(u: number, v: Decimal) {
   const sign = (v as any).isPositive() ? +1 : -1;
-  return new BigNumber(u).times(sign);
+  return new Decimal(u).times(sign);
 }
 
 // We have special artimitic for complex numebrs to handel NaN and infinities
-function dplus(a: BigNumber | number, b: BigNumber | number) {
-  a = BigNumber(a);
-  b = BigNumber(b);
+function dplus(a: Decimal | number, b: Decimal | number) {
+  a = new Decimal(a);
+  b = new Decimal(b);
   if (isinf(a) || isinf(b)) {
     a = copysign(isinf(a) ? 1 : 0, a);
     b = copysign(isinf(b) ? 1 : 0, b);
     const re = a.plus(b);
-    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
+    return re.isZero() ? new Decimal(0) : re.times(Infinity);
   }
   return a.plus(b);
 }
 
-function dminus(a: BigNumber, b: BigNumber): BigNumber {
+function dminus(a: Decimal, b: Decimal): Decimal {
   if (isinf(a) || isinf(b)) {
     a = copysign(isinf(a) ? 1 : 0, a);
     b = copysign(isinf(b) ? 1 : 0, b);
     const re = a.minus(b);
-    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
+    return re.isZero() ? new Decimal(0) : re.times(Infinity);
   }
   return a.minus(b);
 }
 
-function ddiv(a: BigNumber, b: BigNumber): BigNumber {
+function ddiv(a: Decimal, b: Decimal): Decimal {
   if (isinf(a) || isinf(b)) {
     a = copysign(a.isZero() ? 0 : 1, a);
     b = copysign(b.isZero() ? 0 : 1, b);
     const re = a.div(b);
-    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
+    return re.isZero() ? new Decimal(0) : re.times(Infinity);
   }
   return a.div(b);
 }
 
-function dtimes(a: BigNumber, b: BigNumber): BigNumber {
+function dtimes(a: Decimal, b: Decimal): Decimal {
   if (isinf(a) || isinf(b)) {
     a = copysign(a.isZero() ? 0 : 1, a);
     b = copysign(b.isZero() ? 0 : 1, b);
     const re = a.times(b);
-    return re.isZero() ? new BigNumber(0) : re.times(Infinity);
+    return re.isZero() ? new Decimal(0) : re.times(Infinity);
   }
   return a.times(b);
 }

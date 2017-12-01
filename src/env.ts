@@ -60,16 +60,23 @@ export class StackEnv {
     }
   });
 
+  // todo: this should be moved to the Dictionary object?
   expandAction: Function = typed({
     'Action': (action: Action) => {
+      const displayString = action.displayString;
       if (Array.isArray(action.value)) {
-        return new Seq([new Action(this.expandAction(action.value))]);
+        const expandedValue = this.expandAction(action.value);
+        const newAction = new Action(expandedValue, action.displayString);
+        return new Seq([newAction]);
       }
-      const r = this.dict.get(action.value);
+      const r = this.dict.getScope(action.value);
       if (is.undefined(r) && (action.value as string)[0] !== IIF) {
-        throw new Error(`Cannot expand, action undefined: ${action.value}`);
+        return action;
       }
-      return is.function(r) ? new Seq([action]) : this.expandAction(r);
+      if (is.function(r)) {
+        return new Seq([action]);
+      }
+      return this.expandAction(r);
     },
     'Array': (arr: any[]) => {
       return freeze(arr)
@@ -83,7 +90,7 @@ export class StackEnv {
           return p;
         }, []);
     },
-    'BigNumber': x => x,
+    'Decimal': x => x,
     'null': () => null,
     'Object': (obj: Object) => {
       const r = {};
@@ -167,11 +174,20 @@ export class StackEnv {
               qMax = q;
             }
 
+            let lastAction;
+
+            // todo: fix this, sometimes last action is a symbol
+            try {
+              lastAction = String(this.lastAction);
+            } catch (e) {
+              lastAction = '';
+            }
+
             bar.update(this.stack.length / qMax, {
               stack: this.stack.length,
               queue: this.queue.length,
               depth: this.depth,
-              lastAction: this.lastAction
+              lastAction
             });
           }
         };
@@ -343,6 +359,12 @@ export class StackEnv {
 
       if (!is.string(tokenValue)) {
         return this.stackPushValues(tokenValue);
+      }
+
+      if (tokenValue[tokenValue.length - 1] === '!' && tokenValue.length > 1) {
+        tokenValue = tokenValue.slice(0, -1);
+        this.queueFront(new Action('<->'));
+        return this.stackPushValues(new Action(tokenValue));
       }
 
       if (tokenValue[0] === IIF && tokenValue.length > 1) {

@@ -1,6 +1,6 @@
 import is from '@sindresorhus/is';
 
-import { formatValue } from '../utils';
+import { formatValue, FFlatError } from '../utils';
 import { Action, Just, StackValue } from '../types';
 import { USE_STRICT } from '../constants';
 import { StackEnv } from '../env';
@@ -25,7 +25,11 @@ export const dict = {
    * ```
    */
   sto(this: StackEnv, lhs: StackValue, rhs: string) {
-    this.dict.set(rhs, lhs);
+    try {
+      this.dict.set(rhs, lhs);
+    } catch (e) {
+      throw new FFlatError(e, this);
+    }
   },
 
   /**
@@ -57,24 +61,27 @@ export const dict = {
    * ( {string|atom} -> )
    */
   delete(this: StackEnv, path: string) {
-    this.dict.delete(path);
-  },
-
-  /**
-   * ## `defineParent`
-   * defines a word (or dict) in the parent
-   *
-   * ( {string|atom} -> )
-   */
-  defineParent(this: StackEnv, name: string, fn: StackValue) {
-    if (this.parent) {
-      this.parent.defineAction(name, fn);
+    try {
+      this.dict.delete(path);
+    } catch (e) {
+      throw new FFlatError(e, this);
     }
   },
 
-  using(this: StackEnv, name: string) {
-    const r = this.dict.get(name);
-    Object.assign(this.dict.using, r);
+  /**
+   * ## `use`
+   *
+   * Move teh contents of a dictionary into scope
+   *
+   * ( {string|atom} -> )
+   *
+   * ```
+   * f♭> core: rcl use
+   * [ ]
+   * ```
+   */
+  use(this: StackEnv, dict: {}) {
+    Object.assign(this.dict.scope, dict);
   },
 
   /**
@@ -103,7 +110,8 @@ export const dict = {
    * [ [ dup * ] ]
    * ```
    */
-  expand(this: StackEnv, x: Action) {
+  expand(this: StackEnv, x: Action) {  // tbd: rename lift?
+    // todo: should expand and rewrite if possible
     return this.expandAction(x);
   },
 
@@ -123,7 +131,10 @@ export const dict = {
     if (typeof r === 'undefined') {
       return null;
     }
-    return formatValue((r as Action).value || r, 0, { colors: false, indent: false });
+    if (r instanceof Action) {
+      return r.displayString;
+    }
+    return formatValue(r, 0, { colors: false, indent: false });
   },
 
   /**
@@ -144,15 +155,5 @@ export const dict = {
    */
   locals(this: StackEnv): string[] {
     return this.dict.keys();
-  },
-
-  /**
-   * ## `dict`
-   * returns the local dictionary
-   *
-   * ( -> {array} )
-   */
-  dict(this: StackEnv): {} {
-    return this.dict.toObject();
   }
 };

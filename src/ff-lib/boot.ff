@@ -2,61 +2,15 @@
  * # Bootstrap F-Flat
  */
 
-/**
- * ## `;` ( define action )
- * Converts the quote into an action and stores
- */
-[ : swap sto ] : ';' sto
+'module-loader.ff'
+    __filename dirname                  // __dirname
+    swap [ ] >> >> path-join resolve    // resolve
+    read eval                           // eval
 
-// Compute boot files directory based on the filename
-__filename dirname '__dirname' sto
-
-/**
- * ## `load`
- * Reads a file onto the stack as a string and evaluates the content
- */
-load: [ read eval ] ;
-
-/**
- * ## `if-exists-load`
- * Loads a file if it exists in the cwd
- */
-if-exists-load: [ dup exists swap [ load ] >> [ ] choose eval ] ;
-
-/**
- * ## `require-resolve`
- * Resolve path relative to boot file
- */
-require-resolve: [ __dirname swap [ ] >> >> path-join resolve ] ;
-
-/**
- * ## `require`
- * Loads a file based on boot file path
- */
-require: [ require-resolve load ] ;
-
-/**
- * ## `create-module`
- * Creates a module from the locally defined words
- */
-create-module: [ dict expand defineparent ] ;
-
-// Definition of `import-module`
-// Loads and executes a file in a child, expands out defintions, and defines a module
-
-/**
- * ## `require-module`
- * Loads and creates a module from a file
- */
-require-module: [ [ require create-module ] >> q< string q> >> fork drop ] ;
-
-core: 'core.ff' require-module
-shuffle: 'shuffle.ff' require-module
-math: 'math.ff' require-module
-sym: 'math-sym.ff' require-module
-combinators: 'combinators.ff' require-module
+core: 'core.ff' import-as
+shuffle: 'shuffle.ff' import-as
+math: 'math.ff' import-as
+sym: 'math-sym.ff' import-as
+comb: 'combinators.ff' import-as
 
 './src/ff-lib/usr.ff' if-exists-load
-
-
-

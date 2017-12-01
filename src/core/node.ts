@@ -7,15 +7,16 @@ import { promisify } from 'util';
 const readFileAsync = promisify(readFile);
 
 import { StackEnv } from '../env';
-import { log } from '../utils';
+import { log, FFlatError } from '../utils';
+import { typed } from '../types';
 
 // const stdin = process.stdin;
 const stdout = <any>process.stdout;
 
 const { URL } = require('url');
 
-function resolve(specifier: string, parentModuleURL = getURLStringForCwd()) {
-  return new URL(specifier, parentModuleURL);
+function resolve(input: string, base = getURLStringForCwd()) {
+  return new URL(input, base);
 }
 
 function getURLStringForCwd(): string | undefined {
@@ -155,7 +156,14 @@ export default {
    * returns a URL href releative to teh current base
    *
    */
-  resolve: (name: string) => resolve(name).href,
+  resolve: typed('resolve', {
+    'string': (name: string): string => {
+      return resolve(name).href;
+    },
+    'Array': ([name, base]: string[]): string => {
+      return resolve(name, base).href;
+    },
+  }),
 
   /**
    * ## `exists`
@@ -173,9 +181,13 @@ export default {
    */
   read(name: string): string {
     const url = resolve(name);
-    if (url.protocol === 'file:') {
-      return readFileSync(url, 'utf8');
+    try {
+      if (url.protocol === 'file:') {
+        return readFileSync(url, 'utf8');
+      }
+      return fetch(url.href).then(res => res.text());
+    } catch (e) {
+      throw new FFlatError(e, this);
     }
-    return fetch(url.href).then(res => res.text());
   }
 };

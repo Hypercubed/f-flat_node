@@ -1,21 +1,27 @@
 import { lex } from 'literalizer';
 
-import { Action, BigNumber, typed, StackValue, StackArray } from '../types/index';
+import {
+  Action,
+  Decimal,
+  typed,
+  StackValue,
+  StackArray
+} from '../types/index';
 import { unescapeString } from './stringConversion';
 
 const atAction = new Action('@');
 const templateAction = new Action('template');
 const evalAction = new Action('eval');
 
-export function processNumeric(value: string): BigNumber | number {
+export function processNumeric(value: string): Decimal | number {
   if (typeof value !== 'string') {
     return NaN;
   }
   try {
     return Object.freeze(
       value.slice(-1) === '%'
-        ? new BigNumber(String(value.slice(0, -1))).div(100)
-        : new BigNumber(String(value))
+        ? new Decimal(String(value.slice(0, -1))).div(100)
+        : new Decimal(String(value))
     );
   } catch (e) {
     return NaN;
@@ -31,26 +37,32 @@ export const lexer: (x: StackValue) => StackArray = typed('lexer', {
 });
 
 function innerParse(val: string): StackArray {
-  return val
-    .replace(/([{}()[\]])/g, ' $1 ') // add white space around braces
-    .split(/[,\n\s]+/g) // split on whitespace
-    .reduce((p, c) => (c.length > 0 ? p.concat(convertLiteral(c)) : p), ([] as StackArray));
+  return (
+    val
+      .replace(/([{}()[\]])/g, ' $1 ') // add white space around braces
+      // .replace(/([\!])/g, ' $1 ') // add white space after bang
+      .split(/[,\n\s]+/g) // split on whitespace
+      .reduce(
+        (p, c) => (c.length > 0 ? p.concat(convertLiteral(c)) : p),
+        [] as StackArray
+      )
+  );
 }
 
 function processLexerTokens({ type, val }): StackValue | undefined {
   switch (type) {
-  case 0: // general
-  case 4: // regex
-    return innerParse(val);
-  case 2: // string literal
-    return convertString(val);
-  case 3: // string template
-    return [val.slice(1, -1), templateAction, evalAction];
-  case 1: // comment
-    return undefined;
-  default:
-    console.log('Unknown type in lexer', type, val);
-    return process.exit();
+    case 0: // general
+    case 4: // regex
+      return innerParse(val);
+    case 2: // string literal
+      return convertString(val);
+    case 3: // string template
+      return [val.slice(1, -1), templateAction, evalAction];
+    case 1: // comment
+      return undefined;
+    default:
+      console.log('Unknown type in lexer', type, val);
+      return process.exit();
   }
 }
 

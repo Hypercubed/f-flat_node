@@ -1,4 +1,4 @@
-import { typed, Action, Just, Seq, BigNumber, Complex } from '../types';
+import { typed, Action, Just, Seq, Decimal, zero, Complex } from '../types';
 
 const action = typed('action', {  // todo: this should be part of the Action constructor
   Action: x => x,
@@ -21,7 +21,7 @@ export default {
   type: typed('type', {
     Action: x => 'action',
     Array: x => 'array', // eslint-disable-line no-unused-vars
-    BigNumber: x => 'number', // eslint-disable-line no-unused-vars
+    Decimal: x => 'number', // eslint-disable-line no-unused-vars
     Complex: x => 'complex', // eslint-disable-line no-unused-vars,
     Date: x => 'date', // eslint-disable-line no-unused-vars
     any: x => typeof x
@@ -32,14 +32,14 @@ export default {
    */
   number: typed('number', {
     'Date': x => x.valueOf(),
-    any: x => new BigNumber(x)
+    any: x => new Decimal(x)
   }),
 
   /**
    * ## `number?`
    */
   'number?': typed('number_', {
-    'BigNumber | Complex | number': () => true,
+    'Decimal | Complex | number': () => true,
     any: () => false
   }),
 
@@ -48,7 +48,7 @@ export default {
    */
   'complex?': typed('complex_', {
     Complex: (a: Complex) => !a.im.isZero(),
-    'BigNumber | number | any': () => false
+    'Decimal | number | any': () => false
   }),
 
   /**
@@ -120,7 +120,10 @@ export default {
   /**
    * ## `empty`
    */
-  empty: a => (a.empty ? a.empty() : new a.constructor()),
+  empty: typed('empty', {
+    'Decimal | number': () => zero,
+    any: a => (a.empty ? a.empty() : new a.constructor())
+  }),
 
   /**
    * ## `is?`

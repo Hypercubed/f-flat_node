@@ -24,20 +24,8 @@ function getRootEnv () {
   return rootStack;
 }
 
-const root = (/* istanbul ignore next */ function (that) {
-  if (USE_STRICT) {
-    return null;
-  } else if (typeof window === 'object' && window.window === window) {
-    return window;
-  } else if (typeof global === 'object' && global.global === global) {
-    return global;
-  }
-  return that;
-})(this);
-
 export function createRootEnv(): StackEnv {
   const env = new StackEnv({   // root
-    dict: Object.create(root),
     silent: false
   });
 
@@ -50,8 +38,9 @@ export function createRootEnv(): StackEnv {
   env.defineAction(experimental);
   env.defineAction(node);
 
-  const bootFile = join(__dirname, '../src/ff-lib/boot.ff');
+  const bootFile = join('file://', __dirname, '../src/ff-lib/boot.ff');
   return env.eval(`'${bootFile}' dup '__filename' sto read eval`);
+  // todo: move usr.ff loading out of boot
 }
 
 export function Stack(s = '', root?) {
@@ -60,7 +49,6 @@ export function Stack(s = '', root?) {
   }
 
   const stack = new StackEnv({
-    dict: Object.create(root.dict),
     parent: root,
     silent: false
   });

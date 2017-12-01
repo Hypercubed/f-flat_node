@@ -12,6 +12,10 @@ export class AbstractValue {
   inspect(): string {
     return this.toString();
   }
+
+  valueOf() {
+    return Infinity;
+  }
 }
 
 export const complexInfinity = new AbstractValue('ComplexInfinity');

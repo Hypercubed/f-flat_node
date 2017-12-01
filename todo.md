@@ -7,17 +7,23 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] 1 acos = 0 (precision issue)
 - [ ] precision in complex calculations
 - [ ] ComplexInfinity, Indeterminate, Undefined (http://www.wolframalpha.com/input/?i=ComplexInfinity)
+- [ ] @ for out of rang works differently on string and array
+- [x] `{} {} =` returns false
+- [x] `nan nan =` returns false
+- [ ] should eb able sto store null
 
 # Todo next:
 
 - [ ] More tests for stack object immutablity
-- [ ] Use URLs as module id
+- [x] Use URLs as module id
 - [ ] Better types
   - [ ] Just -> ReturnValue
   - [ ] Seq -> ReturnSequence
   - [ ] Action -> Words / Sentence
 - [ ] Test all internal words
+  - [ ] Dictionary words
 - [ ] Test `usr.ff` and cwd
+- [ ] BigNumber/Complex .fromJSON
 
 # New Words
 
@@ -26,7 +32,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] sign, ispos, isneg
 - [ ]  >> and >>> ?
 - [ ] sinpi, cospi?
-- [ ] conj
+- [x] conj
+- [ ] `"1+2i" complex` -> Complex
 
 # Docs
 

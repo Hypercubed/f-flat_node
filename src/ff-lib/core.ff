@@ -20,9 +20,7 @@ do: [ dup dipd ] ;
 neg: [ 0 swap - ] ;
 sum: [ [ + ] reduce* ] ;
 
-map: [ * in ] ;
 foreach: [ * eval ] ;
-in: [ ( swap eval ) ] ;
 
 pop: [ 0 -1 slice ] ;
 shift: [ 1 null slice ] ;
@@ -35,6 +33,7 @@ shift: [ 1 null slice ] ;
 !=: [ = ~ ] ;
 get: [ q< @ dup null? swap q> swap choose ] ;
 zipwith: [ zipinto in ] ;
+return: [ stack send ] ;
 yield: [ return suspend ] ;
 delay: [ [ sleep ] >> slip eval ] ;
 

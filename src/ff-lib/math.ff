@@ -2,8 +2,8 @@
  * # Mathematics lib
  */
  
-core: using
-shuffle: using
+'core.ff' import
+'shuffle.ff' import
 
 // inverse trig
 acos: [ asin 2 * pi swap - 1 2 / * ] ;
@@ -83,11 +83,11 @@ pow: [ -- dup [ [ dup ] swap times [ * ] ] dip times ] ;
 mul: [ -- dup [ [ dup ] swap times [ + ] ] dip times ] ;
 
 // Factorials
-~!: [ ++ gamma ] ;
-c!: [ pred [ count ] dip [ * ] swap times ] ;
-r!: [ dup zero? [ drop 1 ] [ pred 'r!' eval * ] branch ] ;
-y!: [ [ [ over zero? ] [ drop ++ ] [ [ pred ] dip eval * ] ifte ] y eval ] ;
-!: [ dup integer? [ r! ] [ ~! ] branch ] ;
+approx-fact: [ ++ gamma ] ;
+// c!: [ pred [ count ] dip [ * ] swap times ] ;
+recur-fact: [ dup zero? [ drop 1 ] [ pred recur-fact eval * ] branch ] ;
+// y!: [ [ [ over zero? ] [ drop ++ ] [ [ pred ] dip eval * ] ifte ] y eval ] ;
+!: [ dup integer? recur-fact: approx-fact: choose ] ;
 
 // Prob
 npr: [ [ [ ! ] keep ] dip - ! / ] ;

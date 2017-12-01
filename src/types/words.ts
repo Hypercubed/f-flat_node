@@ -1,4 +1,5 @@
 import { typed } from './typed';
+import { formatValue } from '../utils/pprint';
 
 function toString(x: any) {
   if (Array.isArray(x)) {
@@ -8,7 +9,10 @@ function toString(x: any) {
 }
 
 export class Action { // rename word, create sentence
-  constructor(public value: any) { // todo: value should be a string for word, array for sentence
+  constructor(public value: any, public displayString?: string) {
+    if (!displayString) {
+      this.displayString = toString(value);
+    }
     Object.freeze(this);
   }
 

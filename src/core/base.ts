@@ -2,7 +2,7 @@ import { assign, merge, unshift, push, slice, getIn } from 'icepick';
 import memoize from 'memoizee';
 
 import { deepEquals, arrayRepeat, arrayMul, and, nand, or, xor, not } from '../utils';
-import { Seq, Action, typed, I, StackValue, Future, Complex, BigNumber, complexInfinity } from '../types';
+import { Just, Seq, Action, typed, I, StackValue, Future, Complex, Decimal, complexInfinity } from '../types';
 import { StackEnv } from '../env';
 
 /**
@@ -42,16 +42,6 @@ const add = typed('add', {
   'number, boolean': or,
 
   /**
-   * - object assign/assoc
-   *
-   * ```
-   * f♭> { first: 'Manfred' } { last: 'von Thun' } +
-   * [ { first: 'Manfred' last: 'von Thun' } ]
-   * ```
-   */
-  'Object, Object': (lhs: {}, rhs: {}): {} => assign(lhs, rhs),
-
-  /**
    * - arithmetic addition
    *
    * ```
@@ -60,7 +50,17 @@ const add = typed('add', {
    * ```
    */
   'Complex, Complex': (lhs: Complex, rhs: Complex): Complex => lhs.plus(rhs),
-  'BigNumber, BigNumber | number': (lhs: BigNumber, rhs: BigNumber): BigNumber => lhs.plus(rhs),
+  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal): Decimal => lhs.plus(rhs),
+
+  /**
+   * - object assign/assoc
+   *
+   * ```
+   * f♭> { first: 'Manfred' } { last: 'von Thun' } +
+   * [ { first: 'Manfred' last: 'von Thun' } ]
+   * ```
+   */
+  'Object, Object': (lhs: {}, rhs: {}): {} => assign(lhs, rhs),
 
   /**
    * - date addition
@@ -73,8 +73,8 @@ const add = typed('add', {
    */
   'Date, number': (lhs: Date, rhs: number) => new Date(lhs.valueOf() + rhs),
   'number, Date': (lhs: number, rhs: Date) => lhs + rhs.valueOf(),
-  'Date, BigNumber': (lhs: Date, rhs: BigNumber) => new Date(rhs.plus(lhs.valueOf()).valueOf()),
-  'BigNumber, Date': (lhs: BigNumber, rhs: Date) => lhs.plus(rhs.valueOf()),
+  'Date, Decimal': (lhs: Date, rhs: Decimal) => new Date(rhs.plus(lhs.valueOf()).valueOf()),
+  'Decimal, Date': (lhs: Decimal, rhs: Date) => lhs.plus(rhs.valueOf()),
 
   /**
    * - string concatenation
@@ -123,7 +123,7 @@ const sub = typed('sub', {
    * ```
    */
   'Complex, Complex': (lhs: Complex, rhs: Complex) => lhs.minus(rhs),
-  'BigNumber, BigNumber | number': (lhs: BigNumber, rhs: BigNumber) => {
+  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal) => {
     if (lhs.isNaN(), lhs.isNaN()) return NaN;
     return lhs.minus(rhs);
   },
@@ -139,8 +139,8 @@ const sub = typed('sub', {
    */
   'Date, number': (lhs: Date, rhs: number) => new Date(lhs.valueOf() - rhs),
   'number, Date': (lhs: number, rhs: Date) => rhs.valueOf() - lhs,
-  'Date, BigNumber': (lhs: Date, rhs: BigNumber) => new Date(-rhs.minus(lhs.valueOf())),
-  'BigNumber, Date': (lhs: BigNumber, rhs: Date) => lhs.minus(rhs.valueOf()),
+  'Date, Decimal': (lhs: Date, rhs: Decimal) => new Date(-rhs.minus(lhs.valueOf())),
+  'Decimal, Date': (lhs: Decimal, rhs: Date) => lhs.minus(rhs.valueOf()),
 
   'any, any': (lhs: number, rhs: number) => lhs - rhs
 });
@@ -167,7 +167,7 @@ const mul = typed('mul', {
   'Future, any': (f, rhs) => f.map(lhs => mul(lhs, rhs)),
 
   /**
-   * - Array and
+   * - Array join
    *
    * ```
    * f♭> [ 'a' 'b' ] ';' *
@@ -207,7 +207,7 @@ const mul = typed('mul', {
    * ```
    */
   'Complex, Complex': (lhs: Complex, rhs: Complex) => lhs.times(rhs).normalize(),
-  'BigNumber, BigNumber | number': (lhs: BigNumber, rhs: BigNumber) => lhs.times(rhs),
+  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal) => lhs.times(rhs),
   'number | null, number | null': (lhs: number, rhs: number) => lhs * rhs
 });
 
@@ -274,7 +274,7 @@ const div = typed('div', {
    * ```
    */
   'Complex, Complex': (lhs, rhs) => lhs.div(rhs),
-  'BigNumber, BigNumber | number': (lhs, rhs) => {
+  'Decimal, Decimal | number': (lhs, rhs) => {
     if (+rhs === 0 && +lhs !== 0) return complexInfinity;
     return lhs.div(rhs);
   },
@@ -484,6 +484,16 @@ export default {
   }),
 
   /**
+   * ## `<->` (stack)
+   * swaps the last item on the stack and teh first item onteh queue
+   */
+  '<->': function(this: StackEnv, s: any): Just {
+    const q = this.queue.shift();
+    this.queue.unshift(s);
+    return new Just(q);
+  },
+
+  /**
    * ## `<-` (stack)
    * replaces the stack with the item found at the top of the stack
    *
@@ -579,7 +589,7 @@ export default {
    * ```
    */
   cmp: typed('cmp', {
-    'BigNumber | Complex, BigNumber | Complex | number': (lhs, rhs) =>
+    'Decimal | Complex, Decimal | Complex | number': (lhs: Decimal, rhs: Decimal) =>
       lhs.cmp(rhs),
     'Array, Array': (lhs, rhs) => {
       if (deepEquals(lhs, rhs)) {
@@ -648,7 +658,7 @@ export default {
   },
 
   /**
-   * ## `\\`
+   * ## `\`
    * push the top of the queue to the stack
    *
    * ( -> {any} )

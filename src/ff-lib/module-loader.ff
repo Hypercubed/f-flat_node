@@ -1,0 +1,86 @@
+/**
+ * ## `;` ( define action )
+ * Converts the quote into an action and stores
+ */
+[ : swap sto ] : ';' sto
+
+/**
+ * ## `in`
+ */
+in: [ ( swap eval ) ] ;
+
+/**
+ * ## `map`
+ */
+map: [ * in ] ;
+
+// Compute boot file's directory based on the filename
+__dirname: [ __filename dirname '/' + ] ;
+
+/**
+ * ## `load`
+ * Reads a file onto the stack as a string and evaluates the content
+ */
+load: [ read eval ] ;
+
+/**
+ * ## `if-exists-load`
+ * Loads a file if it exists
+ */
+if-exists-load: [ dup exists swap [ load ] >> [ ] choose eval ] ;
+
+/**
+ * ## `require-resolve`
+ * Resolve path relative to boot file
+ */
+import-resolve: [ ( __dirname ) >> resolve ] ;
+
+/**
+ * ## `dict`
+ * returns the local dictionary
+ *
+ * ( -> {array} )
+ */
+dict: [ locals [ dup 0 @ '_' = [ drop ] [ dup rcl ] choose eval ] map object ] ;
+
+/**
+ * ## `create-module`
+ * Creates a module from the locally defined words
+ */
+create-module: [ dict expand ] ;
+
+// Definition of `import-module`
+// Loads and executes a file in a child, expands out defintions, and defines a module
+
+/**
+ * ## `import-module`
+ * Loads and creates a module from a file
+ */
+__load-module: [ [ load create-module send ] >> fork drop ] ;
+__import-module: [ dup __load-module swap btoa sto ] ;
+import-module: [ import-resolve __import-module ] ;
+
+/**
+ * ## `use-module`
+ * Uses an existing module
+ */
+using: [ rcl use ] ;
+use-module: [ import-resolve btoa using ] ;
+
+/**
+ * ## `import`
+ * Import and use module
+ */
+
+is-module-loaded?: [ btoa rcl boolean ] ;
+
+__import-or-load: [
+  import-resolve dup
+  btoa rcl dup boolean
+    [ ]
+    [ drop __load-module ]
+    choose eval
+] ;
+
+import: [ __import-or-load use ] ;
+import-as: [ __import-or-load swap sto ] ;

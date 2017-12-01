@@ -2,9 +2,9 @@
  * # Mathematics symbols
  */
  
-core: using
-shuffle: using
-math: using
+'core.ff' import
+'shuffle.ff' import
+'math.ff' import
 
 ×: [*];
 ∙: [*];

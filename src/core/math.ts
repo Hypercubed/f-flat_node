@@ -1,4 +1,4 @@
-import { typed, BigNumber, Complex, Action, indeterminate, pi } from '../types';
+import { typed, Decimal, gammaDecimal, Complex, Action, indeterminate, pi } from '../types';
 import { lexer } from '../utils';
 
 const erf = require('compute-erf');
@@ -14,7 +14,7 @@ export default {
    *
    */
   re: typed('re', {
-    'BigNumber | number': a => a,
+    'Decimal | number': a => a,
     'ComplexInfinity': a => indeterminate,
     Complex: a => a.re
   }),
@@ -26,7 +26,7 @@ export default {
    *
    */
   im: typed('im', {
-    'BigNumber | number': a => 0,
+    'Decimal | number': a => 0,
     'ComplexInfinity': a => indeterminate,
     Complex: a => a.im
   }),
@@ -38,7 +38,7 @@ export default {
    *
    */
   arg: typed('arg', {
-    'BigNumber': a => (a.isPos() || a.isZero()) ? 0 : pi,
+    'Decimal': a => (a.isPos() || a.isZero()) ? 0 : pi,
     'number': a => a >= 0 ? 0 : pi,
     'ComplexInfinity': a => indeterminate,
     Complex: a => a.arg()
@@ -51,7 +51,7 @@ export default {
    */
   div: typed('div', {
     // integer division
-    'BigNumber | Complex, BigNumber | Complex | number': (a, b) =>
+    'Decimal | Complex, Decimal | Complex | number': (a, b) =>
       a.div(b).floor(),
     'Array | string, number': (a, b) => {
       b = Number(a.length / b) | 0;
@@ -69,7 +69,7 @@ export default {
    *
    */
   '%': typed('rem', {
-    'BigNumber | Complex, BigNumber | number': (lhs, rhs) => lhs.modulo(rhs),
+    'Decimal | Complex, Decimal | number': (lhs, rhs) => lhs.modulo(rhs),
     'Array | string, number': (a, b) => {
       b = Number(a.length / b) | 0;
       if (b === 0 || b > a.length) {
@@ -86,7 +86,7 @@ export default {
    *
    */
   abs: typed('abs', {
-    'BigNumber | Complex': a => a.abs(),
+    'Decimal | Complex': a => a.abs(),
     'ComplexInfinity': a => Infinity
   }),
 
@@ -98,7 +98,7 @@ export default {
    */
   cos: typed('cos', {
     'Complex': a => a.cos(),
-    'BigNumber | number': a => (BigNumber as any).cos(a)
+    'Decimal | number': a => (Decimal as any).cos(a)
   }),
 
   /**
@@ -109,7 +109,7 @@ export default {
    */
   sin: typed('sin', {
     'Complex': a => a.sin(),
-    'BigNumber | number': a => (BigNumber as any).sin(a)
+    'Decimal | number': a => (Decimal as any).sin(a)
   }),
 
   /**
@@ -120,7 +120,7 @@ export default {
    */
   tan: typed('tan', {
     'Complex': a => a.tan(),
-    'BigNumber | number': a => (BigNumber as any).tan(a)
+    'Decimal | number': a => (Decimal as any).tan(a)
   }),
 
   /**
@@ -131,10 +131,10 @@ export default {
    */
   asin: typed('asin', {
     'Complex': a => a.asin(),
-    'BigNumber | number': a => {
+    'Decimal | number': a => {
       if (a === Infinity || a === -Infinity) return new Complex(0, -a);
       if (a > 1 || a < -1) return new Complex(a).asin();
-      return (BigNumber as any).asin(a);
+      return (Decimal as any).asin(a);
     }
   }),
 
@@ -146,7 +146,7 @@ export default {
    */
   atan: typed('atan', {
     'Complex': a => a.atan(),
-    'BigNumber | number': a => (BigNumber as any).atan(a)
+    'Decimal | number': a => (Decimal as any).atan(a)
   }),
 
   /**
@@ -155,7 +155,7 @@ export default {
    * Four-quadrant inverse tangent
    *
    */
-  atan2: (a, b) => (BigNumber as any).atan2(a, b),
+  atan2: (a, b) => (Decimal as any).atan2(a, b),
 
   /**
    * ## `round`
@@ -164,7 +164,7 @@ export default {
    *
    */
   round: typed('round', {
-    'BigNumber | Complex': a => a.round()
+    'Decimal | Complex': a => a.round()
   }),
 
   /**
@@ -174,7 +174,7 @@ export default {
    *
    */
   floor: typed('floor', {
-    'BigNumber | Complex': a => a.floor() // ,
+    'Decimal | Complex': a => a.floor() // ,
     // 'any': a => a
   }),
 
@@ -185,7 +185,7 @@ export default {
    *
    */
   ceil: typed('ceil', {
-    'BigNumber | Complex': a => a.ceil()
+    'Decimal | Complex': a => a.ceil()
   }),
 
   /**
@@ -197,7 +197,7 @@ export default {
     Complex: x => {
       return x.sqrt();
     },
-    BigNumber: x => {
+    Decimal: x => {
       return x.isNegative() ? new Complex(x, 0).sqrt() : x.sqrt();
     }
   }),
@@ -218,7 +218,7 @@ export default {
    * Largest value
    *
    */
-  max: (a, b, ...c) => BigNumber.max(a, b, ...c),
+  max: (a, b, ...c) => Decimal.max(a, b, ...c),
 
   /**
    * ## `min`
@@ -226,7 +226,7 @@ export default {
    * Smallest value
    *
    */
-  min: (a, b, ...c) => BigNumber.min(a, b, ...c),
+  min: (a, b, ...c) => Decimal.min(a, b, ...c),
 
   /**
    * ## `exp`
@@ -235,7 +235,7 @@ export default {
    *
    */
   exp: typed('exp', {
-    'BigNumber | Complex': x => x.exp()
+    'Decimal | Complex': x => x.exp()
   }),
 
   /**
@@ -245,7 +245,8 @@ export default {
    *
    */
   gamma: typed('gamma', {
-    'BigNumber | Complex': a => a.gamma()
+    'Decimal': gammaDecimal,
+    'Complex': a => a.gamma()
   }),
 
   /**
@@ -255,7 +256,7 @@ export default {
    *
    */
   nemes: typed('nemes', {
-    BigNumber: a => a.nemesClosed()
+    Decimal: a => a.nemesClosed()
   }),
 
   /**
@@ -265,7 +266,7 @@ export default {
    *
    */
   spouge: typed('spouge', {
-    BigNumber: a => a.spouge()
+    Decimal: a => a.spouge()
   }),
 
   /**
@@ -274,7 +275,7 @@ export default {
    * Error function
    *
    */
-  erf, // todo: BigNumber. Complex
+  erf, // todo: Decimal. Complex
 
   /**
    * ## `ln`
@@ -284,9 +285,9 @@ export default {
    */
   ln: typed('ln', {
     'Complex': a => a.ln(),
-    'BigNumber | number': a => {
+    'Decimal | number': a => {
       if (a <= 0) return new Complex(a).ln();
-      return new BigNumber(a).ln();
+      return new Decimal(a).ln();
     }
   }),
 
@@ -299,10 +300,10 @@ export default {
    */
   '^': typed('pow', {
     // boolean or?
-    'Complex, BigNumber | Complex | number': (a, b) =>
+    'Complex, Decimal | Complex | number': (a, b) =>
       new Action([b, a].concat(lexer('ln * exp'))),
-    'BigNumber, Complex': (a, b) => new Action([b, a].concat(lexer('ln * exp'))),
-    'BigNumber, BigNumber | number': (a, b) => a.pow(b) // ,
+    'Decimal, Complex': (a, b) => new Action([b, a].concat(lexer('ln * exp'))),
+    'Decimal, Decimal | number': (a, b) => a.pow(b) // ,
     // 'Array, number': (a, b) => new Action([a, b, new Action('pow')])  // this is only integers
   }),
 
@@ -321,7 +322,7 @@ export default {
    *
    */
   'set-precision': x => {
-    BigNumber.config({ precision: Number(x) });
+    Decimal.config({ precision: Number(x) });
   },
 
   /**
@@ -330,5 +331,5 @@ export default {
    * Gets the internal decimal precision
    *
    */
-  'get-precision': () => BigNumber.precision
+  'get-precision': () => Decimal.precision
 };

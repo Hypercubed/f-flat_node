@@ -425,6 +425,25 @@ test('actions', t => {
   t.deepEqual(fSync('[ 1 2 slip ] :'), [new Action([1, 2, sl]).toJSON()]);
 });
 
+test('=', t => {
+  t.deepEqual(fSync('1 1 ='), [true]);
+  t.deepEqual(fSync('1 i * 1 i * ='), [true]);
+  t.deepEqual(fSync('null null ='), [true]);
+  t.deepEqual(fSync('nan nan ='), [true]);  // todo: This is open the array
+  t.deepEqual(fSync('{} {} ='), [true]);
+  t.deepEqual(fSync('{ x: 1 } { x: 1 } ='), [true]);
+  t.deepEqual(fSync('"1/1/1990" date "1/1/1990" date ='), [true]);
+});
+
+test('!=', t => {
+  t.deepEqual(fSync('1 2 ='), [false]);
+  t.deepEqual(fSync('1 i * 2 i * ='), [false]);
+  t.deepEqual(fSync('null 2 ='), [false]);
+  t.deepEqual(fSync('nan 2 ='), [false]);
+  t.deepEqual(fSync('{ x: 1 } { x: 2 } ='), [false]);
+  t.deepEqual(fSync('"1/1/1990" date "1/2/1990" date ='), [false]);
+});
+
 // immutable tests
 
 test('immutable array actions', t => {

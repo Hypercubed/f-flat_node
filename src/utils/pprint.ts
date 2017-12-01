@@ -32,7 +32,7 @@ const defaultOpts = {
 export const formatValue: Function = typed('formatValue', {
   'Symbol, any, any': (value, depth, opts) => formatSymbol(value, opts),
 
-  'BigNumber | Complex | ComplexInfinity | number, any, any': (value, depth, opts) =>
+  'Decimal | Complex | ComplexInfinity | number, any, any': (value, depth, opts) =>
     stylize(value, 'number', opts),
   'null, any, any': (value, depth, opts) => stylize('Null', 'null', opts),
   'boolean, any, any': (value, depth, opts) => stylize(value, 'boolean', opts),

@@ -117,26 +117,6 @@ export default {
   },
 
   /**
-   * ## `return`
-   * pushes current stack to parent
-   *
-   * ( ... -> )
-   *
-   * ```
-   * f♭> [ 1 2 3 return 4 ] fork
-   * [ 1 2 3 [ 4 ] ]
-   * ```
-   */
-  'return': function(this: StackEnv): void {
-    // 'stack send'?
-    if (this.parent) {
-      this.parent.stack = [...this.parent.stack, ...this.stack];
-      this.stack = splice(this.stack, 0);
-      // this.parent.stack.push(...this.stack.splice(0));
-    }
-  },
-
-  /**
    * ## `suspend`
    * stops execution, push queue to stack, loses other state
    *
