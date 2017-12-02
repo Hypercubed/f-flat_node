@@ -4,17 +4,17 @@
 
 // Shuffle words
 slip: [ q< eval q> ] ;      // [b] [a] -> b [a]
-run: [ dup slip ] ;         // [a] -> a [a]
-dip: [ swap slip ] ;        // [b] [a] -> a [b]
-dipd: [ q< dip q> ] ;     // [d] [c] [b] [a] -> [d] b [c] [a]
-sip: [ over slip ] ;        // [b] [a] -> [b] a [b]    (aka keep)
-keep: [ over slip ] ;       // [b] [a] -> [b] a [b]    (aka sip)
-over: [ dupd swap ] ;       // [b] [a] -> [b] [a] [b]  (aka peek)
-dupd: [ q< dup q> ] ;     // [b] [a] -> [b] [b] [a]  (aka w)
-bi: [ sipd eval ] ;  // [c] [b] [a] -> [c] b [c] a
-sipd: [ q< sip q> ] ;       // [b] [a] -> [b] a [b]    (aka sip)
-slipd: [ q< slip q> ] ;
-do: [ dup dipd ] ;
+run: [ dup slip ] ;;        // [a] -> a [a]
+dip: [ swap slip ] ;;       // [b] [a] -> a [b]
+dipd: [ q< dip q> ] ;;      // [d] [c] [b] [a] -> [d] b [c] [a]
+sip: [ over slip ] ;;       // [b] [a] -> [b] a [b]    (aka keep)
+keep: [ over slip ] ;;      // [b] [a] -> [b] a [b]    (aka sip)
+over: [ dupd swap ] ;;      // [b] [a] -> [b] [a] [b]  (aka peek)
+dupd: [ q< dup q> ] ;;      // [b] [a] -> [b] [b] [a]  (aka w)
+bi: [ sipd eval ] ;;        // [c] [b] [a] -> [c] b [c] a
+sipd: [ q< sip q> ] ;;      // [b] [a] -> [b] a [b]    (aka sip)
+slipd: [ q< slip q> ] ;;
+do: [ dup dipd ] ;;
 
 // math
 neg: [ 0 swap - ] ;
@@ -57,7 +57,7 @@ contains: [ indexof 1 > ] ;
 pad-left: [ over * [ swap + ] >> dip tail ] ;
 lreverse: [ [ unit ] [ swap + ] map-reduce ] ;
 sreverse: [ lreverse sum ] ;
-reverse: [ dup string? sreverse: lreverse: branch ] ;
+reverse: [ dup string? sreverse: lreverse: branch ] ;;
 
 // functional
 chain: [ over nothing? ~ swap when ] ;

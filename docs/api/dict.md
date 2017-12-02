@@ -25,10 +25,16 @@ deletes a defined word
 
 ( {string|atom} -> )
 
-## `defineParent`
-defines a word (or dict) in the parent
+## `use`
+
+Move teh contents of a dictionary into scope
 
 ( {string|atom} -> )
+
+```
+f♭> core: rcl use
+[ ]
+```
 
 ## `define`
 defines a set of words from an object
@@ -70,7 +76,12 @@ returns a list of locals words
 
 ( -> {array} )
 
-## `dict`
-returns the local dictionary
+## `locals`
+returns a list of local scoped words
 
 ( -> {array} )
+
+## `rewrite`
+rewrites an expression using a set of rewrite rules
+
+( {object} {express} -> {expression} )

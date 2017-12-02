@@ -19,18 +19,18 @@ f♭> true false +
 [ true ]
 ```
 
-- object assign/assoc
-
-```
-f♭> { first: 'Manfred' } { last: 'von Thun' } +
-[ { first: 'Manfred' last: 'von Thun' } ]
-```
-
 - arithmetic addition
 
 ```
 f♭> 0.1 0.2 +
 [ 0.3 ]
+```
+
+- object assign/assoc
+
+```
+f♭> { first: 'Manfred' } { last: 'von Thun' } +
+[ { first: 'Manfred' last: 'von Thun' } ]
 ```
 
 - date addition
@@ -87,7 +87,7 @@ f♭> [ 'a' ] [ 'b' ] *
 [ [ 'a' 'b' ] ]
 ```
 
-- Array and
+- Array join
 
 ```
 f♭> [ 'a' 'b' ] ';' *
@@ -266,6 +266,9 @@ f♭> NaN ~
 [ NaN ]
 ```
 
+## `<->` (stack)
+swaps the last item on the stack and teh first item onteh queue
+
 ## `<-` (stack)
 replaces the stack with the item found at the top of the stack
 
@@ -344,7 +347,7 @@ f♭> 1 2 3 clr
 [  ]
 ```
 
-## `\\`
+## `\`
 push the top of the queue to the stack
 
 ( -> {any} )

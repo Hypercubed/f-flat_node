@@ -37,16 +37,6 @@ f♭> [ 1 2 3 send 4 ] fork
 [ 3 [ 1 2 4 ] ]
 ```
 
-## `return`
-pushes current stack to parent
-
-( ... -> )
-
-```
-f♭> [ 1 2 3 return 4 ] fork
-[ 1 2 3 [ 4 ] ]
-```
-
 ## `suspend`
 stops execution, push queue to stack, loses other state
 

@@ -1,0 +1,21 @@
+/**
+ * ## `;` ( define action )
+ * Converts the quote into an action and stores
+ */
+[ : swap sto ] : ';' sto
+
+/**
+ * ## `;;` ( define inline action )
+ * Converts the quote into an inline action and stores
+ */
+;;: [ : expand swap sto ] ;
+
+/**
+ * ## `in`
+ */
+in: [ ( swap eval ) ] ;
+
+/**
+ * ## `map`
+ */
+map: [ * in ] ;;

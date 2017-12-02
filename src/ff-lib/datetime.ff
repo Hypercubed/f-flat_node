@@ -1,0 +1,30 @@
+/**
+ * # Dates and times lib
+ */
+
+// timing
+time: [ clock swap 100 repn clock swap - 100 / ] ;
+_timefn: [ clock swap [ dup in drop ] 1000 repn drop clock - ] ;
+timefn: [ _timefn () _timefn - -1000 / inv ' ops/sec' +  ] ;
+
+// dates
+zeller-congruence: [
+  [
+    dup 2 =<
+    [ [ 1 - ] [ 12 + ] bi* ] when
+    [ dup [ 4 div + ] [ 100 div - ] [ 400 div + ] tri ] dip
+    [ 1 + 3 * 5 div + ]
+    keep 2 * +
+  ]
+  dip 1 + + 7 %
+] ;
+
+day: [ string 0 3 slice ] ;
+day-of-week: [ day [ 'Sun' 'Mon' 'Tue' 'Wed' 'Thu' 'Fri' 'Sat' ] swap indexof ] ;
+sunday?: [ day 'Sun' = ] ;
+monday?: [ day 'Mon' = ] ;
+tuesday?: [ day 'Tue' = ] ;
+wednesday?: [ day 'Wed' = ] ;
+thursday?: [ day 'Thu' = ] ;
+friday?: [ day 'Fri' = ] ;
+saturday?: [ day 'Sat' = ] ;

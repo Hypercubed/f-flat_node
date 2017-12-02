@@ -6,52 +6,32 @@
 __dirname: [ __filename dirname '/' + ] ;
 
 /**
- * ## `load`
- * Reads a file onto the stack as a string and evaluates the content
- */
-load: [ read eval ] ;
-
-/**
- * ## `if-exists-load`
- * Loads a file if it exists
- */
-if-exists-load: [ dup exists swap [ load ] >> [ ] choose eval ] ;
-
-/**
- * ## `require-resolve`
+ * ## `import-resolve`
  * Resolve path relative to boot file
  */
-import-resolve: [ ( __dirname ) >> resolve ] ;
+__import-resolve: [ ( __dirname ) >> resolve ] ;
 
 /**
- * ## `dict`
- * returns the local dictionary
+ * ## `_public-dict`
+ * returns the local dictionary, expect "private" words
  *
  * ( -> {array} )
  */
-public-dict: [ locals [ dup 0 @ '_' = [ drop ] [ dup rcl ] choose eval ] map object ] ;
+__public-dict: [ locals [ dup 0 @ '_' = [ drop ] [ dup rcl ] choose eval ] map object ] ;
 
 /**
- * ## `dict`
- * returns the local dictionary
+ * ## `_scoped-dict`
+ * returns the scoped dictionary
  *
  * ( -> {array} )
  */
-private-dict: [ locals [ dup 0 @ '_' = [ dup rcl ] [ drop ] choose eval ] map object ] ;
-
-/**
- * ## `dict`
- * returns the local dictionary
- *
- * ( -> {array} )
- */
-scoped-dict: [ scoped [ dup rcl ] map object ] ;
+__scoped-dict: [ scoped [ dup rcl ] map object ] ;
 
 /**
  * ## `create-module`
  * Creates a module from the locally defined words
  */
-create-module: [ scoped-dict private-dict + public-dict rewrite ] ;
+__create-module: [ __scoped-dict __public-dict rewrite ] ;
 
 // Definition of `import-module`
 // Loads and executes a file in a child, expands out defintions, and defines a module
@@ -60,31 +40,41 @@ create-module: [ scoped-dict private-dict + public-dict rewrite ] ;
  * ## `import-module`
  * Loads and creates a module from a file
  */
-__load-module: [ [ load create-module send ] >> fork drop ] ;
+__load-module: [ [ read eval __create-module send ] >> fork drop ] ;
 __import-module: [ dup __load-module swap btoa sto ] ;
-import-module: [ import-resolve __import-module ] ;
-
-/**
- * ## `use-module`
- * Uses an existing module
- */
-using: [ rcl use ] ;
-use-module: [ import-resolve btoa using ] ;
-
-/**
- * ## `import`
- * Import and use module
- */
-
-is-module-loaded?: [ btoa rcl boolean ] ;
 
 __import-or-load: [
-  import-resolve dup
+  __import-resolve dup
   btoa rcl dup boolean
     [ ]
     [ drop __load-module ]
     choose eval
 ] ;
 
-import: [ __import-or-load use ] ;
-import-as: [ __import-or-load swap sto ] ;
+/**
+ * ## `load`
+ * Reads a file onto the stack as a string and evaluates the content
+ */
+load: [ read eval ] ;
+
+/**
+ * ## `import`
+ * Import and use module
+ */
+import: [ __import-or-load use ] ;;
+import-as: [ __import-or-load swap sto ] ;;
+
+/**
+ * ## `use-module`
+ * Uses an existing module
+ */
+using: [ rcl use ] ;
+use-module: [ __import-resolve btoa using ] ;;
+
+/**
+ * ## `if-exists-load`
+ * Loads a file if it exists
+ */
+if-exists-load: [ dup exists swap [ load ] >> [ ] choose eval ] ;
+
+
