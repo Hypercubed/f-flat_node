@@ -1,5 +1,9 @@
 # Introduction
 
+F♭ (pronounced eff-flat) is a toy language.
+
+F♭ is a dynamically typed array-oriented concatenative language like Forth, Joy, and others. F♭ is meant to be used interactively, for example in a CLI REPL, like R or the command shell, or in a stack based calculator. This constraint dictates many of the language features.
+
 ## Get F♭
 
 F♭ code can be found at https://github.com/Hypercubed/f-flat_node.  Currently, it can be only be used by cloning the github repo.

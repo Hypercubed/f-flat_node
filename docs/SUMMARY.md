@@ -3,7 +3,7 @@
 * [Introduction](README.md)
   * [Demo](demo.md)
   * [Why F♭?](why.md)
-  * [The Stack and the REPL](the-stack-and-the-repl.md)
+  * [The Stack and the Envirnment](the-stack-and-the-repl.md)
   * [History](history.md)
 * [The Language](the-language.md)
   * [Code Structure](code-structure.md)
