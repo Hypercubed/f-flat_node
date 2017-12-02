@@ -60,55 +60,6 @@ export class StackEnv {
     }
   });
 
-  // todo: this should be moved to the Dictionary object?
-  expandAction: Function = typed({
-    'Action': (action: Action) => {
-      const displayString = action.displayString;
-      if (Array.isArray(action.value)) {
-        const expandedValue = this.expandAction(action.value);
-        const newAction = new Action(expandedValue, action.displayString);
-        return new Seq([newAction]);
-      }
-      const r = this.dict.getScope(action.value);
-      if (is.undefined(r) && (action.value as string)[0] !== IIF) {
-        return action;
-      }
-      if (is.function(r)) {
-        return new Seq([action]);
-      }
-      return this.expandAction(r);
-    },
-    'Array': (arr: any[]) => {
-      return freeze(arr)
-        .map(i => this.expandAction(i))
-        .reduce((p, n) => {
-          if (n instanceof Seq) {
-            p.push(...n.value);
-          } else {
-            p.push(n);
-          }
-          return p;
-        }, []);
-    },
-    'Decimal': x => x,
-    'null': () => null,
-    'Object': (obj: Object) => {
-      const r = {};
-      for (const key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-          const n = this.expandAction(obj[key]);
-          if (n instanceof Seq) {
-            r[key] = n.value.length === 1 ? n.value[0] : n.value;
-          } else {
-            r[key] = n;
-          }
-        }
-      }
-      return r;
-    },
-    'any': x => x
-  });
-
   dict: Dictionary;
 
   constructor (initalState: any = { parent: null }) {

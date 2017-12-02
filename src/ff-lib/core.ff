@@ -13,7 +13,7 @@ over: [ dupd swap ] ;       // [b] [a] -> [b] [a] [b]  (aka peek)
 dupd: [ q< dup q> ] ;     // [b] [a] -> [b] [b] [a]  (aka w)
 bi: [ sipd eval ] ;  // [c] [b] [a] -> [c] b [c] a
 sipd: [ q< sip q> ] ;       // [b] [a] -> [b] a [b]    (aka sip)
-slipd: [ q< q< eval q> q> ] ;
+slipd: [ q< slip q> ] ;
 do: [ dup dipd ] ;
 
 // math
@@ -57,7 +57,7 @@ contains: [ indexof 1 > ] ;
 pad-left: [ over * [ swap + ] >> dip tail ] ;
 lreverse: [ [ unit ] [ swap + ] map-reduce ] ;
 sreverse: [ lreverse sum ] ;
-reverse: [ dup string? [ sreverse ] [ lreverse ] branch ] ;
+reverse: [ dup string? sreverse: lreverse: branch ] ;
 
 // functional
 chain: [ over nothing? ~ swap when ] ;
@@ -84,7 +84,7 @@ keepif: [ over unit if ] ;
 loop: [ [ eval ] keep 'loop' >> when ] ;
 while: [ swap do + [ loop ] >> when ] ;
 until: [ [ [ ~ ] + ] dip while ] ;
-forever: [ [ eval ] keep 'forever' >> eval ] ;
+forever: [ [ eval ] keep forever: >> eval ] ;
 
 appl: [ >> in ] ;
 y: [ [ dup >> ] swap + dup >> ] ;
@@ -109,3 +109,11 @@ action?: [ type 'action' = ] ;
 string?: [ type 'string' = ] ;
 boolean?: [ type 'boolean' = ] ;
 array?: [ type 'array' = ] ;
+
+/**
+ * ## `dict`
+ * returns the local dictionary
+ *
+ * ( -> {array} )
+ */
+dict: [ locals [ dup rcl ] map object ] ;

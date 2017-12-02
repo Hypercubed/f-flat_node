@@ -5,13 +5,13 @@
 'core.ff' import
 'shuffle.ff' import
 
-_x: [ dup eval ] ;
-_i: [ eval ] ;
-_?: [ dup [ [ '_?' eval ] >> ] dip ] ;
-_w: [ dupd eval ] ;
-_b: [ [ >> ] dip eval ] ;
-_c: [ swapd eval ] ;
-_k: [ dropd eval ] ;
-_t: [ swap eval ] ;
-_s: [ [ over >> swap ] dip eval ] ;
-_y: [ [ dup >> ] swap + dup >> eval ] ;
+x: [ dup eval ] ;
+i: [ eval ] ;
+?: [ dup [ [ '_?' eval ] >> ] dip ] ;
+w: [ dupd eval ] ;
+b: [ [ >> ] dip eval ] ;
+c: [ swapd eval ] ;
+k: [ dropd eval ] ;
+t: [ swap eval ] ;
+s: [ [ over >> swap ] dip eval ] ;
+y: [ [ dup >> ] swap + dup >> eval ] ;

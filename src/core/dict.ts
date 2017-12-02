@@ -1,9 +1,54 @@
-import is from '@sindresorhus/is';
+import { freeze, assocIn, getIn } from 'icepick';
 
 import { formatValue, FFlatError } from '../utils';
-import { Action, Just, StackValue } from '../types';
-import { USE_STRICT } from '../constants';
+import { Action, Just, StackValue, typed, Seq, Dictionary } from '../types';
+import { USE_STRICT, IIF } from '../constants';
 import { StackEnv } from '../env';
+
+const is = require('@sindresorhus/is');
+
+const rewrite = typed({
+  'Object, Array': (dict: Object, arr: any[]) => {
+    return arr
+      .reduce((p, i) => {
+        const n = rewrite(dict, i);
+        n instanceof Seq ?
+          p.push(...n.value) :
+          p.push(n);
+        return p;
+      }, []);
+  },
+  'Object, Decimal': (x, y) => y,
+  'Object, null': () => null,
+  'Object, Action': (dict, action) => {
+    if (Array.isArray(action.value)) {
+      const displayString = action.displayString;
+      const expandedValue = rewrite(dict, action.value);
+      const newAction = new Action(expandedValue, action.displayString);
+      return new Seq([newAction]);
+    }
+    const path = Dictionary.makePath(action.value);
+    const value = <StackValue>getIn(dict, path);
+    if (is.undefined(value) && (action.value as string)[0] !== IIF) {
+      return action;
+    }
+    if (is.function(value)) {
+      return new Seq([action]);
+    }
+    return rewrite(dict, value);
+  },
+  'Object, Object': (dict: Object, obj: Object) => {
+    return Object.keys(obj)
+      .reduce((p, key) => {
+        const n = rewrite(dict, obj[key]);
+        n instanceof Seq ?
+          p[key] = n.value.length === 1 ? n.value[0] : n.value :
+          p[key] = n;
+        return p;
+      }, {});
+  },
+  'Object, any': (x, y) => y
+});
 
 // For all deictionay actions, note:
 // * The dictionary is mutable
@@ -110,9 +155,8 @@ export const dict = {
    * [ [ dup * ] ]
    * ```
    */
-  expand(this: StackEnv, x: Action) {  // tbd: rename lift?
-    // todo: should expand and rewrite if possible
-    return this.expandAction(x);
+  expand(this: StackEnv, x: Action) {
+    return rewrite(this.dict.locals, x);
   },
 
   /**
@@ -155,5 +199,24 @@ export const dict = {
    */
   locals(this: StackEnv): string[] {
     return this.dict.keys();
-  }
+  },
+
+  /**
+   * ## `locals`
+   * returns a list of local scoped words
+   *
+   * ( -> {array} )
+   */
+  scoped(this: StackEnv): string[] {
+    return Object.keys(this.dict.scope);
+  },
+
+  /**
+   * ## `rewrite`
+   * rewrites an expression using a set of rewrite rules
+   *
+   * ( {object} {express} -> {expression} )
+   */
+  rewrite
 };
+

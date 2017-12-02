@@ -26,8 +26,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] JSON
   - [ ] .toJSON6() ?
   - [ ] to approx JSON (Decimal -> number, etc)
-  - [ ] Decimal/Complex .fromJSON
-
+  - [ ] Decimal/Complex .fromJSON + Tests
+- [ ] rewrite should also rewrite sequences `dup drop` ]` -> ``
 
 # New Words
 
@@ -40,11 +40,12 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `"1+2i" complex` -> Complex
 - [ ] clamp, scale
 - [ ] radians -> rads-per-degree, etc. ?
+- [ ] rename expand to lift?
 
 # Docs
 
 - [ ] REPL intro
-- [ ] "complile"
+- [ ] "compile" (expand)
 - [ ] Module loader, expanding functions, circular references.
 - [ ] Defined words
 - [ ] Child stacks, forks, etc.
@@ -66,7 +67,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] Infinity in a complex number is a ComplexInfinity
   - [x] Multiplications: https://locklessinc.com/articles/complex_multiplication/
   - [x] Divsion: https://arxiv.org/pdf/1210.4539.pdf
-  - [ ] shorthand for complex values? i.e. '1+2i'?
+  - [ ] shorthand for complex values? i.e. 'C#1+2i'?
   - [ ] Pretty printing complex values: '5e-20+2i' -> '2i'
 - [ ] Investigate alternatives to decimal.js? Rational Numbers?
 - [ ] Pool children env?
@@ -83,7 +84,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [-] bubble errors up from children (currently in: swallows errors)
 - [ ] JSON Serialize
   - [ ] Nan, Infinity, etc.
-  - [ ] BigNumber, actions, Complex
+  - [x] BigNumber, Complex
+  - [ ] actions, 
+  - [ ] Dates
 - [ ] Dates
   - [ ] More date base operations
   - [ ] Add Duration type... example: https://github.com/moment/moment/blob/develop/src/lib/duration/constructor.js

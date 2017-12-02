@@ -2,10 +2,30 @@
  * # Bootstrap F-Flat
  */
 
-'module-loader.ff'
-    __filename dirname                  // __dirname
-    swap [ ] >> >> path-join resolve    // resolve
-    read eval                           // eval
+/**
+ * ## `;` ( define action )
+ * Converts the quote into an action and stores
+ */
+[ : swap sto ] : ';' sto
+
+/**
+ * ## `in`
+ */
+in: [ ( swap eval ) ] ;
+
+/**
+ * ## `map`
+ */
+map: [ * in ] ;
+
+modules:
+  'module-loader.ff'
+  __filename dirname                          // __dirname
+  swap [ ] >> >> path-join resolve            // resolve
+  [ read eval create-module send ] >> fork    // eval and export
+  drop swap sto                               // sto module loading system
+
+modules: rcl use
 
 core: 'core.ff' import-as
 shuffle: 'shuffle.ff' import-as

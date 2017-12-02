@@ -1,18 +1,6 @@
 /**
- * ## `;` ( define action )
- * Converts the quote into an action and stores
+ * # Module loader
  */
-[ : swap sto ] : ';' sto
-
-/**
- * ## `in`
- */
-in: [ ( swap eval ) ] ;
-
-/**
- * ## `map`
- */
-map: [ * in ] ;
 
 // Compute boot file's directory based on the filename
 __dirname: [ __filename dirname '/' + ] ;
@@ -41,13 +29,29 @@ import-resolve: [ ( __dirname ) >> resolve ] ;
  *
  * ( -> {array} )
  */
-dict: [ locals [ dup rcl ] map object ] ;
+public-dict: [ locals [ dup 0 @ '_' = [ drop ] [ dup rcl ] choose eval ] map object ] ;
+
+/**
+ * ## `dict`
+ * returns the local dictionary
+ *
+ * ( -> {array} )
+ */
+private-dict: [ locals [ dup 0 @ '_' = [ dup rcl ] [ drop ] choose eval ] map object ] ;
+
+/**
+ * ## `dict`
+ * returns the local dictionary
+ *
+ * ( -> {array} )
+ */
+scoped-dict: [ scoped [ dup rcl ] map object ] ;
 
 /**
  * ## `create-module`
  * Creates a module from the locally defined words
  */
-create-module: [ dict expand ] ;
+create-module: [ scoped-dict private-dict + public-dict rewrite ] ;
 
 // Definition of `import-module`
 // Loads and executes a file in a child, expands out defintions, and defines a module

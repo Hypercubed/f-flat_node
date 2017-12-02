@@ -65,13 +65,15 @@ next-odd: [ [ odd? ] find-next ] ;
 next-even: [ [ even? ] find-next ] ;
 countup: [ over - [ succ ] swap ] ;
 countdown: [ dupd - [ pred ] swap ] ;
-range*: [ 2dup < [ countup ] [ countdown ] branch repn ] ;
-range: [ [ range* ] >> appl ] ;
-count: [ 1 swap range* ] ;
+
+// ranges
+_range: [ 2dup < countup: countdown: choose repn ] ;
+range: [ [ _range ] >> appl ] ;
+count: [ 1 swap _range ] ;
 
 // primes
-prime?*: [ 2 [ 2dup 2 ^ > [ 2dup % 0 > ] dip swap * ] [ ++ ] while 2 ^ < ] ;
-prime?: [ dup 7 < [ [ 2 = ] [ 3 = ] [ 5 = ] tri + + ] [ dup simple? [ drop false ] [ prime?* ] branch ] branch ] ;
+_prime?: [ 2 [ 2dup 2 ^ > [ 2dup % 0 > ] dip swap * ] [ ++ ] while 2 ^ < ] ;
+prime?: [ dup 7 < [ [ 2 = ] [ 3 = ] [ 5 = ] tri + + ] [ dup simple? [ drop false ] [ _prime? ] branch ] branch ] ;
 mersenne?: [ 2 swap ^ 1 - prime? ] ;
 next-prime: [ dup 2 < [ drop 2 ] [ next-odd [ dup prime? ] [ 2 + ] until ] branch ] ;
 nth-prime: [ [ 0 [ next-prime ] ] dip times ] ;
