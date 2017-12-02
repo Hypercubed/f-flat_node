@@ -21,7 +21,7 @@ The primary use case for F♭ at this time is in an interactive REPL. RPN \(and 
 
 ### Post-fix... really!
 
-One of the best \(or worse if you're that way\) things about stack based languages is post fix notation over the mixed bag of infix, prefix, and postfix you see in may languages.  For example, is this infix or postfix?
+One of the best things \(or worse things if you're so inclined\) about stack based languages is post fix notation over the mixed bag of infix, prefix, and postfix you see in may languages.  For example, is this infix or postfix?
 
 ```js
 [1 2 3].map((x) => sin(2 * x * PI));
@@ -30,37 +30,37 @@ One of the best \(or worse if you're that way\) things about stack based languag
 I count all three!  In a post fix language we write:
 
 ```
-[1 2 3] [ 2 * PI * sin ] map
+[1 2 3] [ 2 * pi * sin ] map
 ```
 
 Not only is it shorter but it is all postfix... in fact it is consistently Subject-Verb \(or Subject-Subject-Verb\).  But look at how definitions are defined in [Joy](https://hypercubed.github.io/joy/joy.html) the grand father of concatenative languages:
 
 ```
-tps == 2 * PI * sin
+DEFINE tps == 2 * PI * sin .
 ```
 
 This deviates from the Subject\(s\)-Verb paradigm.  In F♭ we could define words like:
 
 ```
-[ PI * sin ] : tps: sto
+[ pi * sin ] : tps: sto
 ```
 
 or with a proper definition of the word `;`:
 
 ```
-tps: [ PI * sin ] sto
+tps:[PI * sin];
 ```
 
 Again we are postfix following Subject-Subject-Verb.
 
 ### Flat...
 
-F♭ is, well, flat.  Except for possibly the various brackets \(for example \(`(` and `)`\) F♭ has no block structures. In fact, under the hood, the bracket themselves are work like any other.  The `(` pushes a "quote" symbol onto the stack, then '\)' collects all elements up to the last "quote" and places the results onto the stack as a list.
+F♭ is, well, flat.  Except for possibly the various brackets \(for example \(`(` and `)`\) F♭ has no block structures. In fact, under the hood, the bracket themselves work like any other word.  The `(` pushes a "quote" symbol onto the stack, then '\)' collects all elements up to the last "quote" and places the results onto the stack as a list.
 
 ### Hierarchical Write once, read many dictionary
 
-No concatinative language is complete without a dictionary of words.  This dictionary, however, could be abused.  Storing values inside the dictionary has the very real drawback of causing side effects.  One way around thsi is that in   
-F♭ the dictionary is write once.  Definitions cannot be overwritten.  This may seam to cause issues with name collisions, however, the F♭ dictionaries are hierarchical \(or scoped\) that allow for shadowing, much like scoping rules in JavaScript.
+No concatinative language is complete without a dictionary of words.  This dictionary, however, could be abused.  Storing values inside the dictionary has the very real drawback of causing side effects.  One way around this is that in  
+F♭, by default, the dictionary is write once.  Definitions cannot be overwritten in the locals dictionary.  This may seam to cause issues with name collisions, however, the F♭ dictionaries are hierarchical \(or scoped\) that allow for shadowing, much like scoping rules in JavaScript.
 
 ### Immutability
 
@@ -68,9 +68,27 @@ All items on the stack or in the dictionary are immutable using [structural shar
 
 ### Arbitrary-precision decimal and complex number types
 
-Internally numeric values in are stored as arbitrary-precision integers, floats, and complex values.  This allows for some interesting numerical capabilities.
+Internally, numeric values in are stored as arbitrary-precision integers, floats, and complex values.  This allows for some interesting numerical capabilities.
 
 ### JSON format is a valid f-flat programs
 
-Using a few internal and defined words JSON file are valid f-flat programs.  F♭ is able to parse a superset of JSON.
+Using a few internal and defined words JSON file are valid f-flat programs.  F♭ is able to parse a superset of JSON.  The following is valid input to F♭:
+
+```
+{
+  foo: 'bar',
+  while: true,
+  nothing: null,
+  here: 'is another',
+  half: 0.5,
+  to: Infinity,
+  finally: 'a trailing comma',
+  oh: [
+   'we shouldn\'t forget',
+   'arrays can have',
+   'trailing commas too', ],
+}
+```
+
+
 
