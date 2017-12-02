@@ -31,13 +31,14 @@ test('should be chainable', t => {
 });
 
 test('should push numeric values', t => {
-  t.deepEqual(fSyncValues('1 2 -3'), [1, 2, -3], 'integers');
-  t.deepEqual(fSyncValues('1.1 2.2 -3.14'), [1.1, 2.2, -3.14], 'floats');
+  t.deepEqual(fSyncValues('1 2 -3 +5'), [1, 2, -3, 5], 'integers');
+  t.deepEqual(fSyncValues('1.1 2.2 -3.14, +2.17'), [1.1, 2.2, -3.14, 2.17], 'floats');
   t.deepEqual(
     fSyncValues('1.1e-1 2.2e+2 -3.14e-1'),
     [0.11, 220, -0.314],
     'expoential'
   );
+  t.deepEqual(fSyncValues('10_000 1_00'), [10000, 100], 'seperators');
 });
 
 test('should push hexidecimal numeric values', t => {

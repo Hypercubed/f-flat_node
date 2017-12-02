@@ -17,6 +17,10 @@ export function processNumeric(value: string): Decimal | number {
   if (typeof value !== 'string') {
     return NaN;
   }
+  if (value[0] === '+') {
+    value = value.slice(1, value.length);
+  }
+  value = value.replace(/_/g, '');
   try {
     return Object.freeze(
       value.slice(-1) === '%'
@@ -80,8 +84,8 @@ function convertLiteral(value: any): StackValue | undefined {
 
   const ch = id.charCodeAt(0);
 
-  if (ch === 45 || ch === 46 || (ch >= 0x30 && ch <= 0x39)) {
-    // -.0-9
+  if (ch === 43 || ch === 45 || ch === 46 || (ch >= 0x30 && ch <= 0x39)) {
+    // +-.0-9
     const n = processNumeric(id);
     if (!isNaN(<any>n)) {
       // number
