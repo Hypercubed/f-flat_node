@@ -41,7 +41,7 @@ import-resolve: [ ( __dirname ) >> resolve ] ;
  *
  * ( -> {array} )
  */
-dict: [ locals [ dup 0 @ '_' = [ drop ] [ dup rcl ] choose eval ] map object ] ;
+dict: [ locals [ dup rcl ] map object ] ;
 
 /**
  * ## `create-module`

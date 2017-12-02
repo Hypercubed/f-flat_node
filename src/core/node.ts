@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, readFile, existsSync } from 'fs';
 import { dirname, join } from 'path';
 import * as fetch from 'isomorphic-fetch';
 import { promisify } from 'util';
+import * as normalizeUrl from 'normalize-url';
 
 const readFileAsync = promisify(readFile);
 
@@ -158,10 +159,10 @@ export default {
    */
   resolve: typed('resolve', {
     'string': (name: string): string => {
-      return resolve(name).href;
+      return normalizeUrl(resolve(name).href);
     },
     'Array': ([name, base]: string[]): string => {
-      return resolve(name, base).href;
+      return normalizeUrl(resolve(name, base).href);
     },
   }),
 

@@ -4,6 +4,7 @@ import { check, gen } from 'ava-check';
 import {
   F,
   fSyncJSON,
+  fSyncValues,
   options,
   fflatValue,
   fflatPrim,
@@ -25,9 +26,9 @@ test(
   'should sto and rcl value',
   check(options, ffString, gen.oneOf([ffString, ffNumber, ffBoolean]), (t, b, a) => {
     const s = `${a} ${b} sto ${b} rcl`;
-    const r = fSyncJSON(s);
+    const r = fSyncValues(s);
     t.is(r.length, 1);
-    t.is(r[0], a.toJSON());
+    t.is(r[0], a.valueOf());
   })
 );
 

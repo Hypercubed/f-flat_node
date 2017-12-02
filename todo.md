@@ -5,12 +5,12 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 # Bugs
 
 - [ ] 1 acos = 0 (precision issue)
-- [ ] precision in complex calculations
+- [ ] precision in complex calculations (on print)
 - [ ] ComplexInfinity, Indeterminate, Undefined (http://www.wolframalpha.com/input/?i=ComplexInfinity)
-- [ ] @ for out of rang works differently on string and array
+- [ ] @ for out of range works differently on string and array
 - [x] `{} {} =` returns false
 - [x] `nan nan =` returns false
-- [ ] should eb able sto store null
+- [x] should be able sto store null
 
 # Todo next:
 
@@ -23,17 +23,23 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Test all internal words
   - [ ] Dictionary words
 - [ ] Test `usr.ff` and cwd
-- [ ] BigNumber/Complex .fromJSON
+- [ ] JSON
+  - [ ] .toJSON6() ?
+  - [ ] to approx JSON (Decimal -> number, etc)
+  - [ ] Decimal/Complex .fromJSON
+
 
 # New Words
 
 - [ ] fld, cld: https://docs.julialang.org/en/stable/stdlib/math/#Base.fld
 - [ ] isfinite, isinf, isnan
 - [ ] sign, ispos, isneg
-- [ ]  >> and >>> ?
+- [ ] >> and >>> ?
 - [ ] sinpi, cospi?
 - [x] conj
 - [ ] `"1+2i" complex` -> Complex
+- [ ] clamp, scale
+- [ ] radians -> rads-per-degree, etc. ?
 
 # Docs
 
@@ -85,3 +91,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] [ ... ] [ x y z ] @ => [ ... ][x][y][z]
   - [ ] { ... } 'x.y.z' @ => [ ... ][x][y][z]
   - [ ] JS FFI?
+- [ ] Private/Protected words?  Globals/parent scoped?
+- [ ] Preserved presision (2.50 vs 2.5)?
+- [ ] Pattern matching ???

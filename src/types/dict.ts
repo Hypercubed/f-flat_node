@@ -37,6 +37,10 @@ export class Dictionary {
         this.locals[firstKey] = undefined;
         return;
       }
+      if (value === null) {
+        this.locals[firstKey] = null;
+        return;
+      }
       this.locals[firstKey] = freeze(value);
       return;
     }

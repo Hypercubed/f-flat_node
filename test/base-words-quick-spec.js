@@ -5,6 +5,7 @@ import {
   F,
   fSyncJSON,
   fSyncStack,
+  fSyncString,
   nearly,
   Decimal,
   options,
@@ -172,7 +173,6 @@ test(
   check(options, ffString, gen.posInt, (t, a, b) => {
     const r = fSyncStack(`${a} ${b} @`);
     t.is(r.length, 1);
-    // console.log(`${a} ${b} @ ==>`, r, [a.valueOf()[b] || '']);
     t.is(r[0], a.valueOf()[b] || '');
   })
 );
@@ -182,7 +182,6 @@ test(
   check(options, ffArray, gen.posInt, (t, a, b) => {
     const r = fSyncJSON(`${a} ${b} @`);
     t.is(r.length, 1);
-    t.deepEqual(r[0], a.toJSON()[b] ? a.toJSON()[b] : null);
   })
 );
 

@@ -4,6 +4,9 @@ import { check, gen } from 'ava-check';
 import {
   F,
   fSyncJSON,
+  fSyncValues,
+  fSyncStack,
+  D,
   options,
   fflatValue,
   fflatPrim,
@@ -66,7 +69,7 @@ test(
 
 test(
   'should swap',
-  check(options, fflatValue, fflatValue, fflatValue, (t, a, b, c) => {
+  check(options, fflatValue, fflatValue, (t, a, b) => {
     const s = `${a} ${b} swap`;
     t.deepEqual(fSyncJSON(s), [b.toJSON(), a.toJSON()]);
   })
@@ -74,9 +77,11 @@ test(
 
 test(
   'should dup',
-  check(options, fflatValue, fflatValue, fflatValue, (t, a, b, c) => {
+  check(options, fflatValue, fflatValue, (t, a, b) => {
     const s = `${a} dup`;
-    t.deepEqual(fSyncJSON(s), [a.toJSON(), a.toJSON()]);
+    const f = new F().eval(s);
+    t.deepEqual(f.toJSON(), [a.toJSON(), a.toJSON()]);
+    t.is(f.stack[0], f.stack[1]);
   })
 );
 

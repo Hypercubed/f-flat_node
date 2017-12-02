@@ -30,21 +30,22 @@ const P = <any>Decimal.prototype;
 
 // P.empty = () => zero;
 
-const _valueOf = P.valueOf;
-P.valueOf = P.toJSON = function() {
-  return Number(_valueOf.apply(this));
+P.fullString = P.valueOf;
+
+P.valueOf = function() {
+  return Number(this.fullString());
 };
 
-/* Decimal.prototype.toJSON = function() {  // todo: preserve precision in JSON output
-  return { '@@Decimal': _valueOf.apply(this) };
-}; */
+P.toJSON = function() {
+  return { '$numberDecimal': this.fullString() };
+};
 
 P.inspect = function() {
   return this.toString();
 };
 
 P.fromJSON = function(json) {
-  return new Decimal(json);
+  return new Decimal(json.$numberDecimal);
 };
 
 /* P.gamma = function() {

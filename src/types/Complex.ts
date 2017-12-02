@@ -48,10 +48,14 @@ export class Complex {
   toJSON(): {} {
     return {
       '@@Complex': {
-        re: this.re.toJSON(), // fix this, should store full precision
-        im: this.im.toJSON()
+        re: (this.re as any).fullString(),
+        im: (this.im as any).fullString()
       }
     };
+  }
+
+  fromJSON(json): Complex {
+    return new Complex(json.re, json.im);
   }
 
   inspect(): string {
