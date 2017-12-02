@@ -1,6 +1,6 @@
 # Dictionary / Locals
 
-Unlike many other languages, f♭ does not have a concept of variables nor lambdas.  Like most stack based languages the primary location for value storage is the stack.  f♭ has a write once dictionary for storage of word definitions.  Values within a dictionary cannot be overwitten or deleted. However, using child stacks (discussed later) dictionary words can be shadowd. (similar to JS scoping rules).
+Unlike many other languages, f♭ does not have a concept of variables or lambdas.  Like most stack based languages the primary location for value storage is the stack.  f♭ has a write once dictionary for storage of word definitions.  Values within a dictionary cannot be overwritten or deleted. However, using child stacks (discussed later) dictionary words can be shadowed. (similar to JS scoping rules).
 
 Values can be stored and recalled from the stack using the `sto` and `rcl` verbs.
 

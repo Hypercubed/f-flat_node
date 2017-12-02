@@ -39,10 +39,11 @@ f♭> clr z
 ## Definition convention
 
 - Object(s)-Verb pattern
-- should be lower kebab-case
-- inquisitive words (typically boolean returning functions) should end with question mark (`?`)
+- Should be lower kebab-case
+- Inquisitive words (typically boolean returning functions) should end with question mark (`?`)
   - `string?`, `zero?`, `prime?`
-- procedures should be verbs
+- Procedures should be verbs
   - `dup`, `dip`, `drop`
-- types should be nouns
+- Types should be nouns
   - `string`, `number`, `complex`
+- By convention words begging with underscore `_` are considered private.
