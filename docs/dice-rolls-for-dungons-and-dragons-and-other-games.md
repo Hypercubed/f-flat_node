@@ -20,19 +20,16 @@ Now provide handlers for each n-sided die. Each of these takes a
 number representing the number of rolls and returns the sum of the
 rolls.
 
-      [ [ [  4 roll-die ] times ] sip 1 - [ + ] times ] 'd4' :
-      [ [ [  6 roll-die ] times ] sip 1 - [ + ] times ] 'd6' :
-      [ [ [  8 roll-die ] times ] sip 1 - [ + ] times ] 'd8' :
-      [ [ [ 10 roll-die ] times ] sip 1 - [ + ] times ] 'd10' :
-      [ [ [ 12 roll-die ] times ] sip 1 - [ + ] times ] 'd12' :
-      [ [ [ 20 roll-die ] times ] sip 1 - [ + ] times ] 'd20' :
-
-This is *strongly* calling for refactoring.
+      d4: [ [ [ 4 roll-die ] swap times ] >> in ] ;
+      d6: [ [ [ 6 roll-die ] swap times ] >> in ] ;
+      d8: [ [ [ 81 roll-die ] swap times ] >> in ] ;
+      d10: [ [ [ 10 roll-die ] swap times ] >> in ] ;
+      d12: [ [ [ 12 roll-die ] swap times ] >> in ] ;
+      d20: [ [ [ 20 roll-die ] swap times ] >> in ] ;
 
 The final routine is a combinator that sums the results of the rolls.
 
-      [ "q-n"  capture-results #0 [ + ] reduce ] 'roll-dice' :
-    }
+      roll-dice: [ eval sum: dip + ] ;
 
 Example:
 
