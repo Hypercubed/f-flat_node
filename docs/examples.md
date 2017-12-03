@@ -51,6 +51,12 @@ prompt
 'You guessed: ' swap + println
 ```
 
+## Average Some Values
+
+```
+[ 1 3 5 6 9 ] dup length [ 0 [ + ] reduce ] dip /
+```
+
 ## Various Project Euler solutions
 
 See [euler.md](./euler.md).
