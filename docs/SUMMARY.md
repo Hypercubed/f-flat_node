@@ -32,4 +32,5 @@
   * [Site War](site-war.md)
   * [Project Euler Solutions](project-euler-solutions.md)
   * [The Fridge Game](the-fridge-game.md)
+* [Dice Rolls for Dungons & Dragons \(and other games\)](dice-rolls-for-dungons-and-dragons-and-other-games.md)
 
