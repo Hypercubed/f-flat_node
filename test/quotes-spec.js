@@ -1,5 +1,5 @@
 import test from 'ava';
-import { F, fSyncJSON, fSyncValues, D, Action } from './setup';
+import { F, fSyncJSON, fSyncValues, D, Word } from './setup';
 
 test('should push quotes', t => {
   t.deepEqual(fSyncValues('[ 1 ] [ 2 ]'), [[1], [2]], 'should push');
@@ -19,7 +19,7 @@ test('should add quotes', t => {
 });
 
 test('should mul quotes', t => {
-  const plus = new Action('+').toJSON();
+  const plus = new Word('+').toJSON();
   t.deepEqual(
     fSyncJSON('[ 1 2 + ] 2 *'),
     [

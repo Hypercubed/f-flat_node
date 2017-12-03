@@ -4,7 +4,8 @@ import {
   fSyncJSON,
   fSyncStack,
   fSyncValues,
-  Action,
+  Word,
+  Sentence,
   Decimal,
   D, V
 } from './setup';
@@ -223,9 +224,9 @@ test('is?', t => {
 });
 
 test('others2', t => {
-  const def = new Action('def').toJSON();
-  const abc = new Action('abc').toJSON();
-  const plus = new Action('+').toJSON();
+  const def = new Word('def').toJSON();
+  const abc = new Word('abc').toJSON();
+  const plus = new Word('+').toJSON();
 
   t.deepEqual(fSyncJSON('"abc" "b" indexof'), [1], 'indexof');
   t.deepEqual(fSyncJSON('"abc" "def" swap'), ['def', 'abc'], 'swap strings');
@@ -440,10 +441,10 @@ test('pick from, shortcut', t => {
 });
 
 test('actions', t => {
-  const ev = new Action('eval').toJSON();
-  const sl = new Action('slip').toJSON();
-  const actionEval = new Action(D([1, 2, ev])).toJSON();
-  const actionSlip = new Action(D([1, 2, sl])).toJSON();
+  const ev = new Word('eval').toJSON();
+  const sl = new Word('slip').toJSON();
+  const actionEval = new Sentence(D([1, 2, ev])).toJSON();
+  const actionSlip = new Sentence(D([1, 2, sl])).toJSON();
 
   t.deepEqual(fSyncJSON('eval:'), [ev]);
   t.deepEqual(fSyncJSON('eval: :'), [ev]);

@@ -1,4 +1,4 @@
-import { typed, Decimal, gammaDecimal, Complex, Action, indeterminate, pi } from '../types';
+import { typed, Sentence, Decimal, gammaDecimal, Complex, indeterminate, pi } from '../types';
 import { lexer } from '../utils';
 
 const erf = require('compute-erf');
@@ -301,10 +301,10 @@ export default {
   '^': typed('pow', {
     // boolean or?
     'Complex, Decimal | Complex | number': (a, b) =>
-      new Action([b, a].concat(lexer('ln * exp'))),
-    'Decimal, Complex': (a, b) => new Action([b, a].concat(lexer('ln * exp'))),
+      new Sentence([b, a].concat(lexer('ln * exp'))),
+    'Decimal, Complex': (a, b) => new Sentence([b, a].concat(lexer('ln * exp'))),
     'Decimal, Decimal | number': (a, b) => a.pow(b) // ,
-    // 'Array, number': (a, b) => new Action([a, b, new Action('pow')])  // this is only integers
+    // 'Array, number': (a, b) => new Sentence([a, b, new Word('pow')])  // this is only integers
   }),
 
   /**

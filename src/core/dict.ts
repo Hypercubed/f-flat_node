@@ -1,7 +1,7 @@
 import { freeze, assocIn, getIn } from 'icepick';
 
 import { formatValue, FFlatError } from '../utils';
-import { Action, Just, StackValue, typed, Seq, Dictionary } from '../types';
+import { Sentence, Word, Just, StackValue, typed, Seq, Dictionary } from '../types';
 import { USE_STRICT, IIF } from '../constants';
 import { StackEnv } from '../env';
 
@@ -20,13 +20,12 @@ const rewrite = typed({
   },
   'Object, Decimal': (x, y) => y,
   'Object, null': () => null,
-  'Object, Action': (dict, action) => {
-    if (Array.isArray(action.value)) {
-      const displayString = action.displayString;
-      const expandedValue = rewrite(dict, action.value);
-      const newAction = new Action(expandedValue, action.displayString);
-      return new Seq([newAction]);
-    }
+  'Object, Sentence': (dict, action) => {
+    const expandedValue = rewrite(dict, action.value);
+    const newAction = new Sentence(expandedValue, action.displayString);
+    return new Seq([newAction]);
+  },
+  'Object, Word': (dict, action) => {
     const path = Dictionary.makePath(action.value);
     const value = <StackValue>getIn(dict, path);
     if (is.undefined(value) && (action.value as string)[0] !== IIF) {
@@ -93,10 +92,10 @@ export const dict = {
     if (typeof r === 'undefined') {
       return null;
     }
-    if (USE_STRICT && is.function_(r)) { // carefull pushing functions to stack, watch immutability
-      return new Action(r);
+    if (!USE_STRICT && is.function_(r)) { // carefull pushing functions to stack, watch immutability
+      return new Just(new Word(<any>r)); // hack
     }
-    return r instanceof Action ? new Just(r) : r;
+    return (r instanceof Word || r instanceof Sentence) ? new Just(r) : r;
   },
 
   /**
@@ -155,7 +154,7 @@ export const dict = {
    * [ [ dup * ] ]
    * ```
    */
-  expand(this: StackEnv, x: Action) {
+  expand(this: StackEnv, x: Word | Sentence) {
     return rewrite(this.dict.locals, x);
   },
 
@@ -175,7 +174,7 @@ export const dict = {
     if (typeof r === 'undefined') {
       return null;
     }
-    if (r instanceof Action) {
+    if (r instanceof Word || r instanceof Sentence) {
       return r.displayString;
     }
     return formatValue(r, 0, { colors: false, indent: false });

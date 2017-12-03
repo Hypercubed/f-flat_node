@@ -1,7 +1,7 @@
 import test from 'ava';
 import nock from 'nock';
 
-import { F, fSyncJSON, fSyncValues, fAsyncJSON, fAsyncValues, D, Action } from './setup';
+import { F, fSyncJSON, fSyncValues, fAsyncJSON, fAsyncValues, D, Word } from './setup';
 
 const future = { '@@Future': { '$undefined':true } };
 
@@ -15,8 +15,8 @@ nock('https://api.github.com/')
   .reply(200, good);
 
 test('yield', t => {
-  const yieldAction = new Action('yield').toJSON();
-  const plus = new Action('+').toJSON();
+  const yieldAction = new Word('yield').toJSON();
+  const plus = new Word('+').toJSON();
   t.deepEqual(
     fSyncJSON('[1 2 yield 4 5 yield 6 7] fork'),
     D([[1, 2], [4, 5, yieldAction, 6, 7]]),

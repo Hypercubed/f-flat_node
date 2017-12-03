@@ -14,6 +14,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [x] Should support prefix positive numbers (`+10`).
 - [x] Should support using underscore as a sperator: `10_000_000`.
 - [ ] Don't allow `+-` values (i.e. `+-1000`)
+- [ ] Do not allow storing reserverd words (true, false, i, etc).
 
 # Todo next:
 

@@ -1,5 +1,6 @@
 import { typed } from './typed';
 import { formatValue } from '../utils/pprint';
+import { StackValue } from './stackValue';
 
 function toString(x: any) {
   if (Array.isArray(x)) {
@@ -8,7 +9,7 @@ function toString(x: any) {
   return String(x);
 }
 
-export class Action { // rename word, create sentence
+class Action {
   constructor(public value: any, public displayString?: string) {
     if (!displayString) {
       this.displayString = toString(value);
@@ -57,8 +58,24 @@ export class Action { // rename word, create sentence
   }
 }
 
+export class Word extends Action {
+  constructor(value: string, displayString?: string) {
+    super(value, displayString);
+  }
+}
+
+export class Sentence extends Action {
+  constructor(value: StackValue[], displayString?: string) {
+    super(value, displayString);
+  }
+}
+
 typed.addType({
-  name: 'Action',
-  test: item => item instanceof Action
+  name: 'Sentence',
+  test: item => item instanceof Sentence
 });
 
+typed.addType({
+  name: 'Word',
+  test: item => item instanceof Word
+});

@@ -2,7 +2,7 @@ import { assign, merge, unshift, push, slice, getIn } from 'icepick';
 import memoize from 'memoizee';
 
 import { deepEquals, arrayRepeat, arrayMul, and, nand, or, xor, not } from '../utils';
-import { Just, Seq, Action, typed, I, StackValue, Future, Complex, Decimal, complexInfinity } from '../types';
+import { Word, Sentence, Just, Seq, typed, I, StackValue, Future, Complex, Decimal, complexInfinity } from '../types';
 import { StackEnv } from '../env';
 
 /**
@@ -26,7 +26,7 @@ const add = typed('add', {
    */
   'Array, Array': (lhs: StackValue[], rhs: StackValue[]): StackValue[] => lhs.concat(rhs),
   'Array, any': (lhs: StackValue[], rhs: StackValue): StackValue[] => lhs.concat(rhs),
-  'Action, Array': (lhs: Action, rhs: StackValue[]): StackValue[] => [lhs, ...rhs],
+  'Word | Sentence, Array': (lhs: Word, rhs: StackValue[]): StackValue[] => [lhs, ...rhs],
 
   'Future, any': (f: Future, rhs: StackValue): Future => f.map(lhs => lhs.concat(rhs)),
 
@@ -162,8 +162,8 @@ const mul = typed('mul', {
    * [ [ 'a' 'b' ] ]
    *```
    */
-  'Array, Array | Action | Function': arrayMul,
-  'string, Array | Action | Function': (lhs, rhs) => arrayMul(lhs.split(''), rhs),
+  'Array, Array | Word | Sentence | Function': arrayMul,
+  'string, Array | Word | Sentence | Function': (lhs, rhs) => arrayMul(lhs.split(''), rhs),
   'Future, any': (f, rhs) => f.map(lhs => mul(lhs, rhs)),
 
   /**
@@ -300,9 +300,9 @@ const unshiftFn = typed('unshift', {
    * [ 1 2 3 ]
    * ```
    */
-  'any | Action | Object, Array': (lhs, rhs) => unshift(rhs, lhs),
-  'Array, string': (lhs, rhs) => [lhs, new Action(rhs)],
-  'Array | Action, Action': (lhs, rhs) => [lhs, rhs],
+  'any | Word | Sentence | Object, Array': (lhs, rhs) => unshift(rhs, lhs),
+  'Array, string': (lhs, rhs) => [lhs, new Word(rhs)],
+  'Array | Word | Sentence, Word | Sentence': (lhs, rhs) => [lhs, rhs],
   'Future, any': (f, rhs) => f.map(lhs => unshiftFn(lhs, rhs)),
 
   /**
@@ -349,7 +349,7 @@ const pushFn = typed('push', {
    * [ [ 1 2 3 ] ]
    * ```
    */
-  'Array, any | Action | Object': (lhs, rhs) => push(lhs, rhs),
+  'Array, any | Word | Sentence | Object': (lhs, rhs) => push(lhs, rhs),
   'Future, any': (f, rhs) => f.map(lhs => pushFn(lhs, rhs)),
 
   /**
@@ -445,7 +445,7 @@ const at = typed('at', {
    * [ 'Manfred' ]
    * ```
    */
-  'any, Action | string | null': (a, b) => {
+  'any, Word | Sentence | string | null': (a, b) => {
     const path = String(b).split('.');
     const r = getIn(a, path);
     return r === undefined ? null : r;

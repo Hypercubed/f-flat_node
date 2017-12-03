@@ -1,13 +1,13 @@
 
 
 import { typed } from './typed';
-import { Action } from './words';
+import { Sentence, Word } from './words';
 import { StackValue } from './stackValue';
 
 export class Future {
   value: StackValue;
 
-  constructor(public action: Action | undefined, public promise: Promise<any>) {
+  constructor(public action: Word | Sentence | undefined, public promise: Promise<any>) {
     if (typeof promise !== 'undefined') {
       promise.then(data => this.resolve(data));
     }

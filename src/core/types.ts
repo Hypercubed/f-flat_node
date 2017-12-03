@@ -1,14 +1,17 @@
-import { typed, Action, Just, Seq, Decimal, zero, Complex } from '../types';
+import { typed, Word, Sentence, Just, Seq, Decimal, zero, Complex } from '../types';
 
-const action = typed('action', {  // todo: this should be part of the Action constructor
-  Action: x => x,
+const action = typed('action', {  // todo: this should be part of the Action constructor?
+  'Word | Sentence': x => x,
   Array: x => {
-    if (x.length === 1 && x[0] instanceof Action) {
+    if (x.length === 1 && (x[0] instanceof Word || x[0] instanceof Sentence)) {
       return x[0];
     }
-    return new Action(x);
+    return new Sentence(x);
   },
-  any: x => new Action(x)
+  string: x => {
+    return new Word(x);
+  },
+  any: x => new Just(x)
 });
 
 /**
@@ -19,11 +22,12 @@ export default {
    * ## `type`
    */
   type: typed('type', {
-    Action: x => 'action',
-    Array: x => 'array', // eslint-disable-line no-unused-vars
-    Decimal: x => 'number', // eslint-disable-line no-unused-vars
-    Complex: x => 'complex', // eslint-disable-line no-unused-vars,
-    Date: x => 'date', // eslint-disable-line no-unused-vars
+    Word: x => 'action',
+    Sentence: x => 'action',
+    Array: x => 'array',
+    Decimal: x => 'number',
+    Complex: x => 'complex',
+    Date: x => 'date',
     any: x => typeof x
   }),
 

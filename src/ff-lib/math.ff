@@ -87,7 +87,7 @@ approx-fact: [ ++ gamma ] ;
 // c!: [ pred [ count ] dip [ * ] swap times ] ;
 recur-fact: [ dup zero? [ drop 1 ] [ pred recur-fact eval * ] branch ] ;
 // y!: [ [ [ over zero? ] [ drop ++ ] [ [ pred ] dip eval * ] ifte ] y eval ] ;
-!: [ dup integer? recur-fact: approx-fact: choose ] ;
+!: [ dup integer? [recur-fact] [approx-fact] choose eval ] ;
 
 // Prob
 npr: [ [ [ ! ] keep ] dip - ! / ] ;

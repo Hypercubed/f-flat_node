@@ -1,9 +1,9 @@
 import test from 'ava';
-import { F, fSyncJSON, fSyncValues, Action, D } from './setup';
+import { F, fSyncJSON, fSyncValues, Word, Sentence, D } from './setup';
 
 test('should sto and rcl', t => {
-  const plus = new Action('+').toJSON();
-  const action = new Action(D([1, 2, plus])).toJSON();
+  const plus = new Word('+').toJSON();
+  const action = new Sentence(D([1, 2, plus])).toJSON();
   t.deepEqual(fSyncValues('1 2 "x" sto 3 x x'), [1, 3, 2, 2], 'should sto a value');
   t.deepEqual(fSyncValues('1 2 x: sto 3 x x'), [1, 3, 2, 2], 'should sto a value');
   t.deepEqual(
@@ -24,8 +24,8 @@ test('should sto and rcl', t => {
 });
 
 test('should sto and rcl nested props', t => {
-  const plus = new Action('+').toJSON();
-  const action = new Action([D(1), D(2), plus]).toJSON();
+  const plus = new Word('+').toJSON();
+  const action = new Sentence([D(1), D(2), plus]).toJSON();
   t.deepEqual(
     fSyncJSON('{ x: 123 } test: sto test'),
     [{ x: D(123) }],
@@ -140,7 +140,7 @@ test('should return null on undefined', t => {
 });
 
 test('create actions', t => {
-  const evalAction = new Action('eval').toJSON();
+  const evalAction = new Word('eval').toJSON();
 
   t.deepEqual(fSyncJSON('"eval" :'), [evalAction]);
   t.deepEqual(fSyncJSON('eval:'), [evalAction]);
@@ -148,7 +148,7 @@ test('create actions', t => {
 });
 
 test('should expand internal actions', t => {
-  const evalAction = new Action('eval').toJSON();
+  const evalAction = new Word('eval').toJSON();
 
   t.deepEqual(fSyncJSON('eval: expand'), [evalAction]);
   t.deepEqual(fSyncJSON('[ eval ] : expand'), [evalAction]);
@@ -159,10 +159,10 @@ test('should expand internal actions', t => {
 });
 
 test('should expand defined actions', t => {
-  const qi = new Action('q<').toJSON();
-  const evalAction = new Action('eval').toJSON();
-  const qo = new Action('q>').toJSON();
-  const slipAction = new Action([qi, evalAction, qo]).toJSON();
+  const qi = new Word('q<').toJSON();
+  const evalAction = new Word('eval').toJSON();
+  const qo = new Word('q>').toJSON();
+  const slipAction = new Sentence([qi, evalAction, qo]).toJSON();
 
   t.deepEqual(fSyncJSON('slip: expand'), [slipAction]);
   t.deepEqual(fSyncJSON('[ slip ] : expand'), [slipAction]);

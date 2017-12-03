@@ -1,6 +1,6 @@
 import { assocIn, getIn } from 'icepick';
 
-import { typed, Action, Decimal } from '../types/index';
+import { typed, Word, Sentence, Decimal } from '../types/index';
 
 export const arrayRepeat = (a: any[], len: any) => {
   len = Number(len) | 0;
@@ -65,7 +65,10 @@ const __eql = typed('deepEquals', {
     }
     return true;
   },
-  'Action, Action': (a: Action, b: Action): boolean => {
+  'Word, Word': (a: Word, b: Word): boolean => {
+    return a.value === b.value;
+  },
+  'Sentence, Sentence': (a: Sentence, b: Sentence): boolean => {
     return a.value === b.value;
   },
   'number, number': (a: number, b: number): boolean => {

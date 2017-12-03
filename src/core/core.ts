@@ -1,7 +1,7 @@
 import * as fetch from 'isomorphic-fetch';
 import { slice, splice, pop } from 'icepick';
 
-import { typed, Seq, Action, StackValue, StackArray, Future } from '../types';
+import { typed, Seq, StackValue, StackArray, Future, Sentence, Word, Just } from '../types';
 import { log, generateTemplate, toObject } from '../utils';
 import { quoteSymbol } from '../constants';
 import { StackEnv } from '../env';
@@ -120,8 +120,12 @@ export default {
    * ```
    */
   eval: typed('_eval', {
-    Future: (f: Future) => f.promise.then(a => new Action(a)),
-    any: a => new Action(a)
+    Future: (f: Future) => f.promise.then(a => new Sentence(a)),
+    Array: a => new Sentence(a),
+    string: a => new Word(a),
+    Word: a => a,
+    Sentence: a => a,
+    any: a => new Just(a)
   }),
 
   /**
@@ -295,7 +299,7 @@ export default {
    *
    * ( -> #( )
    */
-  '(': quoteSymbol,
+  '(': () => quoteSymbol,
   // '(': ':quote', // list
 
   /**
@@ -336,7 +340,7 @@ export default {
    *
    * ( -> #( )
    */
-  '{': quoteSymbol, // object
+  '{': () => quoteSymbol, // object
 
   /**
    * ## `}` (immediate object dequote)

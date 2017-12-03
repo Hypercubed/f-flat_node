@@ -37,7 +37,9 @@ export const formatValue: Function = typed('formatValue', {
   'null, any, any': (value, depth, opts) => stylize('Null', 'null', opts),
   'boolean, any, any': (value, depth, opts) => stylize(value, 'boolean', opts),
 
-  'Action, any, any': (value, depth, opts) => stylize(value, 'name', opts),
+  'Word, any, any': (value, depth, opts) => stylize(value, 'name', opts),
+  'Sentence, any, any': (value, depth, opts) => stylize(value, 'name', opts),
+
   'string, any, any': (value, depth, opts) => formatString(value, opts),
 
   'Array, any, any': formatArray,

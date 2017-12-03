@@ -1,17 +1,21 @@
 import { lex } from 'literalizer';
 
 import {
-  Action,
+  Word,
+  Sentence,
   Decimal,
   typed,
   StackValue,
-  StackArray
+  StackArray,
+  Just,
+  Seq
 } from '../types/index';
 import { unescapeString } from './stringConversion';
 
-const atAction = new Action('@');
-const templateAction = new Action('template');
-const evalAction = new Action('eval');
+const makeAction = new Word(':');
+const atAction = new Word('@');
+const templateAction = new Word('template');
+const evalAction = new Word('eval');
 
 export function processNumeric(value: string): Decimal | number {
   if (typeof value !== 'string') {
@@ -95,7 +99,7 @@ function convertLiteral(value: any): StackValue | undefined {
 
   if (id.length === 1) {
     // all one character tokens are actions
-    return new Action(value);
+    return new Word(value);
   }
 
   if (id === 'null') {
@@ -111,9 +115,9 @@ function convertLiteral(value: any): StackValue | undefined {
     return Symbol(value.slice(1));
   }
 
-  if (id.slice(-1) === ':') {
+  if (id.slice(-1) === ':') { // this is a hack to push word literals, get rid of this
     value = value.slice(0, -1);
-    return new Action(new Action(value));
+    return new Word(<any>new Word(value));
   }
 
   if (ch === 64) {
@@ -130,5 +134,5 @@ function convertLiteral(value: any): StackValue | undefined {
     return [value, atAction, evalAction];
   }
 
-  return new Action(value);
+  return new Word(value);
 }

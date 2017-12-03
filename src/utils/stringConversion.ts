@@ -1,13 +1,13 @@
 import * as punycode from 'punycode';
 
-import { Action } from '../types/index';
+import { Word, Sentence } from '../types/index';
 
 const cap = '%-cap-%';
 const caplen = cap.length;
 const re = new RegExp(`(${cap}\\$\\(.*\\))`, 'g');
 
-export function generateTemplate(template: string): Array<Action | string> {
-  const r: Array<Action | string> = [''];
+export function generateTemplate(template: string): Array<Word | Sentence | string> {
+  const r: Array<Word | Sentence | string> = [''];
 
   template
     .replace(/\$\(.*\)/g, x => cap + x)
@@ -15,12 +15,12 @@ export function generateTemplate(template: string): Array<Action | string> {
     .forEach(s => {
       if (s.slice(0, caplen) === cap) {
         r.push(s.slice(caplen + 1));
-        r.push(new Action('eval'));
-        r.push(new Action('string'));
-        r.push(new Action('+'));
+        r.push(new Word('eval'));
+        r.push(new Word('string'));
+        r.push(new Word('+'));
       } else {
         r.push(unicodeEscape(s));
-        r.push(new Action('+'));
+        r.push(new Word('+'));
       }
     });
   return r;

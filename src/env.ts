@@ -15,12 +15,12 @@ import {
   lexer
 } from './utils';
 
-import { typed, Action, Seq, Just, Dictionary, StackValue, StackArray, Future } from './types';
+import { typed, Seq, Just, Dictionary, StackValue, StackArray, Future, Word, Sentence } from './types';
 import { MAXSTACK, MAXRUN, IDLE, DISPATCHING, YIELDING, ERR, IIF } from './constants';
 
 const nonInteractive = !process || !process.stdin.isTTY;
 
-type Tokens = Action | Just | Seq | Future | Promise<any>;
+type Tokens = Word | Sentence | Just | Seq | Future | Promise<any>;
 
 export class StackEnv {
   status = IDLE;
@@ -51,11 +51,11 @@ export class StackEnv {
       }
       return this;
     },
-    'Action | string, string': (name: Action | string, fn: string) => {
-      const act = new Action(lexer(fn));
+    'Word | string, string': (name: Word | string, fn: string) => {
+      const act = new Sentence(lexer(fn));
       return this.defineAction(name, act);
     },
-    'Action | string, any': (name: Action | string, fn) => {
+    'Word | string, any': (name: Word | string, fn) => {
       return this.dict.set(String(name), fn);
     }
   });
@@ -301,49 +301,58 @@ export class StackEnv {
       return token.isResolved() ? this.stackPushValues(...token.value) : this.stackPushValues(token);
     }
 
-    if (token instanceof Action && this.isImmediate(token)) {
+    if (token instanceof Sentence && this.isImmediate(<Word>token)) return this.queueFront(token.value);
+
+    if (token instanceof Word && this.isImmediate(<Word>token)) {
       let tokenValue = token.value;
 
-      if (Array.isArray(tokenValue)) {
-        return this.queueFront(tokenValue);
-      }
-
-      if (!is.string(tokenValue)) {
+      if (!is.string(tokenValue)) {  // this is a hack to push word literals, get rid of this
         return this.stackPushValues(tokenValue);
       }
 
-      if (tokenValue[tokenValue.length - 1] === '!' && tokenValue.length > 1) {
-        tokenValue = tokenValue.slice(0, -1);
-        this.queueFront(new Action('<->'));
-        return this.stackPushValues(new Action(tokenValue));
-      }
+      if (tokenValue.length > 1) {
+        if (tokenValue[tokenValue.length - 1] === '!') {  // macro
+          tokenValue = tokenValue.slice(0, -1);
+          this.queueFront(new Word('<->'));
+          return this.stackPushValues(new Word(tokenValue));
+        }
 
-      if (tokenValue[0] === IIF && tokenValue.length > 1) {
-        tokenValue = tokenValue.slice(1);
+        if (tokenValue[tokenValue.length - 1] === IIF) {
+          tokenValue = tokenValue.slice(0, -1);
+          return this.stackPushValues(new Word(tokenValue));
+        }
+
+        if (tokenValue[0] === IIF) {
+          tokenValue = tokenValue.slice(1);
+        }
       }
 
       const lookup = this.dict.get(tokenValue);
       if (is.undefined(lookup)) {
         throw new FFlatError(`${tokenValue} is not defined`, this);
       }
-      if (lookup instanceof Action) {
-        return this.queueFront((lookup as Action).value);
+
+      if (lookup instanceof Word || lookup instanceof Sentence) {
+        return this.queueFront((lookup as Word).value);
       }
+
       if (is.function(lookup)) {
         return this.dispatchFn((lookup as Function), functionLength(lookup), tokenValue);
       }
+
       return this.stackPushValues(lookup);
     }
 
     return this.stackPushValues((token as StackValue));
   }
 
-  private isImmediate(c: Action): boolean {
+  private isImmediate(c: Word | Sentence): boolean {
     return (
       this.depth < 1 ||                // in immediate state
       '[]{}'.indexOf(c.value) > -1 ||   // these quotes are always immediate
       (
         c.value[0] === IIF &&   // tokens prefixed with : are imediate
+        c.value[c.value.length - 1] !== IIF &&
         c.value.length > 1
       )
     );
@@ -359,7 +368,7 @@ export class StackEnv {
       }
 
       const r = fn.apply(this, argArray);
-      if (r instanceof Action) {
+      if (r instanceof Word || r instanceof Sentence) {
         this.queueFront(r.value);
       } else if (typeof r !== 'undefined') {
         this.stackDispatchToken(r);
@@ -368,7 +377,7 @@ export class StackEnv {
     }
     const argArray = this.stack.slice(0);
     this.stack = splice(this.stack, 0);
-    argArray.push(new Action(name));
+    argArray.push(new Word(<any>name));
     this.stackPushValues(argArray);
   }
 }

@@ -1,7 +1,7 @@
 import { freeze, splice, push } from 'icepick';
 import { writeFileSync } from 'fs';
 
-import { typed, Future, Seq, StackValue, StackArray, Action } from '../types';
+import { typed, Word, Sentence, Future, Seq, StackValue, StackArray } from '../types';
 import { StackEnv } from '../env';
 import { log } from '../utils';
 
@@ -81,7 +81,7 @@ export default {
    *
    * ( [A] -> {future} )
    */
-  spawn(this: StackEnv, a: Action): Future {
+  spawn(this: StackEnv, a: Word | Sentence): Future {
     return new Future(a, this.createChildPromise(a));
   },
 
