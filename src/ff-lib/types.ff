@@ -1,0 +1,20 @@
+// types
+types: [
+    'number'
+    'string'
+    'boolean'
+    'array'
+    'date'
+    'object'
+    'null'
+    'undefined'
+    'symbol'
+    'complex'
+    'action'
+    'future' ] ;
+
+null?: [ null = ] ;
+action?: [ type 'action' = ] ;
+string?: [ type 'string' = ] ;
+boolean?: [ type 'boolean' = ] ;
+array?: [ type 'array' = ] ;

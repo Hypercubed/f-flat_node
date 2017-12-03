@@ -1,0 +1,24 @@
+'core.ff' import use
+'shuffle.ff' import use
+
+// strings
+lcase-char: [ dup ucase-char? [ atoi 32 + itoa ] when ] ;
+ucase-char: [ dup lcase-char? [ atoi 32 - itoa ] when ] ;
+char-map: [ map sum ] ;
+ucase: [ [ ucase-char ] char-map ] ;
+lcase: [ [ lcase-char ] char-map ] ;
+
+// rot12
+_rot13-char*: [ [ atoi ] dip [ - 13 + 26 % ] [ + ] bi itoa ] ;
+rot13-char: [ dup ucase-char? 64 97 choose _rot13-char* ] ;;
+rot13: [ [ rot13-char ] char-map ] ;
+
+// inquisitive
+between?: [ swap dupd < bury < * ] ;
+digit-char?: [ atoi [ 47 58 ] dip between? ] ;
+lcase-char?: [ atoi [ 96 123 ] dip between? ] ;
+ucase-char?: [ atoi [ 64 91 ] dip between? ] ;
+empty?: [ length zero? ] ;
+char?: [ [ lcase-char? ] [ ucase-char? ] either? ] ;
+alphanumeric?: [ [ char? ] [ digit-char? ] either? ] ;
+palindrome?: [ [ alphanumeric? ] sfilter lcase dup sreverse = ] ;

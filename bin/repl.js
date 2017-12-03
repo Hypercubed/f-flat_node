@@ -5,10 +5,15 @@
 const repl = require('repl');
 const program = require('commander');
 
-const { Stack } = require('../dist/stack');
+const { Stack, RootStack } = require('../dist/stack');
 const { log, formatValue } = require('../dist/utils');
 
 const pkg = require('../package.json');
+
+const welcome = `
+Welcome to F♭ REPL Interpreter
+F♭ Version ${pkg.version} (C) 2000-2017 ${pkg.author}
+`; // todo: Type ".help", ".copyright", ".credits" or ".license" for more information.
 
 const initialPrompt = 'f♭>';
 const inspectOptions = {
@@ -19,6 +24,9 @@ const inspectOptions = {
 };
 
 let arg = '';
+let buffer = '';
+let timeout = null;
+let silent = false;
 
 program
   .version(pkg.version)
@@ -44,61 +52,47 @@ if (arg !== '') {
   process.exit();
 }
 
-console.log(`Welcome to F♭ REPL Interpreter
-F♭ Version ${pkg.version} (C) 2000-2017 ${pkg.author}
-`); // Type "help", "copyright", "credits" or "license" for more information.
+process.on('uncaughtException', () => {
+  console.log('The event loop was blocked for longer than 2000 milliseconds');
+  process.exit(1);
+});
 
-const stackRepl = repl.start({
+repl.start({
   prompt: `${initialPrompt} `,
   eval: fEval,
   writer,
   ignoreUndefined: false,
   useColors: true,
   useGlobal: false
-});
-
-stackRepl.on('reset', () => {
+}).on('reset', () => {
   f = newStack();
-});
-
-process.on('uncaughtException', () => {
-  console.log('The event loop was blocked for longer than 2000 milliseconds');
-  process.exit(1);
-});
-
-stackRepl.defineCommand('.', {
-  help: 'print stack',
-  action: function action() {
-    console.log(writer(f));
+}).defineCommand('silent', {
+  help: 'Toggle silent mode',
+  action() {
+    silent = !silent;
     this.displayPrompt();
   }
 });
 
+// functions
+
 function newStack() {
-  const f = Stack()
-    .eval('true auto-undo');
+  const f = Stack('true auto-undo', RootStack());
+
   f.defineAction('prompt', () => {
     return new Promise(resolve => {
       stackRepl.question('', resolve);
     });
   });
+
+  console.log(welcome);
+
   return f.createChild(undefined);
 }
 
 function writer(_) {
-  // const depth = '>'.repeat(_.depth);
-  // stackRepl.setPrompt(`${initialPrompt}${depth} `);
-
-  // console.log(v8.getHeapStatistics());
-  // console.log(_.queue);
-
-  return `${formatValue(_.stack, null, inspectOptions)}\n`;
-
-  // return `${util.inspect(_.stack, inspectOptions)}\n`;
+  return silent ? '' : `${formatValue(_.stack, null, inspectOptions)}\n`;
 }
-
-let buffer = '';
-let timeout = null;
 
 function fEval(code, _, __, cb) {
   code = code
@@ -114,32 +108,13 @@ function fEval(code, _, __, cb) {
   global.clearTimeout(timeout);
   timeout = global.setTimeout(run, 60);
 
-  /* const qcount = (code.match(/\`/g) || []).length;
-
-  if (code[code.length - 1] === '\\' || qcount % 2 === 1) {
-    buffer = `${code.slice(0, -1)}\n`;
-  } else {
-    buffer = '';
-
-    tripwire.resetTripwire(600000);  // 10 mins max
-
-    f.next(code)
-      .then(result => cb(null, result))
-      .catch(err => {
-        console.log(err);
-        cb(err);
-      });
-  } */
-
   function run() {
     global.clearTimeout(timeout);
 
-    // const qcount = (buffer.match(/\`/g) || []).length;
     if (!buffer.length) {
       return;
     }
 
-    // tripwire.resetTripwire(600000);  // 10 mins max
     f
       .next(buffer)
       .then(result => cb(null, result))

@@ -12,7 +12,8 @@ import {
   bar,
   FFlatError,
   formatState,
-  lexer
+  lexer,
+  stringifyStrict
 } from './utils';
 
 import { typed, Seq, Just, Dictionary, StackValue, StackArray, Future, Word, Sentence } from './types';
@@ -231,7 +232,8 @@ export class StackEnv {
   }
 
   toJSON(): any[] {
-    return JSON.parse(JSON.stringify(this.stack));
+    // todo: this should stringify all state
+    return JSON.parse(stringifyStrict(this.stack));
   }
 
   createChildPromise(a: StackValue): Promise<StackValue[]> {

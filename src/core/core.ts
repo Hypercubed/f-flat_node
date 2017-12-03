@@ -64,8 +64,8 @@ export default {
    * [ 1 2 3 4 ]
    * ```
    */
-  'q>': function(this: StackEnv): StackValue {
-    return this.queue.pop();
+  'q>': function(this: StackEnv): any {
+    return new Just(this.queue.pop());
   },
 
   /**
@@ -142,6 +142,23 @@ export default {
    */
   fork(this: StackEnv, a: StackValue): StackArray {
     return this.createChild().eval(a).stack;
+  },
+
+  /**
+   * ## `send`
+   * pushes one element from stack to parent.
+   *
+   * ( A -> )
+   *
+   * ```
+   * f♭> [ 1 2 3 send 4 ] fork
+   * [ 3 [ 1 2 4 ] ]
+   * ```
+   */
+  send(this: StackEnv, a: StackValue): void {
+    if (this.parent) {
+      this.parent.stack = push(this.parent.stack, a);
+    }
   },
 
   /**

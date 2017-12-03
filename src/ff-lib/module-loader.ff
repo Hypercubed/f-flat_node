@@ -41,40 +41,26 @@ __create-module: [ __scoped-dict __public-dict rewrite ] ;
  * Loads and creates a module from a file
  */
 __load-module: [ [ read eval __create-module send ] >> fork drop ] ;
-__import-module: [ dup __load-module swap btoa sto ] ;
+__load-and-sto-module: [ dup __load-module swap btoa sto ] ;
 
-__import-or-load: [
+import: [
   __import-resolve dup
   btoa rcl dup boolean
     [ ]
-    [ drop __load-module ]
+    [ drop dup __load-and-sto-module btoa rcl ]
     choose eval
-] ;
+] ;;
 
 /**
  * ## `load`
  * Reads a file onto the stack as a string and evaluates the content
  */
-load: [ read eval ] ;
-
-/**
- * ## `import`
- * Import and use module
- */
-import: [ __import-or-load use ] ;;
-import-as: [ __import-or-load swap sto ] ;;
-
-/**
- * ## `use-module`
- * Uses an existing module
- */
-using: [ rcl use ] ;
-use-module: [ __import-resolve btoa using ] ;;
+load: [ read eval ] ;;
 
 /**
  * ## `if-exists-load`
  * Loads a file if it exists
  */
-if-exists-load: [ dup exists swap [ load ] >> [ ] choose eval ] ;
+if-exists-load: [ dup exists swap [ load ] >> [ ] choose eval ] ;;
 
 

@@ -21,7 +21,7 @@ export function processNumeric(value: string): Decimal | number {
   if (typeof value !== 'string') {
     return NaN;
   }
-  if (value[0] === '+') {
+  if (value[0] === '+' && value[1] !== '-') {
     value = value.slice(1, value.length);
   }
   value = value.replace(/_/g, '');
@@ -117,8 +117,7 @@ function convertLiteral(value: any): StackValue | undefined {
 
   if (id.slice(-1) === ':') { // this is a hack to push word literals, get rid of this
     value = value.slice(0, -1);
-    return new Sentence([<any>new Word(value)]);
-    // return new Word(<any>new Word(value));
+    return new Word(<any>new Word(value));
   }
 
   if (ch === 64) {

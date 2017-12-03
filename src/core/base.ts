@@ -385,7 +385,7 @@ const pushFn = typed('push', {
  * ```
  */
 const choose = typed('choose', {
-  'boolean | null, any, any': (b, t, f) => (b ? t : f),
+  'boolean | null, any, any': (b, t, f) => new Just((b ? t : f)),
   'Future, any, any': (ff, t, f) => ff.map(b => (b ? t : f))
 });
 
@@ -433,7 +433,7 @@ const at = typed('at', {
       rhs = lhs.length + rhs;
     }
     const r = lhs[rhs];
-    return r === undefined ? null : r;
+    return r === undefined ? null : new Just(r);
   },
   'Future, any': (f, rhs) => f.map(lhs => at(lhs, rhs)),
 
@@ -562,7 +562,8 @@ export default {
    *
    * ( -> Infinity )
    */
-  infinity: () => Infinity,
+  infinity: () => new Decimal(Infinity),
+  '-infinity': () => new Decimal(-Infinity),
 
   /**
    * ## `=` equal
@@ -656,14 +657,4 @@ export default {
   clr: function(this: StackEnv): void {
     this.clear();
   },
-
-  /**
-   * ## `\`
-   * push the top of the queue to the stack
-   *
-   * ( -> {any} )
-   */
-  '\\': function(this: StackEnv): any {
-    return this.queue.shift(); // danger?
-  }
 };

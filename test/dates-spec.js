@@ -2,8 +2,8 @@ import test from 'ava';
 import { fSyncJSON } from './setup';
 
 test('should create dates', t => {
-  t.deepEqual(fSyncJSON('"1/1/1990" date'), ['1990-01-01T07:00:00.000Z'], 'should create a date from a short date');
-  t.deepEqual(fSyncJSON('"1990-01-01T07:00:00.000Z" date'), ['1990-01-01T07:00:00.000Z'], 'should create a date from a log date');
+  t.deepEqual(fSyncJSON('"1/1/1990" date'), [{$date: '1990-01-01T07:00:00.000Z'}], 'should create a date from a short date');
+  t.deepEqual(fSyncJSON('"1990-01-01T07:00:00.000Z" date'), [{$date: '1990-01-01T07:00:00.000Z'}], 'should create a date from a log date');
 });
 
 test('should convert to numbers', t => {
@@ -19,8 +19,8 @@ test('should generate current date', t => {
 });
 
 test('should perform basic arithmetic', t => {
-  t.deepEqual(fSyncJSON('"1/1/1990" date 1000 60 * 60 * 24 * +'), ['1990-01-02T07:00:00.000Z'], 'should add a day');
-  t.deepEqual(fSyncJSON('"1/1/1990" date 1000 60 * 60 * 24 * -'), ['1989-12-31T07:00:00.000Z'], 'should sub a day');
+  t.deepEqual(fSyncJSON('"1/1/1990" date 1000 60 * 60 * 24 * +'), [{$date: '1990-01-02T07:00:00.000Z'}], 'should add a day');
+  t.deepEqual(fSyncJSON('"1/1/1990" date 1000 60 * 60 * 24 * -'), [{$date: '1989-12-31T07:00:00.000Z'}], 'should sub a day');
 });
 
 test('should test equality', t => {

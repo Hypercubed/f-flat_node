@@ -15,16 +15,9 @@ import {
   node
 } from './core';
 
-let rootStack: StackEnv;
+let defaultRootStack: StackEnv;
 
-function getRootEnv () {
-  if (!rootStack) {
-    rootStack = createRootEnv();
-  }
-  return rootStack;
-}
-
-export function createRootEnv(): StackEnv {
+export function RootStack(): StackEnv {
   const env = new StackEnv({   // root
     silent: false
   });
@@ -45,7 +38,10 @@ export function createRootEnv(): StackEnv {
 
 export function Stack(s = '', root?) {
   if (typeof root === 'undefined') {
-    root = getRootEnv();
+    if (!defaultRootStack) {
+      defaultRootStack = RootStack();
+    }
+    root = defaultRootStack;
   }
 
   const stack = new StackEnv({

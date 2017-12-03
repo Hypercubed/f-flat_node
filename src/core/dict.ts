@@ -69,6 +69,9 @@ export const dict = {
    * ```
    */
   sto(this: StackEnv, lhs: StackValue, rhs: string) {
+    if (['true', 'false', 'null', 'nan'].includes(rhs)) {
+      throw new FFlatError('Cannot overwrite reserved words', this);
+    }
     try {
       this.dict.set(rhs, lhs);
     } catch (e) {

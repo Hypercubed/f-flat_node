@@ -97,3 +97,23 @@ test('should process string templates', t => {
   ]);
   t.deepEqual(fSyncJSON('`$0.1 (0.2) + = $( 0.1 0.2 + )`'), ['$0.1 (0.2) + = 0.3']);
 });
+
+test('should reverse strings', t => {
+  t.deepEqual(fSyncJSON('"timov,tab" reverse'), ['bat,vomit']);
+  t.deepEqual(fSyncJSON('"racecar" reverse'), ['racecar']);
+});
+
+test('should filter strings', t => {
+  t.deepEqual(fSyncJSON('"dead_beef_123" [alphanumeric?] filter'), ['deadbeef123']);
+});
+
+test('should rot13 strings', t => {
+  t.deepEqual(fSyncJSON('"abc" rot13'), ['nop']);
+  t.deepEqual(fSyncJSON('"nop" rot13'), ['abc']);
+});
+
+test('should eval palindrome?', t => {
+  t.deepEqual(fSyncJSON('"abc" palindrome?'), [false]);
+  t.deepEqual(fSyncJSON('"racecar" palindrome?'), [true]);
+  t.deepEqual(fSyncJSON('"A man, a plan, a canal: Panama" palindrome?'), [true]);
+});

@@ -8,13 +8,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] precision in complex calculations (on print)
 - [ ] ComplexInfinity, Indeterminate, Undefined (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [ ] @ for out of range works differently on string and array
-- [x] `{} {} =` returns false
-- [x] `nan nan =` returns false
-- [x] should be able sto store null
-- [x] Should support prefix positive numbers (`+10`).
-- [x] Should support using underscore as a sperator: `10_000_000`.
-- [ ] Don't allow `+-` values (i.e. `+-1000`)
-- [ ] Do not allow storing reserverd words (true, false, i, etc).
+- [ ] Fix `b t: f: choose`
 
 # Todo next:
 
@@ -23,15 +17,17 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Better types
   - [ ] Just -> ReturnValue
   - [ ] Seq -> ReturnSequence
-  - [ ] Action -> Words / Sentence
+  - [x] Action -> Words / Sentence
+  - [ ] Token type? `a:`
 - [ ] Test all internal words
   - [ ] Dictionary words
 - [ ] Test `usr.ff` and cwd
 - [ ] JSON
-  - [ ] .toJSON6() ?
-  - [ ] to approx JSON (Decimal -> number, etc)
+  - [ ] to simplified JSON (Decimal -> number, etc)
   - [ ] Decimal/Complex .fromJSON + Tests
-- [ ] rewrite should also rewrite sequences `dup drop` -> ``
+- [ ] rewrite should also rewrite sequences
+  - [ ] `dup drop` -> ``
+  - [ ] `q< x q> q< y q>` -> `q< x y q>`
 
 # New Words
 
@@ -44,7 +40,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `"1+2i" complex` -> Complex
 - [ ] `clamp`, `scale`
 - [ ] radians -> rads-per-degree, etc. ?
-- [ ] rename expand to lift?
+- [ ] rename expand to lift?  Catch circular references.
 
 # Docs
 
@@ -101,3 +97,11 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Private/Protected words?  Globals/parent scoped?
 - [ ] Preserved presision (2.50 vs 2.5)?
 - [ ] Pattern matching ???
+- [ ] Better JSON iterop
+  - [ ] StackEnv.prototype.toJSON should serialize entire state
+  - [ ] FFlat Extended JSON, `{ value: i 2 * }`
+  - [ ] Deserialize JSON
+  - [ ] Simplified JSON
+  - [ ] BSON?
+- [ ] Rewrite strings lib to use regex
+- [ ] Regex literal?

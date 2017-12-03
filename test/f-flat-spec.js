@@ -4,6 +4,7 @@ import {
   fSyncJSON,
   fSyncStack,
   fSyncValues,
+  fSyncString,
   Word,
   Sentence,
   Decimal,
@@ -513,4 +514,15 @@ test('immutable sto', t => {
   `),
     [{}, { first }, { last }, {}]
   );
+});
+
+test('atoms are not executed by stack actions', t => {
+  const a = {'@@Action': 'a'};
+  const b = {'@@Action': 'b'};
+  t.deepEqual(fSyncJSON('a: dup'), [a, a]);
+  t.deepEqual(fSyncJSON('true a: b: choose'), [a]);
+  t.deepEqual(fSyncJSON('false a: b: choose'), [b]);
+  t.deepEqual(fSyncJSON('a: b: q< drop q>'), [b]);
+  t.deepEqual(fSyncJSON('[a: b:] 1 @'), [{'@@Action': b}]); // fix this
+  t.deepEqual(fSyncJSON('[a: b:] unstack'), [{'@@Action': a}, {'@@Action': b}]); // fix this
 });

@@ -1,3 +1,6 @@
+'core.ff' import use
+'shuffle.ff' import use
+
 /**
  * # Dates and times lib
  */
@@ -5,7 +8,7 @@
 // timing
 time: [ clock swap 100 repn clock swap - 100 / ] ;
 _timefn: [ clock swap [ dup in drop ] 1000 repn drop clock - ] ;
-timefn: [ _timefn () _timefn - -1000 / inv ' ops/sec' +  ] ;
+timefn: [ _timefn () _timefn - -1000 / inv ' ops/sec' +  ] ;;
 
 // dates
 zeller-congruence: [

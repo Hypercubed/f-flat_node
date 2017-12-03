@@ -23,7 +23,7 @@ export const arrayMul = (lhs: any[], rhs: any) => {
   }
   let i = -1;
   while (++i < len) {
-    acc = acc.concat(lhs[i], rhs);
+    acc = acc.concat([lhs[i]], rhs);
   }
   return acc;
 };

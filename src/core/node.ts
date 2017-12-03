@@ -136,7 +136,7 @@ export default {
   /**
    * ## `dirname`
    *
-   * returns the directory name of a path, similar to the Unix dirname command. 
+   * returns the directory name of a path, similar to the Unix dirname command.
    * See https://nodejs.org/api/path.html#path_path_dirname_path
    *
    */

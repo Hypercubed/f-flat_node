@@ -1,7 +1,16 @@
 import { freeze, splice, push } from 'icepick';
 import { writeFileSync } from 'fs';
+import { stringifyStrict } from '../utils/json';
 
-import { typed, Word, Sentence, Future, Seq, StackValue, StackArray } from '../types';
+import {
+  typed,
+  Word,
+  Sentence,
+  Future,
+  Seq,
+  StackValue,
+  StackArray
+} from '../types';
 import { StackEnv } from '../env';
 import { log } from '../utils';
 
@@ -32,7 +41,7 @@ export default {
   /**
    * ## `stringify`
    */
-  stringify: JSON.stringify, // global.JSON.stringify
+  stringify: a => stringifyStrict(a),
 
   /**
    * ## `parse-json`
@@ -65,7 +74,8 @@ export default {
    * ## `replace`
    */
   replace: typed('replace', {
-    'string, RegExp, string': (str: string, reg: RegExp, rep: string) => str.replace(reg, rep)
+    'string, RegExp, string': (str: string, reg: RegExp, rep: string) =>
+      str.replace(reg, rep)
   }),
 
   /**
@@ -97,23 +107,6 @@ export default {
       return a.promise;
     }
     return this.createChildPromise(a);
-  },
-
-  /**
-   * ## `send`
-   * pushes one element from stack to parent.
-   *
-   * ( A -> )
-   *
-   * ```
-   * f♭> [ 1 2 3 send 4 ] fork
-   * [ 3 [ 1 2 4 ] ]
-   * ```
-   */
-  send(this: StackEnv, a: StackValue): void {
-    if (this.parent) {
-      this.parent.stack = push(this.parent.stack, a);
-    }
   },
 
   /**
@@ -168,5 +161,16 @@ export default {
       ),
       'utf8'
     );
+  },
+
+
+  /**
+   * ## `\`
+   * push the top of the queue to the stack
+   *
+   * ( -> {any} )
+   */
+  '\\': function(this: StackEnv): any {
+    return new Just(this.queue.shift()); // danger?
   }
 };

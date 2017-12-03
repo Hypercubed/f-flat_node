@@ -2,8 +2,8 @@
  * # Mathematics lib
  */
  
-'core.ff' import
-'shuffle.ff' import
+'core.ff' import use
+'shuffle.ff' import use
 
 // inverse trig
 acos: [ asin 2 * pi swap - 1 2 / * ] ;
@@ -96,3 +96,14 @@ ncr: [ [ npr ] keep ! / round ] ;
 // reduce
 product: [ [ * ] reduce* ] ;
 dot: [ [ * ] zipwith sum ] ;
+
+// math-ish
+integers: [ [ count ] appl ] ;
+divisors: [ [ 2 [ 2dup 2 ^ > ] [ 2dup divisor? [ tuck / over ] [ next-odd ] branch ] while drop ] appl ] ;
+next-fib: [ 2dup + ] ;
+fib: [ ( 0 1 [ next-fib ] ) dip -- repn drop ] ;
+collatz: [ [ [ dup 1 > ] [ dup next-collatz ] while ] >> in ] ;
+next-collatz: [ dup even? [ 2 / ] [ 3 * 1 + ] branch ] ;
+divrem: [ [ div ] [ % ] bi2 ] ;
+gcd: [ [ dup 0 > ] [ dup bury % ] while drop ] ;
+lcm: [ 2dup [ [ * abs ] dip ] dip gcd / ] ;

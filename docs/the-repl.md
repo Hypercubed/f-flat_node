@@ -9,7 +9,7 @@ F♭ Version 0.0.0 (C) 2000-2017 J. Harshbarger
 f♭>
 ```
 
-You can exit the REPL by hitting ctrl-C twice.
+You can exit the REPL by hitting ctrl-C twice or by typing `.exit`
 
 ```
 f♭> 
@@ -32,7 +32,7 @@ f♭> "Hello"
 f♭>
 ```
 
-The current stack will be printed after each value is entered.
+The current stack will be printed after each value is entered.  The current stack can be cleared using the `clr` command, the entire envoronment can be reset using the `.clear` REPL command.
 
 ## Interactive Calculator
 

@@ -38,11 +38,13 @@ test('generate json for complex values', t => {
   });
 });
 
-test('generate json for cother values', t => {  // todo create better json rep
+test('generate json for other values', t => {  // todo create better json rep
   t.deepEqual(fSyncJSON('null')[0], null);
-  t.deepEqual(fSyncJSON('nan')[0], null);
-  t.deepEqual(fSyncJSON('infinity')[0], null);
-  t.deepEqual(fSyncJSON('"1/1/1990" date')[0], '1990-01-01T07:00:00.000Z'); // { "$date": "<date>" }
+  t.deepEqual(fSyncJSON('nan')[0], D(NaN));
+  t.deepEqual(fSyncJSON('-0')[0], D(-0));
+  t.deepEqual(fSyncJSON('infinity')[0], D(Infinity));
+  t.deepEqual(fSyncJSON('-infinity')[0], D(-Infinity));
+  t.deepEqual(fSyncJSON('"1/1/1990" date')[0], { $date: '1990-01-01T07:00:00.000Z' }); // { "$date": "<date>" }
   // regex { "$regex": "<sRegex>", "$options": "<sOptions>" }
   // undefined? { "$undefined": true }
 });
