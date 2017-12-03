@@ -117,7 +117,8 @@ function convertLiteral(value: any): StackValue | undefined {
 
   if (id.slice(-1) === ':') { // this is a hack to push word literals, get rid of this
     value = value.slice(0, -1);
-    return new Word(<any>new Word(value));
+    return new Sentence([<any>new Word(value)]);
+    // return new Word(<any>new Word(value));
   }
 
   if (ch === 64) {
