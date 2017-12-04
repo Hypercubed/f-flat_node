@@ -29,6 +29,16 @@ const defaultOpts = {
   indent: false
 };
 
+export const type = typed('type', {
+  Word: x => 'action',
+  Sentence: x => 'action',
+  Array: x => 'array',
+  Decimal: x => 'number',
+  Complex: x => 'complex',
+  Date: x => 'date',
+  any: x => typeof x
+});
+
 export const formatValue: Function = typed('formatValue', {
   'Symbol, any, any': (value, depth, opts) => formatSymbol(value, opts),
 

@@ -1,4 +1,5 @@
 import { typed, Word, Sentence, Just, Seq, Decimal, zero, Complex } from '../types';
+import { type } from '../utils';
 
 const action = typed('action', {  // todo: this should be part of the Action constructor?
   'Word | Sentence': x => x,
@@ -21,15 +22,7 @@ export default {
   /**
    * ## `type`
    */
-  type: typed('type', {
-    Word: x => 'action',
-    Sentence: x => 'action',
-    Array: x => 'array',
-    Decimal: x => 'number',
-    Complex: x => 'complex',
-    Date: x => 'date',
-    any: x => typeof x
-  }),
+  type,
 
   /**
    * ## `number`

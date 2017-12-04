@@ -1,5 +1,5 @@
 import * as fetch from 'isomorphic-fetch';
-import { slice, splice, pop } from 'icepick';
+import { slice, splice, pop, push } from 'icepick';
 
 import { typed, Seq, StackValue, StackArray, Future, Sentence, Word, Just } from '../types';
 import { log, generateTemplate, toObject } from '../utils';
@@ -66,6 +66,21 @@ export default {
    */
   'q>': function(this: StackEnv): any {
     return new Just(this.queue.pop());
+  },
+
+  /**
+   * ## `q@`
+   * moves a copy of the tail of the queue onto the stack
+   *
+   * ( -> {any} )
+   *
+   * ```
+   * f♭> 1 2 q> 4 3
+   * [ 1 2 3 4 ]
+   * ```
+   */
+  'q@': function(this: StackEnv): any {
+    return new Just(this.queue[this.queue.length - 1]);
   },
 
   /**
@@ -198,7 +213,7 @@ export default {
    * [ 1 2 3 3 ]
    * ```
    */
-  dup: (a: StackValue) => new Seq([a, a]),
+  dup: (a: StackValue) => new Seq([a, a]), //  q< q@ q>
 
   /**
    * ## `unstack`

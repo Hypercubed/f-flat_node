@@ -6,7 +6,8 @@ const repl = require('repl');
 const program = require('commander');
 
 const { Stack, RootStack } = require('../dist/stack');
-const { log, formatValue } = require('../dist/utils');
+const { log, formatValue, type } = require('../dist/utils');
+const memoize = require('memoizee');
 
 const pkg = require('../package.json');
 
@@ -57,22 +58,43 @@ process.on('uncaughtException', () => {
   process.exit(1);
 });
 
-repl.start({
+const r = repl.start({
   prompt: `${initialPrompt} `,
   eval: fEval,
   writer,
   ignoreUndefined: false,
   useColors: true,
-  useGlobal: false
-}).on('reset', () => {
+  useGlobal: false,
+  completer: memoize(completer, { maxAge: 10000 })
+});
+
+r.on('reset', () => {
   f = newStack();
-}).defineCommand('silent', {
+});
+
+r.defineCommand('silent', {
   help: 'Toggle silent mode',
   action() {
     silent = !silent;
     this.displayPrompt();
   }
 });
+
+const objectId = getUniqueObjectCounter();
+
+r.defineCommand('s', {
+  help: 'Print the stack',
+  action() {
+    // const objectId = getUniqueObjectCounter();
+    f.stack.forEach((d, i) => {
+      const id = objectId(d).toString(16);
+      console.log(`${f.stack.length - i}: ${formatValue(d, null, inspectOptions)} [${type(d)}] (${id})`);
+    });
+    this.displayPrompt();
+  }
+});
+
+r.context = Object.create(null);
 
 // functions
 
@@ -124,4 +146,28 @@ function fEval(code, _, __, cb) {
 
     buffer = '';
   }
+}
+
+function getUniqueObjectCounter() {
+  const objIdMap = new WeakMap();
+  let objectCount = 0;
+  function objectId(o) {
+    if (!objIdMap.has(o)) objIdMap.set(o, ++objectCount);
+    return objIdMap.get(o);
+  }
+  return objectId;
+}
+
+function completer(line) {
+  const completions = getKeys();
+  const hits = completions.filter((c) => c.startsWith(line));
+  return [hits.length ? hits : completions, line];
+}
+
+function getKeys() {
+  const keys = [];
+  for (const prop in f.dict.locals) {
+    keys.push(prop);
+  }
+  return keys;
 }
