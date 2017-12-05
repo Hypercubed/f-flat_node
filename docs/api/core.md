@@ -20,6 +20,16 @@ f♭> 1 2 q> 4 3
 [ 1 2 3 4 ]
 ```
 
+## `q@`
+moves a copy of the tail of the queue onto the stack
+
+( -> {any} )
+
+```
+f♭> 1 2 q> 4 3
+[ 1 2 3 4 ]
+```
+
 ## `stack`
 replaces the stack with a quote containing the current stack
 
@@ -64,6 +74,16 @@ evalues the quote in a child environment
 ```
 f♭> [ 1 2 * ] fork
 [ [ 2 ] ]
+```
+
+## `send`
+pushes one element from stack to parent.
+
+( A -> )
+
+```
+f♭> [ 1 2 3 send 4 ] fork
+[ 3 [ 1 2 4 ] ]
 ```
 
 ## `drop`

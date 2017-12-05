@@ -1,5 +1,5 @@
 {
-  "name": "f-flat",
+  "name": "@hypercubed/f-flat",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
@@ -44,6 +44,7 @@
     "ava": "^0.23.0",
     "ava-check": "^1.0.0-rc.0",
     "nock": "^8.0.0",
+    "np": "^2.18.1",
     "nyc": "^11.3.0",
     "parse-comments": "^0.4.3",
     "ts-node": "^3.3.0",
@@ -57,5 +58,9 @@
   },
   "ava": {
     "require": "@std/esm"
-  }
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
 }

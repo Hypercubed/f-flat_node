@@ -27,16 +27,6 @@ evalues the quote in a child environment, waits for result
 
 ( [A] -> [a] )
 
-## `send`
-pushes one element from stack to parent.
-
-( A -> )
-
-```
-f♭> [ 1 2 3 send 4 ] fork
-[ 3 [ 1 2 4 ] ]
-```
-
 ## `suspend`
 stops execution, push queue to stack, loses other state
 
@@ -58,3 +48,8 @@ executes each element in a child environment, returns first to finish
 ( [ A B C ]-> [x])
 
 ## `sesssave`
+
+## `\`
+push the top of the queue to the stack
+
+( -> {any} )

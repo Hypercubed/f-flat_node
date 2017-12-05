@@ -346,8 +346,3 @@ clears the stack
 f♭> 1 2 3 clr
 [  ]
 ```
-
-## `\`
-push the top of the queue to the stack
-
-( -> {any} )
