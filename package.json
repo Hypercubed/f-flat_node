@@ -42,7 +42,7 @@
   "devDependencies": {
     "@types/node": "^8.0.53",
     "ava": "^0.23.0",
-    "ava-check": "^1.0.0-rc.0",
+    "ava-check": "git+https://github.com/Hypercubed/ava-check.git",
     "nock": "^8.0.0",
     "np": "^2.18.1",
     "nyc": "^11.3.0",
