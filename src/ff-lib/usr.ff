@@ -5,6 +5,8 @@
 'types.ff' import use
 'datetime.ff' import use
 
+$: [ dip eval ] ; 
+
 // Misc
 compose: [ + ] ;
 prepose: [ swap + ] ;

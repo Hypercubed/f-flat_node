@@ -184,13 +184,12 @@ typed.addConversion({
   }
 });
 
-typed.addType({
+/* typed.addType({
   name: 'notanumber',
   test: x => {
-    console.log('test', x);
     if (x instanceof Decimal) {
       return x.isNaN();
     }
     return Number.isNaN(x);
   }
-});
+}); */

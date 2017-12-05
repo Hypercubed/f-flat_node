@@ -41,6 +41,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `clamp`, `scale`
 - [ ] radians -> rads-per-degree, etc. ?
 - [ ] rename expand to lift?  Catch circular references.
+- [ ] lesser-of, greater-of vs max, min?
 
 # Docs
 
@@ -105,3 +106,5 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] BSON?
 - [ ] Rewrite strings lib to use regex
 - [ ] Regex literal?
+- [ ] Git strict on puncuation
+- [ ] Decide on macros, dupn!3, dup<5>, range<1, 100>, range!(1, 10) ?

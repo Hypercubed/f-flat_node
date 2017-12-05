@@ -25,6 +25,7 @@ radians: [ pi 180 / ] ;
 // Log errfn
 erfc: [ 1 swap erf - ] ;
 log: [ ln ln10 / ] ;
+logn: [ [ ln ] dip ln / ] ;
 
 // Misc
 +-: [ [ + ] [ - ] bi2 ] ;

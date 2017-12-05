@@ -82,14 +82,18 @@ test('constants', t => {
 
 test('ln', t => {
   t.deepEqual(fSyncValues('1 ln'), [0]);
-});
-
-test('should define logs', t => {
-  t.deepEqual(fSyncValues('1 log 10 log 100 log'), [0, 1, 2]);
 
   const r = fSyncValues('2 ln 10 ln');
   t.truthy(nearly(r[0], 0.6931471805599453));
   t.truthy(nearly(r[1], 2.3025850929940458834));
+});
+
+test('should define log', t => {
+  t.deepEqual(fSyncValues('1 log 10 log 100 log'), [0, 1, 2]);
+});
+
+test('should define logn', t => {
+  t.deepEqual(fSyncValues('1 10 logn 10 10 logn 100 10 logn'), [0, 1, 2]);
 });
 
 test('should define gamma', t => {

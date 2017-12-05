@@ -1,9 +1,11 @@
 {
   "name": "@hypercubed/f-flat",
   "version": "0.0.1",
-  "description": "",
+  "description": "F♭ (pronounced F-flat) is a toy language.",
   "main": "index.js",
-  "bin": "./bin/repl.js",
+  "bin": {
+    "f-flat": "./bin/repl.js"
+  },
   "scripts": {
     "build": "tsc && node ./scripts/generate-docs.js",
     "test": "tsc && ava ./test/*-spec.js",
@@ -13,7 +15,8 @@
     "check": "npm run coverage && npm run lint",
     "coverage": "nyc -r lcov -r html -r text ava ./test/*-spec.js",
     "start": "tsc && node ./bin/repl.js",
-    "debugger": "tsc && ts-node --inspect ./bin/repl.ts"
+    "debugger": "tsc && ts-node --inspect ./bin/repl.ts",
+    "np": "np"
   },
   "author": "J. Harshbarger",
   "license": "MIT",
@@ -48,7 +51,6 @@
     "nyc": "^11.3.0",
     "parse-comments": "^0.4.3",
     "ts-node": "^3.3.0",
-    "tslib": "^1.8.0",
     "tslint": "^5.8.0",
     "typescript": "^2.6.1"
   },
@@ -62,5 +64,24 @@
   "files": [
     "dist",
     "src"
-  ]
+  ],
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hypercubed/f-flat_node.git"
+  },
+  "keywords": [
+    "javascript",
+    "language",
+    "flat",
+    "concatenative",
+    "stack-oriented"
+  ],
+  "bugs": {
+    "url": "https://github.com/Hypercubed/f-flat_node/issues"
+  },
+  "homepage": "https://github.com/Hypercubed/f-flat_node#readme"
 }
