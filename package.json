@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "tsc && node ./scripts/generate-docs.js",
+    "docs": "node ./scripts/generate-docs.js",
     "test": "tsc && ava ./test/*-spec.js",
     "quick-tests": "tsc && env ava ./test/*-quick-spec.js",
     "full-quick-tests": "tsc && env TESTS=full ava ./test/*-quick-spec.js",

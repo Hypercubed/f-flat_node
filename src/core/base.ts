@@ -152,8 +152,6 @@ const sub = typed('sub', {
  *
  */
 const mul = typed('mul', {
-  /// - intersparse
-
   /**
    * - intersparse
    *
@@ -339,7 +337,6 @@ const unshiftFn = typed('unshift', {
  */
 const pushFn = typed('push', {
   // <<, Danger! No mutations
-  /// - push/snoc
 
   /**
    * - push/snoc
@@ -426,7 +423,6 @@ const at = typed('at', {
    * [ 2 ]
    * ```
    */
-  /// - {array}, {number|null} - gets item by index, zero based index
   'Array, number | null': (lhs, rhs) => {
     rhs = Number(rhs) | 0;
     if (rhs < 0) {
@@ -626,6 +622,7 @@ export default {
 
   /**
    * ### `memoize`
+   * 
    * memoize a defined word
    *
    * ( {string|atom} -> )
@@ -645,6 +642,7 @@ export default {
 
   /**
    * ## `clr`
+   * 
    * clears the stack
    *
    * ( ... -> )
