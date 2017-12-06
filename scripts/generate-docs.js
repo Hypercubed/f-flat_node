@@ -20,7 +20,6 @@ const files = [
 const md = files.map(file => {
   const str = read(file);
   const comments = extract(str);
-  console.log(comments);
   const md = process(file, comments);
   write(md, file.replace('.ts', '.md'));
 }).join('\n');
