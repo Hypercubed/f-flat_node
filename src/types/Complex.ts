@@ -1,5 +1,5 @@
 import { typed } from './typed';
-import { Decimal, gammaDecimal, zero, pi, twoPiSqrt } from './Decimal';
+import { Decimal, gammaDecimal, zero, pi, twoPiSqrt } from './decimal';
 import { g, c } from './gamma';
 
 const precision = Math.pow(10, -<number>Decimal.precision + 5);

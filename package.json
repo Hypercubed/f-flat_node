@@ -7,6 +7,7 @@
     "f-flat": "./bin/repl.js"
   },
   "scripts": {
+    "dist": "rimraf ./dist && tsc",
     "build": "tsc && node ./scripts/generate-docs.js",
     "docs": "node ./scripts/generate-docs.js",
     "test": "tsc && ava ./test/*-spec.js",
@@ -52,6 +53,7 @@
     "np": "^2.18.1",
     "nyc": "^11.3.0",
     "parse-comments": "^0.4.3",
+    "rimraf": "^2.6.2",
     "ts-node": "^3.3.0",
     "tslint": "^5.8.0",
     "typescript": "^2.6.1"
