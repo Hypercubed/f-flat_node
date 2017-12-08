@@ -1,6 +1,6 @@
 {
   "name": "@hypercubed/f-flat",
-  "version": "0.0.4",
+  "version": "0.0.3",
   "description": "F♭ (pronounced F-flat) is a toy language.",
   "main": "index.js",
   "bin": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dist": "rimraf ./dist && tsc",
-    "build": "tsc && node ./scripts/generate-docs.js",
+    "build": "npm run build && npm run docs",
     "docs": "node ./scripts/generate-docs.js",
     "test": "tsc && ava ./test/*-spec.js",
     "quick-tests": "tsc && env ava ./test/*-quick-spec.js",
@@ -18,7 +18,7 @@
     "coverage": "nyc -r lcov -r html -r text ava ./test/*-spec.js",
     "start": "tsc && node ./bin/repl.js",
     "debugger": "tsc && ts-node --inspect ./bin/repl.ts",
-    "np": "np"
+    "np": "npm run dist && np"
   },
   "author": "J. Harshbarger",
   "license": "MIT",
@@ -67,7 +67,8 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "bin"
   ],
   "directories": {
     "doc": "docs",
