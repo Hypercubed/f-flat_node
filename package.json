@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dist": "rimraf ./dist && tsc",
-    "build": "npm run build && npm run docs",
+    "build": "npm run dist && npm run docs",
     "docs": "node ./scripts/generate-docs.js",
     "test": "tsc && ava ./test/*-spec.js",
     "quick-tests": "tsc && env ava ./test/*-quick-spec.js",

@@ -304,41 +304,15 @@ f♭> NaN ~
 ```
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L480">[src]</a></div>
 
-## `<->` (stack)
-swaps the last item on the stack and teh first item onteh queue
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L487">[src]</a></div>
-
-## `<-` (stack)
-replaces the stack with the item found at the top of the stack
-
-( [A] -> A )
-
-```
-f♭> 1 2 [ 3 4 ] <-
-[ 3 4 ]
-```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L504">[src]</a></div>
-
-## `->` (queue)
-replaces the queue with the item found at the top of the stack
-
-( [A] -> )
-
-```
-f♭> 1 2 [ 3 4 ] -> 5 6
-[ 1 2 3 4 ]
-```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L520">[src]</a></div>
-
 ## `undo`
 restores the stack to state before previous eval
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L529">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L487">[src]</a></div>
 
 ## `auto-undo`
 set flag to auto-undo on error
 
 ( {boolean} -> )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L539">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L497">[src]</a></div>
 
 ## `i`
 push the imaginary number 0+1i
@@ -349,13 +323,13 @@ push the imaginary number 0+1i
 f♭> i
 [ 0+1i ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L554">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L512">[src]</a></div>
 
 ## `infinity`
 pushes the value Infinity
 
 ( -> Infinity )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L562">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L520">[src]</a></div>
 
 ## `=` equal
 Pushes true if x is equal to y.
@@ -366,7 +340,7 @@ Pushes true if x is equal to y.
 f♭> 1 2 =
 [ false ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L576">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L534">[src]</a></div>
 
 ## `cmp`
 Pushes a -1, 0, or a +1 when x is 'less than', 'equal to', or 'greater than' y.
@@ -377,14 +351,14 @@ Pushes a -1, 0, or a +1 when x is 'less than', 'equal to', or 'greater than' y.
 f♭> 1 2 cmp
 [ -1 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L589">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L547">[src]</a></div>
 
 ### `memoize`
 
 memoize a defined word
 
 ( {string|atom} -> )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L631">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L589">[src]</a></div>
 
 ## `clr`
 
@@ -396,4 +370,4 @@ clears the stack
 f♭> 1 2 3 clr
 [  ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L656">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L614">[src]</a></div>
