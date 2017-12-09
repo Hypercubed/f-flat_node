@@ -52,6 +52,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] rename expand to lift?  Catch circular references.
 - [ ] `lesser-of`, `greater-of` vs `max`, `min`?
 - [ ] `gte` vs `>=`
+- [ ] Derivities:
+  - [ ] `deriv = (f, h) => x => (f(x + h) - f(x)) / h`
+  - [ ] `ND = (f, x, h) => (f(x + h) - f(x)) / h`
 
 # Docs
 

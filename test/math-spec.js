@@ -279,3 +279,11 @@ test('atanh of infinities', t => {
   t.deepEqual(fSyncString('infinity atanh'), '0-1.5707963267948966192i');
   t.deepEqual(fSyncString('infinity -1 * atanh'), '0+1.5707963267948966192i');
 });
+
+test('numerical derivative', t => {
+  t.true(nearly(fSyncValues('[ exp ] 1 1e-9 nd')[0], Math.E /* Math.E */));
+  t.true(nearly(fSyncValues('[ sin ] 1 1e-6 nd')[0], 0.54030188513256 /* Math.cos(1) */));
+  t.true(nearly(fSyncValues('[ sin 2 ^ ] 1 1e-6 nd')[0], 0.90929701067825 /* Math.sin(2) */));
+  t.true(nearly(fSyncValues('ln 1 1e-19 nd')[0], 1));
+  t.deepEqual(fSyncString('[ inv ] 0 1e-6 nd'), '-Infinity');
+});

@@ -108,3 +108,6 @@ next-collatz: [ dup even? [ 2 / ] [ 3 * 1 + ] branch ] ;
 divrem: [ [ div ] [ % ] bi2 ] ;
 gcd: [ [ dup 0 > ] [ dup bury % ] while drop ] ;
 lcm: [ 2dup [ [ * abs ] dip ] dip gcd / ] ;
+
+// calculus-ish
+nd: [ dup [ over + rot bi@ - ] dip / ] ;  // forward difference approximation to the derivative
