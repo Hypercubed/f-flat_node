@@ -6,7 +6,7 @@ const erf = require('compute-erf');
 /**
  * # Internal Math Words
  */
-export default {
+export const math = {
   /**
    * ## `re`
    *

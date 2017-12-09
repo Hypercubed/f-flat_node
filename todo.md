@@ -9,9 +9,13 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] ComplexInfinity, Indeterminate, Undefined (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [ ] @ for out of range works differently on string and array
 - [ ] Fix `b t: f: choose`
+- [x] `math.!`
 
 # Todo next:
 
+- [ ] Core functions should also be in modules.
+- [ ] Decide on macros, dupn!3, dup<5>, range<1, 100>, range!(1, 10)$ ?
+- [x] Load ff file directly from command line.
 - [ ] More tests for stack object immutablity
 - [x] Use URLs as module id
 - [ ] Better types
@@ -28,6 +32,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] rewrite should also rewrite sequences
   - [ ] `dup drop` -> ``
   - [ ] `q< x q> q< y q>` -> `q< x y q>`
+- [ ] Remove symbols
+- [ ] Handle literals (true, false, i, infinity, null) in parser?
 
 # New Words
 
@@ -37,11 +43,15 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `>>` and `>>>` ?
 - [ ] `sinpi`, `cospi`?
 - [x] `conj`
-- [ ] `"1+2i" complex` -> Complex
+- [ ] Better complex inputs
+  - [ ] `"1+2i" complex`
+  - [ ] `[1,2] complex`
+  - [ ] `complex:(1,2)$`
 - [ ] `clamp`, `scale`
 - [ ] radians -> rads-per-degree, etc. ?
 - [ ] rename expand to lift?  Catch circular references.
-- [ ] lesser-of, greater-of vs max, min?
+- [ ] `lesser-of`, `greater-of` vs `max`, `min`?
+- [ ] `gte` vs `>=`
 
 # Docs
 
@@ -107,4 +117,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Rewrite strings lib to use regex
 - [ ] Regex literal?
 - [ ] Git strict on puncuation
-- [ ] Decide on macros, dupn!3, dup<5>, range<1, 100>, range!(1, 10) ?
+- [ ] Integer -> Float -> Decimal -> Complex type promotion
+- [ ] Compiler output
+- [ ] true: === true ?

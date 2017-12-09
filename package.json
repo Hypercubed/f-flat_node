@@ -17,7 +17,7 @@
     "check": "npm run coverage && npm run lint",
     "coverage": "nyc -r lcov -r html -r text ava ./test/*-spec.js",
     "start": "tsc && node ./bin/repl.js",
-    "debugger": "tsc && ts-node --inspect ./bin/repl.ts",
+    "debugger": "tsc && node --inspect ./bin/repl.js",
     "np": "npm run dist && np"
   },
   "author": "J. Harshbarger",

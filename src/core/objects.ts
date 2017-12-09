@@ -4,7 +4,7 @@ import { toObject } from '../utils';
 /**
  * # Internal Object Words
  */
-export default {
+export const objects = {
   /* 'group': typed('group', {  // move
     Array: a => {
       const r = [];

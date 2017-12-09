@@ -37,7 +37,7 @@ function dequoteStack(env: StackEnv, s: StackValue) {
 /**
  * # Internal Core Words
  */
-export default {
+export const core = {
   /**
    * ## `q<`
    * moves the top of the stack to the tail of the queue
@@ -101,8 +101,66 @@ export default {
   },
 
   /**
+   * ## `unstack`
+   * push items in a quote to the stack without evaluation
+   *
+   * ( [A B C] -> A B C)
+   *
+   * ```
+   * f♭> [ 1 2 * ] unstack
+   * [ 1 2 * ]
+   * ```
+   */
+  unstack: typed('unstack', {
+    Array: (a: StackArray) => new Seq(a),
+    Future: (f: Future) => f.promise.then(a => new Seq(a))
+  }),
+
+   /**
+   * ## `<->` (s-q swap)
+   * swaps the last item on the stack and the first item on the queue
+   */
+  '<->': function(this: StackEnv, s: any): Just {
+    const q = this.queue.shift();
+    this.queue.unshift(s);
+    return new Just(q);
+  },
+
+  /**
+   * ## `<-` (stack)
+   * replaces the stack with the item found at the top of the stack
+   *
+   * ( [A] -> A )
+   *
+   * ```
+   * f♭> 1 2 [ 3 4 ] <-
+   * [ 3 4 ]
+   * ```
+   */
+  '<-': function(this: StackEnv, s: any): Seq {
+    this.clear();
+    return new Seq(s);
+  },
+
+  /**
+   * ## `->` (queue)
+   * replaces the queue with the item found at the top of the stack
+   *
+   * ( [A] -> )
+   *
+   * ```
+   * f♭> 1 2 [ 3 4 ] -> 5 6
+   * [ 1 2 3 4 ]
+   * ```
+   */
+  '->': function(this: StackEnv, s: any): void {
+    this.queue.splice(0);
+    this.queue.push(...s);
+  },
+
+  /**
    * ## `depth`
-   * pushes the size of the current stack
+   * pushes the size of the current stack (number of items on the stack)
    *
    * ( -> {number} )
    *
@@ -214,22 +272,6 @@ export default {
    * ```
    */
   dup: (a: StackValue) => new Seq([a, a]), //  q< q@ q>
-
-  /**
-   * ## `unstack`
-   * push items in a quote to the stack without evaluation
-   *
-   * ( [A B C] -> A B C)
-   *
-   * ```
-   * f♭> [ 1 2 * ] unstack
-   * [ 1 2 * ]
-   * ```
-   */
-  unstack: typed('unstack', {
-    Array: (a: StackArray) => new Seq(a),
-    Future: (f: Future) => f.promise.then(a => new Seq(a))
-  }),
 
   /**
    * ## `length`

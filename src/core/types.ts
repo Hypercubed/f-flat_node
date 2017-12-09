@@ -12,13 +12,13 @@ const action = typed('action', {  // todo: this should be part of the Action con
   string: x => {
     return new Word(x);
   },
-  any: x => new Just(x)
+  any: x => x
 });
 
 /**
  * # Internal Type Words
  */
-export default {
+export const types = {
   /**
    * ## `type`
    */

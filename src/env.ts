@@ -313,11 +313,11 @@ export class StackEnv {
       }
 
       if (tokenValue.length > 1) {
-        if (tokenValue[tokenValue.length - 1] === '!') {  // macro
+        /* if (tokenValue[tokenValue.length - 1] === '!') {  // macro
           tokenValue = tokenValue.slice(0, -1);
           this.queueFront(new Word('<->'));
           return this.stackPushValues(new Word(tokenValue));
-        }
+        } */
 
         if (tokenValue[tokenValue.length - 1] === IIF) {
           tokenValue = tokenValue.slice(0, -1);

@@ -526,3 +526,17 @@ test('atoms are not executed by stack actions', t => {
   t.deepEqual(fSyncJSON('[a: b:] 1 @'), [{'@@Action': b}]); // fix this
   t.deepEqual(fSyncJSON('[a: b:] unstack'), [{'@@Action': a}, {'@@Action': b}]); // fix this
 });
+
+test('can perform actions from module', t => {
+  t.deepEqual(fSyncValues('5 core.pred'), [5, 4]);
+  t.deepEqual(fSyncValues('12 math.!'), [479001600]);
+});
+
+test('macros', t => {
+  t.deepEqual(fSyncValues('pred:(5)$'), [5, 4]);
+  t.deepEqual(fSyncValues('!:(12)$'), [479001600]);
+  t.deepEqual(fSyncValues('+:(5,4)$'), [9]);
+  t.deepEqual(fSyncValues('+:(pred:(5)$)$'), [9]);
+  t.deepEqual(fSyncValues('+:(*:(5,6)$, *:(5,2)$)$'), [40]);
+  t.deepEqual(fSyncValues('logn:(1000, 10)$'), [3]);
+});

@@ -27,7 +27,7 @@ typed.addConversion({
 /**
  * # Internal Experimental Words
  */
-export default {
+export const experimental = {
   /**
    * ## `clock`
    */

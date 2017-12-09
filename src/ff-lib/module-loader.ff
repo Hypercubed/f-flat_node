@@ -62,5 +62,3 @@ load: [ read eval ] ;;
  * Loads a file if it exists
  */
 if-exists-load: [ dup exists swap [ load ] >> [ ] choose eval ] ;;
-
-

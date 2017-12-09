@@ -49,7 +49,7 @@ function getURLFromFilePath(filepath: string) {
 /**
  * # Internal Node Words
  */
-export default {
+export const node = {
 
   /**
    * ## `os`

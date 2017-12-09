@@ -32,7 +32,10 @@ let silent = false;
 program
   .version(pkg.version)
   .usage('[options] [commands...]')
-  .option('-L, --log-level [level]', 'Set the log level [warn]', 'warn')
+  .option('-L, --log-level [level]', 'Set the log level', 'warn')
+  .option('-f, --file [file]', 'Evaluate contents of file')
+  .option('-i, --interactive', 'force interactive mode', false)
+  .option('-q, --quiet', 'don\'t print initial banner', false)
   .action((...cmds) => {
     cmds.pop();
     arg += cmds.join(' ');
@@ -40,17 +43,12 @@ program
 
 program.parse(process.argv);
 
-let f = newStack();
+if (typeof program.interactive === 'undefined') {
+  program.interactive = !program.file && arg === '';
+}
 
 if (program.logLevel) {
   log.level = program.logLevel;
-}
-
-if (arg !== '') {
-  f.eval(arg);
-  console.log(formatValue(f.stack, null, inspectOptions));
-  console.log();
-  process.exit();
 }
 
 process.on('uncaughtException', () => {
@@ -58,45 +56,69 @@ process.on('uncaughtException', () => {
   process.exit(1);
 });
 
-const r = repl.start({
-  prompt: `${initialPrompt} `,
-  eval: fEval,
-  writer,
-  ignoreUndefined: false,
-  useColors: true,
-  useGlobal: false,
-  completer: memoize(completer, { maxAge: 10000 })
-});
+let f = newStack();
 
-r.on('reset', () => {
-  f = newStack();
-});
+if (program.file) {
+  f.promise(`"${program.file}" read eval`).then(exitOrStartREPL);
+}
 
-r.defineCommand('silent', {
-  help: 'Toggle silent mode',
-  action() {
-    silent = !silent;
-    this.displayPrompt();
-  }
-});
+if (arg !== '') {
+  f.promise(arg).then(exitOrStartREPL);
+}
 
-const objectId = getUniqueObjectCounter();
-
-r.defineCommand('s', {
-  help: 'Print the stack',
-  action() {
-    // const objectId = getUniqueObjectCounter();
-    f.stack.forEach((d, i) => {
-      const id = objectId(d).toString(16);
-      console.log(`${f.stack.length - i}: ${formatValue(d, null, inspectOptions)} [${type(d)}] (${id})`);
-    });
-    this.displayPrompt();
-  }
-});
-
-r.context = Object.create(null);
+if (!program.file && arg === '') {
+  exitOrStartREPL();
+}
 
 // functions
+
+function exitOrStartREPL() {
+  if (!program.interactive) {
+    process.exit();
+  } else {
+    startREPL();
+  }
+}
+
+function startREPL() {
+  const r = repl.start({
+    prompt: `${initialPrompt} `,
+    eval: fEval,
+    writer,
+    ignoreUndefined: false,
+    useColors: true,
+    useGlobal: false,
+    completer: memoize(completer, { maxAge: 10000 })
+  });
+  
+  r.on('reset', () => {
+    f = newStack();
+  });
+  
+  r.defineCommand('silent', {
+    help: 'Toggle silent mode',
+    action() {
+      silent = !silent;
+      this.displayPrompt();
+    }
+  });
+  
+  const objectId = getUniqueObjectCounter();
+  
+  r.defineCommand('s', {
+    help: 'Print the stack',
+    action() {
+      // const objectId = getUniqueObjectCounter();
+      f.stack.forEach((d, i) => {
+        const id = objectId(d).toString(16);
+        console.log(`${f.stack.length - i}: ${formatValue(d, null, inspectOptions)} [${type(d)}] (${id})`);
+      });
+      this.displayPrompt();
+    }
+  });
+  
+  r.context = Object.create(null);
+}
 
 function newStack() {
   const f = Stack('true auto-undo', RootStack());
@@ -107,8 +129,10 @@ function newStack() {
     });
   });
 
-  console.log(welcome);
-
+  if (!program.quiet) {
+    console.log(welcome);
+  }
+  
   return f.createChild(undefined);
 }
 

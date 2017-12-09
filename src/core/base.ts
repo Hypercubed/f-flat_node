@@ -448,7 +448,7 @@ const at = typed('at', {
   }
 });
 
-export default {
+export const base = {
 
   '+': add,
   '-': sub,
@@ -478,48 +478,6 @@ export default {
      */
     'boolean | number': not
   }),
-
-  /**
-   * ## `<->` (stack)
-   * swaps the last item on the stack and teh first item onteh queue
-   */
-  '<->': function(this: StackEnv, s: any): Just {
-    const q = this.queue.shift();
-    this.queue.unshift(s);
-    return new Just(q);
-  },
-
-  /**
-   * ## `<-` (stack)
-   * replaces the stack with the item found at the top of the stack
-   *
-   * ( [A] -> A )
-   *
-   * ```
-   * f♭> 1 2 [ 3 4 ] <-
-   * [ 3 4 ]
-   * ```
-   */
-  '<-': function(this: StackEnv, s: any): Seq {
-    this.clear();
-    return new Seq(s);
-  },
-
-  /**
-   * ## `->` (queue)
-   * replaces the queue with the item found at the top of the stack
-   *
-   * ( [A] -> )
-   *
-   * ```
-   * f♭> 1 2 [ 3 4 ] -> 5 6
-   * [ 1 2 3 4 ]
-   * ```
-   */
-  '->': function(this: StackEnv, s: any): void {
-    this.queue.splice(0);
-    this.queue.push(...s);
-  },
 
   /**
    * ## `undo`
@@ -622,7 +580,7 @@ export default {
 
   /**
    * ### `memoize`
-   * 
+   *
    * memoize a defined word
    *
    * ( {string|atom} -> )
@@ -642,7 +600,7 @@ export default {
 
   /**
    * ## `clr`
-   * 
+   *
    * clears the stack
    *
    * ( ... -> )
@@ -654,5 +612,5 @@ export default {
    */
   clr: function(this: StackEnv): void {
     this.clear();
-  },
+  }
 };
