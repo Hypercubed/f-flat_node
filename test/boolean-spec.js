@@ -84,3 +84,28 @@ test('should test equality with integers', t => {
   t.deepEqual(fSyncJSON('false 0 ='), [true]);
   t.deepEqual(fSyncJSON('false 1 ='), [false]);
 });
+
+test('should cmp', t => {
+  t.deepEqual(fSyncJSON('true true cmp'), [0]);
+  t.deepEqual(fSyncJSON('true false cmp'), [1]);
+  t.deepEqual(fSyncJSON('false true cmp'), [-1]);
+  t.deepEqual(fSyncJSON('false false cmp'), [0]);
+});
+
+test('should cmp with nan, null', t => {  // todo: better comparisons with NaN, null
+  t.deepEqual(fSyncJSON('true nan cmp'), [-1]);
+  t.deepEqual(fSyncJSON('nan true cmp'), [-1]);
+  t.deepEqual(fSyncJSON('false nan cmp'), [-1]);
+  t.deepEqual(fSyncJSON('nan false cmp'), [-1]);
+
+  t.deepEqual(fSyncJSON('null null cmp'), [0]);
+  t.deepEqual(fSyncJSON('true null cmp'), [1]);
+  t.deepEqual(fSyncJSON('null true cmp'), [-1]);
+  t.deepEqual(fSyncJSON('false null cmp'), [0]);
+  t.deepEqual(fSyncJSON('null false cmp'), [0]);
+});
+
+test('length of booleans are zero', t => {
+  t.deepEqual(fSyncJSON('true length'), [0]);
+  t.deepEqual(fSyncJSON('false length'), [0]);
+});

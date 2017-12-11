@@ -28,10 +28,35 @@ test('should test equality', t => {
   t.deepEqual(fSyncJSON('2 2 ='), [true], 'should test equality');
 });
 
-test('should comparey', t => {
+test('should compare', t => {
   t.deepEqual(fSyncValues('1 1 cmp'), [0]);
   t.deepEqual(fSyncValues('1 2 cmp'), [-1]);
   t.deepEqual(fSyncValues('2 1 cmp'), [1]);
+});
+
+test('should cmp with nan, null', t => {  // todo: better comparisons with NaN
+  t.deepEqual(fSyncValues('nan nan cmp'), [0]);
+  t.deepEqual(fSyncString('1 nan cmp'), 'NaN');
+  t.deepEqual(fSyncString('nan 1 cmp'), 'NaN');
+  t.deepEqual(fSyncString('0 nan cmp'), 'NaN');
+  t.deepEqual(fSyncString('nan 1 cmp'), 'NaN');
+
+  t.deepEqual(fSyncValues('null null cmp'), [0]);
+  t.deepEqual(fSyncValues('1 null cmp'), [1]);
+  t.deepEqual(fSyncValues('null 1 cmp'), [-1]);
+  t.deepEqual(fSyncValues('0 null cmp'), [1]);
+  t.deepEqual(fSyncValues('null 1 cmp'), [-1]);
+});
+
+test('should compare infinities', t => {
+  t.deepEqual(fSyncValues('infinity infinity cmp'), [0]);
+  t.deepEqual(fSyncValues('-infinity -infinity cmp'), [0]);
+  t.deepEqual(fSyncValues('infinity -infinity cmp'), [1]);
+  t.deepEqual(fSyncValues('-infinity infinity cmp'), [-1]);
+  t.deepEqual(fSyncValues('infinity 0 cmp'), [1]);
+  t.deepEqual(fSyncValues('-infinity 0 cmp'), [-1]);
+  t.deepEqual(fSyncValues('0 -infinity cmp'), [1]);
+  t.deepEqual(fSyncValues('0 infinity cmp'), [-1]);
 });
 
 test('should test inequality', t => {
@@ -286,4 +311,10 @@ test('numerical derivative', t => {
   t.true(nearly(fSyncValues('[ sin 2 ^ ] 1 1e-6 nd')[0], 0.90929701067825 /* Math.sin(2) */));
   t.true(nearly(fSyncValues('ln 1 1e-19 nd')[0], 1));
   t.deepEqual(fSyncString('[ inv ] 0 1e-6 nd'), '-Infinity');
+});
+
+test('length of numbers', t => {
+  t.deepEqual(fSyncJSON('nan length'), [0]);
+  t.deepEqual(fSyncJSON('3 length'), [1]);
+  t.deepEqual(fSyncJSON('1 3 / length'), [20]);
 });

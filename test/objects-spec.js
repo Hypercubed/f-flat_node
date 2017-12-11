@@ -105,3 +105,9 @@ test('', t => {
     'should get keys length'
   );
 });
+
+test('should cmp objects', t => {
+  t.deepEqual(fSyncJSON('{ x: 123 } { y: 456 } cmp'), [0]);
+  t.deepEqual(fSyncJSON('{ x: 123, z: 789 } { y: 456 } cmp'), [1]);
+  t.deepEqual(fSyncJSON('{ x: 123 } { y: 456, z: 789 } cmp'), [-1]);
+});

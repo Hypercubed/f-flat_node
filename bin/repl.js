@@ -3,6 +3,7 @@
 /* global process */
 
 const repl = require('repl');
+const readline = require('readline');
 const program = require('commander');
 
 const { Stack, RootStack } = require('../dist/stack');
@@ -28,6 +29,7 @@ let arg = '';
 let buffer = '';
 let timeout = null;
 let silent = false;
+let stackRepl = null;
 
 program
   .version(pkg.version)
@@ -105,7 +107,7 @@ function startREPL() {
   
   const objectId = getUniqueObjectCounter();
   
-  r.defineCommand('s', {
+  r.defineCommand('s', {  /// todo: move to core
     help: 'Print the stack',
     action() {
       // const objectId = getUniqueObjectCounter();
@@ -118,14 +120,20 @@ function startREPL() {
   });
   
   r.context = Object.create(null);
+
+  stackRepl = r;
 }
 
 function newStack() {
   const f = Stack('true auto-undo', RootStack());
 
+  const rl = stackRepl || readline.createInterface({
+    input: process.stdin
+  });
+
   f.defineAction('prompt', () => {
     return new Promise(resolve => {
-      stackRepl.question('', resolve);
+      rl.question('', resolve);
     });
   });
 

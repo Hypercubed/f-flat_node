@@ -117,3 +117,9 @@ test('should eval palindrome?', t => {
   t.deepEqual(fSyncJSON('"racecar" palindrome?'), [true]);
   t.deepEqual(fSyncJSON('"A man, a plan, a canal: Panama" palindrome?'), [true]);
 });
+
+test('should get length palindrome?', t => {
+  t.deepEqual(fSyncJSON('"abc" length'), [3]);
+  t.deepEqual(fSyncJSON('"racecar" length'), [7]);
+  t.deepEqual(fSyncJSON('"A man, a plan, a canal: Panama" length'), [30]);
+});

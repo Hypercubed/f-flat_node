@@ -104,7 +104,7 @@ export const core = {
    * ## `unstack`
    * push items in a quote to the stack without evaluation
    *
-   * ( [A B C] -> A B C)
+   * ( [A B C] -> A B C )
    *
    * ```
    * f♭> [ 1 2 * ] unstack
@@ -275,19 +275,53 @@ export const core = {
 
   /**
    * ## `length`
-   * Outputs the length of the Array, string, or object.
+   * Outputs the "length" of the value.
    *
-   * ( {seq} -> {number} )
-   *
-   * ```
-   * > [ 1 2 3 ] length
-   * 3
-   * ```
+   * ( x -> {number} )
    */
   length: typed('length', {
+    /**
+     * - length of the Array or string
+     *
+     * ```
+     * > [ 1 2 3 ] length
+     * [ 3 ]
+     * ```
+     */
     'Array | string': a => a.length,
     Future: (f: Future) => f.promise.then(a => a.length),
+
+    /**
+     * - length of the Object (number of keys)
+     *
+     * ```
+     * > { x: 1, y: 2, z: 3 } length
+     * [ 3 ]
+     * ```
+     */
     Object: (a: {}) => Object.keys(a).length,
+
+    /**
+     * - precision (significant digits) of a number
+     *
+     * ```
+     * > 1 3 / length
+     * [ 20 ]
+     * ```
+     */
+    Decimal: a => a.precision(),
+    Complex: a => a.re.precision() + a.im.precision(),
+
+    /**
+     * - "length" of a nan, null, and booleans are 0
+     *
+     * ```
+     * > true length
+     * [ 0 ]
+     * ```
+     */
+    number: a => 0, // should only be nan
+    boolean: a => 0, // should only be nan
     null: (a: null) => 0 // eslint-disable-line
   }),
 

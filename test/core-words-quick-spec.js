@@ -10,7 +10,9 @@ import {
   options,
   fflatValue,
   fflatPrim,
-  ffString
+  ffString,
+  ffNumber,
+  Decimal
 } from './setup';
 
 test(
@@ -94,6 +96,7 @@ test(
   })
 );
 
+// length
 test(
   'should get length of an array',
   check(options, fflatValue, fflatValue, fflatValue, (t, a, b, c) => {
@@ -101,6 +104,37 @@ test(
     const r = fSyncJSON(s);
     t.is(r.length, 1);
     t.is(r[0].valueOf(), 3);
+  })
+);
+
+test(
+  'should get "length" of an object',
+  check(options, fflatValue, fflatValue, fflatValue, (t, a, b, c) => {
+    const s = `{ a: ${a} b: ${b} c: ${c} } length`;
+    const r = fSyncJSON(s);
+    t.is(r.length, 1);
+    t.is(r[0].valueOf(), 3);
+  })
+);
+
+test(
+  'should get length of a string',
+  check(options, ffString, (t, a) => {
+    const s = `${a} length`;
+    const r = fSyncJSON(s);
+    t.is(r.length, 1);
+    t.is(r[0].valueOf(), a.valueOf().length);
+  })
+);
+
+test(
+  'should get precision of a number',
+  check(options, ffNumber, (t, a) => {
+    const s = `${a} length`;
+    const r = fSyncJSON(s);
+    t.is(r.length, 1);
+    const v = a.valueOf();
+    t.is(r[0].valueOf(), (!Number.isFinite(v) || Number.isNaN(v)) ? new Decimal(NaN) : new Decimal(v).sd());
   })
 );
 

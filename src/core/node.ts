@@ -104,6 +104,12 @@ export const node = {
     console.info(a, ...b);
   },
 
+  /* 'prompt': () => {
+    return new Promise(resolve => {
+      rl.question('', resolve);
+    });
+  }, */
+
   /**
    * ## `exit`
    *

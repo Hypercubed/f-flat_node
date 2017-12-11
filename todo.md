@@ -32,8 +32,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] rewrite should also rewrite sequences
   - [ ] `dup drop` -> ``
   - [ ] `q< x q> q< y q>` -> `q< x y q>`
-- [ ] Remove symbols
+- [ ] Remove symbols?
 - [ ] Handle literals (true, false, i, infinity, null) in parser?
+- [ ] Ensure predictable cmp with null, nan
 
 # New Words
 
@@ -54,7 +55,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `gte` vs `>=`
 - [ ] Derivities:
   - [ ] `deriv = (f, h) => x => (f(x + h) - f(x)) / h`
-  - [ ] `ND = (f, x, h) => (f(x + h) - f(x)) / h`
+  - [x] `nd = (f, x, h) => (f(x + h) - f(x)) / h`
+- [ ] Move `prompt` into code?
 
 # Docs
 

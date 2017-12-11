@@ -343,7 +343,7 @@ f♭> 1 2 =
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L534">[src]</a></div>
 
 ## `cmp`
-Pushes a -1, 0, or a +1 when x is 'less than', 'equal to', or 'greater than' y.
+Pushes a negative number, zero, or a positive number when x is logically 'less than', 'equal to', or 'greater than' y.
 
 ( x y -> z )
 
@@ -353,12 +353,70 @@ f♭> 1 2 cmp
 ```
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L547">[src]</a></div>
 
+- number comparisons
+
+give results of either 1, 0 or -1
+
+```
+f♭> 1 0 cmp
+[ 1 ]
+```
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L559">[src]</a></div>
+
+- vector comparisons
+
+the longer vector is always "greater" regardless of contents
+
+```
+f♭> [1 2 3 4] [4 5 6] cmp
+[ 1 ]
+```
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L576">[src]</a></div>
+
+- string comparisons
+
+compare strings in alphabetically
+
+
+
+```
+f♭> "abc" "def" cmp
+[ -1 ]
+```
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L597">[src]</a></div>
+
+- boolean comparisons
+
+```
+f♭> false true cmp
+[ -1 ]
+```
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L612">[src]</a></div>
+
+- date comparisons
+
+```
+f♭> now now cmp
+[ -1 ]
+```
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L627">[src]</a></div>
+
+- object comparisons
+
+compares number of keys, regardless of contents
+
+```
+f♭> { x: 123, z: 789 } { y: 456 } cmp
+[ 1 ]
+```
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L650">[src]</a></div>
+
 ### `memoize`
 
 memoize a defined word
 
 ( {string|atom} -> )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L589">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L674">[src]</a></div>
 
 ## `clr`
 
@@ -370,4 +428,4 @@ clears the stack
 f♭> 1 2 3 clr
 [  ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L614">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L699">[src]</a></div>

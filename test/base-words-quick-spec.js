@@ -228,15 +228,56 @@ test(
 );
 
 /* cmp */
+
+const cmpCheck = (t, a, b) => {
+  const r = fSyncStack(`${a} ${b} cmp`);
+  t.is(r.length, 1);
+  t.is(r[0], cmp(a.valueOf(), b.valueOf()));
+};
+
 test(
   'should compare numbers',
-  check(options, ffNumber, ffNumber, (t, a, b) => {
-    const r = fSyncStack(`${a} ${b} cmp`);
-    t.is(r.length, 1);
-    t.is(r[0], new Decimal(a.valueOf()).cmp(b.valueOf()));
-  })
+  check(options, ffNumber, ffNumber, cmpCheck)
+);
+
+test(
+  'should compare strings',
+  check(options, ffString, ffString, cmpCheck)
+);
+
+test(
+  'should compare booleans',
+  check(options, ffBoolean, ffBoolean, cmpCheck)
+);
+
+test(
+  'should compare arrays',
+  check(options, ffArray, ffArray, cmpCheck)
+);
+
+test(
+  'should compare objects',
+  check(options, ffObject, ffObject,cmpCheck)
 );
 
 // memoize
 
 // \\
+
+
+// Helper, cmp same types
+function cmp(a, b) {
+  if (Array.isArray(a)) {
+    return cmp(a.length, b.length);
+  }
+  if (typeof a === 'number') {
+    return new Decimal(a).cmp(b);
+  }
+  if (typeof a === 'object') {
+    return cmp(Object.keys(a).length, Object.keys(b).length);
+  }
+  if (a === b) {
+    return 0;
+  }
+  return a > b ? 1 : -1;
+}

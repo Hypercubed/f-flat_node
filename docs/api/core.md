@@ -48,7 +48,7 @@ f♭> 1 2 3 stack
 ## `unstack`
 push items in a quote to the stack without evaluation
 
-( [A B C] -> A B C)
+( [A B C] -> A B C )
 
 ```
 f♭> [ 1 2 * ] unstack
@@ -167,21 +167,48 @@ duplicates the item on the bottom of the stack
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L275">[src]</a></div>
 
 ## `length`
-Outputs the length of the Array, string, or object.
+Outputs the "length" of the value.
 
-( {seq} -> {number} )
+( x -> {number} )
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L282">[src]</a></div>
+
+- length of the Array or string
 
 ```
 > [ 1 2 3 ] length
-3
+[ 3 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L288">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L292">[src]</a></div>
+
+- length of the Object (number of keys)
+
+```
+> { x: 1, y: 2, z: 3 } length
+[ 3 ]
+```
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L303">[src]</a></div>
+
+- precision (significant digits) of a number
+
+```
+> 1 3 / length
+[ 20 ]
+```
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L313">[src]</a></div>
+
+- "length" of a nan, null, and booleans are 0
+
+```
+> true length
+[ 0 ]
+```
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L324">[src]</a></div>
 
 ## `slice`
 a shallow copy of a portion of an array or string
 
 ( seq from to -> seq )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L301">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L335">[src]</a></div>
 
 ## `splitat`
 splits a array or string
@@ -192,7 +219,7 @@ splits a array or string
 f♭> [ 1 2 3 4 ] 2 4 slice
 [ [ 3 4 ] ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L314">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L348">[src]</a></div>
 
 ## `indexof`
 returns the position of the first occurrence of a specified value in a sequence
@@ -203,7 +230,7 @@ returns the position of the first occurrence of a specified value in a sequence
 f♭> [ '1' '2' '3' '4' ] '2' indexof
 [ 1 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L327">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L361">[src]</a></div>
 
 ## `zip`
 
@@ -211,7 +238,7 @@ f♭> [ '1' '2' '3' '4' ] '2' indexof
 f♭> [ 1 2 3 ] [ 4 5 6 ] zip
 [ 1 4 2 5 3 6 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L341">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L375">[src]</a></div>
 
 ## `zipinto`
 
@@ -219,43 +246,43 @@ f♭> [ 1 2 3 ] [ 4 5 6 ] zip
 f♭> [ 1 2 3 ] [ 4 5 6 ] [ 7 8 9 ] zipinto
 [ [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L360">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L394">[src]</a></div>
 
 ## `(` (immediate quote)
 pushes a quotation maker onto the stack
 
 ( -> #( )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L377">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L411">[src]</a></div>
 
 ## `)` (immediate dequote)
 collects stack items upto the last quote marker
 
 ( #( ... -> [ ... ] )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L386">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L420">[src]</a></div>
 
 ## `[` (lazy quote)
 pushes a quotation maker onto the stack, increments depth
 
 ( -> #( )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L396">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L430">[src]</a></div>
 
 ## `]` (lazy dequote)
 decrements depth, collects stack items upto the last quote marker
 
 ( #( ... -> [ ... ] )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L407">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L441">[src]</a></div>
 
 ## `{` (immediate object quote)
 pushes a quotation maker onto the stack
 
 ( -> #( )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L418">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L452">[src]</a></div>
 
 ## `}` (immediate object dequote)
 collects stack items upto the last quote marker, converts to an object
 
 ( #( ... -> [ ... ] )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L426">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L460">[src]</a></div>
 
 ## `template`
 converts a string to a string template
@@ -266,22 +293,22 @@ converts a string to a string template
 f♭> 'hello $(world)' template
 [ [ '' 'hello ' + '(world)' eval string + '' + ] ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L442">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L476">[src]</a></div>
 
 ## `sleep`
 wait x milliseconds
 
 ( x -> )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L450">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L484">[src]</a></div>
 
 ## `get-log-level`
 gets the current logging level
 
 ( -> {string} )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L467">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L501">[src]</a></div>
 
 ## `set-log-level`
 sets the current logging level
 
 ( {string} -> )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L475">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L509">[src]</a></div>

@@ -86,7 +86,7 @@ mul: [ -- dup [ [ dup ] swap times [ + ] ] dip times ] ;
 // Factorials
 approx-fact: [ ++ gamma ] ;
 // c!: [ pred [ count ] dip [ * ] swap times ] ;
-recur-fact: [ dup zero? [ drop 1 ] [ pred recur-fact eval * ] branch ] ;
+recur-fact: [ dup zero? [ drop 1 ] [ pred recur-fact * ] branch ] ;
 // y!: [ [ [ over zero? ] [ drop ++ ] [ [ pred ] dip eval * ] ifte ] y eval ] ;
 !: [ dup integer? [recur-fact] [approx-fact] choose eval ] ;
 
@@ -110,4 +110,5 @@ gcd: [ [ dup 0 > ] [ dup bury % ] while drop ] ;
 lcm: [ 2dup [ [ * abs ] dip ] dip gcd / ] ;
 
 // calculus-ish
-nd: [ dup [ over + rot bi@ - ] dip / ] ;  // forward difference approximation to the derivative
+nd: [ dup [ over + rot bi@ - ] dip / ] ;  // first-order divided difference
+ndm: [ dup 2 * [ [ - ] [ + ] bi2 rot bi@ - ] dip / ] ;  // symmetric difference quotient.

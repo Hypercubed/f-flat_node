@@ -540,3 +540,7 @@ test('macros', t => {
   t.deepEqual(fSyncValues('+:(*:(5,6)$, *:(5,2)$)$'), [40]);
   t.deepEqual(fSyncValues('logn:(1000, 10)$'), [3]);
 });
+
+test('length', t => {
+  t.deepEqual(fSyncJSON('null length'), [0]);
+});

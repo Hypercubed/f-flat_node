@@ -124,7 +124,7 @@ const sub = typed('sub', {
    */
   'Complex, Complex': (lhs: Complex, rhs: Complex) => lhs.minus(rhs),
   'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal) => {
-    if (lhs.isNaN(), lhs.isNaN()) return NaN;
+    if (lhs.isNaN() && lhs.isNaN()) return NaN;
     return lhs.minus(rhs);
   },
 
@@ -534,7 +534,7 @@ export const base = {
 
   /**
    * ## `cmp`
-   * Pushes a -1, 0, or a +1 when x is 'less than', 'equal to', or 'greater than' y.
+   * Pushes a negative number, zero, or a positive number when x is logically 'less than', 'equal to', or 'greater than' y.
    *
    * ( x y -> z )
    *
@@ -544,26 +544,85 @@ export const base = {
    * ```
    */
   cmp: typed('cmp', {
-    'Decimal | Complex, Decimal | Complex | number': (lhs: Decimal, rhs: Decimal) =>
-      lhs.cmp(rhs),
-    'Array, Array': (lhs, rhs) => {
-      if (deepEquals(lhs, rhs)) {
-        return 0;
-      }
-      if (lhs.length === rhs.length) {
-        /* for (let i = 0; i < lhs.length; i++) {  // todo: compare each element
 
-        } */
+    /**
+     * - number comparisons
+     *
+     * give results of either 1, 0 or -1
+     *
+     * ```
+     * f♭> 1 0 cmp
+     * [ 1 ]
+     * ```
+     */
+    'Decimal | Complex, Decimal | Complex': (lhs: Decimal, rhs: Decimal) => {
+      if (lhs.isNaN() && rhs.isNaN()) {
         return 0;
       }
-      return lhs.length > rhs.length ? 1 : -1;
+      return lhs.cmp(rhs);
     },
+
+    /**
+     * - vector comparisons
+     *
+     * the longer vector is always "greater" regardless of contents
+     *
+     * ```
+     * f♭> [1 2 3 4] [4 5 6] cmp
+     * [ 1 ]
+     * ```
+     */
+    'Array, Array': (lhs, rhs) => {
+      lhs = lhs.length;
+      rhs = rhs.length;
+      if (lhs === rhs) {
+        return 0;
+      }
+      return lhs > rhs ? 1 : -1;
+    },
+
+    /**
+     * - string comparisons
+     *
+     * compare strings in alphabetically
+     *
+     *
+     *
+     * ```
+     * f♭> "abc" "def" cmp
+     * [ -1 ]
+     * ```
+     */
     'string, string': (lhs, rhs) => {
       if (lhs === rhs) {
         return 0;
       }
       return lhs > rhs ? 1 : -1;
     },
+
+    /**
+     * - boolean comparisons
+     *
+     * ```
+     * f♭> false true cmp
+     * [ -1 ]
+     * ```
+     */
+    'boolean, boolean': (lhs, rhs) => {
+      if (lhs === rhs) {
+        return 0;
+      }
+      return lhs > rhs ? 1 : -1;
+    },
+
+    /**
+     * - date comparisons
+     *
+     * ```
+     * f♭> now now cmp
+     * [ -1 ]
+     * ```
+     */
     'Date, any': (lhs, rhs) => {
       if (+lhs === +rhs) {
         return 0;
@@ -571,6 +630,32 @@ export const base = {
       return +lhs > +rhs ? 1 : -1;
     },
     'any, Date': (lhs, rhs) => {
+      if (+lhs === +rhs) {
+        return 0;
+      }
+      return +lhs > +rhs ? 1 : -1;
+    },
+
+    /**
+     * - object comparisons
+     *
+     * compares number of keys, regardless of contents
+     *
+     * ```
+     * f♭> { x: 123, z: 789 } { y: 456 } cmp
+     * [ 1 ]
+     * ```
+     */
+    'Object, Object': (lhs, rhs) => {
+      lhs = lhs ? Object.keys(lhs).length : null;
+      rhs = rhs ? Object.keys(rhs).length : null;
+      if (lhs === rhs) {
+        return 0;
+      }
+      return lhs > rhs ? 1 : -1;
+    },
+
+    'any, any': (lhs, rhs) => {
       if (+lhs === +rhs) {
         return 0;
       }
