@@ -134,7 +134,13 @@ test(
     const r = fSyncJSON(s);
     t.is(r.length, 1);
     const v = a.valueOf();
-    t.is(r[0].valueOf(), (!Number.isFinite(v) || Number.isNaN(v)) ? new Decimal(NaN) : new Decimal(v).sd());
+    if (!Number.isFinite(v)) {
+      t.is(r[0].valueOf(), D(NaN)); // todo: fix this, should be 0?
+    } else if (Number.isNaN(v)) {
+      t.is(r[0].valueOf(), 0);
+    } else {
+      t.is(r[0].valueOf(), new Decimal(v).sd());
+    }
   })
 );
 
