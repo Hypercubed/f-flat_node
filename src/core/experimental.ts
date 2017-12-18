@@ -40,13 +40,6 @@ export const experimental = {
   'parse-json': (a: string) => JSON.parse(a), // global.JSON.parse
 
   /**
-   * ## `match`
-   */
-  match: typed('match', {
-    'string, RegExp | string': (lhs: string, rhs: RegExp) => lhs.match(rhs) || [],
-  }), // todo: should a base method? =~?
-
-  /**
    * ## `||>` (apply)
    */
   '||>': typed('ap', {

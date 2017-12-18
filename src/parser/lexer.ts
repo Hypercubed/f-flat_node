@@ -19,16 +19,6 @@ const atAction = new Word('@');
 const templateAction = new Word('template');
 const evalAction = new Word('eval');
 
-/* export const lexer: (x: StackValue) => StackArray = typed('lexer', {
-  Array: (arr: StackArray) => arr,
-  string: (text: string) => {
-    text = text.trim(); // fix this in parser
-    const nodes = tokenize(text).map(processParserTokens);
-    return Array.prototype.concat.apply([], nodes); // flatmap
-  },
-  any: (text: StackValue) => [text]
-}); */
-
 export function lexer(a) {
   if (Array.isArray(a)) {
     return a;
@@ -39,11 +29,11 @@ export function lexer(a) {
     return Array.prototype.concat.apply([], nodes); // flatmap
   }
   return [a];
-};
+}
 
 function processParserTokens(node): StackValue | undefined {
   switch (node.name) {
-    // todo: literals
+    // todo: more literal: infinity, -infinity, regex, complex, percent
     case 'templateString':
       return templateString(node.allText);
     case 'singleQuotedString':
@@ -65,9 +55,6 @@ function processParserTokens(node): StackValue | undefined {
         return convertLiteral(node.allText);
       } // else fall through (all length)
     case 'bracket':
-      if (node.allText === '(') {
-        return 
-      }
       return new Word(node.allText);
     case 'null':
       return null;

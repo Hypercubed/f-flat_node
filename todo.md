@@ -4,24 +4,32 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Bugs
 
-- [ ] 1 acos = 0 (precision issue)
-- [ ] precision in complex calculations (on print)
-- [ ] ComplexInfinity, Indeterminate, Undefined (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [ ] @ for out of range works differently on string and array
-- [-] Fix `b t: f: choose`?
-- [x] `math.!`
-- [x] `-0`
+
+# Decide
+- [ ] Decide on macros, dupn!3, dup<5>, range<1, 100>, range!(1, 10)$ ?
+- [ ] ~ vs !
+- [ ] undef, null nan, ComplexInfinity, Indeterminate, Undefined (http://www.wolframalpha.com/input/?i=ComplexInfinity)
+- [ ] Choose regex vs regexp
+- [ ] words or literals are equivelent? true: === true ?
 
 # Todo next:
 
-- [ ] More literals (regex, i, Infinity, etc) in parser
+- [ ] Consistant and predictable display precision:
+  - [ ] 1 acos = 0 (precision issue)
+  - [ ] precision in complex calculations (on print)
+  - [ ] Pretty printing complex values: '5e-20+2i' -> '2i'
+- [ ] More literals in parser
+  - [ ] regex
+  - [ ] i
+  - [ ] +/-Infinity
+  - [ ] `(`
+  - [x] true, false
+  - [x] null
 - [ ] Make scope lifing safe.  No user writes to scope.
 - [ ] Core functions should also be namespaced.
-- [ ] Decide on macros, dupn!3, dup<5>, range<1, 100>, range!(1, 10)$ ?
-- [x] Load ff file directly from command line.
 - [ ] More tests for stack object immutablity
-- [x] Use URLs as module id
-- [ ] Better types
+- [ ] Better internal types
   - [ ] Just -> ReturnValue
   - [ ] Seq -> ReturnSequence
   - [x] Action -> Words / Sentence
@@ -32,12 +40,11 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] JSON
   - [ ] to simplified JSON (Decimal -> number, etc)
   - [ ] Decimal/Complex .fromJSON + Tests
-- [ ] rewrite should also rewrite sequences
+- [ ] rewrite should also simplify sequences
   - [ ] `dup drop` -> ``
   - [ ] `q< x q> q< y q>` -> `q< x y q>`
 - [ ] Remove symbols?
-- [ ] Handle literals (true, false, i, infinity, null) in parser?
-- [ ] Ensure predictable cmp with null, nan
+- [ ] Ensure predictable cmp with null and nan
 
 # New Words
 
@@ -69,6 +76,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 # Docs
 
 - [x] REPL intro
+- [ ] Boolean/Three valued logic
+- [ ] Basis
+- [ ] Regexp
 - [ ] "compile" (expand)
 - [ ] Module loader, expanding functions, circular references.
 - [ ] Defined words
@@ -78,7 +88,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Todo:
 
-- [ ] undef, null nan, ComplexInfinity?
 - [ ] Improve errors (FF errors should not have a JS stack)
 - [ ] Trig functions on complex
   - [x] sin, cos, tan
@@ -93,7 +102,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [x] Multiplications: https://locklessinc.com/articles/complex_multiplication/
   - [x] Divsion: https://arxiv.org/pdf/1210.4539.pdf
   - [ ] shorthand for complex values? i.e. 'C#1+2i'?
-  - [ ] Pretty printing complex values: '5e-20+2i' -> '2i'
 - [ ] Investigate alternatives to decimal.js? Rational Numbers?
 - [ ] Pool children env?
 - [ ] Use child process/web workers for children?
@@ -107,20 +115,15 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] better stack printing
 - [x] better trace
 - [-] bubble errors up from children (currently in: swallows errors)
-- [ ] JSON Serialize
-  - [ ] Nan, Infinity, etc.
-  - [x] BigNumber, Complex
-  - [ ] actions, 
-  - [ ] Dates
 - [ ] Dates
   - [ ] More date base operations
   - [ ] Add Duration type... example: https://github.com/moment/moment/blob/develop/src/lib/duration/constructor.js
 - Improved `@`
   - [ ] [ ... ] [ x y z ] @ => [ ... ][x][y][z]
   - [ ] { ... } 'x.y.z' @ => [ ... ][x][y][z]
-  - [ ] JS FFI?
+- [x] JS FFI
 - [ ] Private/Protected words?  Globals/parent scoped?
-- [ ] Preserved presision (2.50 vs 2.5)?
+- [ ] Preserved precision base on user input (2.50 vs 2.5)?
 - [ ] Pattern matching ???
 - [ ] Better JSON iterop
   - [ ] StackEnv.prototype.toJSON should serialize entire state
@@ -128,19 +131,20 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] Deserialize JSON
   - [ ] Simplified JSON
   - [ ] BSON?
+  - [ ] Nan, Infinity, etc.
+  - [x] BigNumber, Complex
+  - [ ] actions, 
+  - [ ] Dates
 - [ ] RegExp
   - [?] Rewrite strings lib to use regex
   - [ ] Regex literal?
-  - [ ] Choose regex vs regexp
   - [ ] Fix union of rexexp with flags
-  - [ ] match operator `=~` ?
+  - [x] match operator `=~` ?
   - [ ] {Array} {RegExp} match?
   - [x] OR {regexp} + {regexp} = {regexp} OR {regexp}
   - [ ] AND {regexp} + {regexp} = {regexp} AND {regexp}
   - [ ] NOT {regexp} ~ = NOT {regexp}
-  - [ ] JSON output (jRex#toJSON)
-- [ ] Git strict on puncuation
-- [ ] Integer -> Float -> Decimal -> Complex type promotion
+  - [ ] JSON output
+- [ ] Get strict on punctuation ??
+- [ ] Integer -> Float -> Decimal -> Complex, predictable type promotion
 - [ ] Compiler output
-- [ ] true: === true ?
-

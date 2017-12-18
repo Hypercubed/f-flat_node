@@ -31,8 +31,3 @@ palindrome?: [ [ alphanumeric? ] sfilter lcase dup sreverse = ] ;
   * {string}, {regexp | string}, {string} -> {string}
   */
 replace: [ [ / ] dip * ] ;;
-
-/**
-  * ## `match?`
-  */
-match?: [ match ln 0 > ] ;;

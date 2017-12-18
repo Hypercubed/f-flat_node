@@ -538,4 +538,28 @@ export const core = {
   '<q': function(this: StackEnv): any {
     return new Just(this.queue.shift()); // danger?
   },
+
+  /**
+   * ## `match`
+   *
+   * Matches a string a regex and returns an array containing the results of that search.
+   *
+   * {string} [regexp} -> {boolean}
+   *
+   */
+  match: typed('match', {
+    'string, RegExp | string': (lhs: string, rhs: RegExp) => lhs.match(rhs) || [],
+  }),
+
+  /**
+   * ## `=~`
+   *
+   * Returns a Boolean value that indicates whether or not a pattern exists in a searched string.
+   *
+   * {string} [regexp} -> {boolean}
+   *
+   */
+  '=~': typed('ismatch', {
+    'string, RegExp | string': (lhs: string, rhs: RegExp) => rhs.test(lhs) || [],
+  }),
 };

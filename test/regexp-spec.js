@@ -39,12 +39,12 @@ test('regular expressions, match', t => {
 });
 
 test('regular expressions, match?', t => {
-  t.deepEqual(fSyncJSON('"abc" "/a./" regexp match?'), [true]);
-  t.deepEqual(fSyncJSON('"abc" "/A./" regexp match?'), [false]);
-  t.deepEqual(fSyncJSON('"abc" "/A./i" regexp match?'), [true]);
-  t.deepEqual(fSyncJSON('"abc" "/a.$/" regexp match?'), [false]);
-  t.deepEqual(fSyncJSON('"abc" "/a.*$/" regexp match?'), [true]);
-  t.deepEqual(fSyncJSON('"bcd" "/a./" regexp match?'), [false]);
+  t.deepEqual(fSyncJSON('"abc" "/a./" regexp =~'), [true]);
+  t.deepEqual(fSyncJSON('"abc" "/A./" regexp =~'), [false]);
+  t.deepEqual(fSyncJSON('"abc" "/A./i" regexp =~'), [true]);
+  t.deepEqual(fSyncJSON('"abc" "/a.$/" regexp =~'), [false]);
+  t.deepEqual(fSyncJSON('"abc" "/a.*$/" regexp =~'), [true]);
+  t.deepEqual(fSyncJSON('"bcd" "/a./" regexp =~'), [false]);
 });
 
 test('regular expressions, match @', t => {
