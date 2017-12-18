@@ -536,4 +536,14 @@ export const core = {
   'auto-undo': function(this: StackEnv, a: boolean): void {
     this.undoable = a;
   },
+
+  /*
+   * ## `<q`
+   * push the top of the queue to the stack
+   *
+   * ( -> {any} )
+   */
+  '<q': function(this: StackEnv): any {
+    return new Just(this.queue.shift()); // danger?
+  },
 };

@@ -48,43 +48,6 @@ export const math = {
   }),
 
   /**
-   * ## `div`
-   *
-   * Integer division
-   */
-  div: typed('div', {
-    'Decimal | Complex, Decimal | Complex | number': (a, b) => a.div(b).floor(),
-    'Array, number': (a, b) => {
-      b = Math.floor(a.length / +b);
-      return a.slice(0, b);
-    },
-    'string, number': (a, b) => {
-      b = Math.floor(a.length / +b);
-      return a.slice(0, b);
-    }
-  }),
-
-  /**
-   * ## `%` (modulo)
-   *
-   * Remainder after division
-   *
-   */
-  '%': typed('rem', {
-    'Decimal | Complex, Decimal | number': (lhs, rhs) => lhs.modulo(rhs),
-    'Array, number': (a, b) => {
-      const len = a.length;
-      b = a.length % b;
-      return a.slice(len - b, len);
-    },
-    'string, number': (a, b) => {
-      const len = a.length;
-      b = len % b;
-      return a.slice(len - b, len);
-    }
-  }),
-
-  /**
    * ## `abs`
    *
    * Absolute value and complex magnitude
@@ -283,41 +246,6 @@ export const math = {
       return new Decimal(a).ln();
     },
     'Array | string': a => a.length
-  }),
-
-  /**
-   * ## `^` (pow)
-   *
-   * pow function
-   * returns the base to the exponent power, that is, base^exponent
-   *
-   */
-  '^': typed('pow', {
-    // string ops? s 3 ^ -> s s * s *
-    // boolean or?
-    'Complex, Decimal | Complex | number': (a, b) =>
-      new Sentence([b, a].concat(lexer('ln * exp'))),
-    'Decimal, Complex': (a, b) => new Sentence([b, a].concat(lexer('ln * exp'))),
-    'Decimal, Decimal | number': (a, b) => a.pow(b),
-
-    'string, number': (lhs, rhs) => {
-      let r = lhs;
-      const l = +rhs | 0;
-      for (let i = 1; i < l; i++) {
-        r = lhs.split('').join(r);
-      }
-      return r;
-    },
-
-    'Array, number': (lhs: StackArray, rhs) => {
-      let r = lhs;
-      const l = +rhs | 0;
-      for (let i = 1; i < l; i++) {
-        r = arrayMul(r, lhs);
-      }
-      return r;
-    },
-    // 'Array, number': (a, b) => new Sentence([a, b, new Word('pow')])  // this is only integers
   }),
 
   /**

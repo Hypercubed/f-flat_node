@@ -72,7 +72,7 @@ test(
 test(
   'should xor booleans',
   check(options, gen.boolean, gen.boolean, (t, a, b) => {
-    const r = fSyncStack(`${a} ${b} -`);
+    const r = fSyncStack(`${a} ${b} ^`);
     t.is(r.length, 1);
     t.is(r[0].valueOf(), (a || b) && !(a && b));
   })
@@ -129,7 +129,7 @@ test(
 test(
   'should nand booleans',
   check(options, gen.boolean, gen.boolean, (t, a, b) => {
-    const r = fSyncStack(`${a} ${b} /`);
+    const r = fSyncStack(`${a} ${b} %`);
     t.is(r.length, 1);
     t.is(r[0], !(a && b));
   })
@@ -239,7 +239,7 @@ test(
 /* cmp */
 
 const cmpCheck = (t, a, b) => {
-  const r = fSyncStack(`${a} ${b} cmp`);
+  const r = fSyncStack(`${a} ${b} <=>`);
   t.is(r.length, 1);
   t.is(r[0], cmp(a.valueOf(), b.valueOf()));
 };

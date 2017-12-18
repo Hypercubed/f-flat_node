@@ -1,7 +1,8 @@
 import { assign, merge, unshift, push, slice, getIn } from 'icepick';
 
+import { lexer } from '../parser';
 import { deepEquals, arrayRepeat, arrayMul } from '../utils';
-import { and, nand, or, xor, not } from '../utils/kleene-logic';
+import { and, nand, or, xor, not, nor, cmp, mimpl, cimpl, mnonimpl, cnonimpl } from '../utils/kleene-logic';
 import {
   rAnd,
   rNot,
@@ -23,6 +24,7 @@ import {
   Future,
   Complex,
   Decimal,
+  StackArray,
   complexInfinity
 } from '../types';
 import { StackEnv } from '../env';
@@ -66,8 +68,7 @@ const add = typed('add', {
    * [ true ]
    * ```
    */
-  'boolean, boolean | number': or,
-  'number, boolean': or,
+  'boolean | null, boolean | null': or,
 
   /**
    * - RegExp union
@@ -127,7 +128,7 @@ const add = typed('add', {
    * [ "abcxyz" ]
    *```
    */
-  'string | number | null, string | number | null': (
+  'string | number, string | number': (
     lhs: string,
     rhs: string
   ) => lhs + rhs
@@ -158,7 +159,7 @@ const sub = typed('sub', {
    * [ false ]
    *```
    */
-  'boolean, boolean': xor,
+  'boolean | null, boolean | null': nor,
 
   /**
    * - RegExp exclusive disjunction (xor)
@@ -254,8 +255,7 @@ const mul = typed('mul', {
    * [ true ]
    *```
    */
-  'boolean, boolean | number': and,
-  'number, boolean': and,
+  'boolean | null, boolean | null': and,
 
   /**
    * - RegExp join (and)
@@ -305,7 +305,6 @@ const mul = typed('mul', {
   'Complex, Complex': (lhs: Complex, rhs: Complex) =>
     lhs.times(rhs).normalize(),
   'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal) => lhs.times(rhs),
-  'number | null, number | null': (lhs: number, rhs: number) => lhs * rhs
 });
 
 /**
@@ -327,8 +326,7 @@ const div = typed('div', {
    * [ false ]
    *```
    */
-  'boolean, boolean | number': nand,
-  'number, boolean': nand,
+  'boolean | null, boolean | null': mnonimpl,
 
   /**
    * - Split a string into substrings using the specified a string or regexp seperator
@@ -394,7 +392,7 @@ const div = typed('div', {
     if (+rhs === 0 && +lhs !== 0) return complexInfinity;
     return lhs.div(rhs);
   },
-  'number | null, number | null': (lhs, rhs) => lhs / rhs
+  'number, number': (lhs, rhs) => lhs / rhs
 });
 
 /**
@@ -402,8 +400,6 @@ const div = typed('div', {
  * right shift
  */
 const unshiftFn = typed('unshift', {
-  // >>, Danger! No mutations
-
   /**
    * - unshift/cons
    *
@@ -455,7 +451,17 @@ const unshiftFn = typed('unshift', {
    * [ 16 ]
    * ```
    */
-  'number | null, number | null': (lhs, rhs) => lhs >> rhs,
+  'number, number': (lhs, rhs) => lhs >> rhs,
+
+  /**
+   * - material implication
+   *
+   * ```
+   * f♭> true true >>
+   * [ true ]
+   * ```
+   */
+  'boolean | null, boolean | null': mimpl,
 
   /**
    * - RegExp right seq
@@ -511,6 +517,16 @@ const pushFn = typed('push', {
   'string, number': (lhs, rhs) => lhs.slice(-rhs),
 
   /**
+   * - converse implication
+   *
+   * ```
+   * f♭> true true <<
+   * [ true ]
+   * ```
+   */
+  'boolean | null, boolean | null': cimpl,
+
+  /**
    * - object merge
    *
    * ```
@@ -530,7 +546,7 @@ const pushFn = typed('push', {
    */
   'Decimal, Decimal | number': (lhs, rhs) =>
     new Decimal(lhs.toBinary() + '0'.repeat(+rhs | 0)),
-  'number | null, number | null': (lhs, rhs) => lhs << rhs,
+  'number, number': (lhs, rhs) => lhs << rhs,
 
   /**
    * - RegExp right seq
@@ -558,6 +574,7 @@ const pushFn = typed('push', {
  * ```
  */
 const choose = typed('choose', {
+  // todo true / false / unknown
   'boolean | null, any, any': (b, t, f) => new Just(b ? t : f),
   'Future, any, any': (ff, t, f) => ff.map(b => (b ? t : f))
 });
@@ -698,7 +715,8 @@ export const base = {
 
   /**
    * ## `cmp`
-   * Pushes a negative number, zero, or a positive number when x is logically 'less than', 'equal to', or 'greater than' y.
+   * Pushes a -1, 0, or 1 when x is logically 'less than', 'equal to', or 'greater than' y.
+   * Push null if sort order is unknown
    *
    * ( x y -> z )
    *
@@ -707,7 +725,7 @@ export const base = {
    * [ -1 ]
    * ```
    */
-  cmp: typed('cmp', {
+  '<=>': typed('<=>', {
     /**
      * - number comparisons
      *
@@ -720,7 +738,7 @@ export const base = {
      */
     'Decimal | Complex, Decimal | Complex': (lhs: Decimal, rhs: Decimal) => {
       if (lhs.isNaN()) {
-        return rhs.isNaN() ? 0 : NaN;
+        return rhs.isNaN() ? null : NaN;
       }
       if (rhs.isNaN()) {
         return NaN;
@@ -741,7 +759,7 @@ export const base = {
     'Array, Array': (lhs, rhs) => {
       lhs = lhs.length;
       rhs = rhs.length;
-      return cmp(lhs, rhs);
+      return numCmp(lhs, rhs);
     },
 
     /**
@@ -756,6 +774,9 @@ export const base = {
      * [ -1 ]
      * ```
      */
+    'string, string': (lhs, rhs) => {
+      return numCmp(lhs, rhs);
+    },
 
     /**
      * - boolean comparisons
@@ -765,7 +786,7 @@ export const base = {
      * [ -1 ]
      * ```
      */
-    'string | boolean | any, string | boolean | any': (lhs, rhs) => {
+    'boolean | null, boolean | null': (lhs, rhs) => {
       return cmp(lhs, rhs);
     },
 
@@ -780,7 +801,7 @@ export const base = {
     'Date | number, Date | number': (lhs, rhs) => {
       lhs = +lhs;
       rhs = +rhs;
-      return cmp(lhs, rhs);
+      return numCmp(lhs, rhs);
     },
 
     /**
@@ -796,16 +817,91 @@ export const base = {
     'Object, Object': (lhs, rhs) => {
       lhs = lhs ? Object.keys(lhs).length : null;
       rhs = rhs ? Object.keys(rhs).length : null;
-      return cmp(lhs, rhs);
-    }
-  })
+      return numCmp(lhs, rhs);
+    },
+
+    'any, any': (lhs, rhs) => null
+  }),
+
+  /**
+   * ## `%` (modulo)
+   *
+   * Remainder after division
+   *
+   */
+  '%': typed('rem', {
+    'Decimal | Complex, Decimal | number': (lhs, rhs) => lhs.modulo(rhs),
+    'Array, number': (a, b) => {
+      const len = a.length;
+      b = a.length % b;
+      return a.slice(len - b, len);
+    },
+    'string, number': (a, b) => {
+      const len = a.length;
+      b = len % b;
+      return a.slice(len - b, len);
+    },
+    'boolean | null, boolean | null': nand
+  }),
+
+    /**
+   * ## `^` (pow)
+   *
+   * pow function
+   * returns the base to the exponent power, that is, base^exponent
+   *
+   */
+  '^': typed('pow', {
+    // string ops? s 3 ^ -> s s * s *
+    // boolean or?
+    'Complex, Decimal | Complex | number': (a, b) =>
+      new Sentence([b, a].concat(lexer('ln * exp'))),
+    'Decimal, Complex': (a, b) => new Sentence([b, a].concat(lexer('ln * exp'))),
+    'Decimal, Decimal | number': (a, b) => a.pow(b),
+
+    'string, number': (lhs, rhs) => {
+      let r = lhs;
+      const l = +rhs | 0;
+      for (let i = 1; i < l; i++) {
+        r = lhs.split('').join(r);
+      }
+      return r;
+    },
+
+    'Array, number': (lhs: StackArray, rhs) => {
+      let r = lhs;
+      const l = +rhs | 0;
+      for (let i = 1; i < l; i++) {
+        r = arrayMul(r, lhs);
+      }
+      return r;
+    },
+
+    'boolean | null, boolean | null': xor
+  }),
+
+  /**
+   * ## `div`
+   *
+   * Integer division
+   */
+  '\\': typed('idiv', {
+    'Decimal | Complex, Decimal | Complex | number': (a, b) => a.div(b).floor(),
+    'Array, number': (a, b) => {
+      b = Math.floor(a.length / +b);
+      return a.slice(0, b);
+    },
+    'string, number': (a, b) => {
+      b = Math.floor(a.length / +b);
+      return a.slice(0, b);
+    },
+    'boolean | null, boolean | null': cnonimpl
+  }),
 };
 
-function cmp(lhs, rhs) {
-  if (lhs === null) lhs = -Infinity;
-  if (rhs === null) rhs = -Infinity;
+function numCmp(lhs, rhs) {
   if (Number.isNaN(lhs) || Number.isNaN(rhs)) {
-    return Object.is(lhs, rhs) ? 0 : NaN;
+    return Object.is(lhs, rhs) ? null : NaN;
   }
   if (lhs === rhs) {
     return 0;

@@ -43,9 +43,9 @@ test('should / (div + rem)', t => {
 });
 
 test('should div (cut)', t => {
-  t.deepEqual(fSyncJSON('"abc" 2 div'), ['a']);
-  t.deepEqual(fSyncJSON('"abcd" 2 div'), ['ab']);
-  t.deepEqual(fSyncJSON('"abcd" 5 div'), ['']);
+  t.deepEqual(fSyncJSON('"abc" 2 \\'), ['a']);
+  t.deepEqual(fSyncJSON('"abcd" 2 \\'), ['ab']);
+  t.deepEqual(fSyncJSON('"abcd" 5 \\'), ['']);
 });
 
 test('should mod (rem)', t => {
@@ -55,7 +55,7 @@ test('should mod (rem)', t => {
 });
 
 test('should div rem', t => {
-  t.deepEqual(fSyncJSON('"aaX" [ 2 div ] [ 2 % ] bi +'), ['aX']);
+  t.deepEqual(fSyncJSON('"aaX" [ 2 \\ ] [ 2 % ] bi +'), ['aX']);
 });
 
 test('should test equality', t => {
@@ -63,10 +63,10 @@ test('should test equality', t => {
   t.deepEqual(fSyncJSON('"a" "a" ='), [true]);
 });
 
-test('should cmp', t => {
-  t.deepEqual(fSyncJSON('"a" "a" cmp'), [0]);
-  t.deepEqual(fSyncJSON('"a" "b" cmp'), [-1]);
-  t.deepEqual(fSyncJSON('"b" "a" cmp'), [1]);
+test('should <=>', t => {
+  t.deepEqual(fSyncJSON('"a" "a" <=>'), [0]);
+  t.deepEqual(fSyncJSON('"a" "b" <=>'), [-1]);
+  t.deepEqual(fSyncJSON('"b" "a" <=>'), [1]);
 });
 
 test('should test lt', t => {

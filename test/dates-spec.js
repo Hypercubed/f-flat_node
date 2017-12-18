@@ -29,9 +29,9 @@ test('should test equality', t => {
 });
 
 test('should compare', t => {
-  t.deepEqual(fSyncJSON('"1/1/1990" date "1/1/1990" date cmp'), [0]);
-  t.deepEqual(fSyncJSON('"1/1/1990" date "1/1/1970" date cmp'), [1]);
-  t.deepEqual(fSyncJSON('"1/1/1990" date "1/1/2000" date cmp'), [-1]);
+  t.deepEqual(fSyncJSON('"1/1/1990" date "1/1/1990" date <=>'), [0]);
+  t.deepEqual(fSyncJSON('"1/1/1990" date "1/1/1970" date <=>'), [1]);
+  t.deepEqual(fSyncJSON('"1/1/1990" date "1/1/2000" date <=>'), [-1]);
 });
 
 test('should test inequality', t => {

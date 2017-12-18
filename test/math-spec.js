@@ -36,41 +36,41 @@ test('should test equality of -0', t => {
 });
 
 test('should compare', t => {
-  t.deepEqual(fSyncValues('1 1 cmp'), [0]);
-  t.deepEqual(fSyncValues('1 2 cmp'), [-1]);
-  t.deepEqual(fSyncValues('2 1 cmp'), [1]);
+  t.deepEqual(fSyncValues('1 1 <=>'), [0]);
+  t.deepEqual(fSyncValues('1 2 <=>'), [-1]);
+  t.deepEqual(fSyncValues('2 1 <=>'), [1]);
 });
 
-test('should cmp with -0', t => {  // todo: better comparisons with NaN
-  t.deepEqual(fSyncValues('0 0 cmp'), [0]);
-  t.deepEqual(fSyncValues('0 -0 cmp'), [0]);
-  t.deepEqual(fSyncValues('-0 -0 cmp'), [0]);
-  t.deepEqual(fSyncValues('-0 0 cmp'), [0]);
+test('should <=> with -0', t => {  // todo: better comparisons with NaN
+  t.deepEqual(fSyncValues('0 0 <=>'), [0]);
+  t.deepEqual(fSyncValues('0 -0 <=>'), [0]);
+  t.deepEqual(fSyncValues('-0 -0 <=>'), [0]);
+  t.deepEqual(fSyncValues('-0 0 <=>'), [0]);
 });
 
-test('should cmp with nan, null', t => {  // todo: better comparisons with NaN
-  t.deepEqual(fSyncValues('nan nan cmp'), [0]);
-  t.deepEqual(fSyncString('1 nan cmp'), 'NaN');
-  t.deepEqual(fSyncString('nan 1 cmp'), 'NaN');
-  t.deepEqual(fSyncString('0 nan cmp'), 'NaN');
-  t.deepEqual(fSyncString('nan 1 cmp'), 'NaN');
+/* test('should <=> with nan, null', t => {  // todo: better comparisons with NaN
+  t.deepEqual(fSyncValues('nan nan <=>'), [0]);
+  t.deepEqual(fSyncString('1 nan <=>'), 'NaN');
+  t.deepEqual(fSyncString('nan 1 <=>'), 'NaN');
+  t.deepEqual(fSyncString('0 nan <=>'), 'NaN');
+  t.deepEqual(fSyncString('nan 1 <=>'), 'NaN');
 
-  t.deepEqual(fSyncValues('null null cmp'), [0]);
-  t.deepEqual(fSyncValues('1 null cmp'), [1]);
-  t.deepEqual(fSyncValues('null 1 cmp'), [-1]);
-  t.deepEqual(fSyncValues('0 null cmp'), [1]);
-  t.deepEqual(fSyncValues('null 1 cmp'), [-1]);
-});
+  t.deepEqual(fSyncValues('null null <=>'), [0]);
+  t.deepEqual(fSyncValues('1 null <=>'), [1]);
+  t.deepEqual(fSyncValues('null 1 <=>'), [-1]);
+  t.deepEqual(fSyncValues('0 null <=>'), [1]);
+  t.deepEqual(fSyncValues('null 1 <=>'), [-1]);
+}); */
 
 test('should compare infinities', t => {
-  t.deepEqual(fSyncValues('infinity infinity cmp'), [0]);
-  t.deepEqual(fSyncValues('-infinity -infinity cmp'), [0]);
-  t.deepEqual(fSyncValues('infinity -infinity cmp'), [1]);
-  t.deepEqual(fSyncValues('-infinity infinity cmp'), [-1]);
-  t.deepEqual(fSyncValues('infinity 0 cmp'), [1]);
-  t.deepEqual(fSyncValues('-infinity 0 cmp'), [-1]);
-  t.deepEqual(fSyncValues('0 -infinity cmp'), [1]);
-  t.deepEqual(fSyncValues('0 infinity cmp'), [-1]);
+  t.deepEqual(fSyncValues('infinity infinity <=>'), [0]);
+  t.deepEqual(fSyncValues('-infinity -infinity <=>'), [0]);
+  t.deepEqual(fSyncValues('infinity -infinity <=>'), [1]);
+  t.deepEqual(fSyncValues('-infinity infinity <=>'), [-1]);
+  t.deepEqual(fSyncValues('infinity 0 <=>'), [1]);
+  t.deepEqual(fSyncValues('-infinity 0 <=>'), [-1]);
+  t.deepEqual(fSyncValues('0 -infinity <=>'), [1]);
+  t.deepEqual(fSyncValues('0 infinity <=>'), [-1]);
 });
 
 test('should test inequality', t => {

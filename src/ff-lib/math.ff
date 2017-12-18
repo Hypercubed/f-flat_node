@@ -105,7 +105,7 @@ next-fib: [ dup2 + ] ;
 fib: [ ( 0 1 [ next-fib ] ) dip -- repn drop ] ;
 collatz: [ [ [ dup 1 > ] [ dup next-collatz ] while ] >> in ] ;
 next-collatz: [ dup even? [ 2 / ] [ 3 * 1 + ] branch ] ;
-divrem: [ [ div ] [ % ] bi2 ] ;
+divrem: [ [ \ ] [ % ] bi2 ] ;
 gcd: [ [ dup 0 > ] [ dup bury % ] while drop ] ;
 lcm: [ dup2 [ [ * abs ] dip ] dip gcd / ] ;
 

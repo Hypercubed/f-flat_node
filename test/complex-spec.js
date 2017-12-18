@@ -115,9 +115,9 @@ test('should test equality', t => {
 });
 
 test('should compare', t => {
-  t.deepEqual(fSyncValues('1 i * 1 i * cmp'), [0]);
-  t.deepEqual(fSyncValues('1 i * 2 i * cmp'), [-1]);
-  t.deepEqual(fSyncValues('2 i * 1 i * cmp'), [1]);
+  t.deepEqual(fSyncValues('1 i * 1 i * <=>'), [0]);
+  t.deepEqual(fSyncValues('1 i * 2 i * <=>'), [-1]);
+  t.deepEqual(fSyncValues('2 i * 1 i * <=>'), [1]);
 });
 
 test('should test inequality', t => {

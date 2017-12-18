@@ -283,7 +283,7 @@ test('zip, zipwith and dot', t => {
   t.deepEqual(fSyncValues('[ 1 2 3 4 ] [ 4 5 6 ] dot'), [32], 'dot');
 });
 
-test('operations with null', t => {
+/* test('operations with null', t => {
   t.deepEqual(fSyncJSON('null 5 +'), [5], 'add');
   t.deepEqual(fSyncJSON('5 null +'), [5], 'add');
   t.deepEqual(fSyncJSON('null 5 -'), [-5], 'sub');
@@ -303,7 +303,7 @@ test('operations with null, cont2', t => {
   t.deepEqual(fSyncJSON('null 5 >>'), [0]);
   t.deepEqual(fSyncJSON('5 null >>'), [5]);
   t.deepEqual(fSyncJSON('null in'), [[null]]);
-});
+}); */
 
 test('errors on unknown command, sync', t => {
   t.throws(() => {
@@ -585,16 +585,17 @@ test('hex, bin', t => {
   t.deepEqual(fSyncJSON('-0.125 hex'), ['-0x0.2']);
 });
 
-test('should cmp with nan, null', t => {  // todo: better comparisons with NaN
-  t.deepEqual(fSyncValues('nan nan cmp'), [0]);
-  t.deepEqual(fSyncValues('null null cmp'), [0]);
+/* test('should <=> with nan, null', t => {  // todo: better comparisons with NaN
+  t.deepEqual(fSyncValues('nan nan <=>'), [0]);
+  t.deepEqual(fSyncValues('null null <=>'), [0]);
 
-  t.deepEqual(fSyncValues('-Infinity -Infinity cmp'), [0]);
-  t.deepEqual(fSyncValues('Infinity Infinity cmp'), [0]);
+  t.deepEqual(fSyncValues('null nan <=>'), [NaN]);
+  t.deepEqual(fSyncValues('nan null <=>'), [NaN]);
 
-  t.deepEqual(fSyncValues('null nan cmp'), [NaN]);
-  t.deepEqual(fSyncValues('nan null cmp'), [NaN]);
+  t.deepEqual(fSyncValues('null -Infinity <=>'), [-1]);
+  t.deepEqual(fSyncValues('-Infinity null <=>'), [1]);
+}); */
 
-  t.deepEqual(fSyncValues('null -Infinity cmp'), [-1]);
-  t.deepEqual(fSyncValues('-Infinity null cmp'), [1]);
+test('should div rem', t => {  // todo: better comparisons with NaN
+  t.deepEqual(fSyncValues('5 2 divrem'), [2, 1]);
 });

@@ -131,17 +131,6 @@ export const experimental = {
     );
   },
 
-
-  /**
-   * ## `\`
-   * push the top of the queue to the stack
-   *
-   * ( -> {any} )
-   */
-  '\\': function(this: StackEnv): any {
-    return new Just(this.queue.shift()); // danger?
-  },
-
   /**
    * ## `js-raw`
    * evalues a string as raw javascript

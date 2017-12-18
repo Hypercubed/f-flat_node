@@ -70,8 +70,8 @@ test('should join lists', t => {
   t.deepEqual(f.stack[0].toString(), '1,2,+');
 });
 
-test('should cmp arrays', t => {
-  t.deepEqual(fSyncJSON('[1 2 3] [4 5 6] cmp'), [0]);
-  t.deepEqual(fSyncJSON('[1 2 3 4] [4 5 6] cmp'), [1]);
-  t.deepEqual(fSyncJSON('[1 2 3] [4 5 6 7] cmp'), [-1]);
+test('should <=> arrays by length', t => {
+  t.deepEqual(fSyncJSON('[1 2 3] [4 5 6] <=>'), [0]);
+  t.deepEqual(fSyncJSON('[1 2 3 4] [4 5 6] <=>'), [1]);
+  t.deepEqual(fSyncJSON('[1 2 3] [4 5 6 7] <=>'), [-1]);
 });
