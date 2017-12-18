@@ -56,8 +56,8 @@ test('regular expressions, match @', t => {
 test('can add (or) regexp', t => {
   t.deepEqual(fSyncValues('"abc" regexp "def" regexp + type'), ['regexp']);
   t.deepEqual(fSyncValues('"\:" regexp "\;" regexp +'), [/:|;/], 'no enclosure needed');
-  t.deepEqual(fSyncValues('"abc" regexp "def" regexp +'), [/(?:abc)|(?:def)/], 'enclosure needed');
-  t.deepEqual(fSyncValues('"/abc/i" regexp "/def/" regexp +'), [/(?:abc)|(?:def)/i], 'keep lhs flags');
+  t.deepEqual(fSyncValues('"abc" regexp "def" regexp +'), [/abc|def/], 'enclosure needed');
+  t.deepEqual(fSyncValues('"/abc/i" regexp "/def/" regexp +'), [/abc|def/i], 'keep lhs flags');
   t.deepEqual(fSyncJSON('"a;b:c" ";" regexp ":" regexp + /'), [['a', 'b', 'c']]);
 });
 

@@ -560,6 +560,6 @@ export const core = {
    *
    */
   '=~': typed('ismatch', {
-    'string, RegExp | string': (lhs: string, rhs: RegExp) => rhs.test(lhs) || [],
+    'string, RegExp | string': (lhs: string, rhs: RegExp) => rhs.test(lhs)
   }),
 };
