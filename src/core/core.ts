@@ -411,7 +411,6 @@ export const core = {
    * ( -> #( )
    */
   '(': () => quoteSymbol,
-  // '(': ':quote', // list
 
   /**
    * ## `)` (immediate dequote)

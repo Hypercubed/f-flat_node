@@ -12,6 +12,7 @@ import {
   I
 } from '../types';
 import { unescapeString } from '../utils/stringConversion';
+import { quoteSymbol } from '../constants';
 
 const makeAction = new Word(':');
 const atAction = new Word('@');
@@ -64,6 +65,9 @@ function processParserTokens(node): StackValue | undefined {
         return convertLiteral(node.allText);
       } // else fall through (all length)
     case 'bracket':
+      if (node.allText === '(') {
+        return 
+      }
       return new Word(node.allText);
     case 'null':
       return null;
