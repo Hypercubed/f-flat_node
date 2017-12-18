@@ -528,7 +528,7 @@ test('macros', t => {
 });
 
 test('length', t => {
-  t.deepEqual(fSyncJSON('null length'), [0]);
+  t.deepEqual(fSyncJSON('null ln'), [0]);
 });
 
 test('base, pos integers', t => {

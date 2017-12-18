@@ -100,7 +100,7 @@ test('', t => {
     { name: ['Manfred von Thun'] }
   ]);
   t.deepEqual(
-    fSyncJSON('{ first: "Manfred" last: "von Thun" } length'),
+    fSyncJSON('{ first: "Manfred" last: "von Thun" } ln'),
     [2],
     'should get keys length'
   );

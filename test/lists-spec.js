@@ -12,7 +12,7 @@ test('should evaluate quoted lists', t => {
 });
 
 test('should get length', t => {
-  t.deepEqual(fSyncValues('( 1 2 ) length'), [2], 'should get length');
+  t.deepEqual(fSyncValues('( 1 2 ) ln'), [2], 'should get length');
 });
 
 test('should add', t => {

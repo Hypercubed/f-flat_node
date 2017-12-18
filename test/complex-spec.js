@@ -258,14 +258,6 @@ test('hyperbolic inverse trig functions on complex infinities', t => {
   t.deepEqual(fSyncString('infinity i * -1 * atanh'), '0-1.5707963267948966192i');
 });
 
-test('precision of complex numbers', t => {
-  t.deepEqual(fSyncJSON('i length'), [2]);
-  t.deepEqual(fSyncJSON('i 3 * length'), [2]);
-  t.deepEqual(fSyncJSON('1 3 / i * length'), [21]);
-  t.deepEqual(fSyncJSON('i 1 + 1 2 / * length'), [2]);
-  t.deepEqual(fSyncJSON('i 1 + 1 3 / * length'), [40]);
-});
-
 test('should negate', t => {
   t.deepEqual(fSyncString('i 3 * ~'), '-0-3i');
   t.deepEqual(fSyncString('pi i 1 + * ~'), '-3.141592653589793-3.141592653589793i');

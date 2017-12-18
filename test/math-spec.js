@@ -327,12 +327,6 @@ test('numerical derivative', t => {
   t.is(fSyncString('[ inv ] 0 1e-6 nd'), '-Infinity');
 });
 
-test('length of numbers', t => {
-  t.deepEqual(fSyncJSON('nan length'), [0]);
-  t.deepEqual(fSyncJSON('3 length'), [1]);
-  t.deepEqual(fSyncJSON('1 3 / length'), [20]);
-});
-
 test('should support neg 0', t => {
   t.deepEqual(fSyncValues('-0'), [-0]);
   t.deepEqual(fSyncValues('0 -1 *'), [-0]);

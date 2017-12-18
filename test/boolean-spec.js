@@ -174,6 +174,6 @@ test('should \ (converse non-implication)', t => {
 ///
 
 test('length of booleans are zero', t => {
-  t.deepEqual(fSyncJSON('true length'), [0]);
-  t.deepEqual(fSyncJSON('false length'), [0]);
+  t.deepEqual(fSyncJSON('true ln'), [0]);
+  t.deepEqual(fSyncJSON('false ln'), [0]);
 });

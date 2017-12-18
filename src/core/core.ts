@@ -283,12 +283,19 @@ export const core = {
   dup: (a: StackValue) => new Seq([a, a]), //  q< q@ q>
 
   /**
-   * ## `length`
-   * Outputs the "length" of the value.
+   * ## `ln`
+   *
+   * Natural logarithm / item length
    *
    * ( x -> {number} )
    */
-  length: typed('length', {
+  ln: typed('ln', {
+    'Complex': a => a.ln(),
+    'Decimal | number': a => {
+      if (a <= 0) return new Complex(a).ln();
+      return new Decimal(a).ln();
+    },
+
     /**
      * - length of the Array or string
      *
@@ -298,7 +305,6 @@ export const core = {
      * ```
      */
     'Array | string': a => a.length,
-    Future: (f: Future) => f.promise.then(a => a.length),
 
     /**
      * - length of the Object (number of keys)
@@ -311,17 +317,6 @@ export const core = {
     Object: (a: {}) => Object.keys(a).length,
 
     /**
-     * - precision (significant digits) of a number
-     *
-     * ```
-     * > 1 3 / length
-     * [ 20 ]
-     * ```
-     */
-    Decimal: (a: Decimal) => (a.isNaN() || !a.isFinite()) ? 0 : a.precision(),
-    Complex: (a: Complex) => (a.isNaN() || !a.isFinite()) ? 0 : a.re.precision() + a.im.precision(),
-
-    /**
      * - "length" of a nan, null, and booleans are 0
      *
      * ```
@@ -329,8 +324,6 @@ export const core = {
      * [ 0 ]
      * ```
      */
-    number: a => 0, // should only be nan
-    boolean: a => 0, // should only be nan
     null: (a: null) => 0, // eslint-disable-line
     any: a => 0
   }),

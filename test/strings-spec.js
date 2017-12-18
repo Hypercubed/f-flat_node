@@ -13,7 +13,7 @@ test('should quickcheck strings', t => {
   t.deepEqual(fSyncJSON('[rand-string] [ dup 1 * = ] for-all'), [[]]);
   t.deepEqual(fSyncJSON('[rand-string] [ dup 2 * 2 / = ] for-all'), [[]]);
   t.deepEqual(
-    fSyncJSON('[rand-string] [ [length 2 *] [2 * length] bi = ] for-all'),
+    fSyncJSON('[rand-string] [ [ ln 2 *] [2 * ln ] bi = ] for-all'),
     [[]]
   );
 });
@@ -148,10 +148,10 @@ test('should eval palindrome?', t => {
   t.deepEqual(fSyncJSON('"A man, a plan, a canal: Panama" palindrome?'), [true]);
 });
 
-test('should get length palindrome?', t => {
-  t.deepEqual(fSyncJSON('"abc" length'), [3]);
-  t.deepEqual(fSyncJSON('"racecar" length'), [7]);
-  t.deepEqual(fSyncJSON('"A man, a plan, a canal: Panama" length'), [30]);
+test('should get string length', t => {
+  t.deepEqual(fSyncJSON('"abc" ln'), [3]);
+  t.deepEqual(fSyncJSON('"racecar" ln'), [7]);
+  t.deepEqual(fSyncJSON('"A man, a plan, a canal: Panama" ln'), [30]);
 });
 
 test('should concat strings using << and >>', t => {

@@ -18,7 +18,7 @@ between?: [ swap dupd < bury < * ] ;
 digit-char?: [ atoi [ 47 58 ] dip between? ] ;
 lcase-char?: [ atoi [ 96 123 ] dip between? ] ;
 ucase-char?: [ atoi [ 64 91 ] dip between? ] ;
-empty?: [ length zero? ] ;
+empty?: [ ln zero? ] ;
 char?: [ [ lcase-char? ] [ ucase-char? ] either? ] ;
 alphanumeric?: [ [ char? ] [ digit-char? ] either? ] ;
 palindrome?: [ [ alphanumeric? ] sfilter lcase dup sreverse = ] ;
@@ -35,4 +35,4 @@ replace: [ [ / ] dip * ] ;;
 /**
   * ## `match?`
   */
-match?: [ match length 0 > ] ;;
+match?: [ match ln 0 > ] ;;

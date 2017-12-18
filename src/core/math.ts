@@ -234,21 +234,6 @@ export const math = {
   erf, // todo: Decimal. Complex
 
   /**
-   * ## `ln`
-   *
-   * Natural logarithm
-   *
-   */
-  ln: typed('ln', {
-    'Complex': a => a.ln(),
-    'Decimal | number': a => {
-      if (a <= 0) return new Complex(a).ln();
-      return new Decimal(a).ln();
-    },
-    'Array | string': a => a.length
-  }),
-
-  /**
    * ## `bitand`
    *
    */
