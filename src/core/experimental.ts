@@ -1,4 +1,5 @@
-import { freeze, splice, push } from 'icepick';
+import { splice, push } from 'icepick';
+import memoize from 'memoizee';
 import { writeFileSync } from 'fs';
 import { stringifyStrict } from '../utils/json';
 
@@ -29,17 +30,6 @@ typed.addConversion({
  */
 export const experimental = {
   /**
-   * ## `clock`
-   */
-  clock: (): number => new Date().getTime(),
-
-  // 'js': () => Object.assign({}, (typeof window === 'undefined') ? global : window),
-  // 'console': console,
-  // 'alert', function alert (a) { window.alert(a); });
-  // 'this': function () { return this; },  // eslint-disable-line
-  // '$', function $ (a) { return global.$(a); });
-
-  /**
    * ## `stringify`
    */
   stringify: a => stringifyStrict(a),
@@ -50,34 +40,11 @@ export const experimental = {
   'parse-json': (a: string) => JSON.parse(a), // global.JSON.parse
 
   /**
-   * ## `regexp`
-   * convert string to RegExp
-   */
-  regexp: typed('regexp', {
-    RegExp: x => x // typed will convert string to RegExp
-  }),
-
-  /**
    * ## `match`
    */
   match: typed('match', {
-    'string, RegExp': (lhs: string, rhs: RegExp) => lhs.match(rhs)
-  }),
-
-  /**
-   * ## `test?`
-   */
-  'test?': typed('test', {
-    'string, RegExp': (lhs: string, rhs: RegExp) => rhs.test(lhs)
-  }),
-
-  /**
-   * ## `replace`
-   */
-  replace: typed('replace', {
-    'string, RegExp, string': (str: string, reg: RegExp, rep: string) =>
-      str.replace(reg, rep)
-  }),
+    'string, RegExp | string': (lhs: string, rhs: RegExp) => lhs.match(rhs) || [],
+  }), // todo: should a base method? =~?
 
   /**
    * ## `||>` (apply)
@@ -173,5 +140,35 @@ export const experimental = {
    */
   '\\': function(this: StackEnv): any {
     return new Just(this.queue.shift()); // danger?
+  },
+
+  /**
+   * ## `js-raw`
+   * evalues a string as raw javascript
+   *
+   * ( {string} -> {any} )
+   */
+  'js-raw': function(this: StackEnv, s: string): any {
+    return new Function(`return ${s}`).call(this);
+  },
+
+  /**
+   * ### `memoize`
+   *
+   * memoize a defined word
+   *
+   * ( {string|atom} -> )
+   */
+  memoize(this: StackEnv, name: string, n: number): void {
+    const cmd = this.dict.get(name);
+    if (cmd) {
+      const fn = (...a) => {
+        const s = this.createChild()
+          .eval([...a])
+          .eval(cmd).stack;
+        return new Seq(s);
+      };
+      this.defineAction(name, memoize(fn, { length: n, primitive: true }));
+    }
   }
 };

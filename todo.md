@@ -8,12 +8,15 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] precision in complex calculations (on print)
 - [ ] ComplexInfinity, Indeterminate, Undefined (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [ ] @ for out of range works differently on string and array
-- [ ] Fix `b t: f: choose`
+- [-] Fix `b t: f: choose`?
 - [x] `math.!`
+- [x] `-0`
 
 # Todo next:
 
-- [ ] Core functions should also be in modules.
+- [ ] More literals (regex, i, Infinity, etc) in parser
+- [ ] Make scope lifing safe.  No user writes to scope.
+- [ ] Core functions should also be namespaced.
 - [ ] Decide on macros, dupn!3, dup<5>, range<1, 100>, range!(1, 10)$ ?
 - [x] Load ff file directly from command line.
 - [ ] More tests for stack object immutablity
@@ -45,6 +48,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `sinpi`, `cospi`?
 - [x] `conj`
 - [ ] Better complex inputs
+  - [ ] `1+2i` (Literal)
   - [ ] `"1+2i" complex`
   - [ ] `[1,2] complex`
   - [ ] `complex:(1,2)$`
@@ -53,10 +57,14 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] rename expand to lift?  Catch circular references.
 - [ ] `lesser-of`, `greater-of` vs `max`, `min`?
 - [ ] `gte` vs `>=`
-- [ ] Derivities:
+- [ ] Derivatives:
   - [ ] `deriv = (f, h) => x => (f(x + h) - f(x)) / h`
   - [x] `nd = (f, x, h) => (f(x + h) - f(x)) / h`
 - [ ] Move `prompt` into code?
+- [ ] Radix from number: `radix = (n, radix) => n.toString(radix)`
+  - [ ] Fix bin and oct floating point
+  - [ ] fix hx, bin, ect with neg values
+- [x] Bitwise operators (&, |, ^, etc)?
 
 # Docs
 
@@ -70,6 +78,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Todo:
 
+- [ ] undef, null nan, ComplexInfinity?
 - [ ] Improve errors (FF errors should not have a JS stack)
 - [ ] Trig functions on complex
   - [x] sin, cos, tan
@@ -119,9 +128,19 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] Deserialize JSON
   - [ ] Simplified JSON
   - [ ] BSON?
-- [ ] Rewrite strings lib to use regex
-- [ ] Regex literal?
+- [ ] RegExp
+  - [?] Rewrite strings lib to use regex
+  - [ ] Regex literal?
+  - [ ] Choose regex vs regexp
+  - [ ] Fix union of rexexp with flags
+  - [ ] match operator `=~` ?
+  - [ ] {Array} {RegExp} match?
+  - [x] OR {regexp} + {regexp} = {regexp} OR {regexp}
+  - [ ] AND {regexp} + {regexp} = {regexp} AND {regexp}
+  - [ ] NOT {regexp} ~ = NOT {regexp}
+  - [ ] JSON output (jRex#toJSON)
 - [ ] Git strict on puncuation
 - [ ] Integer -> Float -> Decimal -> Complex type promotion
 - [ ] Compiler output
 - [ ] true: === true ?
+

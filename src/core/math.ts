@@ -1,5 +1,8 @@
-import { typed, Sentence, Decimal, gammaDecimal, Complex, indeterminate, pi } from '../types';
-import { lexer } from '../utils';
+import { typed, Sentence, Decimal, gammaDecimal, Complex, indeterminate, pi, StackArray } from '../types';
+import { lexer } from '../parser';
+import { arrayMul } from '../utils';
+
+const mod = (m, n) => ((m % n) + n ) % n;
 
 const erf = require('compute-erf');
 
@@ -50,14 +53,13 @@ export const math = {
    * Integer division
    */
   div: typed('div', {
-    // integer division
-    'Decimal | Complex, Decimal | Complex | number': (a, b) =>
-      a.div(b).floor(),
-    'Array | string, number': (a, b) => {
-      b = Number(a.length / b) | 0;
-      if (b === 0 || b > a.length) {
-        return null;
-      }
+    'Decimal | Complex, Decimal | Complex | number': (a, b) => a.div(b).floor(),
+    'Array, number': (a, b) => {
+      b = Math.floor(a.length / +b);
+      return a.slice(0, b);
+    },
+    'string, number': (a, b) => {
+      b = Math.floor(a.length / +b);
       return a.slice(0, b);
     }
   }),
@@ -70,12 +72,15 @@ export const math = {
    */
   '%': typed('rem', {
     'Decimal | Complex, Decimal | number': (lhs, rhs) => lhs.modulo(rhs),
-    'Array | string, number': (a, b) => {
-      b = Number(a.length / b) | 0;
-      if (b === 0 || b > a.length) {
-        return null;
-      }
-      return a.slice(b);
+    'Array, number': (a, b) => {
+      const len = a.length;
+      b = a.length % b;
+      return a.slice(len - b, len);
+    },
+    'string, number': (a, b) => {
+      const len = a.length;
+      b = len % b;
+      return a.slice(len - b, len);
     }
   }),
 
@@ -194,11 +199,15 @@ export const math = {
    * Square root
    */
   sqrt: typed('sqrt', {
-    Complex: x => {
+    Complex: (x: Complex) => {
       return x.sqrt();
     },
-    Decimal: x => {
+    Decimal: (x: Decimal) => {
       return x.isNegative() ? new Complex(x, 0).sqrt() : x.sqrt();
+    },
+    'Array | string': (x: StackArray | string) => {
+      const n = Math.sqrt(x.length) | 0;
+      return x.slice(1, n + 1);
     }
   }),
 
@@ -211,22 +220,6 @@ export const math = {
   conj: typed('conj', {
     'Complex': a => a.conj()
   }),
-
-  /**
-   * ## `max`
-   *
-   * Largest value
-   *
-   */
-  max: (a, b, ...c) => Decimal.max(a, b, ...c),
-
-  /**
-   * ## `min`
-   *
-   * Smallest value
-   *
-   */
-  min: (a, b, ...c) => Decimal.min(a, b, ...c),
 
   /**
    * ## `exp`
@@ -288,7 +281,8 @@ export const math = {
     'Decimal | number': a => {
       if (a <= 0) return new Complex(a).ln();
       return new Decimal(a).ln();
-    }
+    },
+    'Array | string': a => a.length
   }),
 
   /**
@@ -299,13 +293,56 @@ export const math = {
    *
    */
   '^': typed('pow', {
+    // string ops? s 3 ^ -> s s * s *
     // boolean or?
     'Complex, Decimal | Complex | number': (a, b) =>
       new Sentence([b, a].concat(lexer('ln * exp'))),
     'Decimal, Complex': (a, b) => new Sentence([b, a].concat(lexer('ln * exp'))),
-    'Decimal, Decimal | number': (a, b) => a.pow(b) // ,
+    'Decimal, Decimal | number': (a, b) => a.pow(b),
+
+    'string, number': (lhs, rhs) => {
+      let r = lhs;
+      const l = +rhs | 0;
+      for (let i = 1; i < l; i++) {
+        r = lhs.split('').join(r);
+      }
+      return r;
+    },
+
+    'Array, number': (lhs: StackArray, rhs) => {
+      let r = lhs;
+      const l = +rhs | 0;
+      for (let i = 1; i < l; i++) {
+        r = arrayMul(r, lhs);
+      }
+      return r;
+    },
     // 'Array, number': (a, b) => new Sentence([a, b, new Word('pow')])  // this is only integers
   }),
+
+  /**
+   * ## `bitand`
+   *
+   */
+  'bitand': (a, b) => a & b,
+
+  /**
+   * ## `bitor`
+   *
+   */
+  'bitor': (a, b) => a | b,
+
+  /**
+   * ## `bitxor`
+   *
+   */
+  'bitxor': (a, b) => a ^ b,
+
+  /**
+   * ## `bitnot`
+   *
+   */
+  'bitnot': (a) => ~a,
 
   /**
    * ## `rand`

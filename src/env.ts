@@ -7,12 +7,12 @@ import { freeze, thaw, splice, push, merge } from 'icepick';
 
 const is = require('@sindresorhus/is');
 
+import { lexer } from './parser';
 import {
   log,
   bar,
   FFlatError,
   formatState,
-  lexer,
   stringifyStrict
 } from './utils';
 

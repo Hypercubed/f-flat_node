@@ -1,4 +1,4 @@
-/**
+/* 
  * # Bootstrap F-Flat
  */
 
@@ -6,6 +6,7 @@
   __filename dirname                          // __dirname
   swap [ ] >> >> path-join resolve            // resolve
   read eval                                   // eval and export
+
 
 'module-loader.ff'
   __filename dirname                          // __dirname
@@ -20,5 +21,6 @@ sym: 'math-sym.ff' import ;
 comb: 'combinators.ff' import ;
 strings: 'strings.ff' import ;
 types: 'types.ff' import ;
+node: 'node.ff' import ;
 
-'./src/ff-lib/usr.ff' if-exists-load
+'./src/ff-lib/usr.ff' if-exists-load 

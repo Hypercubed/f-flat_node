@@ -66,12 +66,12 @@ next-odd: [ [ odd? ] find-next ] ;
 next-even: [ [ even? ] find-next ] ;
 countup: [ over - [ succ ] swap ] ;
 countdown: [ dupd - [ pred ] swap ] ;
-range*: [ 2dup < [ countup ] [ countdown ] branch repn ] ;
+range*: [ over over < [ countup ] [ countdown ] branch repn ] ;
 range: [ [ range* ] >> appl ] ;
 count: [ 1 swap range* ] ;
 
 // primes
-prime?*: [ 2 [ 2dup 2 ^ > [ 2dup % 0 > ] dip swap * ] [ ++ ] while 2 ^ < ] ;
+prime?*: [ 2 [ dup2 2 ^ > [ dup2 % 0 > ] dip swap * ] [ ++ ] while 2 ^ < ] ;
 prime?: [ dup 7 < [ [ 2 = ] [ 3 = ] [ 5 = ] tri + + ] [ dup simple? [ drop false ] [ prime?* ] branch ] branch ] ;
 mersenne?: [ 2 swap ^ 1 - prime? ] ;
 next-prime: [ dup 2 < [ drop 2 ] [ next-odd [ dup prime? ] [ 2 + ] until ] branch ] ;
@@ -100,15 +100,21 @@ dot: [ [ * ] zipwith sum ] ;
 
 // math-ish
 integers: [ [ count ] appl ] ;
-divisors: [ [ 2 [ 2dup 2 ^ > ] [ 2dup divisor? [ tuck / over ] [ next-odd ] branch ] while drop ] appl ] ;
-next-fib: [ 2dup + ] ;
+divisors: [ [ 2 [ dup2 2 ^ > ] [ dup2 divisor? [ tuck / over ] [ next-odd ] branch ] while drop ] appl ] ;
+next-fib: [ dup2 + ] ;
 fib: [ ( 0 1 [ next-fib ] ) dip -- repn drop ] ;
 collatz: [ [ [ dup 1 > ] [ dup next-collatz ] while ] >> in ] ;
 next-collatz: [ dup even? [ 2 / ] [ 3 * 1 + ] branch ] ;
 divrem: [ [ div ] [ % ] bi2 ] ;
 gcd: [ [ dup 0 > ] [ dup bury % ] while drop ] ;
-lcm: [ 2dup [ [ * abs ] dip ] dip gcd / ] ;
+lcm: [ dup2 [ [ * abs ] dip ] dip gcd / ] ;
 
 // calculus-ish
 nd: [ dup [ over + rot bi@ - ] dip / ] ;  // first-order divided difference
 ndm: [ dup 2 * [ [ - ] [ + ] bi2 rot bi@ - ] dip / ] ;  // symmetric difference quotient.
+
+// bits
+on-bits: /* ( m -- n ) */ [ dup 0 <= [ drop 0 ] [ 2 swap ^ 1 - ] branch ] ;
+bits: /* ( m n -- m' ) */ [ on-bits bitand ] ;
+random-bits: /* ( m -- n ) */ [ rand-u32 swap bits ] ;  // generate n bits (n < 32)
+random-bytes: /* ( m -- n ) */ [ 8 / random-bits ] ;  // generate n bytes (n < 8)

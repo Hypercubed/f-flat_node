@@ -72,10 +72,12 @@ const __eql = typed('deepEquals', {
     return a.value === b.value;
   },
   'number, number': (a: number, b: number): boolean => {
+    if (Object.is(a, -0)) return Object.is(b, -0);
     if (Number.isNaN(a)) return Number.isNaN(b);
     return a === b;
   },
   'Decimal | Complex, Decimal | Complex': (a: Decimal, b: Decimal): boolean => {
+    // if (a.isZero() && b.isZero()) return a.isPos() === b.isPos();
     if (a.isNaN()) return b.isNaN();
     return a.equals(b);
   },
@@ -84,6 +86,9 @@ const __eql = typed('deepEquals', {
   },
   'any, Date': (a: any, b: Date): boolean => {
     return +a === +b;
+  },
+  'RegExp, RegExp': (a: RegExp, b: RegExp): boolean => {
+    return a.toString() === b.toString();
   },
   'Object, Object': objEquiv,
   'any, any': (a: any, b: any): boolean => {

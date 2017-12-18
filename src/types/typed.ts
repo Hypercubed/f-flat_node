@@ -1,8 +1,14 @@
 import { create } from 'typed-function';
+import is from '@sindresorhus/is';
 
 export const typed = create();
 
 typed.addType({
   name: 'Symbol',
-  test: x => typeof x === 'symbol'
+  test: is.symbol
+});
+
+typed.addType({
+  name: 'plainObject',
+  test: is.plainObject
 });

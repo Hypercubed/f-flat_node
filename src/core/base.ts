@@ -1,8 +1,30 @@
 import { assign, merge, unshift, push, slice, getIn } from 'icepick';
-import memoize from 'memoizee';
 
-import { deepEquals, arrayRepeat, arrayMul, and, nand, or, xor, not } from '../utils';
-import { Word, Sentence, Just, Seq, typed, I, StackValue, Future, Complex, Decimal, complexInfinity } from '../types';
+import { deepEquals, arrayRepeat, arrayMul } from '../utils';
+import { and, nand, or, xor, not } from '../utils/kleene-logic';
+import {
+  rAnd,
+  rNot,
+  rOr,
+  rXor,
+  rNand,
+  rLsh,
+  rRsh,
+  rRepeat
+} from '../utils/regex-logic';
+import {
+  Word,
+  Sentence,
+  Just,
+  Seq,
+  typed,
+  I,
+  StackValue,
+  Future,
+  Complex,
+  Decimal,
+  complexInfinity
+} from '../types';
 import { StackEnv } from '../env';
 
 /**
@@ -24,11 +46,17 @@ const add = typed('add', {
    * [ [ 1 2 3 ] ]
    * ```
    */
-  'Array, Array': (lhs: StackValue[], rhs: StackValue[]): StackValue[] => lhs.concat(rhs),
-  'Array, any': (lhs: StackValue[], rhs: StackValue): StackValue[] => lhs.concat(rhs),
-  'Word | Sentence, Array': (lhs: Word, rhs: StackValue[]): StackValue[] => [lhs, ...rhs],
+  'Array, Array': (lhs: StackValue[], rhs: StackValue[]): StackValue[] =>
+    lhs.concat(rhs),
+  'Array, any': (lhs: StackValue[], rhs: StackValue): StackValue[] =>
+    lhs.concat(rhs),
+  'Word | Sentence, Array': (lhs: Word, rhs: StackValue[]): StackValue[] => [
+    lhs,
+    ...rhs
+  ],
 
-  'Future, any': (f: Future, rhs: StackValue): Future => f.map(lhs => lhs.concat(rhs)),
+  'Future, any': (f: Future, rhs: StackValue): Future =>
+    f.map(lhs => lhs.concat(rhs)),
 
   /**
    * - boolean or
@@ -42,6 +70,19 @@ const add = typed('add', {
   'number, boolean': or,
 
   /**
+   * - RegExp union
+   *
+   * Return a Regexp object that is the union of the given patterns.
+   * That is the regexp matches either input regex
+   *
+   * ```
+   * f♭> "skiing" regexp "sledding" regexp +
+   * [ /(?:skiing)|(?:sledding)/ ]
+   * ```
+   */
+  'RegExp, RegExp': rOr,
+
+  /**
    * - arithmetic addition
    *
    * ```
@@ -50,7 +91,8 @@ const add = typed('add', {
    * ```
    */
   'Complex, Complex': (lhs: Complex, rhs: Complex): Complex => lhs.plus(rhs),
-  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal): Decimal => lhs.plus(rhs),
+  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal): Decimal =>
+    lhs.plus(rhs),
 
   /**
    * - object assign/assoc
@@ -73,7 +115,8 @@ const add = typed('add', {
    */
   'Date, number': (lhs: Date, rhs: number) => new Date(lhs.valueOf() + rhs),
   'number, Date': (lhs: number, rhs: Date) => lhs + rhs.valueOf(),
-  'Date, Decimal': (lhs: Date, rhs: Decimal) => new Date(rhs.plus(lhs.valueOf()).valueOf()),
+  'Date, Decimal': (lhs: Date, rhs: Decimal) =>
+    new Date(rhs.plus(lhs.valueOf()).valueOf()),
   'Decimal, Date': (lhs: Decimal, rhs: Date) => lhs.plus(rhs.valueOf()),
 
   /**
@@ -84,7 +127,10 @@ const add = typed('add', {
    * [ "abcxyz" ]
    *```
    */
-  'string | number | null, string | number | null': (lhs: string, rhs: string) => lhs + rhs
+  'string | number | null, string | number | null': (
+    lhs: string,
+    rhs: string
+  ) => lhs + rhs
 });
 
 /**
@@ -115,6 +161,19 @@ const sub = typed('sub', {
   'boolean, boolean': xor,
 
   /**
+   * - RegExp exclusive disjunction (xor)
+   *
+   * Return a Regexp object that is the exclusive disjunction of the given patterns.
+   * That is the regexp matches one of the inputs, but not both
+   *
+   * ```
+   * f♭> "skiing" regexp "sledding" regexp -
+   * [ /(?=(?:skiing)|(?:sledding))(?=(?!(?=skiing)(?=sledding)))/ ]
+   * ```
+   */
+  'RegExp, RegExp': rXor,
+
+  /**
    * - arithmetic subtraction
    *
    * ```
@@ -139,7 +198,8 @@ const sub = typed('sub', {
    */
   'Date, number': (lhs: Date, rhs: number) => new Date(lhs.valueOf() - rhs),
   'number, Date': (lhs: number, rhs: Date) => rhs.valueOf() - lhs,
-  'Date, Decimal': (lhs: Date, rhs: Decimal) => new Date(-rhs.minus(lhs.valueOf())),
+  'Date, Decimal': (lhs: Date, rhs: Decimal) =>
+    new Date(-rhs.minus(lhs.valueOf())),
   'Decimal, Date': (lhs: Decimal, rhs: Date) => lhs.minus(rhs.valueOf()),
 
   'any, any': (lhs: number, rhs: number) => lhs - rhs
@@ -153,7 +213,7 @@ const sub = typed('sub', {
  */
 const mul = typed('mul', {
   /**
-   * - intersparse
+   * - array intersparse
    *
    * ```
    * f♭> [ 'a' ] [ 'b' ] *
@@ -161,7 +221,8 @@ const mul = typed('mul', {
    *```
    */
   'Array, Array | Word | Sentence | Function': arrayMul,
-  'string, Array | Word | Sentence | Function': (lhs, rhs) => arrayMul(lhs.split(''), rhs),
+  'string, Array | Word | Sentence | Function': (lhs, rhs) =>
+    arrayMul(lhs.split(''), rhs),
   'Future, any': (f, rhs) => f.map(lhs => mul(lhs, rhs)),
 
   /**
@@ -175,6 +236,17 @@ const mul = typed('mul', {
   'Array, string': (lhs, rhs) => lhs.join(rhs),
 
   /**
+   * - string join
+   *
+   * ```
+   * f♭> 'xyz' ';'
+   * [ [ 'x;y;z' ] ]
+   *```
+   */
+  'string, string': (lhs, rhs) => lhs.split('').join(rhs),
+  // todo: string * regexp?
+
+  /**
    * - boolean and
    *
    * ```
@@ -186,6 +258,31 @@ const mul = typed('mul', {
   'number, boolean': and,
 
   /**
+   * - RegExp join (and)
+   *
+   * Return a Regexp object that is the join of the given patterns.
+   * That is the regexp matches both inputs
+   *
+   * ```
+   * f♭> "skiing" regexp "sledding" regexp *
+   * [ /(?=skiing)(?=sledding)/ ]
+   * ```
+   */
+  'RegExp, RegExp': rAnd,
+
+  /**
+   * - RegExp repeat (multiply)
+   *
+   * Return a Regexp object that matches n repeats of the given pattern
+   *
+   * ```
+   * f♭> "skiing" regexp 3 *
+   * [ /(?:skiing){3}/ ]
+   * ```
+   */
+  'RegExp, number': rRepeat,
+
+  /**
    * - repeat sequence
    *
    * ```
@@ -193,6 +290,7 @@ const mul = typed('mul', {
    * [ 'abcabcabc' ]
    *```
    */
+  // string intersparse?
   'string, number': (a, b) => a.repeat(b),
   'Array, number': (a, b) => arrayRepeat(a, b),
 
@@ -204,7 +302,8 @@ const mul = typed('mul', {
    * [ 6 ]
    * ```
    */
-  'Complex, Complex': (lhs: Complex, rhs: Complex) => lhs.times(rhs).normalize(),
+  'Complex, Complex': (lhs: Complex, rhs: Complex) =>
+    lhs.times(rhs).normalize(),
   'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal) => lhs.times(rhs),
   'number | null, number | null': (lhs: number, rhs: number) => lhs * rhs
 });
@@ -232,14 +331,27 @@ const div = typed('div', {
   'number, boolean': nand,
 
   /**
-   * - string split
+   * - Split a string into substrings using the specified a string or regexp seperator
    *
    * ```
    * f♭> 'a;b;c' ';' /
    * [ [ 'a' 'b' 'c' ] ]
    *```
    */
-  'string, string': (lhs, rhs) => lhs.split(rhs),
+  'string, string | RegExp': (lhs: string, rhs: string) => lhs.split(rhs),
+
+  /**
+   * - RegExp inverse join (nand)
+   *
+   * Return a Regexp object that is the inverse join of the given patterns.
+   * That is the regexp does not match both inputs
+   *
+   * ```
+   * f♭> "skiing" regexp "sledding" regexp /
+   * [ /(?!(?=skiing)(?=sledding))/ ]
+   * ```
+   */
+  'RegExp, RegExp': rNand,
 
   /**
    * - string/array slice
@@ -249,13 +361,19 @@ const div = typed('div', {
    * [ 'ab' ]
    *```
    */
-  'Array | string, number': (a, b) => {
-    b = Number(a.length / b) | 0;
-    if (b === 0 || b > a.length) {
-      return null;
-    }
-    return slice(a, 0, b);
+  'Array, number': (a, b) => {
+    const len = a.length;
+    const d = Math.floor(a.length / +b);
+    const r = a.length % +b;
+    return [...a.slice(0, d), ...a.slice(len - r, len)];
   },
+  'string, number': (a, b) => {
+    const len = a.length;
+    const d = Math.floor(a.length / +b);
+    const r = a.length % +b;
+    return a.slice(0, d) + a.slice(len - r, len);
+  },
+
   'Future, any': (f, rhs) => f.map(lhs => div(lhs, rhs)),
   /* 'string | Array, number': (lhs, rhs) => {
     rhs = +rhs | 0;
@@ -282,10 +400,6 @@ const div = typed('div', {
 /**
  * ## `>>`
  * right shift
- *
- * ```
- * ( x y -> z) 3 ]
- * ```
  */
 const unshiftFn = typed('unshift', {
   // >>, Danger! No mutations
@@ -302,6 +416,26 @@ const unshiftFn = typed('unshift', {
   'Array, string': (lhs, rhs) => [lhs, new Word(rhs)],
   'Array | Word | Sentence, Word | Sentence': (lhs, rhs) => [lhs, rhs],
   'Future, any': (f, rhs) => f.map(lhs => unshiftFn(lhs, rhs)),
+
+  /**
+   * - string concat
+   *
+   * ```
+   * f♭> 'abc' 'def' >>
+   * 'abcdef'
+   * ```
+   */
+  'string, string': (lhs, rhs) => lhs + rhs,
+
+  /**
+   * - string right shift
+   *
+   * ```
+   * f♭> 'abcdef' 3 >>
+   * 'abc'
+   * ```
+   */
+  'string, number': (lhs, rhs) => lhs.slice(0, -rhs),
 
   /**
    * - object merge
@@ -321,7 +455,20 @@ const unshiftFn = typed('unshift', {
    * [ 16 ]
    * ```
    */
-  'string | number | null, string | number | null': (lhs, rhs) => lhs >> rhs
+  'number | null, number | null': (lhs, rhs) => lhs >> rhs,
+
+  /**
+   * - RegExp right seq
+   *
+   * Return a Regexp that sequentially matchs the input Regexps
+   * And uses the right-hand-side flags
+   *
+   * ```
+   * f♭> "/skiing/i" regexp "sledding" regexp >>
+   * [ /skiingsledding/ ]
+   * ```
+   */
+  'RegExp, RegExp': rRsh
 });
 
 /**
@@ -330,14 +477,8 @@ const unshiftFn = typed('unshift', {
  *
  * ( x y -> z)
  *
- * ```
- * f♭> [ 1 2 ] 3 <<
- * [ [ 1 2 3 ] ]
- * ```
  */
 const pushFn = typed('push', {
-  // <<, Danger! No mutations
-
   /**
    * - push/snoc
    *
@@ -348,6 +489,26 @@ const pushFn = typed('push', {
    */
   'Array, any | Word | Sentence | Object': (lhs, rhs) => push(lhs, rhs),
   'Future, any': (f, rhs) => f.map(lhs => pushFn(lhs, rhs)),
+
+  /**
+   * - string concat
+   *
+   * ```
+   * f♭> 'abc' 'def' <<
+   * 'abcdef'
+   * ```
+   */
+  'string, string': (lhs, rhs) => lhs + rhs,
+
+  /**
+   * - string left shift
+   *
+   * ```
+   * f♭> 'abcdef' 3 <<
+   * 'def'
+   * ```
+   */
+  'string, number': (lhs, rhs) => lhs.slice(-rhs),
 
   /**
    * - object merge
@@ -367,7 +528,22 @@ const pushFn = typed('push', {
    * [ 256 ]
    * ```
    */
-  'string | number | null, string | number | null': (lhs, rhs) => lhs << rhs
+  'Decimal, Decimal | number': (lhs, rhs) =>
+    new Decimal(lhs.toBinary() + '0'.repeat(+rhs | 0)),
+  'number | null, number | null': (lhs, rhs) => lhs << rhs,
+
+  /**
+   * - RegExp right seq
+   *
+   * Return a Regexp that sequentially matchs the input Regexps
+   * And uses the left-hand-side flags
+   *
+   * ```
+   * f♭> "/skiing/i" regexp "sledding" regexp <<
+   * [ /skiingsledding/i ]
+   * ```
+   */
+  'RegExp, RegExp': rLsh
 });
 
 /**
@@ -382,7 +558,7 @@ const pushFn = typed('push', {
  * ```
  */
 const choose = typed('choose', {
-  'boolean | null, any, any': (b, t, f) => new Just((b ? t : f)),
+  'boolean | null, any, any': (b, t, f) => new Just(b ? t : f),
   'Future, any, any': (ff, t, f) => ff.map(b => (b ? t : f))
 });
 
@@ -446,10 +622,10 @@ const at = typed('at', {
     const r = getIn(a, path);
     return r === undefined ? null : r;
   }
+  // number n @ -> get bin n (n >> 1 bitand)
 });
 
 export const base = {
-
   '+': add,
   '-': sub,
   '*': mul,
@@ -464,6 +640,21 @@ export const base = {
    */
   '~': typed('not', {
     /**
+     * - number negate
+     *
+     * ```
+     * f♭> 5 ~
+     * [ -5 ]
+     * ```
+     */
+    'Decimal | Complex': (a: Decimal) => a.neg(),
+    number: a => {
+      if (a === 0) return -0;
+      if (a === -0) return 0;
+      return Number.isNaN(a) ? NaN : -a;
+    },
+
+    /**
      * - boolean (indeterminate) not
      *
      * ```
@@ -476,39 +667,12 @@ export const base = {
      * [ NaN ]
      * ```
      */
-    'boolean | number': not
+    boolean: not,
+
+    RegExp: rNot,
+
+    any: not
   }),
-
-  /**
-   * ## `undo`
-   * restores the stack to state before previous eval
-   */
-  undo (this: StackEnv): void {
-    this.undo().undo();
-  },
-
-  /**
-   * ## `auto-undo`
-   * set flag to auto-undo on error
-   *
-   * ( {boolean} -> )
-   */
-  'auto-undo': function(this: StackEnv, a: boolean): void {
-    this.undoable = a;
-  },
-
-  /**
-   * ## `i`
-   * push the imaginary number 0+1i
-   *
-   * ( -> 0+1i )
-   *
-   *  ```
-   * f♭> i
-   * [ 0+1i ]
-   * ```
-   */
-  i: () => I,
 
   /**
    * ## `infinity`
@@ -544,7 +708,6 @@ export const base = {
    * ```
    */
   cmp: typed('cmp', {
-
     /**
      * - number comparisons
      *
@@ -556,8 +719,11 @@ export const base = {
      * ```
      */
     'Decimal | Complex, Decimal | Complex': (lhs: Decimal, rhs: Decimal) => {
-      if (lhs.isNaN() && rhs.isNaN()) {
-        return 0;
+      if (lhs.isNaN()) {
+        return rhs.isNaN() ? 0 : NaN;
+      }
+      if (rhs.isNaN()) {
+        return NaN;
       }
       return lhs.cmp(rhs);
     },
@@ -575,10 +741,7 @@ export const base = {
     'Array, Array': (lhs, rhs) => {
       lhs = lhs.length;
       rhs = rhs.length;
-      if (lhs === rhs) {
-        return 0;
-      }
-      return lhs > rhs ? 1 : -1;
+      return cmp(lhs, rhs);
     },
 
     /**
@@ -593,12 +756,6 @@ export const base = {
      * [ -1 ]
      * ```
      */
-    'string, string': (lhs, rhs) => {
-      if (lhs === rhs) {
-        return 0;
-      }
-      return lhs > rhs ? 1 : -1;
-    },
 
     /**
      * - boolean comparisons
@@ -608,11 +765,8 @@ export const base = {
      * [ -1 ]
      * ```
      */
-    'boolean, boolean': (lhs, rhs) => {
-      if (lhs === rhs) {
-        return 0;
-      }
-      return lhs > rhs ? 1 : -1;
+    'string | boolean | any, string | boolean | any': (lhs, rhs) => {
+      return cmp(lhs, rhs);
     },
 
     /**
@@ -623,17 +777,10 @@ export const base = {
      * [ -1 ]
      * ```
      */
-    'Date, any': (lhs, rhs) => {
-      if (+lhs === +rhs) {
-        return 0;
-      }
-      return +lhs > +rhs ? 1 : -1;
-    },
-    'any, Date': (lhs, rhs) => {
-      if (+lhs === +rhs) {
-        return 0;
-      }
-      return +lhs > +rhs ? 1 : -1;
+    'Date | number, Date | number': (lhs, rhs) => {
+      lhs = +lhs;
+      rhs = +rhs;
+      return cmp(lhs, rhs);
     },
 
     /**
@@ -649,53 +796,19 @@ export const base = {
     'Object, Object': (lhs, rhs) => {
       lhs = lhs ? Object.keys(lhs).length : null;
       rhs = rhs ? Object.keys(rhs).length : null;
-      if (lhs === rhs) {
-        return 0;
-      }
-      return lhs > rhs ? 1 : -1;
-    },
-
-    'any, any': (lhs, rhs) => {
-      if (+lhs === +rhs) {
-        return 0;
-      }
-      return +lhs > +rhs ? 1 : -1;
+      return cmp(lhs, rhs);
     }
-  }),
-
-  /**
-   * ### `memoize`
-   *
-   * memoize a defined word
-   *
-   * ( {string|atom} -> )
-   */
-  memoize(this: StackEnv, name: string, n: number): void {
-    const cmd = this.dict.get(name);
-    if (cmd) {
-      const fn = (...a) => {
-        const s = this.createChild()
-          .eval([...a])
-          .eval(cmd).stack;
-        return new Seq(s);
-      };
-      this.defineAction(name, memoize(fn, { length: n, primitive: true }));
-    }
-  },
-
-  /**
-   * ## `clr`
-   *
-   * clears the stack
-   *
-   * ( ... -> )
-   *
-   * ```
-   * f♭> 1 2 3 clr
-   * [  ]
-   * ```
-   */
-  clr: function(this: StackEnv): void {
-    this.clear();
-  }
+  })
 };
+
+function cmp(lhs, rhs) {
+  if (lhs === null) lhs = -Infinity;
+  if (rhs === null) rhs = -Infinity;
+  if (Number.isNaN(lhs) || Number.isNaN(rhs)) {
+    return Object.is(lhs, rhs) ? 0 : NaN;
+  }
+  if (lhs === rhs) {
+    return 0;
+  }
+  return lhs > rhs ? 1 : -1;
+}

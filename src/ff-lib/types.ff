@@ -19,3 +19,7 @@ action?: [ type 'action' = ] ;
 string?: [ type 'string' = ] ;
 boolean?: [ type 'boolean' = ] ;
 array?: [ type 'array' = ] ;
+
+hex: [ 16 base ] ;
+oct: [ 8 base ] ;
+bin: [ 2 base ] ;

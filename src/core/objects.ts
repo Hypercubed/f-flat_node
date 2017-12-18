@@ -38,15 +38,10 @@ export const objects = {
   /**
    * ## `keys`
    */
-  keys: (o: {}) => Object.keys(o),
+  keys: (o: {}) => Object.keys(o), // v: `o => Object.values(o)` js-raw ;
 
   /**
    * ## `vals`
    */
-  vals: (o: {}) => Object.values(o),
-
-  /**
-   * ## `assign`
-   */
-  assign: '{} [ + ] reduce'
+  vals: (o: {}) => Object.values(o), // v: `o => Object.values(o)` js-raw ;
 };

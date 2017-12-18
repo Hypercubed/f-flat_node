@@ -5,14 +5,13 @@
 
 'core.ff' import use
 
-2drop: [ drop drop ] ;
+drop2: [ drop drop ] ;
 
 m: [ dup eval ] ;           // [a] -> [a] a
 
-2dup: [ over over ] ;       // [b] [a] -> [b] [a] [b] [a]
+dup2: [ over over ] ;       // [b] [a] -> [b] [a] [b] [a]
 
-keep2: [ q< 2dup q> dive ] ;  // [c] [b] [a] -> [c] [b] a [c] [b]   (aka 2keep)
-
+keep2: [ q< dup2 q> dive ] ;  // [c] [b] [a] -> [c] [b] a [c] [b]   (aka 2keep)
 
 dropd: [ q< drop q> ] ;   // [b] [a] -> [a]          (aka nip)
 nip: [ swap drop ] ;        // [b] [a] -> [a]
@@ -20,7 +19,7 @@ tuck: [ swap over ] ;       // [b] [a] -> [a] [b] [a]
 
 overd: [ q< over q> ] ;   // [c] [b] [a] -> [c] [b] [c] [a]
 pick: [ overd swap ] ;      // [c] [b] [a] -> [c] [b] [a] [c]
-3dup: [ pick pick pick ] ;  // [c] [b] [a] -> [c] [b] [a] [c] [b] [a]
+dup3: [ pick pick pick ] ;  // [c] [b] [a] -> [c] [b] [a] [c] [b] [a]
 swapd: [ q< swap q> ] ;   // [c] [b] [a] -> [b] [c] [a]
 dig: [ swapd swap ] ;        // [c] [b] [a] -> [b] [a] [c]
 rolldown: [ swapd swap ] ;  // [c] [b] [a] -> [b] [a] [c] (aka dig)

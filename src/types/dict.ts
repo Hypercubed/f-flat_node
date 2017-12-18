@@ -1,4 +1,4 @@
-import { freeze, assocIn, getIn } from 'icepick';
+import { assocIn, getIn } from 'icepick';
 
 import { StackValue } from './stackValue';
 import { USE_STRICT } from '../constants';
@@ -41,7 +41,7 @@ export class Dictionary {
         this.locals[firstKey] = null;
         return;
       }
-      this.locals[firstKey] = freeze(value);
+      this.locals[firstKey] = value;
       return;
     }
     this.locals[firstKey] = assocIn(this.locals[firstKey] || {}, path, value);

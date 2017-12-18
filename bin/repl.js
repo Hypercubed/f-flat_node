@@ -107,7 +107,7 @@ function startREPL() {
   
   const objectId = getUniqueObjectCounter();
   
-  r.defineCommand('s', {  /// todo: move to core
+  r.defineCommand('s', {  // todo: move to core?
     help: 'Print the stack',
     action() {
       // const objectId = getUniqueObjectCounter();
@@ -115,6 +115,14 @@ function startREPL() {
         const id = objectId(d).toString(16);
         console.log(`${f.stack.length - i}: ${formatValue(d, null, inspectOptions)} [${type(d)}] (${id})`);
       });
+      this.displayPrompt();
+    }
+  });
+
+  r.defineCommand('j', {
+    help: 'Print the stack',
+    action() {
+      console.log(f.toJSON());
       this.displayPrompt();
     }
   });

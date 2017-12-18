@@ -195,6 +195,15 @@ test(
   })
 );
 
+test(
+  'should neg numbers',
+  check(options, ffNumber, (t, a, b) => {
+    const r = fSyncStack(`${a} ~`);
+    t.is(r.length, 1);
+    t.is(r[0].valueOf(), -a);
+  })
+);
+
 // <-
 
 // ->

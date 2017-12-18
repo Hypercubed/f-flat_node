@@ -52,31 +52,18 @@ function getURLFromFilePath(filepath: string) {
 export const node = {
 
   /**
-   * ## `os`
-   *
-   * returns a string identifying the operating system platform on which the Node.js process is running
-   * see https://nodejs.org/api/process.html#process_process_platform
-   */
-  os: () => process.platform,
-
-
-  /**
-   * ## `cwd`
-   *
-   * returns the current working directory of the process
-   *
-   */
-  cwd: () => process.cwd(),
-
-  /**
    * ## `println`
    *
    * Prints the value followed by (newline)
    *
    */
   println: (a, ...b) => {
-    stdout.clearLine();
-    stdout.cursorTo(0);
+    try {
+      stdout.clearLine();
+      stdout.cursorTo(0);
+    } catch (e) {
+
+    }
     console.log(a, ...b);
   },
 
@@ -87,8 +74,12 @@ export const node = {
    *
    */
   print: (a, ...b) => {
-    stdout.clearLine();
-    stdout.cursorTo(0);
+    try {
+      stdout.clearLine();
+      stdout.cursorTo(0);
+    } catch (e) {
+
+    }
     stdout.write(String([a, ...b]));
   },
 
@@ -99,16 +90,14 @@ export const node = {
    *
    */
   '?': (a, ...b) => {
-    stdout.clearLine();
-    stdout.cursorTo(0);
+    try {
+      stdout.clearLine();
+      stdout.cursorTo(0);
+    } catch (e) {
+
+    }
     console.info(a, ...b);
   },
-
-  /* 'prompt': () => {
-    return new Promise(resolve => {
-      rl.question('', resolve);
-    });
-  }, */
 
   /**
    * ## `exit`
@@ -117,27 +106,16 @@ export const node = {
    *
    */
   exit: a => {
-    process.exit(Number(a));
+    process.exit(Number(a)); // exit: `process.exit` js-raw ;
   },
 
   /**
    * ## `rand-u32`
    *
-   * Generates cryptographically strong pseudo-random UInt32 value
+   * Generates cryptographically strong pseudo-random with a givennumber of bytes to generate
    *
    */
-  'rand-u32': function randU32() {
-    return randomBytes(4).readUInt32BE(0, true);
-  },
-
-  /**
-   * ## `env`
-   *
-   * returns an object containing the user environment
-   * See https://nodejs.org/api/process.html#process_process_env
-   *
-   */
-  env: () => process.env,
+  'rand-u32': () => randomBytes(4).readUInt32BE(0, true),
 
   /**
    * ## `dirname`

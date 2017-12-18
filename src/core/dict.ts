@@ -1,4 +1,4 @@
-import { freeze, assocIn, getIn } from 'icepick';
+import { assocIn, getIn } from 'icepick';
 
 import { formatValue, FFlatError } from '../utils';
 import { Sentence, Word, Just, StackValue, typed, Seq, Dictionary } from '../types';
@@ -6,6 +6,10 @@ import { USE_STRICT, IIF } from '../constants';
 import { StackEnv } from '../env';
 
 const is = require('@sindresorhus/is');
+
+const isObjectLike = val => typeof val === 'object' &&
+  val.constructor === Object &&
+  Object.getPrototypeOf(val) === Object.prototype;
 
 const rewrite = typed({
   'Object, Array': (dict: Object, arr: any[]) => {
@@ -18,8 +22,6 @@ const rewrite = typed({
         return p;
       }, []);
   },
-  'Object, Decimal': (x, y) => y,
-  'Object, null': () => null,
   'Object, Sentence': (dict, action) => {
     const expandedValue = rewrite(dict, action.value);
     const newAction = new Sentence(expandedValue, action.displayString);
@@ -36,10 +38,10 @@ const rewrite = typed({
     }
     return rewrite(dict, value);
   },
-  'Object, Object': (dict: Object, obj: Object) => {
+  'Object, plainObject': (dict: Object, obj: Object) => {
     return Object.keys(obj)
       .reduce((p, key) => {
-        const n = rewrite(dict, obj[key]);
+        const n = rewrite(dict, obj[key]); // todo: think about this, do we ever want to work on anything other than {string: Array}?
         n instanceof Seq ?
           p[key] = n.value.length === 1 ? n.value[0] : n.value :
           p[key] = n;

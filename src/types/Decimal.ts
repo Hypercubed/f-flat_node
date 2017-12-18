@@ -30,14 +30,14 @@ const P = <any>Decimal.prototype;
 
 // P.empty = () => zero;
 
-P.fullString = P.valueOf;
+P.toString = P.valueOf;
 
 P.valueOf = function() {
-  return Number(this.fullString());
+  return Number(this.toString());
 };
 
 P.toJSON = function() {
-  return { '$numberDecimal': this.fullString() };
+  return { '$numberDecimal': this.toString() };
 };
 
 P.inspect = function() {

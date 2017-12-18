@@ -169,10 +169,10 @@ test('should undo', t => {
   t.deepEqual(V(f), [1]);
 });
 
-test('apply', t => {
-  t.deepEqual(fSyncValues('10 [ 9 4 3 ] max: rcl ||>'), [10, 9]);
-  t.deepEqual(fSyncValues('10 [ 9 4 3 ] min: rcl ||>'), [10, 3]);
-});
+/* test('apply', t => {
+  t.deepEqual(fSyncValues('10 [ 9 4 ] max: rcl ||>'), [10, 9]);
+  t.deepEqual(fSyncValues('10 [ 9 4 ] min: rcl ||>'), [10, 3]);
+}); */
 
 /* test('apply', t => {
   t.plan(2);
@@ -355,20 +355,6 @@ test('should spawn, returning a future', async t => {
   // t.deepEqual(f.eval('await slip').toJSON(), [3628800, 9]);
 });
 
-test('regular expressions, test', t => {
-  t.deepEqual(fSyncJSON('"abc" "/a./" test?'), [true]);
-  t.deepEqual(fSyncJSON('"abc" "/a.$/" test?'), [false]);
-  t.deepEqual(fSyncJSON('"abc" "/a.*$/" test?'), [true]);
-  t.deepEqual(fSyncJSON('"bcd" "/a./" test?'), [false]);
-});
-
-test('regular expressions, replace', t => {
-  t.deepEqual(fSyncJSON('"abc" "/a./" "X" replace'), ['Xc']);
-  t.deepEqual(fSyncJSON('"abc" "/a.$/" "X" replace'), ['abc']);
-  t.deepEqual(fSyncJSON('"abc" "/a.*$/" "X" replace'), ['X']);
-  t.deepEqual(fSyncJSON('"bcd" "/a./" "X" replace'), ['bcd']);
-});
-
 test('pick', t => {
   t.deepEqual(fSyncValues('{a: 1} a: @'), [1]);
   t.deepEqual(fSyncValues('{a: 2} "a" @'), [2]);
@@ -543,4 +529,72 @@ test('macros', t => {
 
 test('length', t => {
   t.deepEqual(fSyncJSON('null length'), [0]);
+});
+
+test('base, pos integers', t => {
+  t.deepEqual(fSyncJSON('3735928559 16 base'), ['0xDEADBEEF']);
+  t.deepEqual(fSyncJSON('3735928559 2 base'), ['0b11011110101011011011111011101111']);
+
+  t.deepEqual(fSyncJSON('18446744073709551615 16 base'), ['0xFFFFFFFFFFFFFFFF']);
+  t.deepEqual(fSyncJSON('18446744073709551615 10 base'), ['18446744073709551615']);
+  t.deepEqual(fSyncJSON('18446744073709551615 8 base'), ['0o1777777777777777777777']);
+  t.deepEqual(fSyncJSON('18446744073709551615 4 base'), ['33333333333333333333333333333333']);
+  t.deepEqual(fSyncJSON('18446744073709551615 2 base'), ['0b1111111111111111111111111111111111111111111111111111111111111111']);
+});
+
+test('base, neg integers', t => {
+  t.deepEqual(fSyncJSON('-3735928559 16 base'), ['-0xDEADBEEF']);
+  t.deepEqual(fSyncJSON('-18446744073709551615 16 base'), ['-0xFFFFFFFFFFFFFFFF']);
+  t.deepEqual(fSyncJSON('-18446744073709551615 10 base'), ['-18446744073709551615']);
+  t.deepEqual(fSyncJSON('-18446744073709551615 8 base'), ['-0o1777777777777777777777']);
+  t.deepEqual(fSyncJSON('-18446744073709551615 2 base'), ['-0b1111111111111111111111111111111111111111111111111111111111111111']);
+});
+
+test('base, pos floats', t => {
+  t.deepEqual(fSyncJSON('0.125 16 base'), ['0x0.2']);
+  t.deepEqual(fSyncJSON('0.125 10 base'), ['0.125']);
+  t.deepEqual(fSyncJSON('0.125 8 base'), ['0o0.1']);
+  // t.deepEqual(fSyncJSON('0.125 4 base'), ['0.02']);
+  t.deepEqual(fSyncJSON('0.125 2 base'), ['0b0.001']);
+
+  // t.deepEqual(fSyncJSON('123456789.87654321 2 base'), ['0b111010110111100110100010101.1110000001100101001000101100010001111011']);
+});
+
+test('base, neg floats', t => {
+  t.deepEqual(fSyncJSON('-0.125 16 base'), ['-0x0.2']);
+  t.deepEqual(fSyncJSON('-0.125 10 base'), ['-0.125']);
+  t.deepEqual(fSyncJSON('-0.125 8 base'), ['-0o0.1']);
+  t.deepEqual(fSyncJSON('-0.125 2 base'), ['-0b0.001']);
+});
+
+test('base with inf and nan', t => {
+  t.deepEqual(fSyncJSON('nan 16 base'), ['NaN']);
+  t.deepEqual(fSyncJSON('Infinity 16 base'), ['Infinity']);
+  t.deepEqual(fSyncJSON('-Infinity 16 base'), ['-Infinity']);
+});
+
+test('hex, bin', t => {
+  t.deepEqual(fSyncJSON('18446744073709551615 hex'), ['0xFFFFFFFFFFFFFFFF']);
+  t.deepEqual(fSyncJSON('18446744073709551615 bin'), ['0b1111111111111111111111111111111111111111111111111111111111111111']);
+  t.deepEqual(fSyncJSON('18446744073709551615 oct'), ['0o1777777777777777777777']);
+
+  t.deepEqual(fSyncJSON('0.125 hex'), ['0x0.2']);
+
+  t.deepEqual(fSyncJSON('-18446744073709551615 hex'), ['-0xFFFFFFFFFFFFFFFF']);
+  t.deepEqual(fSyncJSON('-18446744073709551615 bin'), ['-0b1111111111111111111111111111111111111111111111111111111111111111']);
+  t.deepEqual(fSyncJSON('-0.125 hex'), ['-0x0.2']);
+});
+
+test('should cmp with nan, null', t => {  // todo: better comparisons with NaN
+  t.deepEqual(fSyncValues('nan nan cmp'), [0]);
+  t.deepEqual(fSyncValues('null null cmp'), [0]);
+
+  t.deepEqual(fSyncValues('-Infinity -Infinity cmp'), [0]);
+  t.deepEqual(fSyncValues('Infinity Infinity cmp'), [0]);
+
+  t.deepEqual(fSyncValues('null nan cmp'), [NaN]);
+  t.deepEqual(fSyncValues('nan null cmp'), [NaN]);
+
+  t.deepEqual(fSyncValues('null -Infinity cmp'), [-1]);
+  t.deepEqual(fSyncValues('-Infinity null cmp'), [1]);
 });

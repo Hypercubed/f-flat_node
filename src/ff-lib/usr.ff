@@ -48,4 +48,3 @@ rand-bool: [ rand-u32 even? ] ;
 
 // repl
 cls: [ "\u001B[2J\u001B[0;0f" println ] ;
-

@@ -14,7 +14,6 @@ class Action {
     if (!displayString) {
       this.displayString = toString(value);
     }
-    Object.freeze(this);
   }
 
   inspect(): string {

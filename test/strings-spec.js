@@ -36,9 +36,26 @@ test('should split', t => {
   t.deepEqual(fSyncJSON('"a-b-c" "-" /'), [['a', 'b', 'c']]);
 });
 
-test('should cut', t => {
+test('should / (div + rem)', t => {
+  t.deepEqual(fSyncJSON('"abc" 2 /'), ['ac']);
   t.deepEqual(fSyncJSON('"abcd" 2 /'), ['ab']);
-  t.deepEqual(fSyncJSON('"abcd" 5 /'), [null]);
+  t.deepEqual(fSyncJSON('"abcd" 5 /'), ['abcd']);
+});
+
+test('should div (cut)', t => {
+  t.deepEqual(fSyncJSON('"abc" 2 div'), ['a']);
+  t.deepEqual(fSyncJSON('"abcd" 2 div'), ['ab']);
+  t.deepEqual(fSyncJSON('"abcd" 5 div'), ['']);
+});
+
+test('should mod (rem)', t => {
+  t.deepEqual(fSyncJSON('"abc" 2 %'), ['c']);
+  t.deepEqual(fSyncJSON('"abcd" 2 %'), ['']);
+  t.deepEqual(fSyncJSON('"abcd" 5 %'), ['abcd']);
+});
+
+test('should div rem', t => {
+  t.deepEqual(fSyncJSON('"aaX" [ 2 div ] [ 2 % ] bi +'), ['aX']);
 });
 
 test('should test equality', t => {
@@ -62,6 +79,19 @@ test('should test gt', t => {
   t.deepEqual(fSyncJSON('"a" "a" >'), [false]);
   t.deepEqual(fSyncJSON('"a" "b" >'), [false]);
   t.deepEqual(fSyncJSON('"b" "a" >'), [true]);
+});
+
+test('should get max/min, alpha sorting', t => {
+  t.deepEqual(fSyncJSON('"a" "a" max'), ['a']);
+  t.deepEqual(fSyncJSON('"a" "b" max'), ['b']);
+  t.deepEqual(fSyncJSON('"b" "a" max'), ['b']);
+
+  t.deepEqual(fSyncJSON('"a" "a" min'), ['a']);
+  t.deepEqual(fSyncJSON('"a" "b" min'), ['a']);
+  t.deepEqual(fSyncJSON('"b" "a" min'), ['a']);
+
+  t.deepEqual(fSyncJSON('"abc" "xyz" min'), ['abc']);
+  t.deepEqual(fSyncJSON('"abc" "xyz" max'), ['xyz']);
 });
 
 test('should eval strings', t => {
@@ -122,4 +152,14 @@ test('should get length palindrome?', t => {
   t.deepEqual(fSyncJSON('"abc" length'), [3]);
   t.deepEqual(fSyncJSON('"racecar" length'), [7]);
   t.deepEqual(fSyncJSON('"A man, a plan, a canal: Panama" length'), [30]);
+});
+
+test('should concat strings using << and >>', t => {
+  t.deepEqual(fSyncJSON('"dead" "beef" <<'), ['deadbeef']);
+  t.deepEqual(fSyncJSON('"dead" "beef" >>'), ['deadbeef']);
+});
+
+test('should left and right shift', t => {
+  t.deepEqual(fSyncJSON('"deadbeef" 4 <<'), ['beef']);
+  t.deepEqual(fSyncJSON('"deadbeef" 4 >>'), ['dead']);
 });

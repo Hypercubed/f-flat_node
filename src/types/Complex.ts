@@ -17,8 +17,7 @@ export class Complex {
 
     if (this.re.isNaN() && this.im.isNaN()) {  // NaN+NaNi -> NaN
       this.im = copysign(0, this.im);
-      Object.freeze(this);
-      return;
+      return this;
     }
 
     if (this.re.isNaN()) this.re = copysign(0, this.re);  // NaN+bi -> NaNi
@@ -26,8 +25,6 @@ export class Complex {
 
     if (isinf(this.re)) this.im = copysign(0, this.im);  // inf+bi -> +-Inf
     if (isinf(this.im)) this.re = copysign(0, this.re);  // a+infi -> +-Infi
-
-    Object.freeze(this);
   }
 
   empty(): Decimal {
@@ -48,8 +45,8 @@ export class Complex {
   toJSON(): {} {
     return {
       '@@Complex': {
-        re: (this.re as any).fullString(),
-        im: (this.im as any).fullString()
+        re: (this.re as any).toString(),
+        im: (this.im as any).toString()
       }
     };
   }

@@ -28,10 +28,24 @@ test('should test equality', t => {
   t.deepEqual(fSyncJSON('2 2 ='), [true], 'should test equality');
 });
 
+test('should test equality of -0', t => {
+  t.deepEqual(fSyncValues('0 0 ='), [true]);
+  t.deepEqual(fSyncValues('0 -0 ='), [true]);
+  t.deepEqual(fSyncValues('-0 -0 ='), [true]);
+  t.deepEqual(fSyncValues('-0 0 ='), [true]);
+});
+
 test('should compare', t => {
   t.deepEqual(fSyncValues('1 1 cmp'), [0]);
   t.deepEqual(fSyncValues('1 2 cmp'), [-1]);
   t.deepEqual(fSyncValues('2 1 cmp'), [1]);
+});
+
+test('should cmp with -0', t => {  // todo: better comparisons with NaN
+  t.deepEqual(fSyncValues('0 0 cmp'), [0]);
+  t.deepEqual(fSyncValues('0 -0 cmp'), [0]);
+  t.deepEqual(fSyncValues('-0 -0 cmp'), [0]);
+  t.deepEqual(fSyncValues('-0 0 cmp'), [0]);
 });
 
 test('should cmp with nan, null', t => {  // todo: better comparisons with NaN
@@ -310,11 +324,49 @@ test('numerical derivative', t => {
   t.true(nearly(fSyncValues('[ sin ] 1 1e-6 nd')[0], 0.54030188513256 /* Math.cos(1) */));
   t.true(nearly(fSyncValues('[ sin 2 ^ ] 1 1e-6 nd')[0], 0.90929701067825 /* Math.sin(2) */));
   t.true(nearly(fSyncValues('ln 1 1e-19 nd')[0], 1));
-  t.deepEqual(fSyncString('[ inv ] 0 1e-6 nd'), '-Infinity');
+  t.is(fSyncString('[ inv ] 0 1e-6 nd'), '-Infinity');
 });
 
 test('length of numbers', t => {
   t.deepEqual(fSyncJSON('nan length'), [0]);
   t.deepEqual(fSyncJSON('3 length'), [1]);
   t.deepEqual(fSyncJSON('1 3 / length'), [20]);
+});
+
+test('should support neg 0', t => {
+  t.deepEqual(fSyncValues('-0'), [-0]);
+  t.deepEqual(fSyncValues('0 -1 *'), [-0]);
+});
+
+test('should negate', t => {
+  t.is(fSyncString('1 ~'), '-1');
+  t.is(fSyncString('pi ~'), '-3.1415926535897932385');
+  t.is(fSyncString('infinity ~'), '-Infinity');
+  t.is(fSyncString('-infinity ~'), 'Infinity');
+  t.deepEqual(fSyncValues('0 ~'), [-0]); // fix this
+  t.deepEqual(fSyncValues('-0 ~'), [0]); // fix this
+});
+
+test('should << (left shift)', t => {
+  t.deepEqual(fSyncValues('0b0001 1 <<'), [0b0010]);
+  t.deepEqual(fSyncValues('0b0001 16 <<'), [65536]);
+  t.deepEqual(fSyncValues('0b0001 32 <<'), [4294967296]);
+});
+
+test('should >> (right shift)', t => {
+  t.deepEqual(fSyncValues('0b0100 1 >>'), [0b0010]);
+  t.deepEqual(fSyncValues('0b0010 1 >>'), [0b0001]);
+  t.deepEqual(fSyncValues('0b1000 3 >>'), [0b0001]);
+});
+
+test('bitwise ops', t => {
+  t.deepEqual(fSyncValues('0b0001 0b0001 bitand'), [0b0001]);
+  t.deepEqual(fSyncValues('0b0001 0b0001 bitor'), [0b0001]);
+  t.deepEqual(fSyncValues('0b0001 0b0001 bitxor'), [0b0000]);
+  t.deepEqual(fSyncValues('0b0001 bitnot'), [-2]);
+
+  t.deepEqual(fSyncValues('0b0001 0b0010 bitand'), [0b0000]);
+  t.deepEqual(fSyncValues('0b0001 0b0010 bitor'), [0b0011]);
+  t.deepEqual(fSyncValues('0b0001 0b0010 bitxor'), [0b0011]);
+  t.deepEqual(fSyncValues('0b0010 bitnot'), [-3]);
 });

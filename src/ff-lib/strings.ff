@@ -22,3 +22,17 @@ empty?: [ length zero? ] ;
 char?: [ [ lcase-char? ] [ ucase-char? ] either? ] ;
 alphanumeric?: [ [ char? ] [ digit-char? ] either? ] ;
 palindrome?: [ [ alphanumeric? ] sfilter lcase dup sreverse = ] ;
+
+// regexp
+
+/**
+  * ## `replace`
+  *
+  * {string}, {regexp | string}, {string} -> {string}
+  */
+replace: [ [ / ] dip * ] ;;
+
+/**
+  * ## `match?`
+  */
+match?: [ match length 0 > ] ;;

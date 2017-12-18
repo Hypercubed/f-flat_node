@@ -12,6 +12,8 @@ import {
   fflatPrim,
   ffString,
   ffNumber,
+  ffArray,
+  ffObject,
   Decimal
 } from './setup';
 
@@ -99,21 +101,21 @@ test(
 // length
 test(
   'should get length of an array',
-  check(options, fflatValue, fflatValue, fflatValue, (t, a, b, c) => {
-    const s = `( ${a} ${b} ${c} ) length`;
+  check(options, ffArray, (t, a) => {
+    const s = `${a} length`;
     const r = fSyncJSON(s);
     t.is(r.length, 1);
-    t.is(r[0].valueOf(), 3);
+    t.is(r[0].valueOf(), a.valueOf().length);
   })
 );
 
 test(
   'should get "length" of an object',
-  check(options, fflatValue, fflatValue, fflatValue, (t, a, b, c) => {
-    const s = `{ a: ${a} b: ${b} c: ${c} } length`;
+  check(options, ffObject, (t, a) => {
+    const s = `${a} length`;
     const r = fSyncJSON(s);
     t.is(r.length, 1);
-    t.is(r[0].valueOf(), 3);
+    t.is(r[0], Object.keys(a.valueOf()).length);
   })
 );
 
@@ -134,9 +136,7 @@ test(
     const r = fSyncJSON(s);
     t.is(r.length, 1);
     const v = a.valueOf();
-    if (Number.isFinite(v) && !Number.isNaN(v)) {
-      t.is(r[0].valueOf(), new Decimal(v).sd());
-    }
+    t.is(r[0], (Number.isNaN(v) || !Number.isFinite(v)) ? 0 : new Decimal(v).sd());
   })
 );
 

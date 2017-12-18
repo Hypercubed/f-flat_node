@@ -8,13 +8,15 @@ run: [ dup slip ] ;;        // [a] -> a [a]
 dip: [ swap slip ] ;;       // B [a] -> a B
 sip: [ over slip ] ;;       // B [a] -> B a B    (aka keep)
 over: [ dupd swap ] ;;      // B A -> B A B  (aka peek)
-bi: [ sipd eval ] ;;        // C [b] [a] -> C b C a
+
 
 // diped
 dipd: [ q< dip q> ] ;;      // D C [b] A -> D b C A
 sipd: [ q< sip q> ] ;;      // C B [a] -> C a C B
 dupd: [ q< dup q> ] ;;      // B A -> B B A  (aka w)
 slipd: [ q< slip q> ] ;;
+
+bi: [ sipd eval ] ;;        // C [b] [a] -> C b C a
 
 do: [ dup dipd ] ;;
 
@@ -36,6 +38,10 @@ shift: [ 1 null slice ] ;
 <=: [ > ~ ] ;;
 =<: [ > ~ ] ;;
 !=: [ = ~ ] ;
+
+max: [ dup2 q< q< > q> q> choose ] ;;
+min: [ dup2 q< q< < q> q> choose ] ;;
+
 get: [ q< @ dup null? swap q> swap choose ] ;
 zipwith: [ zipinto in ] ;
 return: [ stack send ] ;
@@ -104,3 +110,11 @@ y: [ [ dup >> ] swap + dup >> ] ;
  * ( -> {array} )
  */
 dict: [ locals [ dup rcl ] map object ] ;
+
+/**
+  * ## `nop`
+  * no op
+  *
+  * ( -> )
+  */
+nop: [] ;

@@ -1,0 +1,28 @@
+/**
+ * # Node specific defined words
+ */
+
+/**
+  * ## `env`
+  *
+  * returns an object containing the user environment
+  * See https://nodejs.org/api/process.html#process_process_env
+  *
+  */
+env: '() => process.env' js-raw ;
+
+/**
+  * ## `os`
+  *
+  * returns a string identifying the operating system platform on which the Node.js process is running
+  * see https://nodejs.org/api/process.html#process_process_platform
+  */
+os: '() => process.platform' js-raw ;
+
+/**
+  * ## `cwd`
+  *
+  * returns the current working directory of the process
+  *
+  */
+cwd: '() => process.cwd()' js-raw ;

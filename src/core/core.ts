@@ -1,7 +1,7 @@
 import * as fetch from 'isomorphic-fetch';
 import { slice, splice, pop, push } from 'icepick';
 
-import { typed, Seq, StackValue, StackArray, Future, Sentence, Word, Just } from '../types';
+import { typed, Seq, StackValue, StackArray, Future, Sentence, Word, Just, Complex, Decimal } from '../types';
 import { log, generateTemplate, toObject } from '../utils';
 import { quoteSymbol } from '../constants';
 import { StackEnv } from '../env';
@@ -51,7 +51,7 @@ export const core = {
    */
   'q<': function(this: StackEnv, a: StackValue): void {
     this.queue.push(a);
-  }, // good for yielding, bad for repl
+  },
 
   /**
    * ## `q>`
@@ -158,6 +158,23 @@ export const core = {
     this.queue.push(...s);
   },
 
+
+  /**
+   * ## `clr`
+   *
+   * clears the stack
+   *
+   * ( ... -> )
+   *
+   * ```
+   * f♭> 1 2 3 clr
+   * [  ]
+   * ```
+   */
+  clr: function(this: StackEnv): void {
+    this.clear();
+  },
+
   /**
    * ## `depth`
    * pushes the size of the current stack (number of items on the stack)
@@ -170,16 +187,8 @@ export const core = {
    * ```
    */
   depth (this: StackEnv): number {
-    return this.stack.length; // ,  or "stack [ unstack ] [ length ] bi"
+    return this.stack.length; // ,  or "stack [ unstack ] [ length ] bi", `"this.stack.length" js-raw`
   },
-
-  /**
-   * ## `nop`
-   * no op
-   *
-   * ( -> )
-   */
-  nop: (): void => {},
 
   /**
    * ## `eval`
@@ -309,8 +318,8 @@ export const core = {
      * [ 20 ]
      * ```
      */
-    Decimal: a => a.precision(),
-    Complex: a => a.re.precision() + a.im.precision(),
+    Decimal: (a: Decimal) => (a.isNaN() || !a.isFinite()) ? 0 : a.precision(),
+    Complex: (a: Complex) => (a.isNaN() || !a.isFinite()) ? 0 : a.re.precision() + a.im.precision(),
 
     /**
      * - "length" of a nan, null, and booleans are 0
@@ -322,7 +331,8 @@ export const core = {
      */
     number: a => 0, // should only be nan
     boolean: a => 0, // should only be nan
-    null: (a: null) => 0 // eslint-disable-line
+    null: (a: null) => 0, // eslint-disable-line
+    any: a => 0
   }),
 
   /**
@@ -507,5 +517,23 @@ export const core = {
    */
   'set-log-level': (a: string): void => {
     log.level = a;
-  }
+  },
+
+  /**
+   * ## `undo`
+   * restores the stack to state before previous eval
+   */
+  undo(this: StackEnv): void {
+    this.undo().undo();
+  },
+
+  /**
+   * ## `auto-undo`
+   * set flag to auto-undo on error
+   *
+   * ( {boolean} -> )
+   */
+  'auto-undo': function(this: StackEnv, a: boolean): void {
+    this.undoable = a;
+  },
 };

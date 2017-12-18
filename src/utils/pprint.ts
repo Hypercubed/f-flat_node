@@ -49,14 +49,18 @@ export const type = typed('type', {
   Decimal: x => 'number',
   Complex: x => 'complex',
   Date: x => 'date',
+  RegExp: x => 'regexp',
   any: x => typeof x
 });
 
 export const formatValue: Function = typed('formatValue', {
   'Symbol, any, any': (value, depth, opts) => formatSymbol(value, opts),
 
-  'Decimal | Complex | ComplexInfinity | number, any, any': (value, depth, opts) =>
-    stylize(value, 'number', opts),
+  'Decimal | Complex | ComplexInfinity | number, any, any': (
+    value,
+    depth,
+    opts
+  ) => stylize(value, 'number', opts),
   'null, any, any': (value, depth, opts) => stylize('Null', 'null', opts),
   'boolean, any, any': (value, depth, opts) => stylize(value, 'boolean', opts),
 
@@ -67,17 +71,20 @@ export const formatValue: Function = typed('formatValue', {
 
   'Array, any, any': formatArray,
   'Future, any, any': (value, depth, opts) => inspect(value, opts),
-  'Object, any, any': formatMap,
+  'plainObject, any, any': formatMap,
 
   'Date, any, any': (value, depth, opts) => stylize(value, 'name', opts),
 
   'any, any, any': (value, depth, opts) => inspect(value, opts)
 });
 
-function formatString(value: any, opts: InspectOptions = { colors: false }): string {
+function formatString(
+  value: any,
+  opts: InspectOptions = { colors: false }
+): string {
   const x = JSON.stringify(value)
     .replace(/^"|"$/g, '')
-    .replace(/'/g, '\\\'')
+    .replace(/'/g, "\\'")
     .replace(/\\"/g, '"');
   return stylize(`'${x}'`, 'string', opts);
 }
@@ -94,7 +101,11 @@ function rtrim(str: string, n = 40): string {
   return fixedWidthString(str, n);
 }
 
-function stylize(value: any, styleType: string, opts: InspectOptions = { colors: false }): string {
+function stylize(
+  value: any,
+  styleType: string,
+  opts: InspectOptions = { colors: false }
+): string {
   const str = value.toString();
   if (opts.colors) {
     const style = styles[styleType];
@@ -106,8 +117,11 @@ function stylize(value: any, styleType: string, opts: InspectOptions = { colors:
 }
 
 export function formatState({ stack, queue }, opts = defaultOpts): string {
-  const maxOutputLength = (process.stdout && process.stdout.columns) ? process.stdout.columns / 2 - 5 : 35; // todo: this should be an option input
-  opts.childOpts = {...opts, maxArrayLength: 5, maxObjectKeys: 5};
+  const maxOutputLength =
+    process.stdout && process.stdout.columns
+      ? process.stdout.columns / 2 - 5
+      : 35; // todo: this should be an option input
+  opts.childOpts = { ...opts, maxArrayLength: 5, maxObjectKeys: 5 };
   stack = lpad(formatArray(stack, 0, opts, '  '), maxOutputLength);
   queue = rtrim(formatArray(queue, 0, opts, '  '), maxOutputLength);
   return `${stack} <=> ${queue}`;
@@ -116,25 +130,33 @@ export function formatState({ stack, queue }, opts = defaultOpts): string {
 const sRE = /Symbol\(([^)]*)\).*/g;
 
 function formatSymbol(value: Symbol, opts: InspectOptions): string {
-  const str = value
-    .toString()
-    .replace(sRE, '#$1');
+  const str = value.toString().replace(sRE, '#$1');
   return stylize(str, 'symbol', opts);
 }
 
-function formatArray(arr: Array<any>, depth: number, opts: InspectOptions, braces = '[]'): string {
+function formatArray(
+  arr: Array<any>,
+  depth: number,
+  opts: InspectOptions,
+  braces = '[]'
+): string {
   const maxLength = opts.maxArrayLength || 100;
   const output = arr
     .slice(0, maxLength)
-    .map(x => formatValue(x, depth + 1, opts.childOpts || opts)
-    .replace(/\n/g, '\n  '));
+    .map(x =>
+      formatValue(x, depth + 1, opts.childOpts || opts).replace(/\n/g, '\n  ')
+    );
   if (arr.length > output.length) {
     output.push('…');
   }
   return reduceToSingleString(output, braces, opts);
 }
 
-function reduceToSingleString(output: any[], braces: string, opts: InspectOptions): string {
+function reduceToSingleString(
+  output: any[],
+  braces: string,
+  opts: InspectOptions
+): string {
   const length = output.reduce((prev, cur) => prev + strLen(cur), 0);
   if (length > 60 && opts.indent) {
     return `${braces[0]} ${output.join('\n  ')} ${braces[1]}`;
@@ -145,18 +167,21 @@ function reduceToSingleString(output: any[], braces: string, opts: InspectOption
 function formatMap(value: Object, depth: number, opts: InspectOptions): string {
   const maxLength = opts.maxObjectKeys || 100;
   const keys = Object.keys(value);
-  const output = keys
-    .slice(0, maxLength)
-    .map(key => {
-      return formatProperty(key, value[key], depth + 1, opts.childOpts || opts);
-    });
+  const output = keys.slice(0, maxLength).map(key => {
+    return formatProperty(key, value[key], depth + 1, opts.childOpts || opts);
+  });
   if (keys.length > output.length) {
     output.push('…');
   }
   return reduceToSingleString(output, '{}', opts);
 }
 
-function formatProperty(key: string, value: any, depth: number, opts: InspectOptions): string {
+function formatProperty(
+  key: string,
+  value: any,
+  depth: number,
+  opts: InspectOptions
+): string {
   const skey = stylize(String(key), 'name', opts);
   const svalue = formatValue(value, depth + 1, opts).replace(/\n/g, '\n  ');
   return `${skey}: ${svalue}`;

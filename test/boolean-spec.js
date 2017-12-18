@@ -1,5 +1,5 @@
 import test from 'ava';
-import { F, fSyncJSON, fSyncStack } from './setup';
+import { F, fSyncJSON, fSyncStack, fSyncValues } from './setup';
 
 /* test('should parse', t => {
   var f = F();
@@ -14,8 +14,6 @@ test('should push booleans', t => {
 test('should not', t => {
   t.deepEqual(fSyncJSON('true ~'), [false]);
   t.deepEqual(fSyncJSON('false ~'), [true]);
-  t.deepEqual(fSyncJSON('1 ~'), [false]);
-  t.deepEqual(fSyncJSON('0 ~'), [true]);
   t.deepEqual(fSyncStack('nan ~'), [NaN]);
 });
 
@@ -92,17 +90,20 @@ test('should cmp', t => {
   t.deepEqual(fSyncJSON('false false cmp'), [0]);
 });
 
-test('should cmp with nan, null', t => {  // todo: better comparisons with NaN, null
-  t.deepEqual(fSyncJSON('true nan cmp'), [-1]);
-  t.deepEqual(fSyncJSON('nan true cmp'), [-1]);
-  t.deepEqual(fSyncJSON('false nan cmp'), [-1]);
-  t.deepEqual(fSyncJSON('nan false cmp'), [-1]);
+test('should cmp with nan', t => {  
+  t.deepEqual(fSyncStack('nan nan cmp'), [0]);
+  t.deepEqual(fSyncStack('true nan cmp'), [NaN]);
+  t.deepEqual(fSyncStack('nan true cmp'), [NaN]);
+  t.deepEqual(fSyncStack('false nan cmp'), [NaN]);
+  t.deepEqual(fSyncStack('nan false cmp'), [NaN]);
+});
 
-  t.deepEqual(fSyncJSON('null null cmp'), [0]);
-  t.deepEqual(fSyncJSON('true null cmp'), [1]);
-  t.deepEqual(fSyncJSON('null true cmp'), [-1]);
-  t.deepEqual(fSyncJSON('false null cmp'), [0]);
-  t.deepEqual(fSyncJSON('null false cmp'), [0]);
+test('should cmp with null', t => { // todo: better com with null
+  t.deepEqual(fSyncStack('null null cmp'), [0]);
+  t.deepEqual(fSyncStack('true null cmp'), [1]); // 1
+  t.deepEqual(fSyncStack('null true cmp'), [-1]); // -1
+  t.deepEqual(fSyncStack('false null cmp'), [1]); // 1
+  t.deepEqual(fSyncStack('null false cmp'), [-1]); // -1
 });
 
 test('length of booleans are zero', t => {

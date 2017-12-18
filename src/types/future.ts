@@ -27,7 +27,6 @@ export class Future {
     }
     this.action = undefined;
     this.value = p;
-    Object.freeze(this);
 
     return this.value;
   }

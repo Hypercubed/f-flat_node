@@ -2,7 +2,6 @@ import { typed } from './typed';
 
 export class AbstractValue {
   constructor(public type) {
-    Object.freeze(this);
   }
 
   toString(): string {
@@ -42,13 +41,13 @@ typed.addConversion({
   convert: x => Infinity
 });
 
-typed.addType({
+/* typed.addType({
   name: 'zero',
   test: x => {
     console.log('zero', x, +x === 0);
     return +x === 0;
   }
-});
+}); */
 
 typed.addType({
   name: 'infinity',
