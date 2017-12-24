@@ -5,7 +5,7 @@
 'types.ff' import use
 'datetime.ff' import use
 
-$: [ dip eval ] ; 
+.: [ [ unstack ] >> dip eval ] ;
 
 // Misc
 compose: [ + ] ;
@@ -48,3 +48,29 @@ rand-bool: [ rand-u32 even? ] ;
 
 // repl
 cls: [ "\u001B[2J\u001B[0;0f" println ] ;
+
+// switch
+stack-copy: [ stack run ] ;
+stack-check: [ q< stack-copy q> =~ ] ;;
+case: [ [ stack-check ] dip when ] ;;
+switch: [ [ unstack case ] foreach ] ;;
+
+// short circuit logicals
+&&: [ slip when ] ;;
+||: [ slip [] swap branch ] ;;
+
+length: [ ln ] ;  // just an alias
+
+quicksort: [
+  dup length 1 <=             // if length < 1
+  [ ]                           // do nothing
+  [                           // otherwise:
+    xxs                         // split into first, rest
+    over dup                    // shuffle
+    [ [ <= ] >> filter ] >>     // filter values less than or equal to pivot
+    swap [ [ > ] >> filter ] >> // filter values greater than to pivot
+    bi
+    [ quicksort ] bi@           // quicksort each sublist
+    [ swap + ] dip +            // merge results 
+  ] branch
+] ;

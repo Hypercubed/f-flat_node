@@ -5,29 +5,35 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 # Bugs
 
 - [ ] @ for out of range works differently on string and array
+- [x] Colen should terminate a word: `x:1` => `x: 1`
+- [x] Regexp logical ops need to match boolean
 
 # Decide
-- [ ] Decide on macros, dupn!3, dup<5>, range<1, 100>, range!(1, 10)$ ?
+- [ ] Decide on macros, dupn!3, dup<5>, range<1, 100>, range!(1, 10). ?
 - [ ] ~ vs !
-- [ ] undef, null nan, ComplexInfinity, Indeterminate, Undefined (http://www.wolframalpha.com/input/?i=ComplexInfinity)
+- [ ] undef, null nan, nil, ComplexInfinity, Indeterminate, Undefined (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [ ] Choose regex vs regexp
-- [ ] words or literals are equivelent? true: === true ?
+- [ ] words and literals are equivelent? true: === true ?
+- [ ] Ranges?
+- [ ] Symbols vs internal classes?
 
 # Todo next:
 
+- [x] Tests for floored division
+- [ ] Fix API docs for base
 - [ ] Consistant and predictable display precision:
   - [ ] 1 acos = 0 (precision issue)
   - [ ] precision in complex calculations (on print)
   - [ ] Pretty printing complex values: '5e-20+2i' -> '2i'
 - [ ] More literals in parser
-  - [ ] regex
+  - [ ] regex?
   - [ ] i
   - [ ] +/-Infinity
-  - [ ] `(`
+  - [ ] Symbols `(`, `_`
   - [x] true, false
   - [x] null
-- [ ] Make scope lifing safe.  No user writes to scope.
-- [ ] Core functions should also be namespaced.
+- [ ] Make scope lifting safe.  No user writes to scope.
+- [x] Core functions should also be namespaced.
 - [ ] More tests for stack object immutablity
 - [ ] Better internal types
   - [ ] Just -> ReturnValue
@@ -36,14 +42,13 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] Token type? `a:`
 - [ ] Test all internal words
   - [ ] Dictionary words
-- [ ] Test `usr.ff` and cwd
+- [ ] Test missing `usr.ff` and cwd
 - [ ] JSON
-  - [ ] to simplified JSON (Decimal -> number, etc)
+  - [ ] to simplified JSON (Decimal -> number, regex, symbols, etc)
   - [ ] Decimal/Complex .fromJSON + Tests
 - [ ] rewrite should also simplify sequences
   - [ ] `dup drop` -> ``
-  - [ ] `q< x q> q< y q>` -> `q< x y q>`
-- [ ] Remove symbols?
+  - [ ] `q> q< ` -> ``
 - [ ] Ensure predictable cmp with null and nan
 
 # New Words
@@ -75,8 +80,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Docs
 
+- [ ] Standardize all stack effects in docs and code comments
 - [x] REPL intro
-- [ ] Boolean/Three valued logic
+- [ ] Detail boolean / Three valued logic
 - [ ] Basis
 - [ ] Regexp
 - [ ] "compile" (expand)
@@ -147,4 +153,11 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] JSON output
 - [ ] Get strict on punctuation ??
 - [ ] Integer -> Float -> Decimal -> Complex, predictable type promotion
-- [ ] Compiler output
+- [ ] Parser / compiler output
+- [ ] Ranges? 1..4?
+- [ ] Pattern matching?
+  - [x] place holder `_`
+  - [x] rest pattern in arrays `[ 1 ... ]`
+  - [-] OR patterns `1 | 2` (using regex)
+  - [-] ranges `1...4` (using regex)
+  - [ ] guards `3 >`

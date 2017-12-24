@@ -19,17 +19,22 @@ let defaultRootStack: StackEnv;
 
 export function RootStack(): StackEnv {
   const env = new StackEnv({   // root
-    silent: false
+    silent: true
   });
 
-  env.defineAction(base);
-  env.defineAction(dict);
-  env.defineAction(objects);
-  env.defineAction(core);
-  env.defineAction(math);
-  env.defineAction(types);
-  env.defineAction(experimental);
-  env.defineAction(node);
+  const prelude = {
+    ...core,
+    ...base,
+    ...dict,
+    ...objects,
+    ...math,
+    ...types,
+    ...experimental,
+    ...node
+  };
+
+  env.defineAction('prelude', prelude);
+  Object.assign(env.dict.scope, prelude);
 
   const bootFile = join('file://', __dirname, '../src/ff-lib/boot.ff');
   return env.eval(`'${bootFile}' dup '__filename' sto read eval`);
@@ -37,18 +42,9 @@ export function RootStack(): StackEnv {
 }
 
 export function Stack(s = '', root?) {
-  if (typeof root === 'undefined') {
-    if (!defaultRootStack) {
-      defaultRootStack = RootStack();
-    }
-    root = defaultRootStack;
-  }
-
-  const stack = new StackEnv({
-    parent: root,
+  return new StackEnv({
+    parent: root || defaultRootStack || (defaultRootStack = RootStack()),
     silent: false
-  });
-
-  return stack.enqueue(s);
+  }).enqueue(s);
 }
 

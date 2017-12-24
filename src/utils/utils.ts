@@ -1,6 +1,6 @@
 import { assocIn, getIn } from 'icepick';
 
-import { typed, Word, Sentence, Decimal } from '../types/index';
+import { typed, Word, Sentence, Decimal, StackValue } from '../types/index';
 
 export const arrayRepeat = (a: any[], len: any) => {
   len = Number(len) | 0;

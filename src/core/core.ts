@@ -1,9 +1,20 @@
 import * as fetch from 'isomorphic-fetch';
-import { slice, splice, pop, push } from 'icepick';
+import { slice, splice, pop, push, getIn } from 'icepick';
 
-import { typed, Seq, StackValue, StackArray, Future, Sentence, Word, Just, Complex, Decimal } from '../types';
+import {
+  typed,
+  Seq,
+  StackValue,
+  StackArray,
+  Future,
+  Sentence,
+  Word,
+  Just,
+  Complex,
+  Decimal
+} from '../types';
 import { log, generateTemplate, toObject } from '../utils';
-import { quoteSymbol } from '../constants';
+import { deepEquals } from '../utils/utils';
 import { StackEnv } from '../env';
 
 const _slice = typed('slice', {
@@ -26,7 +37,7 @@ const splitat = typed('splitat', {
 
 function dequoteStack(env: StackEnv, s: StackValue) {
   const r: StackArray = [];
-  while (env.stack.length > 0 && s !== quoteSymbol) {
+  while (env.stack.length > 0 && s !== Symbol.for('(')) {
     r.unshift(s);
     s = env.stack[env.stack.length - 1];
     env.stack = pop(env.stack);
@@ -34,10 +45,136 @@ function dequoteStack(env: StackEnv, s: StackValue) {
   return r;
 }
 
+const patternMatch = typed('pattern', {
+  'any, Symbol': (a: any, b: Symbol): boolean => {
+    if (b === Symbol.for('_')) return true;
+    return typeof a === 'symbol' ? a === b : false;
+  },
+  'any, Word': (a: any, b: Word): boolean => {
+    if (b.value === '_') return true;
+    return a instanceof Word && a.value === b.value;
+  },
+  'Array, Array': (a: StackValue[], b: StackValue[]): boolean => {
+    if (a.length < b.length) {
+      // todo: handle "rest" pattern '...'
+      return false;
+    }
+    for (let i = 0; i < a.length; i++) {
+      const bb = b[i];
+      if (bb instanceof Word && bb.value === '...') return true;
+      if (!patternMatch(a[i], bb)) {
+        return false;
+      }
+    }
+    return true;
+  },
+  'plainObject, plainObject': (a: {}, b: {}): boolean => {
+    const ak = Object.keys(a);
+    const bk = Object.keys(b);
+    if (ak.length < bk.length) {
+      return false;
+    }
+    if (bk.length === 0) {
+      return true;
+    }
+    for (let i = 0; i < bk.length; i++) {
+      // rest?
+      const key = ak[i];
+      if (!patternMatch(a[key], b[key])) {
+        return false;
+      }
+    }
+    return true;
+  },
+  'any, RegExp': (lhs: string, rhs: RegExp) => rhs.test(lhs),
+  'any, any': (a: any, b: any): boolean => deepEquals(a, b)
+});
+
 /**
  * # Internal Core Words
  */
 export const core = {
+  /**
+   * ## `choose`
+   * conditional (ternary) operator
+   *
+   * ( {boolean} [A] [B] -> {A|B} )
+   *
+   * ```
+   * f♭> true 1 2 choose
+   * [ 1 ]
+   * ```
+   */
+  choose: typed('choose', {
+    // todo: true / false / nan, null
+    'boolean | null, any, any': (b, t, f) => new Just(b ? t : f),
+    'Future, any, any': (ff, t, f) => ff.map(b => (b ? t : f))
+  }),
+
+  /**
+   * ## `@` (at)
+   *
+   * returns the item at the specified index/key
+   *
+   * ( {seq} {index} -> {item} )
+   *
+   * ```
+   * > [ 1 2 3 ] 1 @
+   * [ 2 ]
+   * ```
+   */
+  '@': typed('at', {
+    /**
+     * - string char at, zero based index
+     *
+     * ```
+     * f♭> 'abc' 2 @
+     * [ 'c' ]
+     * ```
+     */
+    'string, number | null | string': (lhs, rhs) => {
+      rhs = Number(rhs) | 0;
+      if (rhs < 0) {
+        rhs = lhs.length + rhs;
+      }
+      const r = lhs.charAt(rhs);
+      return r === undefined ? null : r;
+    },
+
+    /**
+     * - array at, zero based index
+     *
+     * ```
+     * f♭> [ 1 2 3 ] 1 @
+     * [ 2 ]
+     * ```
+     */
+    'Array, number | null | string': (lhs, rhs) => {
+      rhs = Number(rhs) | 0;
+      if (rhs < 0) {
+        rhs = lhs.length + rhs;
+      }
+      const r = lhs[rhs];
+      return r === undefined ? null : new Just(r);
+    },
+    'Future, any': (f, rhs) => f.map(lhs => core['@'](lhs, rhs)),
+
+    /**
+     * - map get by key
+     *
+     * ```
+     * f♭> { first: 'Manfred' last: 'von Thun' } 'first' @
+     * [ 'Manfred' ]
+     * ```
+     */
+    'map, Word | Sentence | string | null': (a, b) => {
+      const path = String(b).split('.');
+      const r = getIn(a, path);
+      return r === undefined ? null : r;
+    }
+    // number n @ -> get bin n (n >> 1 bitand)
+  }),
+
   /**
    * ## `q<`
    * moves the top of the stack to the tail of the queue
@@ -94,7 +231,7 @@ export const core = {
    * [ [ 1 2 3 ] ]
    * ```
    */
-  stack (this: StackEnv): StackArray {
+  stack(this: StackEnv): StackArray {
     const s = this.stack.slice();
     this.stack = splice(this.stack, 0);
     return s;
@@ -113,10 +250,11 @@ export const core = {
    */
   unstack: typed('unstack', {
     Array: (a: StackArray) => new Seq(a),
-    Future: (f: Future) => f.promise.then(a => new Seq(a))
+    Future: (f: Future) => f.promise.then(a => new Seq(a)),
+    any: a => a
   }),
 
-   /**
+  /**
    * ## `<->` (s-q swap)
    * swaps the last item on the stack and the first item on the queue
    */
@@ -158,7 +296,6 @@ export const core = {
     this.queue.push(...s);
   },
 
-
   /**
    * ## `clr`
    *
@@ -186,7 +323,7 @@ export const core = {
    * [ 0 1 2 3 ]
    * ```
    */
-  depth (this: StackEnv): number {
+  depth(this: StackEnv): number {
     return this.stack.length; // ,  or "stack [ unstack ] [ length ] bi", `"this.stack.length" js-raw`
   },
 
@@ -283,54 +420,9 @@ export const core = {
   dup: (a: StackValue) => new Seq([a, a]), //  q< q@ q>
 
   /**
-   * ## `ln`
-   *
-   * Natural logarithm / item length
-   *
-   * ( x -> {number} )
-   */
-  ln: typed('ln', {
-    'Complex': a => a.ln(),
-    'Decimal | number': a => {
-      if (a <= 0) return new Complex(a).ln();
-      return new Decimal(a).ln();
-    },
-
-    /**
-     * - length of the Array or string
-     *
-     * ```
-     * > [ 1 2 3 ] length
-     * [ 3 ]
-     * ```
-     */
-    'Array | string': a => a.length,
-
-    /**
-     * - length of the Object (number of keys)
-     *
-     * ```
-     * > { x: 1, y: 2, z: 3 } length
-     * [ 3 ]
-     * ```
-     */
-    Object: (a: {}) => Object.keys(a).length,
-
-    /**
-     * - "length" of a nan, null, and booleans are 0
-     *
-     * ```
-     * > true length
-     * [ 0 ]
-     * ```
-     */
-    null: (a: null) => 0, // eslint-disable-line
-    any: a => 0
-  }),
-
-  /**
    * ## `slice`
-   * a shallow copy of a portion of an array or string
+   *
+   * copy of a portion of an array or string
    *
    * ( seq from to -> seq )
    */
@@ -338,6 +430,7 @@ export const core = {
 
   /**
    * ## `splitat`
+   *
    * splits a array or string
    *
    * ( seq at -> seq )
@@ -394,7 +487,11 @@ export const core = {
    * ```
    */
   zipinto: typed('zipinto', {
-    'Array, Array, Array': (a: StackArray[], b: StackArray[], c: StackArray[]): StackArray[] => {
+    'Array, Array, Array': (
+      a: StackArray[],
+      b: StackArray[],
+      c: StackArray[]
+    ): StackArray[] => {
       const l = a.length < b.length ? a.length : b.length;
       const r: StackArray[] = [];
       for (let i = 0; i < l; i++) {
@@ -408,9 +505,9 @@ export const core = {
    * ## `(` (immediate quote)
    * pushes a quotation maker onto the stack
    *
-   * ( -> #( )
+   * ( -> ( )
    */
-  '(': () => quoteSymbol,
+  '(': () => Symbol.for('('),
 
   /**
    * ## `)` (immediate dequote)
@@ -426,11 +523,11 @@ export const core = {
    * ## `[` (lazy quote)
    * pushes a quotation maker onto the stack, increments depth
    *
-   * ( -> #( )
+   * ( -> ( )
    */
   '[': function(this: StackEnv) {
     this.depth++;
-    return quoteSymbol;
+    return Symbol.for('(');
   },
 
   /**
@@ -450,7 +547,7 @@ export const core = {
    *
    * ( -> #( )
    */
-  '{': () => quoteSymbol, // object
+  '{': () => Symbol.for('('),
 
   /**
    * ## `}` (immediate object dequote)
@@ -548,18 +645,34 @@ export const core = {
    *
    */
   match: typed('match', {
-    'string, RegExp | string': (lhs: string, rhs: RegExp) => lhs.match(rhs) || [],
+    'string, RegExp | string': (lhs: string, rhs: RegExp) =>
+      lhs.match(rhs) || []
   }),
 
   /**
    * ## `=~`
    *
-   * Returns a Boolean value that indicates whether or not a pattern exists in a searched string.
+   * Returns a Boolean value that indicates whether or not the lhs matches the rhs.
    *
-   * {string} [regexp} -> {boolean}
+   * {any} {any} -> {boolean}
    *
    */
-  '=~': typed('ismatch', {
-    'string, RegExp | string': (lhs: string, rhs: RegExp) => rhs.test(lhs)
-  }),
+  '=~': patternMatch,
+
+  /**
+   * ## `_`
+   *
+   * Match symbol
+   *
+   */
+  _: () => Symbol.for('_'), // Match symbol
+
+  /**
+   * ## `infinity`
+   * pushes the value Infinity
+   *
+   * ( -> Infinity )
+   */
+  infinity: () => new Decimal(Infinity),
+  '-infinity': () => new Decimal(-Infinity)
 };

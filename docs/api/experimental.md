@@ -1,27 +1,14 @@
 # Internal Experimental Words
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L30">[src]</a></div>
-
-## `clock`
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L35">[src]</a></div>
-
-## `stringify`
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L46">[src]</a></div>
-
-## `parse-json`
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L51">[src]</a></div>
-
-## `regexp`
-convert string to RegExp
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L57">[src]</a></div>
-
-## `match`
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L64">[src]</a></div>
 
-## `test?`
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L71">[src]</a></div>
+## `throw`
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L69">[src]</a></div>
 
-## `replace`
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L78">[src]</a></div>
+## `stringify`
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L76">[src]</a></div>
+
+## `parse-json`
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L81">[src]</a></div>
 
 ## `||>` (apply)
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L86">[src]</a></div>
@@ -64,8 +51,15 @@ executes each element in a child environment, returns first to finish
 ## `sesssave`
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L152">[src]</a></div>
 
-## `\`
-push the top of the queue to the stack
+## `js-raw`
+evalues a string as raw javascript
 
-( -> {any} )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L175">[src]</a></div>
+( {string} -> {any} )
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L174">[src]</a></div>
+
+### `memoize`
+
+memoize a defined word
+
+( {string|atom} -> )
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L185">[src]</a></div>

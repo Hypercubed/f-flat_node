@@ -12,7 +12,6 @@ import {
   I
 } from '../types';
 import { unescapeString } from '../utils/stringConversion';
-import { quoteSymbol } from '../constants';
 
 const makeAction = new Word(':');
 const atAction = new Word('@');
@@ -107,14 +106,7 @@ function convertWord(value: string) {
 function convertLiteral(value: string): StackValue | undefined { // move these to parser
   if (value.slice(-1) === ':') { // this is a hack to push word literals, get rid of this
     value = value.slice(0, -1);
-    return new Word(<any>new Word(value));
+    value = <any>new Word(value);
   }
-
-  if (value.charCodeAt(0) === 64) {  // used?
-    // @
-    value = value.slice(1);
-    return [parseInt(value, 10) || String(value), atAction];
-  }
-
   return new Word(value);
 }

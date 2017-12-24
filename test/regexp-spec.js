@@ -61,11 +61,13 @@ test('can add (or) regexp', t => {
   t.deepEqual(fSyncJSON('"a;b:c" ";" regexp ":" regexp + /'), [['a', 'b', 'c']]);
 });
 
-test('can mul (and?) regexp', t => {
+test('can mul (and) regexp', t => {
   t.deepEqual(fSyncValues('"abc" regexp "def" regexp * type'), ['regexp']);
   t.deepEqual(fSyncValues('"\:" regexp "\;" regexp *'), [/(?=:)(?=;)/], 'no enclosure needed');
   t.deepEqual(fSyncValues('"abc" regexp "def" regexp *'), [/(?=abc)(?=def)/], 'enclosure needed');
 });
+
+// todo: nor, xor, etc.
 
 test('can mul (repeat) regexp', t => {
   t.deepEqual(fSyncValues('"abc" regexp 2 * type'), ['regexp']);
@@ -90,7 +92,7 @@ test('can test equality of regexp', t => {
   t.deepEqual(fSyncValues('";|:" regexp ";" regexp ":" regexp + ='), [true]);
 });
 
-test('can left and right shift', t => {
+test('can left and right "shift"', t => {
   t.deepEqual(fSyncValues('"/abc/i" regexp "/def/" regexp <<'), [/abcdef/i], 'keep lhs flags');
   t.deepEqual(fSyncValues('"/abc/i" regexp "/def/" regexp >>'), [/abcdef/], 'keep rhs flags');
 });

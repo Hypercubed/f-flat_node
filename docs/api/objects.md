@@ -15,6 +15,3 @@
 
 ## `vals`
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L47">[src]</a></div>
-
-## `assign`
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L52">[src]</a></div>

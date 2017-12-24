@@ -5,36 +5,36 @@
 
 'core.ff' import use
 
-drop2: [ drop drop ] ;
+drop2: [ drop drop ] ;        // B A ->
 
-m: [ dup eval ] ;           // [a] -> [a] a
+m: [ dup eval ] ;             // [a] -> [a] a
 
-dup2: [ over over ] ;       // [b] [a] -> [b] [a] [b] [a]
+dup2: [ over over ] ;         // B A -> B A B A
 
 keep2: [ q< dup2 q> dive ] ;  // [c] [b] [a] -> [c] [b] a [c] [b]   (aka 2keep)
 
-dropd: [ q< drop q> ] ;   // [b] [a] -> [a]          (aka nip)
-nip: [ swap drop ] ;        // [b] [a] -> [a]
-tuck: [ swap over ] ;       // [b] [a] -> [a] [b] [a]
+nip: [ swap drop ] ;          // B [a] -> [a]
+dropd: [ q< drop q> ] ;       // B [a] -> [a]          (aka nip)
+tuck: [ swap over ] ;         // [b] [a] -> [a] [b] [a]
 
-overd: [ q< over q> ] ;   // [c] [b] [a] -> [c] [b] [c] [a]
-pick: [ overd swap ] ;      // [c] [b] [a] -> [c] [b] [a] [c]
-dup3: [ pick pick pick ] ;  // [c] [b] [a] -> [c] [b] [a] [c] [b] [a]
-swapd: [ q< swap q> ] ;   // [c] [b] [a] -> [b] [c] [a]
-dig: [ swapd swap ] ;        // [c] [b] [a] -> [b] [a] [c]
-rolldown: [ swapd swap ] ;  // [c] [b] [a] -> [b] [a] [c] (aka dig)
-bury: [ swap swapd ] ;      // [c] [b] [a] -> [a] [c] [b]
-flip: [ swapd bury ] ;      // [c] [b] [a] -> [a] [b] [c]
-rot: [ bury swap ] ;        // [c] [b] [a] -> [a] [b] [c]
+overd: [ q< over q> ] ;       // [c] [b] [a] -> [c] [b] [c] [a]
+pick: [ overd swap ] ;        // [c] [b] [a] -> [c] [b] [a] [c]
+dup3: [ pick pick pick ] ;    // [c] [b] [a] -> [c] [b] [a] [c] [b] [a]
+swapd: [ q< swap q> ] ;       // [c] [b] [a] -> [b] [c] [a]
+dig: [ swapd swap ] ;         // [c] [b] [a] -> [b] [a] [c]
+rolldown: [ swapd swap ] ;    // [c] [b] [a] -> [b] [a] [c] (aka dig)
+bury: [ swap swapd ] ;        // [c] [b] [a] -> [a] [c] [b]
+flip: [ swapd bury ] ;        // [c] [b] [a] -> [a] [b] [c]
+rot: [ bury swap ] ;          // [c] [b] [a] -> [a] [b] [c]
 
 repn: [ runn drop ] ;
 
-dive: [ swap dipd ] ;       // [c] [b] [a] -> a [c] [b]   (aka dip2)
-dip2: [ swap dipd ] ; // [c] [b] [a] -> a [c] [b]
+dip2: [ swap dipd ] ;            // [c] [b] [a] -> a [c] [b]
+dive: [ swap dipd ] ;            // [c] [b] [a] -> a [c] [b]   (aka dip2)
 
-bi2: [ q< keep2 q> eval ] ;      // D C [b] [a] -> D C b D C a
-bi*: [ dipd eval ] ;             // D C [b] [a] -> D b C a
-bi@: [ dup bi* ] ;               // C B [a] -> C a B a
-tri: [ q< sipd sip q> eval ] ;   // D [c] [b] [a] -> D c D b D a
+bi2: [ q< keep2 q> eval ] ;;     // D C [b] [a] -> D C b D C a
+bi*: [ dipd eval ] ;;            // D C [b] [a] -> D b C a
+bi@: [ dup bi* ] ;;              // C B [a] -> C a B a
+tri: [ q< sipd sip q> eval ] ;;  // D [c] [b] [a] -> D c D b D a
 
 

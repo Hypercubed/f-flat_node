@@ -9,6 +9,11 @@ typed.addType({
 });
 
 typed.addType({
+  name: 'map',
+  test: is.plainObject
+});
+
+typed.addType({
   name: 'plainObject',
   test: is.plainObject
 });

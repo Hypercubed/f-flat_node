@@ -8,7 +8,7 @@
  * ## `;;` ( define inline action )
  * Converts the quote into an inline action and stores
  */
-;;: [ : expand swap sto ] ;
+;;: [ expand ; ] expand ;
 
 /**
  * ## `in`

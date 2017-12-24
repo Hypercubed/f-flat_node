@@ -5,11 +5,14 @@ test('should perform basic arithmetic', t => {
   t.deepEqual(fSyncValues('1 2 +'), [3], 'should add numbers');
   t.deepEqual(fSyncValues('1 2 -'), [-1], 'should sub numbers');
   t.deepEqual(fSyncValues('2 3 *'), [6], 'should multiply numbers');
-  t.deepEqual(fSyncValues('1 2 /'), [0.5], 'should divide numbers');
+  t.deepEqual(fSyncValues('3 2 /'), [1.5], 'should divide numbers');
+  t.deepEqual(fSyncValues('3 2 \\'), [1], 'should fld numbers');
+  t.deepEqual(fSyncValues('3 2 %'), [1], 'should fld numbers');
 });
 
-test('should div by zero, returns infinity', t => {
+test('should div by zero, returns complex infinity', t => {
   t.deepEqual(new F().eval('1 0 /').stack[0].type, 'ComplexInfinity');
+  t.deepEqual(new F().eval('1 0 \\').stack[0].type, 'ComplexInfinity');
 });
 
 test('should quickcheck integer arithmetic', t => {
@@ -354,13 +357,13 @@ test('should >> (right shift)', t => {
 });
 
 test('bitwise ops', t => {
-  t.deepEqual(fSyncValues('0b0001 0b0001 bitand'), [0b0001]);
-  t.deepEqual(fSyncValues('0b0001 0b0001 bitor'), [0b0001]);
-  t.deepEqual(fSyncValues('0b0001 0b0001 bitxor'), [0b0000]);
+  t.deepEqual(fSyncValues('0b0001 0b0001 &'), [0b0001]);
+  t.deepEqual(fSyncValues('0b0001 0b0001 |'), [0b0001]);
+  t.deepEqual(fSyncValues('0b0001 0b0001 $'), [0b0000]);
   t.deepEqual(fSyncValues('0b0001 bitnot'), [-2]);
 
-  t.deepEqual(fSyncValues('0b0001 0b0010 bitand'), [0b0000]);
-  t.deepEqual(fSyncValues('0b0001 0b0010 bitor'), [0b0011]);
-  t.deepEqual(fSyncValues('0b0001 0b0010 bitxor'), [0b0011]);
+  t.deepEqual(fSyncValues('0b0001 0b0010 &'), [0b0000]);
+  t.deepEqual(fSyncValues('0b0001 0b0010 |'), [0b0011]);
+  t.deepEqual(fSyncValues('0b0001 0b0010 $'), [0b0011]);
   t.deepEqual(fSyncValues('0b0010 bitnot'), [-3]);
 });

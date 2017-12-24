@@ -8,7 +8,8 @@ import {
   Word,
   Sentence,
   Decimal,
-  D, V
+  D, V,
+  Complex
 } from './setup';
 
 const future = { '@@Future': { $undefined: true } };
@@ -369,28 +370,10 @@ test('pick', t => {
   );
 });
 
-test('pick, shortcuts', t => {
-  t.deepEqual(fSyncValues('{a: 1} @a'), [1]);
-  t.deepEqual(fSyncValues('{a: 2} @a'), [2]);
-  t.deepEqual(fSyncJSON('{a: 3} @b'), [null]);
-  t.deepEqual(fSyncValues('{a: {b: 5}} @a.b'), [5]);
-  t.deepEqual(fSyncValues('{a: 11} @b 13 orelse'), [13]);
-  t.deepEqual(
-    fSyncValues('[ @a ] : pickfunc: sto { a: 17 } pickfunc'),
-    [17]
-  );
-});
-
 test('pick into object', t => {
   t.deepEqual(fSyncJSON('{ a: { a: 1 } a: @ }'), [{ a: D(1) }]);
   t.deepEqual(fSyncJSON('{ a: 2 } q< { a: q> over @ }'), [{ a: D(2) }]);
   t.deepEqual(fSyncJSON('{ a: 3 } q< { b: q> a: @ }'), [{ b: D(3) }]);
-  // t.deepEqual(fSyncJSON('{ a: 23 } { a: } @'), [{a: 23}]);
-});
-
-test('pick into object, shortcuts', t => {
-  t.deepEqual(fSyncJSON('{ a: { a: 1 } @a }'), [{ a: D(1) }]);
-  t.deepEqual(fSyncJSON('{ a: 3 } q< { b: q> @a }'), [{ b: D(3) }]);
   // t.deepEqual(fSyncJSON('{ a: 23 } { a: } @'), [{a: 23}]);
 });
 
@@ -402,29 +385,14 @@ test('pick into object with default', t => {
   t.snapshot(fSyncStack('{ a: 7 } q< { c: q> b: @ 11 orelse }')); // [{ c: 11 }]
 });
 
-test('pick into  shortcuts with default', t => {
-  t.deepEqual(fSyncJSON('{ a: { a: 1 } @b 2 orelse }'), [{ a: D(2) }]);
-  t.snapshot(fSyncStack('{ a: 7 } q< { c: q> @b 11 orelse }')); // [{ c: 11 }]
-});
-
 test('pick into array', t => {
   t.deepEqual(fSyncValues('( { a: 1 } a: @ )'), [[1]]);
-});
-
-test('pick into array, shortcut', t => {
-  t.deepEqual(fSyncValues('( { a: 1 } @a )'), [[1]]);
 });
 
 test('pick from array', t => {
   t.deepEqual(fSyncValues('[1 2] 0 @'), [1]);
   t.deepEqual(fSyncValues('[3 5] 1 @'), [5]);
   t.deepEqual(fSyncValues('([7 11] 0 @)'), [[7]]);
-});
-
-test('pick from, shortcut', t => {
-  t.deepEqual(fSyncValues('[1 2] @0'), [1]);
-  t.deepEqual(fSyncValues('[3 5] @1'), [5]);
-  t.deepEqual(fSyncValues('([7 11] @0)'), [[7]]);
 });
 
 test('actions', t => {
@@ -519,12 +487,15 @@ test('can perform actions from module', t => {
 });
 
 test('macros', t => {
-  t.deepEqual(fSyncValues('pred:(5)$'), [5, 4]);
-  t.deepEqual(fSyncValues('!:(12)$'), [479001600]);
-  t.deepEqual(fSyncValues('+:(5,4)$'), [9]);
-  t.deepEqual(fSyncValues('+:(pred:(5)$)$'), [9]);
-  t.deepEqual(fSyncValues('+:(*:(5,6)$, *:(5,2)$)$'), [40]);
-  t.deepEqual(fSyncValues('logn:(1000, 10)$'), [3]);
+  t.deepEqual(fSyncValues('pred:(5).'), [5, 4]);
+  t.deepEqual(fSyncValues('!:(12).'), [479001600]);
+  t.deepEqual(fSyncValues('+:(5,4).'), [9]);
+  t.deepEqual(fSyncValues('+:(pred:(5).).'), [9]);
+  t.deepEqual(fSyncValues('+:(*:(5,6)., *:(5,2).).'), [40]);
+  t.deepEqual(fSyncValues('logn:(1000, 10).'), [3]);
+  t.deepEqual(fSyncValues('!:(2 6 *).'), [479001600]);
+  t.deepEqual(fSyncValues('regexp:"/a./".'), [/a./]);
+  t.deepEqual(fSyncValues('[i *](10).'), [new Complex(0, 10)]);
 });
 
 test('length', t => {

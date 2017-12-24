@@ -35,14 +35,14 @@ test('should multiply', t => {
 test('mul identities', t => {
   t.deepEqual(fSyncValues('(1) 3 * sum'), [3]);
   t.deepEqual(fSyncValues('(2) 3 * sum'), [6]);
-  t.deepEqual(fSyncValues('(1) 3 * 3 / sum'), [1]);
-  t.deepEqual(fSyncValues('(2) 3 * 3 / sum'), [2]);
+  t.deepEqual(fSyncValues('(1) 3 * 3 / + sum'), [3]);
+  t.deepEqual(fSyncValues('(2) 3 * 3 / + sum'), [6]);
 });
 
 test('div identities', t => {
-  t.deepEqual(fSyncValues('(1) 1 /'), [[1]]);
-  t.deepEqual(fSyncValues('(1 1) 2 /'), [[1]]);
-  t.deepEqual(fSyncValues('(1 1 1 1) 2 /'), [[1, 1]]);
+  t.deepEqual(fSyncValues('(1) 1 /'), [[1], []]);
+  t.deepEqual(fSyncValues('(1 2) 1 /'), [[1], [2]]);
+  t.deepEqual(fSyncValues('(1 2 3 4) 2 /'), [[1, 2], [3,4]]);
 });
 
 test('add/sub identities', t => {
@@ -129,3 +129,41 @@ test('should pop and shift without mutation', t => {
     'should shift, without mutation'
   );
 });
+
+test('should fine maximum and minimum', t => {
+  t.deepEqual(
+    fSyncValues('( 2 3 1 6 3 ) maximum'),
+    [ 6 ]
+  );
+  t.deepEqual(
+    fSyncValues('( 2 3 1 6 3 ) minimum'),
+    [1]
+  );
+});
+
+test('should xxs', t => {
+  t.deepEqual(fSyncValues('(5 4 3) xxs'), [5, [4,3]]);
+});
+
+test('should quicksort', t => {
+  t.deepEqual(
+    fSyncValues('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] quicksort'),
+    [[ 1, 2, 2, 3, 3, 4, 4, 5, 6, 7, 8, 9, 10 ]]
+  );
+});
+
+test('should filter', t => {
+  t.deepEqual(
+    fSyncValues('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] [ even? ] filter'),
+    [[ 10, 2, 6, 4, 2, 4, 8 ]]
+  );
+});
+
+test('should filter arrays of arrays', t => {
+  t.deepEqual(
+    fSyncValues('[ [10 2] [5] [3 1 6 7] [4 2 3] [4] [8 9] ] [ ln even? ] filter'),
+    [[ [10, 2], [3, 1, 6, 7], [8, 9] ]]
+  );
+});
+
+

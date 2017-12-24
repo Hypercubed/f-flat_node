@@ -20,6 +20,10 @@ export function rOr(lhs: RegExp, rhs: RegExp) {
   return flags(lhs.flags, either(lhs, rhs));
 }
 
+export function rNor(lhs: RegExp, rhs: RegExp) {
+  return rNot(rOr(lhs, rhs));
+}
+
 export function rXor(lhs, rhs) {
   return rAnd(rOr(lhs, rhs), rNot(rAnd(lhs, rhs)));
 }

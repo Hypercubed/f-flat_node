@@ -3,15 +3,17 @@ import { Myna } from 'myna-parser';
 
 // Construct a grammar object
 const g = Object.create(null);
-const delimiters = ' \t\n\r\f,';
-const brackets = '[]{}()';
-const quotes = '\'"`';
+
+const DELIMITER = ' \t\n\r\f,';
+const BRACKETS = '[]{}()';
+const QUOTES = '\'"`';
+const COLON = ':';
 
 // words
-g.bracket = Myna.char(brackets).ast;
-g.identifierFirst = Myna.notChar(delimiters + quotes + brackets);
-g.identifierNext = Myna.notChar(delimiters + quotes + brackets);
-g.identifier = Myna.seq(g.identifierFirst, g.identifierNext.zeroOrMore);
+g.bracket = Myna.char(BRACKETS).ast;
+g.identifierFirst = Myna.notChar(DELIMITER + QUOTES + BRACKETS);
+g.identifierNext = Myna.notChar(DELIMITER + QUOTES + BRACKETS + COLON);
+g.identifier = Myna.seq(g.identifierFirst, g.identifierNext.zeroOrMore, Myna.char(COLON).opt);
 g.word = g.identifier.copy.ast;
 
 // decimal
@@ -59,19 +61,18 @@ g.untilEol = Myna.advanceWhileNot(Myna.newLine).then(Myna.newLine.opt);
 g.fullComment = Myna.seq('/*', Myna.advanceUntilPast('*/'));
 g.lineComment = Myna.seq('//', g.untilEol);
 g.comment = g.fullComment.or(g.lineComment);
-g.delimiter = Myna.char(delimiters).oneOrMore;
+g.delimiter = Myna.char(DELIMITER).oneOrMore;
 g.ws = g.delimiter.or(Myna.atWs.then(Myna.advance)).zeroOrMore;
 
 // symbol
 g.symbol = Myna.seq(Myna.char('#'), g.identifier).ast;
 
 // literals
-// g.quote = Myna.char(brackets).ast;
 g.bool = Myna.keywords('true', 'false', 'TRUE', 'FALSE').thenNot(
   g.identifierNext
 ).ast;
 g.null = Myna.keyword('null', 'NULL').thenNot(g.identifierNext).ast;
-g.nan = Myna.keyword('nan', 'NAN').thenNot(g.identifierNext).ast;
+g.nan = Myna.keyword('nan', 'NAN', 'NaN').thenNot(g.identifierNext).ast;
 g.i = Myna.char('iI').thenNot(g.identifierNext).ast;
 
 g.literal = Myna.choice(g.bool, g.null, g.nan, g.i);
@@ -80,9 +81,9 @@ g.literal = Myna.choice(g.bool, g.null, g.nan, g.i);
 g.escapedChar = Myna.char('\\').then(Myna.advance);
 g.templateString = Myna.guardedSeq('`', Myna.notChar('`').zeroOrMore, '`').ast;
 g.singleQuotedString = Myna.guardedSeq(
-  "'",
-  Myna.notChar("'").zeroOrMore,
-  "'"
+  '\'',
+  Myna.notChar('\'').zeroOrMore,
+  '\''
 ).ast;
 g.doubleQuotedString = Myna.guardedSeq(
   '"',

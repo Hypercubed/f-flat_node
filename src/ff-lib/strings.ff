@@ -21,7 +21,7 @@ ucase-char?: [ atoi [ 64 91 ] dip between? ] ;
 empty?: [ ln zero? ] ;
 char?: [ [ lcase-char? ] [ ucase-char? ] either? ] ;
 alphanumeric?: [ [ char? ] [ digit-char? ] either? ] ;
-palindrome?: [ [ alphanumeric? ] sfilter lcase dup sreverse = ] ;
+palindrome?: [ [ alphanumeric? ] filter lcase dup reverse = ] ;
 
 // regexp
 

@@ -196,6 +196,10 @@ export class Complex {
     return new Complex(ddiv(u, w), ddiv(v, w));
   }
 
+  divToInt(rhs: Complex | number): Complex {
+    return this.div(rhs).floor();
+  }
+
   plus(rhs: Complex | number): Complex {
     rhs = new Complex(rhs);
     const re = dplus(this.re, rhs.re);

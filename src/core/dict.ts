@@ -1,55 +1,11 @@
 import { assocIn, getIn } from 'icepick';
+import is from '@sindresorhus/is';
 
 import { formatValue, FFlatError } from '../utils';
-import { Sentence, Word, Just, StackValue, typed, Seq, Dictionary } from '../types';
-import { USE_STRICT, IIF } from '../constants';
+import { Sentence, Word, Just, StackValue } from '../types';
+import { USE_STRICT } from '../constants';
 import { StackEnv } from '../env';
-
-const is = require('@sindresorhus/is');
-
-const isObjectLike = val => typeof val === 'object' &&
-  val.constructor === Object &&
-  Object.getPrototypeOf(val) === Object.prototype;
-
-const rewrite = typed({
-  'Object, Array': (dict: Object, arr: any[]) => {
-    return arr
-      .reduce((p, i) => {
-        const n = rewrite(dict, i);
-        n instanceof Seq ?
-          p.push(...n.value) :
-          p.push(n);
-        return p;
-      }, []);
-  },
-  'Object, Sentence': (dict, action) => {
-    const expandedValue = rewrite(dict, action.value);
-    const newAction = new Sentence(expandedValue, action.displayString);
-    return new Seq([newAction]);
-  },
-  'Object, Word': (dict, action) => {
-    const path = Dictionary.makePath(action.value);
-    const value = <StackValue>getIn(dict, path);
-    if (is.undefined(value) && (action.value as string)[0] !== IIF) {
-      return action;
-    }
-    if (is.function(value)) {
-      return new Seq([action]);
-    }
-    return rewrite(dict, value);
-  },
-  'Object, plainObject': (dict: Object, obj: Object) => {
-    return Object.keys(obj)
-      .reduce((p, key) => {
-        const n = rewrite(dict, obj[key]); // todo: think about this, do we ever want to work on anything other than {string: Array}?
-        n instanceof Seq ?
-          p[key] = n.value.length === 1 ? n.value[0] : n.value :
-          p[key] = n;
-        return p;
-      }, {});
-  },
-  'Object, any': (x, y) => y
-});
+import { rewrite } from '../utils/rewrite';
 
 // For all deictionay actions, note:
 // * The dictionary is mutable
@@ -120,16 +76,22 @@ export const dict = {
   /**
    * ## `use`
    *
-   * Move teh contents of a dictionary into scope
+   * Move the contents of a map into scope
    *
    * ( {string|atom} -> )
    *
    * ```
-   * f♭> core: rcl use
+   * f♭> core: use
    * [ ]
    * ```
    */
-  use(this: StackEnv, dict: {}) {
+  use(this: StackEnv, dict: any) {
+    /* if (dict instanceof Word) {
+      dict = this.dict.get(dict.value);
+    }
+    if (typeof dict === 'string') {
+      dict = this.dict.get(dict);
+    } */
     Object.assign(this.dict.scope, dict);
   },
 

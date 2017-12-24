@@ -7,3 +7,4 @@ export * from './stackValue';
 export * from './returnValues';
 export * from './future';
 export * from './complexInfinity';
+export * from './map';

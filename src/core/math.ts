@@ -234,22 +234,28 @@ export const math = {
   erf, // todo: Decimal. Complex
 
   /**
-   * ## `bitand`
+   * ## `&`
+   *
+   * bitwise and
    *
    */
-  'bitand': (a, b) => a & b,
+  '&': (a, b) => a & b,
 
   /**
-   * ## `bitor`
+   * ## `|`
+   *
+   * bitwise or
    *
    */
-  'bitor': (a, b) => a | b,
+  '|': (a, b) => a | b,
 
   /**
-   * ## `bitxor`
+   * ## `$`
+   *
+   * bitwise xor
    *
    */
-  'bitxor': (a, b) => a ^ b,
+  '$': (a, b) => a ^ b,
 
   /**
    * ## `bitnot`

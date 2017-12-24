@@ -7,7 +7,6 @@
   swap [ ] >> >> path-join resolve            // resolve
   read eval                                   // eval and export
 
-
 'module-loader.ff'
   __filename dirname                          // __dirname
   swap [ ] >> >> path-join resolve            // resolve

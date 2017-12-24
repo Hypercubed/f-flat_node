@@ -1,5 +1,5 @@
 import test from 'ava';
-import { F, fSyncJSON } from './setup';
+import { F, fSyncJSON, fSyncValues } from './setup';
 
 test('should push strings', t => {
   t.deepEqual(fSyncJSON('"a" "b"'), ['a', 'b']);
@@ -11,7 +11,6 @@ test('should push strings', t => {
 
 test('should quickcheck strings', t => {
   t.deepEqual(fSyncJSON('[rand-string] [ dup 1 * = ] for-all'), [[]]);
-  t.deepEqual(fSyncJSON('[rand-string] [ dup 2 * 2 / = ] for-all'), [[]]);
   t.deepEqual(
     fSyncJSON('[rand-string] [ [ ln 2 *] [2 * ln ] bi = ] for-all'),
     [[]]
@@ -36,26 +35,43 @@ test('should split', t => {
   t.deepEqual(fSyncJSON('"a-b-c" "-" /'), [['a', 'b', 'c']]);
 });
 
-test('should / (div + rem)', t => {
-  t.deepEqual(fSyncJSON('"abc" 2 /'), ['ac']);
-  t.deepEqual(fSyncJSON('"abcd" 2 /'), ['ab']);
-  t.deepEqual(fSyncJSON('"abcd" 5 /'), ['abcd']);
+test('should / (split at)', t => {
+  t.deepEqual(fSyncJSON('"abc" 2 /'), ['ab', 'c']);
+  t.deepEqual(fSyncJSON('"abcd" 2 /'), ['ab', 'cd']);
+  t.deepEqual(fSyncJSON('"abcd" 5 /'), ['abcd', '']);
+  t.deepEqual(fSyncJSON('"aaX" 2 / +'), ['aaX']);
 });
 
 test('should div (cut)', t => {
-  t.deepEqual(fSyncJSON('"abc" 2 \\'), ['a']);
+  t.deepEqual(fSyncJSON('"abc" 2 \\'), ['ab']);
   t.deepEqual(fSyncJSON('"abcd" 2 \\'), ['ab']);
-  t.deepEqual(fSyncJSON('"abcd" 5 \\'), ['']);
+  t.deepEqual(fSyncJSON('"abcd" 5 \\'), ['abcd']);
 });
 
-test('should mod (rem)', t => {
+test('should mod (cut rem)', t => {
   t.deepEqual(fSyncJSON('"abc" 2 %'), ['c']);
-  t.deepEqual(fSyncJSON('"abcd" 2 %'), ['']);
-  t.deepEqual(fSyncJSON('"abcd" 5 %'), ['abcd']);
+  t.deepEqual(fSyncJSON('"abcd" 2 %'), ['cd']);
+  t.deepEqual(fSyncJSON('"abcd" 5 %'), ['']);
 });
 
 test('should div rem', t => {
-  t.deepEqual(fSyncJSON('"aaX" [ 2 \\ ] [ 2 % ] bi +'), ['aX']);
+  t.deepEqual(fSyncJSON('"aaX" [ 2 \\ ] [ 2 % ] bi +'), ['aaX']);
+});
+
+test('should split string using string', t => {
+  t.deepEqual(fSyncValues('"a;b;c" ";" /'), [['a', 'b', 'c']]);
+});
+
+test('should split string using string, first', t => {
+  t.deepEqual(fSyncValues('"a;b;c" ";" \\'), ['a']);
+});
+
+test('should split string using string, rest', t => {
+  t.deepEqual(fSyncValues('"a;b;c" ";" %'), [['b', 'c']]);
+});
+
+test('should div rem', t => {
+  t.deepEqual(fSyncJSON('"a;b;c" [ ";" \\ ] [ ";" % ] bi'), ['a', ['b', 'c']]);
 });
 
 test('should test equality', t => {
@@ -155,11 +171,18 @@ test('should get string length', t => {
 });
 
 test('should concat strings using << and >>', t => {
-  t.deepEqual(fSyncJSON('"dead" "beef" <<'), ['deadbeef']);
-  t.deepEqual(fSyncJSON('"dead" "beef" >>'), ['deadbeef']);
+  t.deepEqual(fSyncJSON('"dead" "XXXXXXXX" <<'), ['deadXXXXXXXX']);
+  t.deepEqual(fSyncJSON('"XXXXXXXX" "beef" >>'), ['XXXXXXXXbeef']);
 });
 
 test('should left and right shift', t => {
   t.deepEqual(fSyncJSON('"deadbeef" 4 <<'), ['beef']);
   t.deepEqual(fSyncJSON('"deadbeef" 4 >>'), ['dead']);
+});
+
+test('should quicksort strings', t => {
+  t.deepEqual(
+    fSyncValues('"the quick brown fox jumps over the lazy dog" quicksort'),
+    ['        abcdeeefghhijklmnoooopqrrsttuuvwxyz']
+  );
 });

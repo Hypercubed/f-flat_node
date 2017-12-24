@@ -1,70 +1,60 @@
-import is from '@sindresorhus/is';
 
-export function not(a: boolean) {
-  return (is as any).null(a) ? null : !a;
+export type bool = boolean | null;
+export type cmpValue = -1 | 0 | 1;
+
+export function not(a: bool) {
+  if (a === true) return false;
+  if (a === false) return true;
+  return null;
 }
 
-export function and(lhs, rhs) {
-  if ((is as any).null(lhs)) {
-    if ((is as any).null(rhs)) return null;
-    return rhs ? null : false;
-  }
-  if ((is as any).null(rhs)) {
-    return lhs ? null : false;
-  }
-  return rhs && lhs;
+export function and(lhs: bool, rhs: bool): bool {
+  if (lhs === true) return rhs;
+  if (rhs === true) return lhs;
+  if (lhs === false || rhs === false) return false;
+  return null;
 }
 
-export function or(lhs, rhs) {
-  if ((is as any).null(rhs)) {
-    return lhs || rhs;
-  }
-  return rhs || lhs;
-}
-
-export function cmp(lhs, rhs) {
-  lhs = k(lhs);
-  rhs = k(rhs);
-  if (lhs === rhs) {
-    return 0;
-  }
-  return lhs > rhs ? 1 : -1;
-}
-
-export function xor(lhs, rhs) {
-  return and(or(lhs, rhs), nand(lhs, rhs));
-}
-
-export function nand(lhs, rhs) {
+export function nand(lhs: bool, rhs: bool): bool {
   return not(and(lhs, rhs));
 }
 
-export function nor(lhs, rhs) {
+export function or(lhs: bool, rhs: bool): bool {
+  return nand(not(lhs), not(rhs));
+}
+
+export function xor(lhs: bool, rhs: bool): bool {
+  return and(or(lhs, rhs), nand(lhs, rhs));
+}
+
+export function nor(lhs: bool, rhs: bool): bool {
   return not(or(lhs, rhs));
 }
 
-export function mimpl(lhs, rhs) {
+export function mimpl(lhs: bool, rhs: bool): bool {
   return or(not(lhs), rhs);
 }
 
-export function cimpl(lhs, rhs) {
+export function cimpl(lhs: bool, rhs: bool): bool {
   return or(lhs, not(rhs));
 }
 
-export function mnonimpl(lhs, rhs) {
+export function mnonimpl(lhs: bool, rhs: bool): bool {
   return and(lhs, not(rhs));
 }
 
-export function cnonimpl(lhs, rhs) {
+export function cnonimpl(lhs: bool, rhs: bool): bool {
   return and(not(lhs), rhs);
 }
 
-function k(a) {
-  if ((is as any).null(a)) return 0;
-  return a ? 1 : -1;
+export function cmp(lhs: bool, rhs: bool): cmpValue {
+  const slhs = sort_order(lhs);
+  const srhs = sort_order(rhs);
+  if (slhs === srhs) return 0;
+  return slhs > srhs ? 1 : -1;
 }
 
-export function r(a) {
-  if (a === 0) return null;
-  return a === 1;
+function sort_order(a: bool): cmpValue {
+  if (a === null) return 0;
+  return a ? 1 : -1;
 }

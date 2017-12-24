@@ -2,6 +2,7 @@ import { Word, Sentence } from './words';
 import { Future } from './future';
 import { Complex } from './complex';
 import { Decimal } from './decimal';
+import { map } from './map';
 
 export type StackValue =
   | number
@@ -16,6 +17,7 @@ export type StackValue =
   | undefined
   | null
   | Complex
-  | Decimal;
+  | Decimal
+  | map;
 
 export interface StackArray extends Array<StackValue> {}

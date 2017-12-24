@@ -56,9 +56,7 @@ export class StackEnv {
       const act = new Sentence(lexer(fn));
       return this.defineAction(name, act);
     },
-    'Word | string, any': (name: Word | string, fn) => {
-      return this.dict.set(String(name), fn);
-    }
+    'Word | string, any': (name: Word | string, a) => this.dict.set(String(name), a)
   });
 
   dict: Dictionary;
@@ -313,12 +311,6 @@ export class StackEnv {
       }
 
       if (tokenValue.length > 1) {
-        /* if (tokenValue[tokenValue.length - 1] === '!') {  // macro
-          tokenValue = tokenValue.slice(0, -1);
-          this.queueFront(new Word('<->'));
-          return this.stackPushValues(new Word(tokenValue));
-        } */
-
         if (tokenValue[tokenValue.length - 1] === IIF) {
           tokenValue = tokenValue.slice(0, -1);
           return this.stackPushValues(new Word(tokenValue));

@@ -176,14 +176,6 @@ export const types = {
   of: (a, b) => (a.constructor ? new a.constructor(b) : undefined),
 
   /**
-   * ## `empty`
-   */
-  empty: typed('empty', {
-    'Decimal | number': () => zero,
-    any: a => (a.empty ? a.empty() : new a.constructor())
-  }),
-
-  /**
    * ## `is?`
    */
   'is?': (a, b) => a === b,

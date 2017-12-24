@@ -263,3 +263,7 @@ test('should negate', t => {
   t.deepEqual(fSyncString('pi i 1 + * ~'), '-3.141592653589793-3.141592653589793i');
 });
 
+test('floor division', t => {
+  t.deepEqual(fSyncString('i 3 * i 2 * \\'), '1');
+});
+

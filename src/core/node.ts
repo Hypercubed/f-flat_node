@@ -50,6 +50,10 @@ function getURLFromFilePath(filepath: string) {
  * # Internal Node Words
  */
 export const node = {
+  /**
+   * ## `args`
+   */
+  args: () => process.argv,
 
   /**
    * ## `println`

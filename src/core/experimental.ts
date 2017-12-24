@@ -1,7 +1,10 @@
-import { splice, push } from 'icepick';
+import { splice, push, pop } from 'icepick';
 import memoize from 'memoizee';
 import { writeFileSync } from 'fs';
+
 import { stringifyStrict } from '../utils/json';
+import { deepEquals } from '../utils/utils';
+import { FFlatError } from '../utils';
 
 import {
   typed,
@@ -11,10 +14,12 @@ import {
   Just,
   Seq,
   StackValue,
-  StackArray
+  StackArray,
+  Decimal
 } from '../types';
 import { StackEnv } from '../env';
 import { log } from '../utils';
+import { lexer } from '../parser/lexer';
 
 typed.addConversion({
   from: 'string',
@@ -25,10 +30,45 @@ typed.addConversion({
   }
 });
 
+const patternMatch = typed('pattern', {
+  'any, Symbol': (a: any, b: Symbol): boolean => {
+    if (b === Symbol.for('_')) return true;
+    return typeof a === 'symbol' ? a === b : false;
+  },
+  'Array, Array': (a: StackValue[], b: StackValue[]): boolean => {
+    if (a.length < b.length) { // todo: handle "rest" pattern '...'
+      return false;
+    }
+    for (let i = 0; i < a.length; i++) {
+      const bb = b[i];
+      if (bb instanceof Word && bb.value === '...') return true;
+      if (bb instanceof Word && bb.value === '***') return true;
+      if (bb instanceof Symbol && bb === Symbol.for('...')) return true;
+      if (!patternMatch(a[i], bb)) {
+        return false;
+      }
+    }
+    return true;
+  },
+  'string, RegExp': (lhs: string, rhs: RegExp) => rhs.test(lhs),
+  'any, Word': (a: any, b: Word): boolean => {
+    if (b.value === '_') return true;
+    return a instanceof Word && a.value === b.value;
+  },
+  'any, any': (a: any, b: any): boolean => deepEquals(a, b)
+});
+
 /**
  * # Internal Experimental Words
  */
 export const experimental = {
+  /**
+   * ## `throw`
+   */
+  throw: function(this: StackEnv, e) {
+    throw new FFlatError(e, this);
+  },
+
   /**
    * ## `stringify`
    */

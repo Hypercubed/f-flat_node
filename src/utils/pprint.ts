@@ -130,7 +130,7 @@ export function formatState({ stack, queue }, opts = defaultOpts): string {
 const sRE = /Symbol\(([^)]*)\).*/g;
 
 function formatSymbol(value: Symbol, opts: InspectOptions): string {
-  const str = value.toString().replace(sRE, '#$1');
+  const str = value.toString().replace(sRE, '$1');
   return stylize(str, 'symbol', opts);
 }
 
