@@ -267,3 +267,10 @@ test('floor division', t => {
   t.deepEqual(fSyncString('i 3 * i 2 * \\'), '1');
 });
 
+test('complex works as a "macro"', t => {
+  t.deepEqual(fSyncValues('5:complex'), [5]);
+  t.deepEqual(fSyncValues('[ 5:complex ]'), [[ 5 ]]);
+  t.deepEqual(fSyncString('[ [5,3]:complex ]'), '5+3i');
+  t.deepEqual(fSyncValues('[ [5,3]:complex ] ln'), [1]);
+});
+

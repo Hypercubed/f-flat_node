@@ -57,6 +57,13 @@ export const types = {
   }),
 
   /**
+   * ## `complex`
+   */
+  complex: typed('complex', {
+    any: x => Complex.parse(x)
+  }),
+
+  /**
    * ## `number?`
    */
   'number?': typed('number_', {

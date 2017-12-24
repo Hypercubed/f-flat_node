@@ -367,3 +367,8 @@ test('bitwise ops', t => {
   t.deepEqual(fSyncValues('0b0001 0b0010 $'), [0b0011]);
   t.deepEqual(fSyncValues('0b0010 bitnot'), [-3]);
 });
+
+test('number works as a "macro"', t => {
+  t.deepEqual(fSyncValues('"5":number'), [5]);
+  t.deepEqual(fSyncValues('[ "5":number ]'), [[ 5 ]]);
+});

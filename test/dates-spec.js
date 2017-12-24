@@ -48,3 +48,8 @@ test('should get day', t => {
   t.deepEqual(fSyncJSON('"1/1/1990" date 1000 60 * 60 * 24 * - day'), ['Sun']);
 });
 
+test('date works as a "macro"', t => {
+  t.deepEqual(fSyncJSON('"1/1/1990":date'), [{$date: '1990-01-01T07:00:00.000Z'}]);
+  t.deepEqual(fSyncJSON('[ "1/1/1990":date ]'), [[{$date: '1990-01-01T07:00:00.000Z'}]]);
+});
+

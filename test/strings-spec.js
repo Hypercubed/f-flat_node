@@ -186,3 +186,8 @@ test('should quicksort strings', t => {
     ['        abcdeeefghhijklmnoooopqrrsttuuvwxyz']
   );
 });
+
+test('string works as a "macro"', t => {
+  t.deepEqual(fSyncValues('5:string'), ['5']);
+  t.deepEqual(fSyncValues('[ 5:string ]'), [[ '5' ]]);
+});

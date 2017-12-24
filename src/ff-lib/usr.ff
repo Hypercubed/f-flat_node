@@ -15,6 +15,7 @@ with: [ [ swap [ swap ] ] dip + >> ] ;
 eval2: [ slip eval ] ;
 replicate: [ [ unit ] dip * ] ;
 nth: [ -- @ ] ;
+dupn: [ [ dup ] swap times ] ;
 
 // side effects
 trace: [ trace: set-log-level ] ;

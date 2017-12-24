@@ -4,11 +4,15 @@ import { g, c } from './gamma';
 
 const precision = Math.pow(10, -<number>Decimal.precision + 5);
 
+const reRe = '[+-]?\\d+(?:e[+-]\\d+)?';
+const reIm = '[+-]\\d+(?:e[+-]\\d+)?';
+const reComplex = new RegExp(`^(${reRe})(${reIm})(?:\i)$`, 'i');
+
 export class Complex {
   re: Decimal;
   im: Decimal;
 
-  constructor(re: number | Decimal | Complex, im: number | Decimal = 0) {
+  constructor(re: Decimal.Value | Complex, im: Decimal.Value = 0) {
     if (re instanceof Complex) {
       return re;
     }
@@ -411,6 +415,21 @@ export class Complex {
   }
 
   static I = new Complex(0, 1);
+
+  static parse(a: Decimal.Value | Complex) {
+    if (Array.isArray(a) && a.length === 2) {
+      return new Complex(a[0], a[1]);
+    }
+    if (typeof a === 'string') {
+      const tokens = reComplex.exec(a);
+      if (tokens !== null && tokens.length === 3) {
+        tokens[1] = tokens[1].replace(/^\+/, '');
+        tokens[2] = tokens[2].replace(/^\+/, '');
+        return new Complex(tokens[1], tokens[2]);
+      }
+    }
+    return new Complex(a);
+  }
 }
 
 // Complex.type = '@@complex';

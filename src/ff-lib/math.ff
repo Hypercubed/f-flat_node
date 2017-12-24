@@ -45,7 +45,6 @@ sinh: [ exp dup inv - 2 / ] ;
 tanh: [ 2 * exp pred swap ++ / ] ;
 
 // inverse hyperbolic trig
-complex: [ 0 i * + ] ;
 asinh: [ complex dup dup * ++ sqrt + ln ] ;
 acosh: [ complex dup -- sqrt over 1 + sqrt * + ln ] ;
 atanh: [ i * atan i / ] ;

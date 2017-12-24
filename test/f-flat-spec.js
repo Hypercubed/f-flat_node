@@ -486,7 +486,14 @@ test('can perform actions from module', t => {
   t.deepEqual(fSyncValues('12 math.!'), [479001600]);
 });
 
-test('macros', t => {
+test('postfix "macros"', t => {
+  t.deepEqual(fSyncValues('5:pred'), [5, 4]);
+  t.deepEqual(fSyncValues('12:!'), [479001600]);
+  t.deepEqual(fSyncValues('1000 10:logn'), [3]);
+  t.deepEqual(fSyncValues('"a" 5:dupn'), ['a', 'a', 'a', 'a', 'a', 'a']);
+});
+
+test('prefix macros', t => {
   t.deepEqual(fSyncValues('pred:(5).'), [5, 4]);
   t.deepEqual(fSyncValues('!:(12).'), [479001600]);
   t.deepEqual(fSyncValues('+:(5,4).'), [9]);

@@ -97,5 +97,10 @@ test('can left and right "shift"', t => {
   t.deepEqual(fSyncValues('"/abc/i" regexp "/def/" regexp >>'), [/abcdef/], 'keep rhs flags');
 });
 
+test('regexp works as a macro "macro"', t => {
+  t.deepEqual(fSyncValues('"/abc/i":regexp'), [/abc/i]);
+  t.deepEqual(fSyncValues('[ "/abc/i":regexp ]'), [[ /abc/i ]]);
+});
+
 
 
