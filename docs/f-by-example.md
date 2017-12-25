@@ -85,3 +85,66 @@ xs 2 /
 '1/1/1990' date 
 ```
 
+## Expressions
+
+```
+sqr: [ dup * ] ;
+cube: [ dup sqr * ] ;
+
+
+`5 is $( 5 )` println
+`5 squared is $( 5 sqr )` println
+`5 cubed is $( 5 cube)` println
+```
+
+## Flow Control
+
+```
+f♭> true 'Value is true' 'Value is false' choose
+[ 'Value is true' ]
+```
+
+## Functions
+
+Le's write a fizzbuzz
+
+```
+fizzbuzz: [
+  dup 15 divisor?
+  [ 'fizzbuzz' println ]
+  [
+    dup 3 divisor?
+    [ 'fizz' println ]
+    [ 
+      dup 5 divisor?
+      [ 'buzz' println ]
+      [ println ]
+      branch
+    ]
+    branch
+  ]
+  branch
+] ;
+
+30 integers [ fizzbuzz ] map
+```
+
+## Modules
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
