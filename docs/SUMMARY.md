@@ -14,11 +14,15 @@
   * [Data Stuctures](data-stuctures.md)
   * [Expressions / Evaluation](expressions-evaluation.md)
   * [Dictionary / Locals](dictionary-locals.md)
+  * [Operator Basis](operator-basis.md)
   * [Function Definitions / Expanding Functions](function-definitions-expanding-functions.md)
   * [Control Structures, Conditionals and Blocks](control-structures-conditionals-and-blocks.md)
   * [Looping and Recursion](looping-and-recursion.md)
   * [Compared to JavaScript](compare.md)
   * [Compared to JSON](compared-to-json.md)
+  * [Module Loading](module-loading.md)
+  * [JavaScript interop](javascript-interop.md)
+  * [Concurrency](concurrency.md)
 * [Internal Words](internal-words.md)
   * [Core](api/core.md)
   * [Base](api/base.md)
@@ -34,6 +38,4 @@
   * [Dice Rolls for Dungeons & Dragons \(and other games\)](dice-rolls-for-dungons-and-dragons-and-other-games.md)
   * [The Fridge Game](the-fridge-game.md)
   * [99-problems](99-problems-solved)
-
-
 
