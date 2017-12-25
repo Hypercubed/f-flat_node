@@ -33,4 +33,7 @@
   * [Project Euler Solutions](project-euler-solutions.md)
   * [Dice Rolls for Dungons & Dragons \(and other games\)](dice-rolls-for-dungons-and-dragons-and-other-games.md)
   * [The Fridge Game](the-fridge-game.md)
+  * [99-problems](99-problems-solved)
+
+
 
