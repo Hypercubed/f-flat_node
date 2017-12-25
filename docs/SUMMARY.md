@@ -38,4 +38,5 @@
   * [Dice Rolls for Dungeons & Dragons \(and other games\)](dice-rolls-for-dungons-and-dragons-and-other-games.md)
   * [The Fridge Game](the-fridge-game.md)
   * [99-problems](99-problems-solved)
+* [F♭ by example](f-by-example.md)
 
