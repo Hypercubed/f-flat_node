@@ -16,6 +16,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] words and literals are equivelent? true: === true ?
 - [ ] Ranges?
 - [ ] Symbols vs internal classes?
+- [ ] sto/rcl destructuring `1 2 3 [ x: y: z: ] sto`?
 
 # Todo next:
 

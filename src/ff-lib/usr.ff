@@ -56,6 +56,20 @@ stack-check: [ q< stack-copy q> =~ ] ;;
 case: [ [ stack-check ] dip when ] ;;
 switch: [ [ unstack case ] foreach ] ;;
 
+// lambdas
+=>: [ [ sto ] foreach-rev ] ;
+lambda-eval: [
+  [ stack ] dip
+  unstack: swap >>
+  >> fork unstack
+] ;
+lambda: [ 
+  [ lambda-eval ] >>
+] ;
+
+// f x y z = y2 + x2 − |y|
+f: [ [x: y: z:] => y 2 ^ x 2 ^ + y abs - ] lambda ;
+
 // short circuit logicals
 &&: [ slip when ] ;;
 ||: [ slip [] swap branch ] ;;

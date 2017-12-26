@@ -50,6 +50,7 @@ if: [ slip when ] ;
 while: [ swap do + [ loop ] >> when ] ;
 runn: [ [ -- dup -1 > ] [ [ run ] dip ] while drop ] ;
 foreach: [ * eval ] ;
+foreach-rev: [ [ reverse ] dip * eval ] ;
 times: [ runn drop ] ;
 guard: [ [ keep ] >> dip branch ] ;
 orelse: [ [ null? ~ ] guard ] ;
