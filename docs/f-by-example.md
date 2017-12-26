@@ -2,15 +2,30 @@
 
 ## Hello World
 
-A traditional Hello World:
+Our first example is to print a traditional "Hello World" message.  When you firt open f-flat in interactive mode you will see the wolcome message:
 
 ```
-'Hello World' println
+Welcome to F♭ REPL Interpreter
+F♭ Version 0.0.6 (C) 2000-2017 J. Harshbarger
+
+f♭>
 ```
+
+The `f♭>` is the REPL input prompt.  To print our message type the string and `println`:
+
+```
+f♭> 'Hello World' println
+Hello World
+[  ]
+```
+
+The empty brackets after the message indicate that the stack is empty.
+
+To exoit the REPL type `.exit` or hit `ctrl-c` twice.
 
 ## Comments
 
-F♭ supports both :
+F♭ supports both:
 
 * // Line comments which go to the end of the line.
 * /* Block comments which go to the closing delimiter. */
@@ -22,102 +37,458 @@ F♭ supports both :
  * This is another type of comment, the block comment.
  */
  
- 'Hello World' println
+f♭> 'Hello World' println
 ```
+
+## Stack manipulation
+
+```
+// push items onto the stack
+f♭> 3 'Hello World'
+[ 3 'Hello World' ]
+
+// duplicate an item
+f♭> dup
+[ 3 'Hello World' 'Hello World' ]
+
+// remove an item
+f♭> drop
+[ 3 'Hello World' ]
+
+// swap items
+f♭> swap
+[ 'Hello World' 3 ]
+
+// undo last user action
+f♭> undo
+[ 3 'Hello World' ]
+
+// clear the stack
+f♭> clr
+[ ]
+
+// clear the environment (cannot be undone)
+f♭> .clear
+Clearing context...
+
+Welcome to F♭ REPL Interpreter
+F♭ Version 0.0.6 (C) 2000-2017 J. Harshbarger
+
+f♭>
+// now ready for more input
+````
 
 ## Literals and Operators
 
 ```
-`1 + 2 is $(1 2 +)` println
+// using postfix notation
+f♭> 6 5 4 * +
+[ 26 ]
 
-// Integer subtraction
-`1 - 2 is $(1 2 -)` println
+f♭> 6.5 /
+[ 4 ]
+
+f♭> 10 *
+[ 40 ]
+
+f♭> 5 /
+[ 8 ]
+
+f♭> 2 %
+[ 0 ]
+
+// ln on a number to calculate natural log
+f♭> ln
+[ -Infinity ]
+
+// println prints a value
+f♭> clr 3 println
+3
+[  ]
+
+// single quotes for strings
+f♭> 'Hello' println
+Hello
+[  ]
+
+// double quotes to use encoded strings
+f♭> "f-flat === f\u{266D}" println
+f-flat === f♭
+[  ]
+
+// Use backticks for string templates
+f♭> `1 + 2 is $(1 2 +)` println
+1 + 2 is 3
+[  ]
+
+// string concatenation with +
+f♭> 'f' '-flat' + println
+f-flat
+[  ]
 
 // boolean logic
-`true AND false is $(true false *)` println
-`true OR false is $(true false +)` println
-`NOT true is $(true ~)` println
+f♭> `true AND false is $(true false *)` println
+true AND false is false
+[  ]
+
+f♭> `true OR false is $(true false +)` println
+true OR false is true
+[  ]
+
+f♭> `NOT true is $(true ~)` println
+NOT true is false
+[  ]
 
 // Bitwise operations
-`0011 AND 0101 is $( 0b011 0b101 & bin )` println
-`0011 OR 0101 is $( 0b011 0b101 | bin )` println
-`0011 XOR 0101 is $( 0b011 0b101 $ )` println
-`1 << 5 is $( 1 5 << )` println
-`0x80 >> 2 is $( 0x80 2 >> hex )` println
+f♭> `0011 AND 0101 is $( 0b011 0b101 & bin )` println
+0011 AND 0101 is 0b1
+[  ]
+
+f♭> `0011 OR 0101 is $( 0b011 0b101 | bin )` println
+0011 OR 0101 is 0b111
+[  ]
+
+f♭> `0011 XOR 0101 is $( 0b011 0b101 $ )` println
+0011 XOR 0101 is 6
+[  ]
+
+f♭> `1 << 5 is $( 1 5 << )` println
+1 << 5 is 32
+[  ]
+
+f♭> `0x80 >> 2 is $( 0x80 2 >> hex )` println
+0x80 >> 2 is 0x20
+[  ]
 
 // Use underscores to improve readability!
-`One million is written as $( 1_000_000 )` println
+f♭> `One million is written as $( 1_000_000 )` println
+One million is written as 1000000
+[  ]
 ```
 
-## Arrays and slices
+## Arrays
+
+Expressions within square brackets are not evaluated.  Expressions within round brackets are.  Commas are whitespace.
 
 ```
-[1, 2, 3, 4, 5] xs: sto
+f♭> [ 5, 4 ]
+[ [ 5 4 ] ]
+
+f♭> ( 3 2 * )
+[ [ 5 4 ] [ 6 ] ]
+
+f♭> <<
+[ [ 5 4 [ 6 ] ] ]
+
+f♭> [ println ] >>
+[ [ [ 5 4 3 [ 3 ] ] println ] ]
+
+f♭> 0 @
+[ [ 5 4 3 [ 2 ] ] ]
+```
+
+## Maps
+
+Objects/Maps are key value pairs.  Keys can be strings or words (identifies with a colon suffix).  Again, commas are whitespace.
+
+```
+f♭> { 'x' 123, y: 456 }
+[ { x: 123 y: 456 } ]
+
+f♭> { "y": 890 }
+[ { x: 123 y: 456 } { y: 890 } ]
+
+f♭> <<
+[ { y: 890 x: 123 } ]
+
+f♭> x: @
+[ 123 ]
+
+f♭> undo
+[ { y: 890 x: 123 } ]
+
+f♭> { x: 123 y: 890 }
+[ { y: 890 x: 123 } { x: 123 y: 890 } ]
+
+f♭> =
+[ true ]
+```
+
+## Storing values
+
+```
+// Use sto to store a value in the dictionary
+f♭> 45 x: sto
+[  ]
+
+// use rcl to recall
+f♭> x
+[ 45 ]
+
+// dictionary words cannot be over written
+f♭> 54 x: sto
+FFlatError: Error: Cannot overrite definitions in strict mode: x
+    stack/queue: 1 / 0
+    state:                                                                           45  <=>
+```
+
+## Slices and Lengths
+
+```
+// first we store some values for later use... this is discouraged in general.
+f♭> [1, 2, 3, 4, 5] xs: sto
+[  ]
+
+f♭> 'Hello+World' ss: sto
+[  ]
 
 // Indexing starts at 0
-`first element of the array: $( xs 0 @ )` println
-`second element of the array: $( xs 1 @ )` println
+f♭> `first element of the array: $( xs 0 @ )` println
+first element of the array: 1
+[  ]
 
-// `ln` returns the size of the array
-`array size: $( xs ln )` println
+f♭> `second element of the array: $( xs 1 @ )` println
+second element of the array: 2
+[  ]
 
-// / splits an array
-`array split at 2:` println
-xs 2 /
+f♭> `first character of the string: $( ss 0 @ )` println
+first character of the string: H
+[  ]
+
+f♭> `second character of the string: $( ss 1 @ )` println
+second character of the string: e
+[  ]
+
+// `ln` returns the length/size
+f♭> `array size: $( xs ln )` println
+array size: 5
+[  ]
+
+f♭> `string size: $( ss ln )` println
+string size: 11
+[  ]
+
+// `/` splits an array or string
+f♭> `array split at 2:` println xs 2 /
+ array split at 2:
+[ [ 1 2 ] [ 3 4 5 ] ]
+
+f♭> clr `string split at 6:` println ss 6 /
+ string split at 6:
+[ 'Hello+' 'World' ]
+
+f♭> clr ` string split at "+"` println ss '+' /
+ string split at "+"
+[ [ 'Hello' 'World' ] ]
+
+// * joins an array
+f♭> clr [ 'Hello' 'World' ] '::' * println
+Hello::World
+[  ]
+```
+
+## Types
+
+```
+f♭> 5 type println
+number
+[  ]
+
+f♭> 'Hello' type println
+string
+[  ]
+
+f♭> i type println
+complex
+[  ]
+
+f♭> [] type println
+array
+[  ]
+
+f♭> now type println
+date
+[  ]
+
+f♭> {} type println
+object
+[  ]
 ```
 
 ## Conversions
 
 ```
-// number to string
-15 string
+f♭> 15 string
+[ '15' ]
 
-// string to number
-'15' number
+f♭> number
+[ 15 ]
 
 // string to regex
-'/a/' regexp
+f♭> clr '/a/' regexp
+[ /a/ ]
 
 // string to complex value
-'1+5i' complex
+f♭> clr '1+5i' complex
+[ 1+5i ]
 
 // string to date
-'1/1/1990' date 
+f♭> clr '1/1/1990' date
+[ Mon Jan 01 1990 00:00:00 GMT-0700 (Mountain Standard Time) ]
 ```
 
 ## Expressions
 
+Expression are arrays containing literals and words. They are stored in thedictionary like any other value discussed above (using `sto`), however, they must first be converted to an expression using the colon (`:`) operator.  The semi-colon operator is a short cut definition for defining expressions.
+
 ```
-sqr: [ dup * ] ;
-cube: [ dup sqr * ] ;
+// convert to an expression and sto
+f♭> [ dup * ] : sqr: sto
+[  ]
 
+// same as above (; is defined as [ : swap sto ])
+f♭> cube: [ dup sqr * ] ;
+[  ]
 
-`5 is $( 5 )` println
-`5 squared is $( 5 sqr )` println
-`5 cubed is $( 5 cube)` println
+f♭> `5 is $( 5 )` println
+5 is 5
+[  ]
+
+f♭> `5 squared is $( 5 sqr )` println
+5 squared is 25
+[  ]
+
+f♭> `5 cubed is $( 5 cube)` println
+5 cubed is 125
+[  ]
+```
+
+To see the definition of a single word use `see`:
+
+```
+f♭> ';' see println
+[ : swap sto ]
+[  ]
+
+f♭> sqr: see println
+[ dup * ]
+[  ]
+```
+
+Use `words` to see all words currently defined:
+
+```
+f♭> words [ println ] foreach
+...etc
+sqr
+cubed
+...etc
+[ ]
+```
+
+## Mapping and Filters
+
+```
+// repeat items in an array with *
+f♭> [ 2 ] 2 *
+[ [ 2 2 ] ]
+
+// Intersparse arrays using *
+
+f♭> [ 2 * ] *
+[ [ 2 2 * 2 2 * ] ]
+
+// which can be evaluated
+f♭> eval
+[ 4 4 ]
+
+// or use map (note map == * eval)
+f♭> [ 2 2 ] [ 2 * ] map
+[ [ 4 4 ] ]
+
+// Add items to an array with << (or >> from lhs)
+f♭> [ 5 ] <<
+[ [ 4 4 [ 5 ] ] ]
+
+f♭> eval: map
+[ [ 4 4 5 ] ]
+
+// Array are equal if that are deeply equal
+f♭> [ 4 4 5 ] =
+[ true ]
+ 
+f♭> clr [ 1 2 3 4 5 ] [ even? ] filter
+[ [ 2 4 ] ]
+
+f♭> clr [ 1 2 3 4 5 ] [ println ] foreach
+1
+2
+3
+4
+5
+[  ]
+
+// these actions also work with strings
+f♭> 'AbCDefg'
+[ 'AbCDefg' ]
+
+f♭> [ ucase ] map '' *
+[ 'ABCDEFG' ]
+
+f♭> undo
+[ 'AbCDefg' ]
+
+f♭> [ dup ucase = ] filter
+[ 'ACD' ]
 ```
 
 ## Flow Control
 
+The base operator for flow control is choose... similar to the tertiary operator in other languages.
+
 ```
-f♭> true 'Value is true' 'Value is false' choose
-[ 'Value is true' ]
+f♭> true 'Value is true' 'Value is false' choose println
+Value is true
+[  ]
+
+f♭> false [ 'Value is true' println ] [ 'Value is false' println ] branch
+Value is false
+[  ]
+```
+
+## Pattern Matching and Regular Expressions
+
+```
+f♭> 5 3 =~
+[ false ]
+
+f♭> clr 'Hello' '/^Hell/' regexp =~
+[ true ]
+
+f♭> clr 'This can be anything' _ =~
+[ true ]
+
+f♭> clr [ 'Hello' 3 4 5 ] [ '/^Hell/':regexp 3 ... ]
+[ [ 'Hello' 3 4 5 ] [ /^Hell/ 3 ... ] ]
+
+f♭> =~
+[ true ]
 ```
 
 ## Functions
 
-Le's write a fizzbuzz
+Let's define fizzbuzz
 
 ```
-fizzbuzz: [
+f♭> fizzbuzz: [
   dup 15 divisor?
-  [ 'fizzbuzz' println ]
+  [ drop 'fizzbuzz' println ]
   [
     dup 3 divisor?
-    [ 'fizz' println ]
+    [ drop 'fizz' println ]
     [ 
       dup 5 divisor?
-      [ 'buzz' println ]
+      [ drop 'buzz' println ]
       [ println ]
       branch
     ]
@@ -125,11 +496,71 @@ fizzbuzz: [
   ]
   branch
 ] ;
+[  ]
 
-30 integers [ fizzbuzz ] map
+f♭> 30 integers [ fizzbuzz ] foreach
+1
+2
+fizz
+4
+buzz
+fizz
+7
+8
+fizz
+buzz
+11
+fizz
+13
+14
+fizzbuzz
+16
+17
+fizz
+19
+buzz
+fizz
+22
+23
+fizz
+buzz
+26
+fizz
+28
+29
+fizzbuzz
+[  ]
 ```
 
+## More Stack Combinators
+
+```
+// `dip` calls a quotation while temporarily hiding the top item on the stack
+f♭> 1 2 4 [ + ] dip
+[ 3 4 ]
+
+// `keep` calls a quotation with an item on the stack, restoring that item after the quotation returns
+f♭> clr 1 2 4 [ + ] keep
+[ 1 6 4 ]
+
+// `bi` applies quotation p to x, then applies quotation q to x
+f♭> clr [ 1 2 3 ] [ sum ] [ length ] bi /
+[ 2 ]
+
+// `bi*` applies quotation p to x, then applies quotation q to y
+f♭> clr [ 1 2 ] [ 3 4 ] [ 0 @ ] [ 1 @ ] bi*
+[ 1 4 ]
+
+// `bi@` applies the quotation to x, then to y
+f♭> clr "Hello" "All" [ ln ] bi@
+[ 5 3 ]
+```
+
+## Concurrency
+TBD
+
 ## Modules
+TBD
 
 
 
