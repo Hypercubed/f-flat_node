@@ -44,40 +44,41 @@ f♭> 'Hello World' println
 
 ## Stack manipulation
 
-    // push items onto the stack
-    f♭> 3 'Hello World'
-    [ 3 'Hello World' ]
+```
+// push items onto the stack
+f♭> 3 'Hello World'
+[ 3 'Hello World' ]
 
-    // duplicate an item
-    f♭> dup
-    [ 3 'Hello World' 'Hello World' ]
+// duplicate an item
+f♭> dup
+[ 3 'Hello World' 'Hello World' ]
 
-    // remove an item
-    f♭> drop
-    [ 3 'Hello World' ]
+// remove an item
+f♭> drop
+[ 3 'Hello World' ]
 
-    // swap items
-    f♭> swap
-    [ 'Hello World' 3 ]
+// swap items
+f♭> swap
+[ 'Hello World' 3 ]
 
-    // undo last user action
-    f♭> undo
-    [ 3 'Hello World' ]
+// undo last user action
+f♭> undo
+[ 3 'Hello World' ]
 
-    // clear the stack
-    f♭> clr
-    [ ]
+// clear the stack
+f♭> clr
+[ ]
 
-    // clear the environment (cannot be undone)
-    f♭> .clear
-    Clearing context...
+// clear the environment (cannot be undone)
+f♭> .clear
+Clearing context...
 
-    Welcome to F♭ REPL Interpreter
-    F♭ Version 0.0.6 (C) 2000-2017 J. Harshbarger
+Welcome to F♭ REPL Interpreter
+F♭ Version 0.0.6 (C) 2000-2017 J. Harshbarger
 
-    f♭>
-    // now ready for more input
-    `
+f♭>
+// now ready for more input
+```
 
 ## Literals and Operators
 
@@ -175,6 +176,8 @@ f♭> 'Hello World' println
     One million is written as 1000000
     [  ]
 
+Other internal operators can be found in the [API](/docs/api/base.md) section.
+
 ## Arrays
 
 Expressions within square brackets are not evaluated.  Expressions within round brackets are.  Commas are whitespace.
@@ -223,13 +226,11 @@ f♭> =
 [ true ]
 ```
 
-Note: [F♭ is a superset of JSON](https://hypercubed.gitbooks.io/f-flat/content/compared-to-json.html)
+Interesting note: [F♭ is a superset of JSON](https://hypercubed.gitbooks.io/f-flat/content/compared-to-json.html)
 
 ## Words
 
 Words can be recalled from the dictionary by entering the identifier directly.  If a word is defined as an expression it is executed. If a word contains a colon suffix, the word is pushed to the stack as a literal.  If the colon is a prefix, it is executed immediately, this is useful inside lazy lists.
-
-
 
 ```
 f♭> pi
@@ -365,6 +366,18 @@ f♭> clr '1+5i' complex
 // string to date
 f♭> clr '1/1/1990' date
 [ Mon Jan 01 1990 00:00:00 GMT-0700 (Mountain Standard Time) ]
+```
+
+Using the conversion words inside lazy lists are lazy.  However, using the colon word prefix the conversion can be executed immediately:
+
+```
+f♭> [ '/a/i':regexp '1+5i':complex '1/1/1990':date ]
+[ [ /a/i
+    1+5i
+    Mon Jan 01 1990 00:00:00 GMT-0700 (Mountain Standard Time) ] ]
+
+f♭> ln
+[ 3 ]
 ```
 
 ## Expressions
@@ -510,23 +523,23 @@ Let's define fizzbuzz
 ```
 f♭> fizzbuzz: [
   dup 15 divisor?
-  [ drop 'fizzbuzz' println ]
+  [ drop 'fizzbuzz' ]
   [
     dup 3 divisor?
-    [ drop 'fizz' println ]
+    [ drop 'fizz' ]
     [ 
       dup 5 divisor?
-      [ drop 'buzz' println ]
-      [ println ]
-      branch
+      [ drop 'buzz' ]
+      when
     ]
     branch
   ]
   branch
+  println
 ] ;
 [  ]
 
-f♭> 30 integers [ fizzbuzz ] foreach
+f♭> 20 integers [ fizzbuzz ] foreach
 1
 2
 fizz
@@ -547,17 +560,21 @@ fizzbuzz
 fizz
 19
 buzz
-fizz
-22
-23
-fizz
-buzz
-26
-fizz
-28
-29
-fizzbuzz
 [  ]
+```
+
+Here is fizzbuzz using pattern matching:
+
+```
+p-fizzbuzz: [
+  dup [ 5 divisor? ] [ 3 divisor? ] bi pair
+  [
+    [ true true ] [ drop 'fizzbuzz' ]
+    [ false true ] [ drop 'fizz' ]
+    [ true false ] [ drop 'buzz' ]
+  ]
+  pattern-choose eval println
+] ;
 ```
 
 ## More Stack Combinators
@@ -582,11 +599,15 @@ fizzbuzz
     f♭> clr "Hello" "All" [ ln ] bi@
     [ 5 3 ]
 
+## Scoping and Child Environments
+
+TBR
+
 ## Concurrency
 
-TBD
+TBR
 
 ## Modules
 
-TBD
+TBR
 
