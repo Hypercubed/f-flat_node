@@ -105,17 +105,27 @@ p-reverse: [
 
 fizzbuzz: [
   dup 15 divisor?
-  [ drop 'fizzbuzz' println ]
+  [ drop 'fizzbuzz' ]
   [
     dup 3 divisor?
-    [ drop 'fizz' println ]
+    [ drop 'fizz' ]
     [ 
       dup 5 divisor?
-      [ drop 'buzz' println ]
-      [ println ]
-      branch
+      [ drop 'buzz' ]
+      when
     ]
     branch
   ]
   branch
+  println
+] ;
+
+p-fizzbuzz: [
+  dup [ 5 divisor? ] [ 3 divisor? ] bi pair
+  [
+    [ true true ] [ drop 'fizzbuzz' ]
+    [ false true ] [ drop 'fizz' ]
+    [ true false ] [ drop 'buzz' ]
+  ]
+  pattern-choose eval println
 ] ;
