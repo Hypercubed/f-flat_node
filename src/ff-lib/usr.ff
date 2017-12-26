@@ -7,6 +7,9 @@
 
 .: [ [ unstack ] >> dip eval ] ;
 
+!!: [ null? ~ ] ;;
+?@: [ [ dup !! ] dip [ @ ] >> [ drop null ] branch ] ;
+
 // Misc
 compose: [ + ] ;
 prepose: [ swap + ] ;
@@ -74,4 +77,45 @@ quicksort: [
     [ quicksort ] bi@           // quicksort each sublist
     [ swap + ] dip +            // merge results 
   ] branch
+] ;
+
+pattern-branch: [ pattern-choose eval ] ;
+
+/**
+ * Factorial using pattern matching
+ */
+p-fact: [
+  dup
+  [
+    0 [ drop 1 ]
+    _ [ pred p-fact * ]
+  ]
+  pattern-branch
+] ;
+
+p-reverse: [
+  dup ln
+  [
+    0 []
+    1 []
+    _ [ xxs reverse swap + ]
+  ]
+  pattern-branch
+] ;
+
+fizzbuzz: [
+  dup 15 divisor?
+  [ drop 'fizzbuzz' println ]
+  [
+    dup 3 divisor?
+    [ drop 'fizz' println ]
+    [ 
+      dup 5 divisor?
+      [ drop 'buzz' println ]
+      [ println ]
+      branch
+    ]
+    branch
+  ]
+  branch
 ] ;

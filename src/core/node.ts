@@ -77,14 +77,14 @@ export const node = {
    * Prints the value
    *
    */
-  print: (a, ...b) => {
+  print: (a) => {
     try {
       stdout.clearLine();
       stdout.cursorTo(0);
     } catch (e) {
 
     }
-    stdout.write(String([a, ...b]));
+    stdout.write(String(a));
   },
 
   /**

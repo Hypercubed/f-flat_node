@@ -68,6 +68,7 @@ cons: [ >> ] ;
 pair: [ unit >> ] ;
 
 // aggregates
+slice: [ [ % ] dip \ ] ;
 pop: [ -1 \ ] ;
 shift: [ 1 % ] ;
 car: [ 0 @ ] ;

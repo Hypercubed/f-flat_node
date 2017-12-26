@@ -142,11 +142,6 @@ export const types = {
           const arr = convertBase(new d(lhs).absoluteValue().toString(), 10, base);
           return sgn + arr.map(x => NUMERALS[x]).join('');
       }
-    },
-    'number, number': (n: number, base) => {
-      base = +base | 0;
-      if (!Number.isFinite(n) || Number.isNaN(n) || base === 10) return n.toString();
-      Number(n).toString(base).toUpperCase();
     }
   }),
 

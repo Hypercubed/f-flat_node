@@ -244,14 +244,15 @@ test('others2', t => {
 test('should slice', t => {
   t.deepEqual(fSyncJSON('["a" "b" "c" "d"] 0 1 slice'), [['a']]);
   t.deepEqual(fSyncJSON('["a" "b" "c" "d"] 0 -1 slice'), [['a', 'b', 'c']]);
+  t.deepEqual(fSyncJSON('["a" "b" "c" "d"] 1 -1 slice'), [['b', 'c']]);
 });
 
 test('should split at', t => {
-  t.deepEqual(fSyncJSON('["a" "b" "c" "d"] 1 splitat'), [
+  t.deepEqual(fSyncJSON('["a" "b" "c" "d"] 1 /'), [
     ['a'],
     ['b', 'c', 'd']
   ]);
-  t.deepEqual(fSyncJSON('["a" "b" "c" "d"] -1 splitat'), [
+  t.deepEqual(fSyncJSON('["a" "b" "c" "d"] -1 /'), [
     ['a', 'b', 'c'],
     ['d']
   ]);
@@ -574,6 +575,55 @@ test('hex, bin', t => {
   t.deepEqual(fSyncValues('-Infinity null <=>'), [1]);
 }); */
 
-test('should div rem', t => {  // todo: better comparisons with NaN
+test('should div rem', t => {
   t.deepEqual(fSyncValues('5 2 divrem'), [2, 1]);
+});
+
+test('integer number formats', t => {
+  t.deepEqual(fSyncValues('5'), [5]);
+  t.deepEqual(fSyncValues('+5'), [5]);
+});
+
+test('decimal number formats', t => {
+  t.deepEqual(fSyncValues('0.5'), [0.5]);
+  t.deepEqual(fSyncValues('.5'), [0.5]);
+  t.deepEqual(fSyncValues('+.5e1'), [5]);
+  t.deepEqual(fSyncValues('+5e0'), [5]);
+  t.deepEqual(fSyncValues('+5e+0'), [5]);
+  t.deepEqual(fSyncValues('+5e-0'), [5]);
+  t.deepEqual(fSyncValues('+5e-9'), [5e-9]);
+  t.deepEqual(fSyncValues('+5e+9'), [5e+9]);
+  t.deepEqual(fSyncValues('+5e+10'), [5e+10]);
+});
+
+test('integer precent formats', t => {
+  t.deepEqual(fSyncValues('5%'), [0.05]);
+  t.deepEqual(fSyncValues('+5%'), [0.05]);
+  t.deepEqual(fSyncValues('-5%'), [-0.05]);
+});
+
+test('hexadecimal integer formats', t => {
+  t.deepEqual(fSyncValues('0xDEAD'), [0xDEAD]);
+  t.deepEqual(fSyncValues('-0xBEEF'), [-0xBEEF]);
+});
+
+test('hexadecimal float formats', t => {
+  t.deepEqual(fSyncValues('0xDEAD.BEEF'), [0xDEADBEEF / 2 ** 16]);
+  t.deepEqual(fSyncValues('-0xDEAD.BEEF'), [-0xDEADBEEF / 2 ** 16]);
+  t.deepEqual(fSyncValues('0x1.1p5'), [34]);
+});
+
+test('underscore seperators', t => {
+  t.deepEqual(fSyncValues('5_000'), [5000]);
+  t.deepEqual(fSyncValues('5_000_000'), [5000000]);
+  t.deepEqual(fSyncValues('+5_000e+6'), [5e+9]);
+  t.deepEqual(fSyncValues('+5_000_000e+3'), [5e+9]);
+  t.deepEqual(fSyncValues('+5_000.000_000e+1_0'), [5e+13]);
+  t.deepEqual(fSyncValues('-5_000.000_000e-1_0'), [-5e-7]);
+});
+
+test('underscore seperators hexadecimal integer formats', t => {
+  t.deepEqual(fSyncValues('0xDE_AD'), [0xDEAD]);
+  t.deepEqual(fSyncValues('-0xBE_EF'), [-0xBEEF]);
+  t.deepEqual(fSyncValues('0xDE_AD_BE_EF'), [0xDEADBEEF]);
 });

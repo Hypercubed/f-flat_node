@@ -13,6 +13,7 @@ types: [
     'action'
     'future' ] ;
 
+
 null?: [ null = ] ;
 nan?: [ nan = ] ;
 action?: [ type 'action' = ] ;

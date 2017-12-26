@@ -15,25 +15,8 @@ import {
 } from '../types';
 import { log, generateTemplate, toObject } from '../utils';
 import { deepEquals } from '../utils/utils';
+import { patternMatch } from '../utils/pattern';
 import { StackEnv } from '../env';
-
-const _slice = typed('slice', {
-  'Array | string, number | null, number | null': (lhs, b, c) =>
-    slice(lhs, b, c === null ? undefined : c),
-  'Future, any, any': (f, b, c) => f.map(lhs => slice(lhs, b, c)),
-  'any, number | null, number | null': (lhs, b, c) =>
-    slice(lhs, [b, c === null ? undefined : c])
-});
-
-const splitat = typed('splitat', {
-  'Array, number | null': (arr, a) =>
-    new Seq([
-      // use head and tail?
-      slice(arr, 0, a),
-      slice(arr, a)
-    ]),
-  'Future, any': (f, a) => f.map(arr => splitat(arr, a))
-});
 
 function dequoteStack(env: StackEnv, s: StackValue) {
   const r: StackArray = [];
@@ -44,51 +27,6 @@ function dequoteStack(env: StackEnv, s: StackValue) {
   }
   return r;
 }
-
-const patternMatch = typed('pattern', {
-  'any, Symbol': (a: any, b: Symbol): boolean => {
-    if (b === Symbol.for('_')) return true;
-    return typeof a === 'symbol' ? a === b : false;
-  },
-  'any, Word': (a: any, b: Word): boolean => {
-    if (b.value === '_') return true;
-    return a instanceof Word && a.value === b.value;
-  },
-  'Array, Array': (a: StackValue[], b: StackValue[]): boolean => {
-    if (a.length < b.length) {
-      // todo: handle "rest" pattern '...'
-      return false;
-    }
-    for (let i = 0; i < a.length; i++) {
-      const bb = b[i];
-      if (bb instanceof Word && bb.value === '...') return true;
-      if (!patternMatch(a[i], bb)) {
-        return false;
-      }
-    }
-    return true;
-  },
-  'plainObject, plainObject': (a: {}, b: {}): boolean => {
-    const ak = Object.keys(a);
-    const bk = Object.keys(b);
-    if (ak.length < bk.length) {
-      return false;
-    }
-    if (bk.length === 0) {
-      return true;
-    }
-    for (let i = 0; i < bk.length; i++) {
-      // rest?
-      const key = ak[i];
-      if (!patternMatch(a[key], b[key])) {
-        return false;
-      }
-    }
-    return true;
-  },
-  'any, RegExp': (lhs: string, rhs: RegExp) => rhs.test(lhs),
-  'any, any': (a: any, b: any): boolean => deepEquals(a, b)
-});
 
 /**
  * # Internal Core Words
@@ -418,29 +356,6 @@ export const core = {
    * ```
    */
   dup: (a: StackValue) => new Seq([a, a]), //  q< q@ q>
-
-  /**
-   * ## `slice`
-   *
-   * copy of a portion of an array or string
-   *
-   * ( seq from to -> seq )
-   */
-  slice: _slice,
-
-  /**
-   * ## `splitat`
-   *
-   * splits a array or string
-   *
-   * ( seq at -> seq )
-   *
-   * ```
-   * f♭> [ 1 2 3 4 ] 2 4 slice
-   * [ [ 3 4 ] ]
-   * ```
-   */
-  splitat,
 
   /**
    * ## `indexof`
