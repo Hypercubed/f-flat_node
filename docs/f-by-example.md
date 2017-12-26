@@ -229,8 +229,6 @@ Note: [F♭ is a superset of JSON](https://hypercubed.gitbooks.io/f-flat/content
 
 Words can be recalled from the dictionary by entering the identifier directly.  If a word is defined as an expression it is executed. If a word contains a colon suffix, the word is pushed to the stack as a literal.  If the colon is a prefix, it is executed immediately, this is useful inside lazy lists.
 
-
-
 ```
 f♭> pi
 [ 3.1415926535897932385 ]
@@ -510,19 +508,19 @@ Let's define fizzbuzz
 ```
 f♭> fizzbuzz: [
   dup 15 divisor?
-  [ drop 'fizzbuzz' println ]
+  [ drop 'fizzbuzz' ]
   [
     dup 3 divisor?
-    [ drop 'fizz' println ]
+    [ drop 'fizz' ]
     [ 
       dup 5 divisor?
-      [ drop 'buzz' println ]
-      [ println ]
-      branch
+      [ drop 'buzz' ]
+      when
     ]
     branch
   ]
   branch
+  println
 ] ;
 [  ]
 
@@ -558,6 +556,20 @@ fizz
 29
 fizzbuzz
 [  ]
+```
+
+Here is fizzbuzz using pattern matching:
+
+```
+p-fizzbuzz: [
+  dup [ 5 divisor? ] [ 3 divisor? ] bi pair
+  [
+    [ true true ] [ drop 'fizzbuzz' ]
+    [ false true ] [ drop 'fizz' ]
+    [ true false ] [ drop 'buzz' ]
+  ]
+  pattern-choose eval println
+] ;
 ```
 
 ## More Stack Combinators
