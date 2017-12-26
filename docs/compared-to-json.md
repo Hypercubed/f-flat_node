@@ -1,13 +1,13 @@
 # F♭ is a superset of JSON
 
-By definition of the following words, F♭ is able to (mostly) parse a superset of JSON.
+By definition of the following words, F♭ is able to \(mostly\) parse a superset of JSON.
 
-- `{`      - start a quote
-- `}`      - end a quote, convert to hash assuming a list of key value pairs `[ key value key value ]`
-- `[`      - start a lazy quote
-- `]`      - start end a lazy quote
-- `:`      - convert a string to an word
-- `{word}:` - macro for creating words, same as `"{word}" :`
+* `{`      - start a quote
+* `}`      - end a quote, convert to hash assuming a list of key value pairs `[ key value key value ]`
+* `[`      - start a lazy quote
+* `]`      - end a lazy quote
+* `:`      - convert a string to an word
+* `{word}:` - word literal, same as `"{word}" :`
 
 The following
 
@@ -33,7 +33,7 @@ in other words:
 5. Push another string
 6. Convert string to a word
 7. push a string
-8. end the quote and convert to an hash assuming a list of key values pairs
+8. end the quote and convert to an map assuming a list of key values pairs
 
 resulting in the equivalent of a JavaScript object:
 
@@ -55,7 +55,7 @@ However, because this is actually F♭ the syntax is relaxed.
 }
 ```
 
-## Both double and single quotes are supported.
+## Both double, single, and backtick quotes are supported.
 
 ```
 {
@@ -75,7 +75,7 @@ However, because this is actually F♭ the syntax is relaxed.
 
 ## Keys can be strings or words.
 
-Quotes around keys are optional if the key is an word (no whitespace between the key and colon)
+Quotes around keys are optional if the key is an word \(no whitespace between the key and colon\)
 
 ```
 {
@@ -104,19 +104,18 @@ Colon is optional between key and value if the key is a string.
 
 Including template strings
 
-```
-{
-  key: 5 2 *
-  `key$(1 1 +)` : `$(10 10 +)`
-}
-```
+    {
+      key: 5 2 *
+      `key$(1 1 +)` : `$(10 10 +)`
+    }
 
-Including infinity, null, and complex values:
+Including infinity, null, complex and date values:
 
 ```
 {
   pi: 4 1 atan *
-  complex: 2 4 i * +
+  complex: '2+4i':complex
+  date: '1/1/1990':date
   nothing: null
   everything: 1 0 /
 }
@@ -127,8 +126,9 @@ results in:
 ```
 { pi: 3.1415926535897932385
   complex: 2+4i
+  date: Mon Jan 01 1990 00:00:00 GMT-0700 (Mountain Standard Time)
   nothing: Null
-  everything: Infinity }
+  everything: ComplexInfinity }
 ```
 
 ## Square brackets are lazy, round brackets are not.
@@ -148,3 +148,6 @@ results in the object:
   b: [ 3 ]
 }
 ```
+
+
+

@@ -11,8 +11,8 @@ Numeric literals in F♭ are arbitary precision decimals.  The values may be inp
 * Signed and unsigned binary, hexadecimal or octal integer \(`0xDEAD`, `-0xBEEF`\)
 * Signed and unsigned binary, hexadecimal or octal float \(`0xDEAD.BEEF`, `-0xDEAD.BEEF`\)
 * Signed and unsigned binary, hexadecimal or octal in power-of-two exponent notation \(`0x1.1p5`, `-0x1.1p-2`, `0x1.921FB4D12D84Ap+1`\)
-* Percentages \(`10%`, `0xDEAD.BEEF%`\)
-* Underscores as separators (`10_001`, `0xDEAD_BEEF`) 
+* Percentages \(`10%`\)
+* Underscores as separators \(`10_001`, `0xDEAD_BEEF`\) 
 
 ## Complex numbers
 
@@ -24,6 +24,35 @@ f♭> 3 i 2 * +
 
 f♭> -1 sqrt
 [ 3+2i 0+1i ]
+```
+
+The word `complex` can be used to convert a string or array to a complex value.
+
+```
+f♭> '3+2i' complex
+[ 3+2i ]
+
+f♭> [0,1] complex
+[ 3+2i 0+1i ]
+```
+
+Later we will learn that words prefixed with a colon \(`:`\) are immediate words.  That is they work inside lazy arrays.
+
+```
+f♭> [ '3+2i' complex ]
+[ [ '3+2i' complex ] ]
+
+f♭> ln
+[ 2 ]
+
+f♭> clr
+[  ]
+
+f♭> [ '3+2i':complex ]
+[ [ 3+2i ] ]
+
+f♭> ln
+[ 1 ]
 ```
 
 ## Number-Like
@@ -43,11 +72,11 @@ f♭> nan
 
 ## Booleans and null
 
-F♭ supports `true`, `false` and `null` values.
+F♭ supports `true`, `false` and `null` values.  A null is considered an unknown.  When comparing boolean values the values are considered sorted in this order: `false`, `null`, `true`. 
 
 ## Strings
 
-String literals in F♭ use single, double, and backtick quotes where double quoted strings supports unicode escapes and backticks are string templates.
+String literals in F♭ use single \(`'`\), double \(`"`\), and backtick quotes \(\`\) where double quoted strings supports unicode escapes and backticks are string templates.
 
     f♭> 'Hello world!'
     [ 'Hello world!' ]
@@ -60,7 +89,7 @@ String literals in F♭ use single, double, and backtick quotes where double quo
 
 ## Dates
 
-Dates are input as strings and convered to date values uning teh `date` word.
+Dates are input as strings and convered to date values usingthe`date` word.
 
 ```
 f♭> '1/1/1990'
@@ -70,9 +99,16 @@ f♭> date
 [ Mon Jan 01 1990 00:00:00 GMT-0700 (MST) ]
 ```
 
+As with complex values, strings can be converted to dates using the immediate version `:date`
+
+```
+f♭> [ '1/1/1990':date ]
+[ [ Mon Jan 01 1990 00:00:00 GMT-0700 (Mountain Standard Time) ] ]
+```
+
 ## Words
 
-A word \(aka symbols or keys\) can be added to the stack without execution by either postfixing the word with a colon \(`:`\) or converting a string to a word using a colon \(`:`\).
+A word \(aka symbols or keys\) can be added to the stack without execution by either post-fixing the word with a colon \(`:`\) or converting a string to a word using a colon \(`:`\).
 
 ```
 f♭> x:
