@@ -21,14 +21,16 @@ Hello World
 
 The empty brackets after the message indicate that the stack is empty.
 
-To exoit the REPL type `.exit` or hit `ctrl-c` twice.
+To exit the REPL type `.exit` or hit `ctrl-c` twice.
+
+[More information on the F-Flat REPL](https://hypercubed.gitbooks.io/f-flat/content/the-repl.html)
 
 ## Comments
 
 F♭ supports both:
 
 * // Line comments which go to the end of the line.
-* /* Block comments which go to the closing delimiter. */
+* /_ Block comments which go to the closing delimiter. _/
 
 ```
 // This is an example of a line comments
@@ -36,135 +38,142 @@ F♭ supports both:
 /* 
  * This is another type of comment, the block comment.
  */
- 
+
 f♭> 'Hello World' println
 ```
 
 ## Stack manipulation
 
-```
-// push items onto the stack
-f♭> 3 'Hello World'
-[ 3 'Hello World' ]
+    // push items onto the stack
+    f♭> 3 'Hello World'
+    [ 3 'Hello World' ]
 
-// duplicate an item
-f♭> dup
-[ 3 'Hello World' 'Hello World' ]
+    // duplicate an item
+    f♭> dup
+    [ 3 'Hello World' 'Hello World' ]
 
-// remove an item
-f♭> drop
-[ 3 'Hello World' ]
+    // remove an item
+    f♭> drop
+    [ 3 'Hello World' ]
 
-// swap items
-f♭> swap
-[ 'Hello World' 3 ]
+    // swap items
+    f♭> swap
+    [ 'Hello World' 3 ]
 
-// undo last user action
-f♭> undo
-[ 3 'Hello World' ]
+    // undo last user action
+    f♭> undo
+    [ 3 'Hello World' ]
 
-// clear the stack
-f♭> clr
-[ ]
+    // clear the stack
+    f♭> clr
+    [ ]
 
-// clear the environment (cannot be undone)
-f♭> .clear
-Clearing context...
+    // clear the environment (cannot be undone)
+    f♭> .clear
+    Clearing context...
 
-Welcome to F♭ REPL Interpreter
-F♭ Version 0.0.6 (C) 2000-2017 J. Harshbarger
+    Welcome to F♭ REPL Interpreter
+    F♭ Version 0.0.6 (C) 2000-2017 J. Harshbarger
 
-f♭>
-// now ready for more input
-````
+    f♭>
+    // now ready for more input
+    `
 
 ## Literals and Operators
 
-```
-// using postfix notation
-f♭> 6 5 4 * +
-[ 26 ]
+    // using postfix notation
+    f♭> 6 5 4 * +
+    [ 26 ]
 
-f♭> 6.5 /
-[ 4 ]
+    f♭> 6.5 /
+    [ 4 ]
 
-f♭> 10 *
-[ 40 ]
+    f♭> 10 *
+    [ 40 ]
 
-f♭> 5 /
-[ 8 ]
+    f♭> 5 /
+    [ 8 ]
 
-f♭> 2 %
-[ 0 ]
+    f♭> 2 %
+    [ 0 ]
 
-// ln on a number to calculate natural log
-f♭> ln
-[ -Infinity ]
+    // ln on a number to calculate natural log
+    f♭> ln
+    [ -Infinity ]
 
-// println prints a value
-f♭> clr 3 println
-3
-[  ]
+    // println prints a value
+    f♭> clr 3 println
+    3
+    [  ]
 
-// single quotes for strings
-f♭> 'Hello' println
-Hello
-[  ]
+    // single quotes for strings
+    f♭> 'Hello' println
+    Hello
+    [  ]
 
-// double quotes to use encoded strings
-f♭> "f-flat === f\u{266D}" println
-f-flat === f♭
-[  ]
+    // double quotes to use encoded strings
+    f♭> "f-flat === f\u{266D}" println
+    f-flat === f♭
+    [  ]
 
-// Use backticks for string templates
-f♭> `1 + 2 is $(1 2 +)` println
-1 + 2 is 3
-[  ]
+    // Use backticks for string templates
+    f♭> `1 + 2 is $(1 2 +)` println
+    1 + 2 is 3
+    [  ]
 
-// string concatenation with +
-f♭> 'f' '-flat' + println
-f-flat
-[  ]
+    // string concatenation with +
+    f♭> 'f' '-flat' + println
+    f-flat
+    [  ]
 
-// boolean logic
-f♭> `true AND false is $(true false *)` println
-true AND false is false
-[  ]
+    // boolean logic
+    f♭> `true AND false is $(true false *)` println
+    true AND false is false
+    [  ]
 
-f♭> `true OR false is $(true false +)` println
-true OR false is true
-[  ]
+    f♭> `true OR false is $(true false +)` println
+    true OR false is true
+    [  ]
 
-f♭> `NOT true is $(true ~)` println
-NOT true is false
-[  ]
+    f♭> `NOT true is $(true ~)` println
+    NOT true is false
+    [  ]
 
-// Bitwise operations
-f♭> `0011 AND 0101 is $( 0b011 0b101 & bin )` println
-0011 AND 0101 is 0b1
-[  ]
+    // Null is considered unknown for boolean logic
+    f♭> `false AND null is $(false null *)` println
+    false AND null is false
+    [  ]
 
-f♭> `0011 OR 0101 is $( 0b011 0b101 | bin )` println
-0011 OR 0101 is 0b111
-[  ]
+    f♭> `true AND null is $(true null *)` println
+    true AND null is
+    [  ]
 
-f♭> `0011 XOR 0101 is $( 0b011 0b101 $ )` println
-0011 XOR 0101 is 6
-[  ]
+    // Bitwise operations
+    // Binary, octal, and hex values ca be entered using 0b, 0o, and 0b notation.
+    f♭> `0011 AND 0101 is $( 0b011 0b101 & bin )` println
+    0011 AND 0101 is 0b1
+    [  ]
 
-f♭> `1 << 5 is $( 1 5 << )` println
-1 << 5 is 32
-[  ]
+    f♭> `0011 OR 0101 is $( 0b011 0b101 | bin )` println
+    0011 OR 0101 is 0b111
+    [  ]
 
-f♭> `0x80 >> 2 is $( 0x80 2 >> hex )` println
-0x80 >> 2 is 0x20
-[  ]
+    f♭> `0011 XOR 0101 is $( 0b011 0b101 $ )` println
+    0011 XOR 0101 is 6
+    [  ]
 
-// Use underscores to improve readability!
-f♭> `One million is written as $( 1_000_000 )` println
-One million is written as 1000000
-[  ]
-```
+    f♭> `1 << 5 is $( 1 5 << )` println
+    1 << 5 is 32
+    [  ]
+
+    f♭> `0x80 >> 2 is $( 0x80 2 >> hex )` println
+    0x80 >> 2 is 0x20
+    [  ]
+
+    // Use underscores to improve readability!
+    f♭> `One million is written as $( 1_000_000 )` println
+    One million is written as 1000000
+    [  ]
 
 ## Arrays
 
@@ -189,7 +198,7 @@ f♭> 0 @
 
 ## Maps
 
-Objects/Maps are key value pairs.  Keys can be strings or words (identifies with a colon suffix).  Again, commas are whitespace.
+Objects/Maps are key value pairs.  Keys can be strings or words \(identifies with a colon suffix\).  Again, commas are whitespace.
 
 ```
 f♭> { 'x' 123, y: 456 }
@@ -214,6 +223,31 @@ f♭> =
 [ true ]
 ```
 
+Note: [F♭ is a superset of JSON](https://hypercubed.gitbooks.io/f-flat/content/compared-to-json.html)
+
+## Words
+
+Words can be recalled from the dictionary by entering the identifier directly.  If a word is defined as an expression it is executed. If a word contains a colon suffix, the word is pushed to the stack as a literal.  If the colon is a prefix, it is executed immediately, this is useful inside lazy lists.
+
+
+
+```
+f♭> pi
+[ 3.1415926535897932385 ]
+
+f♭> cos
+[ -1 ]
+
+f♭> sin:
+[ -1 sin ]
+
+f♭> clr [ -1 sin ]
+[ [ -1 sin ] ]
+
+f♭> clr [ -1 :sin ]
+[ [ -0.84147098480789650665 ] ]
+```
+
 ## Storing values
 
 ```
@@ -221,71 +255,67 @@ f♭> =
 f♭> 45 x: sto
 [  ]
 
-// use rcl to recall
+// use rcl to recall the value
 f♭> x
 [ 45 ]
 
 // dictionary words cannot be over written
 f♭> 54 x: sto
-FFlatError: Error: Cannot overrite definitions in strict mode: x
-    stack/queue: 1 / 0
-    state:                                                                           45  <=>
+FFlatError: Error: Cannot overwrite definitions in strict mode: x
 ```
 
 ## Slices and Lengths
 
-```
-// first we store some values for later use... this is discouraged in general.
-f♭> [1, 2, 3, 4, 5] xs: sto
-[  ]
+    // first we store some values for later use... this is discouraged in general.
+    f♭> [1, 2, 3, 4, 5] xs: sto
+    [  ]
 
-f♭> 'Hello+World' ss: sto
-[  ]
+    f♭> 'Hello+World' ss: sto
+    [  ]
 
-// Indexing starts at 0
-f♭> `first element of the array: $( xs 0 @ )` println
-first element of the array: 1
-[  ]
+    // Indexing starts at 0
+    f♭> `first element of the array: $( xs 0 @ )` println
+    first element of the array: 1
+    [  ]
 
-f♭> `second element of the array: $( xs 1 @ )` println
-second element of the array: 2
-[  ]
+    f♭> `second element of the array: $( xs 1 @ )` println
+    second element of the array: 2
+    [  ]
 
-f♭> `first character of the string: $( ss 0 @ )` println
-first character of the string: H
-[  ]
+    f♭> `first character of the string: $( ss 0 @ )` println
+    first character of the string: H
+    [  ]
 
-f♭> `second character of the string: $( ss 1 @ )` println
-second character of the string: e
-[  ]
+    f♭> `second character of the string: $( ss 1 @ )` println
+    second character of the string: e
+    [  ]
 
-// `ln` returns the length/size
-f♭> `array size: $( xs ln )` println
-array size: 5
-[  ]
+    // `ln` returns the length/size
+    f♭> `array size: $( xs ln )` println
+    array size: 5
+    [  ]
 
-f♭> `string size: $( ss ln )` println
-string size: 11
-[  ]
+    f♭> `string size: $( ss ln )` println
+    string size: 11
+    [  ]
 
-// `/` splits an array or string
-f♭> `array split at 2:` println xs 2 /
- array split at 2:
-[ [ 1 2 ] [ 3 4 5 ] ]
+    // `/` splits an array or string
+    f♭> `array split at 2:` println xs 2 /
+     array split at 2:
+    [ [ 1 2 ] [ 3 4 5 ] ]
 
-f♭> clr `string split at 6:` println ss 6 /
- string split at 6:
-[ 'Hello+' 'World' ]
+    f♭> clr `string split at 6:` println ss 6 /
+     string split at 6:
+    [ 'Hello+' 'World' ]
 
-f♭> clr ` string split at "+"` println ss '+' /
- string split at "+"
-[ [ 'Hello' 'World' ] ]
+    f♭> clr ` string split at "+"` println ss '+' /
+     string split at "+"
+    [ [ 'Hello' 'World' ] ]
 
-// * joins an array
-f♭> clr [ 'Hello' 'World' ] '::' * println
-Hello::World
-[  ]
-```
+    // * joins an array
+    f♭> clr [ 'Hello' 'World' ] '::' * println
+    Hello::World
+    [  ]
 
 ## Types
 
@@ -339,29 +369,27 @@ f♭> clr '1/1/1990' date
 
 ## Expressions
 
-Expression are arrays containing literals and words. They are stored in thedictionary like any other value discussed above (using `sto`), however, they must first be converted to an expression using the colon (`:`) operator.  The semi-colon operator is a short cut definition for defining expressions.
+Expression are arrays containing literals and words. They are stored in thedictionary like any other value discussed above \(using `sto`\), however, they must first be converted to an expression using the colon \(`:`\) operator.  The semi-colon operator is a short cut definition for defining expressions.
 
-```
-// convert to an expression and sto
-f♭> [ dup * ] : sqr: sto
-[  ]
+    // convert to an expression and sto
+    f♭> [ dup * ] : sqr: sto
+    [  ]
 
-// same as above (; is defined as [ : swap sto ])
-f♭> cube: [ dup sqr * ] ;
-[  ]
+    // same as above (; is defined as [ : swap sto ])
+    f♭> cube: [ dup sqr * ] ;
+    [  ]
 
-f♭> `5 is $( 5 )` println
-5 is 5
-[  ]
+    f♭> `5 is $( 5 )` println
+    5 is 5
+    [  ]
 
-f♭> `5 squared is $( 5 sqr )` println
-5 squared is 25
-[  ]
+    f♭> `5 squared is $( 5 sqr )` println
+    5 squared is 25
+    [  ]
 
-f♭> `5 cubed is $( 5 cube)` println
-5 cubed is 125
-[  ]
-```
+    f♭> `5 cubed is $( 5 cube)` println
+    5 cubed is 125
+    [  ]
 
 To see the definition of a single word use `see`:
 
@@ -416,7 +444,7 @@ f♭> eval: map
 // Array are equal if that are deeply equal
 f♭> [ 4 4 5 ] =
 [ true ]
- 
+
 f♭> clr [ 1 2 3 4 5 ] [ even? ] filter
 [ [ 2 4 ] ]
 
@@ -534,48 +562,31 @@ fizzbuzz
 
 ## More Stack Combinators
 
-```
-// `dip` calls a quotation while temporarily hiding the top item on the stack
-f♭> 1 2 4 [ + ] dip
-[ 3 4 ]
+    // `dip` calls a quotation while temporarily hiding the top item on the stack
+    f♭> 1 2 4 [ + ] dip
+    [ 3 4 ]
 
-// `keep` calls a quotation with an item on the stack, restoring that item after the quotation returns
-f♭> clr 1 2 4 [ + ] keep
-[ 1 6 4 ]
+    // `keep` calls a quotation with an item on the stack, restoring that item after the quotation returns
+    f♭> clr 1 2 4 [ + ] keep
+    [ 1 6 4 ]
 
-// `bi` applies quotation p to x, then applies quotation q to x
-f♭> clr [ 1 2 3 ] [ sum ] [ length ] bi /
-[ 2 ]
+    // `bi` applies quotation p to x, then applies quotation q to x
+    f♭> clr [ 1 2 3 ] [ sum ] [ length ] bi /
+    [ 2 ]
 
-// `bi*` applies quotation p to x, then applies quotation q to y
-f♭> clr [ 1 2 ] [ 3 4 ] [ 0 @ ] [ 1 @ ] bi*
-[ 1 4 ]
+    // `bi*` applies quotation p to x, then applies quotation q to y
+    f♭> clr [ 1 2 ] [ 3 4 ] [ 0 @ ] [ 1 @ ] bi*
+    [ 1 4 ]
 
-// `bi@` applies the quotation to x, then to y
-f♭> clr "Hello" "All" [ ln ] bi@
-[ 5 3 ]
-```
+    // `bi@` applies the quotation to x, then to y
+    f♭> clr "Hello" "All" [ ln ] bi@
+    [ 5 3 ]
 
 ## Concurrency
+
 TBD
 
 ## Modules
+
 TBD
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
