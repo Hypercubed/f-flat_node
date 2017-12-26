@@ -44,40 +44,41 @@ f♭> 'Hello World' println
 
 ## Stack manipulation
 
-    // push items onto the stack
-    f♭> 3 'Hello World'
-    [ 3 'Hello World' ]
+```
+// push items onto the stack
+f♭> 3 'Hello World'
+[ 3 'Hello World' ]
 
-    // duplicate an item
-    f♭> dup
-    [ 3 'Hello World' 'Hello World' ]
+// duplicate an item
+f♭> dup
+[ 3 'Hello World' 'Hello World' ]
 
-    // remove an item
-    f♭> drop
-    [ 3 'Hello World' ]
+// remove an item
+f♭> drop
+[ 3 'Hello World' ]
 
-    // swap items
-    f♭> swap
-    [ 'Hello World' 3 ]
+// swap items
+f♭> swap
+[ 'Hello World' 3 ]
 
-    // undo last user action
-    f♭> undo
-    [ 3 'Hello World' ]
+// undo last user action
+f♭> undo
+[ 3 'Hello World' ]
 
-    // clear the stack
-    f♭> clr
-    [ ]
+// clear the stack
+f♭> clr
+[ ]
 
-    // clear the environment (cannot be undone)
-    f♭> .clear
-    Clearing context...
+// clear the environment (cannot be undone)
+f♭> .clear
+Clearing context...
 
-    Welcome to F♭ REPL Interpreter
-    F♭ Version 0.0.6 (C) 2000-2017 J. Harshbarger
+Welcome to F♭ REPL Interpreter
+F♭ Version 0.0.6 (C) 2000-2017 J. Harshbarger
 
-    f♭>
-    // now ready for more input
-    `
+f♭>
+// now ready for more input
+```
 
 ## Literals and Operators
 
@@ -538,7 +539,7 @@ f♭> fizzbuzz: [
 ] ;
 [  ]
 
-f♭> 30 integers [ fizzbuzz ] foreach
+f♭> 20 integers [ fizzbuzz ] foreach
 1
 2
 fizz
@@ -559,16 +560,6 @@ fizzbuzz
 fizz
 19
 buzz
-fizz
-22
-23
-fizz
-buzz
-26
-fizz
-28
-29
-fizzbuzz
 [  ]
 ```
 
