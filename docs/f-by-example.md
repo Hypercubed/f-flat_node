@@ -175,6 +175,8 @@ f♭> 'Hello World' println
     One million is written as 1000000
     [  ]
 
+Other internal operators can be found in the [API](/docs/api/base.md) section.
+
 ## Arrays
 
 Expressions within square brackets are not evaluated.  Expressions within round brackets are.  Commas are whitespace.
@@ -223,7 +225,7 @@ f♭> =
 [ true ]
 ```
 
-Note: [F♭ is a superset of JSON](https://hypercubed.gitbooks.io/f-flat/content/compared-to-json.html)
+Interesting note: [F♭ is a superset of JSON](https://hypercubed.gitbooks.io/f-flat/content/compared-to-json.html)
 
 ## Words
 
@@ -363,6 +365,18 @@ f♭> clr '1+5i' complex
 // string to date
 f♭> clr '1/1/1990' date
 [ Mon Jan 01 1990 00:00:00 GMT-0700 (Mountain Standard Time) ]
+```
+
+Using the conversion words inside lazy lists are lazy.  However, using the colon word prefix the conversion can be executed immediately:
+
+```
+f♭> [ '/a/i':regexp '1+5i':complex '1/1/1990':date ]
+[ [ /a/i
+    1+5i
+    Mon Jan 01 1990 00:00:00 GMT-0700 (Mountain Standard Time) ] ]
+
+f♭> ln
+[ 3 ]
 ```
 
 ## Expressions
@@ -594,11 +608,15 @@ p-fizzbuzz: [
     f♭> clr "Hello" "All" [ ln ] bi@
     [ 5 3 ]
 
+## Scoping and Child Environments
+
+TBR
+
 ## Concurrency
 
-TBD
+TBR
 
 ## Modules
 
-TBD
+TBR
 
