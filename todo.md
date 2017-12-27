@@ -7,7 +7,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] @ for out of range works differently on string and array
 - [?] Bitwise ops on decimals
 - [ ] map over strings should return strings
-- [ ] `[ null ] string`
+- [ ] `'0.03+0.86i':complex`
+- [ ] `'86i' complex`
 
 # Decide
 - [ ] Decide on macros, dupn!3, dup<5>, range<1, 100>, range!(1, 10). ?
@@ -17,6 +18,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] words and literals are equivelent? true: === true ?
 - [ ] Ranges?
 - [ ] Symbols vs internal classes?
+- [ ] sto/rcl destructuring `1 2 3 [ x: y: z: ] sto`?
 
 # Todo next:
 
@@ -123,7 +125,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Dates
   - [ ] More date base operations
   - [ ] Add Duration type... example: https://github.com/moment/moment/blob/develop/src/lib/duration/constructor.js
-- Improved `@`
+- [ ] Improved `@`
   - [ ] [ ... ] [ x y z ] @ => [ ... ][x][y][z]
   - [ ] { ... } 'x.y.z' @ => [ ... ][x][y][z]
 - [ ] Private/Protected words?  Globals/parent scoped?
