@@ -135,13 +135,9 @@ test('should @ from out of bounds', t => {
 test('should process string templates', t => {
   t.deepEqual(fSyncJSON('`-1 sqrt = $( -1 sqrt )`'), ['-1 sqrt = 0+1i']);
   t.deepEqual(fSyncJSON('`0.1 0.2 + = $( 0.1 0.2 + )`'), ['0.1 0.2 + = 0.3']);
-  t.deepEqual(fSyncJSON('0.1 0.2 q< q< `0.1 0.2 + = $( q> q> + )`'), [
-    '0.1 0.2 + = 0.3'
-  ]);
-  t.deepEqual(fSyncJSON('0.1 0.2 q< q< `(0.1 0.2) = $( q> q> )`'), [
-    '(0.1 0.2) = 0.1,0.2'
-  ]);
   t.deepEqual(fSyncJSON('`$0.1 (0.2) + = $( 0.1 0.2 + )`'), ['$0.1 (0.2) + = 0.3']);
+  t.deepEqual(fSyncJSON('`$(0.1 dup dup +) + = $( 0.1 0.2 + )`'), ['0.1 0.2 + = 0.3']);
+  t.deepEqual(fSyncJSON('`true AND null = $( true null * )`'), ['true AND null = null']);
 });
 
 test('should reverse strings', t => {

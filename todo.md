@@ -5,12 +5,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 # Bugs
 
 - [ ] @ for out of range works differently on string and array
-- [x] Colen should terminate a word: `x:1` => `x: 1`
-- [x] Regexp logical ops need to match boolean
-- [ ] Bitwise ops on decimals
+- [?] Bitwise ops on decimals
 - [ ] map over strings should return strings
-- [ ] `NOT null is $(null ~)` println
-- [ ] Error strings: `FFlatError: Error: Cannot overrite definitions in strict mode: x`
+- [ ] `[ null ] string`
 
 # Decide
 - [ ] Decide on macros, dupn!3, dup<5>, range<1, 100>, range!(1, 10). ?
@@ -23,7 +20,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Todo next:
 
-- [x] Tests for floored division
 - [ ] Fix API docs for base
 - [ ] Consistant and predictable display precision:
   - [ ] 1 acos = 0 (precision issue)
@@ -37,7 +33,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [x] true, false
   - [x] null
 - [ ] Make scope lifting safe.  No user writes to scope.
-- [x] Core functions should also be namespaced.
 - [ ] More tests for stack object immutablity
 - [ ] Better internal types
   - [ ] Just -> ReturnValue
@@ -57,38 +52,37 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # New Words
 
-- [ ] `fld`, `cld`: https://docs.julialang.org/en/stable/stdlib/math/#Base.fld
+- [ ] `cld`: https://docs.julialang.org/en/stable/stdlib/math/#Base.cld
 - [ ] `isfinite?`, `isinf?`, `isnan?`
 - [ ] `sign`, `ispos?`, `isneg?`
 - [ ] `>>` and `>>>` ?
 - [ ] `sinpi`, `cospi`?
-- [x] `conj`
 - [ ] Better complex inputs
   - [ ] `1+2i` (Literal)
-  - [ ] `"1+2i" complex`
-  - [ ] `[1,2] complex`
-  - [ ] `complex:(1,2)$`
+  - [x] `"1+2i" complex`
+  - [x] `[1,2] complex`
+  - [x] `complex:((1,2)).`
+  - [x] `complex:("1+2i").`
 - [ ] `clamp`, `scale`
 - [ ] radians -> rads-per-degree, etc. ?
-- [ ] rename expand to lift?  Catch circular references.
+- [ ] rename expand to lift?
 - [ ] `lesser-of`, `greater-of` vs `max`, `min`?
 - [ ] `gte` vs `>=`
+- [ ] `&` vs `bit-and`
 - [ ] Derivatives:
   - [ ] `deriv = (f, h) => x => (f(x + h) - f(x)) / h`
   - [x] `nd = (f, x, h) => (f(x + h) - f(x)) / h`
 - [ ] Move `prompt` into code?
 - [ ] Radix from number: `radix = (n, radix) => n.toString(radix)`
   - [ ] Fix bin and oct floating point
-  - [ ] fix hx, bin, ect with neg values
-- [x] Bitwise operators (&, |, ^, etc)?
-- [ ] Elivs operastor `?:` replaces choose
-- [ ] Safe at `?@` performs @ if lhs is not null
+  - [ ] fix hex, bin, ect with neg values
+- [ ] Elvis operastor `?:` replaces choose
+- [x] Safe at `?@` performs @ if lhs is not null
 - [ ] `..` creastes a range
 
 # Docs
 
 - [ ] Standardize all stack effects in docs and code comments
-- [x] REPL intro
 - [ ] Detail boolean / Three valued logic
 - [ ] Basis
 - [ ] Regexp
@@ -122,20 +116,16 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Separate state from environment and engine?
 - [ ] IO Class?
 - [ ] Session saving
-- [x] modules/name spaces/named imports
 - [x] Undo history
   - [x] undo
   - [ ] redo?
 - [ ] better stack printing
-- [x] better trace
-- [-] bubble errors up from children (currently in: swallows errors)
 - [ ] Dates
   - [ ] More date base operations
   - [ ] Add Duration type... example: https://github.com/moment/moment/blob/develop/src/lib/duration/constructor.js
 - Improved `@`
   - [ ] [ ... ] [ x y z ] @ => [ ... ][x][y][z]
   - [ ] { ... } 'x.y.z' @ => [ ... ][x][y][z]
-- [x] JS FFI
 - [ ] Private/Protected words?  Globals/parent scoped?
 - [ ] Preserved precision base on user input (2.50 vs 2.5)?
 - [ ] Pattern matching ???
@@ -156,8 +146,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [x] match operator `=~` ?
   - [ ] {Array} {RegExp} match?
   - [x] OR {regexp} + {regexp} = {regexp} OR {regexp}
-  - [ ] AND {regexp} + {regexp} = {regexp} AND {regexp}
-  - [ ] NOT {regexp} ~ = NOT {regexp}
+  - [x] AND {regexp} + {regexp} = {regexp} AND {regexp}
+  - [x] NOT {regexp} ~ = NOT {regexp}
   - [ ] JSON output
 - [ ] Get strict on punctuation ??
 - [ ] Integer -> Float -> Decimal -> Complex, predictable type promotion
@@ -166,6 +156,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Pattern matching?
   - [x] place holder `_`
   - [x] rest pattern in arrays `[ 1 ... ]`
-  - [-] OR patterns `1 | 2` (using regex)
-  - [-] ranges `1...4` (using regex)
+  - [-] OR patterns `1 | 2` (now using regex)
+  - [-] ranges `1...4` (now using regex)
   - [ ] guards `3 >`

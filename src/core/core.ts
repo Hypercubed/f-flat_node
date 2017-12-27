@@ -13,7 +13,7 @@ import {
   Complex,
   Decimal
 } from '../types';
-import { log, generateTemplate, toObject } from '../utils';
+import { log, template, toObject } from '../utils';
 import { deepEquals } from '../utils/utils';
 import { patternMatch } from '../utils/pattern';
 import { StackEnv } from '../env';
@@ -486,7 +486,7 @@ export const core = {
    * [ [ '' 'hello ' + '(world)' eval string + '' + ] ]
    * ```
    */
-  template: generateTemplate,
+  template,
 
   /**
    * ## `sleep`
