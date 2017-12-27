@@ -84,10 +84,8 @@ mul: [ -- dup [ [ dup ] swap times [ + ] ] dip times ] ;
 
 // Factorials
 approx-fact: [ ++ gamma ] ;
-// c!: [ pred [ count ] dip [ * ] swap times ] ;
 recur-fact: [ dup zero? [ drop 1 ] [ pred recur-fact * ] branch ] ;
-// y!: [ [ [ over zero? ] [ drop ++ ] [ [ pred ] dip eval * ] ifte ] y eval ] ;
-!: [ dup integer? [recur-fact] [approx-fact] choose eval ] ;
+!: [ dup integer? [recur-fact] [approx-fact] branch ] ;;
 
 // Prob
 npr: [ [ [ ! ] keep ] dip - ! / ] ;

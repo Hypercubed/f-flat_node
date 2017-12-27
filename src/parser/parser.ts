@@ -16,27 +16,44 @@ g.identifierNext = Myna.notChar(DELIMITER + QUOTES + BRACKETS + COLON);
 g.identifier = Myna.seq(g.identifierFirst, g.identifierNext.zeroOrMore, Myna.char(COLON).opt);
 g.word = g.identifier.copy.ast;
 
+g.digit = Myna.choice(
+  Myna.digit,
+  Myna.char('_')
+);
+
+g.digits = g.digit.oneOrMore;
+
 // decimal
 g.integer = Myna.seq(
   Myna.digit.oneOrMore,
-  Myna.char('_').zeroOrMore,
-  Myna.digit.zeroOrMore
+  g.digit.zeroOrMore
 );
 g.fraction = Myna.seq('.', g.integer);
 g.plusOrMinus = Myna.char('+-');
-g.exponent = Myna.seq(Myna.char('eE'), g.plusOrMinus.opt, Myna.digits);
+g.exponent = Myna.seq(Myna.char('eE'), g.plusOrMinus.opt, g.digits);
 g.decimal = Myna.seq(
   g.plusOrMinus.opt,
   g.integer,
   g.fraction.opt,
-  g.exponent.opt
+  g.exponent.opt,
+  Myna.char('%').opt
+).thenNot(g.identifierNext.or(Myna.digit));
+g.decimalFraction = Myna.seq(
+  g.plusOrMinus.opt,
+  g.integer.opt,
+  g.fraction,
+  g.exponent.opt,
+  Myna.char('%').opt
 ).thenNot(g.identifierNext.or(Myna.digit));
 
 // radix
-g.radixDigit = Myna.char('0123456789abcdefABCDEF');
+g.rawRadixDigit = Myna.char('0123456789abcdefABCDEF');
+g.radixDigit = Myna.choice(
+  g.rawRadixDigit,
+  Myna.char('_')
+);
 g.radixInteger = Myna.seq(
-  g.radixDigit.oneOrMore,
-  Myna.char('_').zeroOrMore,
+  g.rawRadixDigit.oneOrMore,
   g.radixDigit.zeroOrMore
 );
 g.radixFraction = Myna.seq('.', g.radixInteger);
@@ -54,7 +71,7 @@ g.radix = Myna.seq(
   g.radixExponent.opt
 ).thenNot(g.identifierNext.or(g.radixDigit));
 
-g.number = Myna.choice(g.radix, g.decimal).ast;
+g.number = Myna.choice(g.radix, g.decimal, g.decimalFraction, g.integer).ast;
 
 // Comments and whitespace
 g.untilEol = Myna.advanceWhileNot(Myna.newLine).then(Myna.newLine.opt);

@@ -239,7 +239,7 @@ export const math = {
    * bitwise and
    *
    */
-  '&': (a, b) => a & b,
+  '&': (a, b) => +a & +b,
 
   /**
    * ## `|`
@@ -247,7 +247,7 @@ export const math = {
    * bitwise or
    *
    */
-  '|': (a, b) => a | b,
+  '|': (a, b) => +a | +b,
 
   /**
    * ## `$`
@@ -255,7 +255,7 @@ export const math = {
    * bitwise xor
    *
    */
-  '$': (a, b) => a ^ b,
+  '$': (a, b) => +a ^ +b,
 
   /**
    * ## `bitnot`

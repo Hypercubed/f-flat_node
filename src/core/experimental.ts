@@ -4,7 +4,8 @@ import { writeFileSync } from 'fs';
 
 import { stringifyStrict } from '../utils/json';
 import { deepEquals } from '../utils/utils';
-import { FFlatError } from '../utils';
+import { FFlatError } from '../utils/fflat-error';
+import { patternMatch } from '../utils/pattern';
 
 import {
   typed,
@@ -28,34 +29,6 @@ typed.addConversion({
     const match = str.match(new RegExp('^/(.*?)/([gimy]*)$'));
     return match ? new RegExp(match[1], match[2]) : new RegExp(str);
   }
-});
-
-const patternMatch = typed('pattern', {
-  'any, Symbol': (a: any, b: Symbol): boolean => {
-    if (b === Symbol.for('_')) return true;
-    return typeof a === 'symbol' ? a === b : false;
-  },
-  'Array, Array': (a: StackValue[], b: StackValue[]): boolean => {
-    if (a.length < b.length) { // todo: handle "rest" pattern '...'
-      return false;
-    }
-    for (let i = 0; i < a.length; i++) {
-      const bb = b[i];
-      if (bb instanceof Word && bb.value === '...') return true;
-      if (bb instanceof Word && bb.value === '***') return true;
-      if (bb instanceof Symbol && bb === Symbol.for('...')) return true;
-      if (!patternMatch(a[i], bb)) {
-        return false;
-      }
-    }
-    return true;
-  },
-  'string, RegExp': (lhs: string, rhs: RegExp) => rhs.test(lhs),
-  'any, Word': (a: any, b: Word): boolean => {
-    if (b.value === '_') return true;
-    return a instanceof Word && a.value === b.value;
-  },
-  'any, any': (a: any, b: any): boolean => deepEquals(a, b)
 });
 
 /**
@@ -191,6 +164,14 @@ export const experimental = {
         return new Seq(s);
       };
       this.defineAction(name, memoize(fn, { length: n, primitive: true }));
+    }
+  },
+
+  'pattern-choose': function(this: StackEnv, item: StackValue, arr: StackArray) {
+    for (let i = 0; i < arr.length; i += 2) {
+      if (patternMatch(item, arr[i])) {
+        return arr[i + 1];
+      }
     }
   }
 };

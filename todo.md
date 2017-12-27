@@ -7,6 +7,12 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] @ for out of range works differently on string and array
 - [x] Colen should terminate a word: `x:1` => `x: 1`
 - [x] Regexp logical ops need to match boolean
+- [ ] Bitwise ops on decimals
+- [ ] map over strings should return strings
+- [ ] `NOT null is $(null ~)` println
+- [ ] Error strings: `FFlatError: Error: Cannot overrite definitions in strict mode: x`
+- [ ] `'0.03+0.86i':complex`
+- [ ] `'86i' complex`
 
 # Decide
 - [ ] Decide on macros, dupn!3, dup<5>, range<1, 100>, range!(1, 10). ?
@@ -78,6 +84,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] Fix bin and oct floating point
   - [ ] fix hx, bin, ect with neg values
 - [x] Bitwise operators (&, |, ^, etc)?
+- [ ] Elivs operastor `?:` replaces choose
+- [ ] Safe at `?@` performs @ if lhs is not null
+- [ ] `..` creastes a range
 
 # Docs
 
@@ -95,6 +104,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Todo:
 
+- [ ] Pattern substitution? `[_ _]` => `[a,b]`
 - [ ] Improve errors (FF errors should not have a JS stack)
 - [ ] Trig functions on complex
   - [x] sin, cos, tan

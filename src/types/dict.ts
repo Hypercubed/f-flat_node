@@ -30,7 +30,7 @@ export class Dictionary {
     const path = Dictionary.makePath(key);
     const firstKey = <string>path.shift();
     if (USE_STRICT && Object.prototype.hasOwnProperty.call(this.locals, firstKey)) {
-      throw new Error(`Cannot overrite definitions in strict mode: ${firstKey}`);
+      throw new Error(`Cannot overwrite definitions in strict mode: ${firstKey}`);
     }
     if (path.length === 0) {
       if (typeof value === 'undefined') {
