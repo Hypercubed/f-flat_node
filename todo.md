@@ -87,6 +87,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Elivs operastor `?:` replaces choose
 - [ ] Safe at `?@` performs @ if lhs is not null
 - [ ] `..` creastes a range
+- [ ] Use standard words, `foldl`, etc
+- [ ] Use y vs. recursion?
 
 # Docs
 
@@ -104,6 +106,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Todo:
 
+- [ ] Matrices
 - [ ] Pattern substitution? `[_ _]` => `[a,b]`
 - [ ] Improve errors (FF errors should not have a JS stack)
 - [ ] Trig functions on complex
