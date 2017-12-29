@@ -33,7 +33,7 @@ export const dict = {
     try {
       this.dict.set(rhs, lhs);
     } catch (e) {
-      throw new FFlatError(e, this);
+      throw new FFlatError(e.message, this);
     }
   },
 

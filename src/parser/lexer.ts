@@ -15,7 +15,7 @@ import { unescapeString } from '../utils/stringConversion';
 
 const makeAction = new Word(':');
 const atAction = new Word('@');
-const templateAction = new Word('template');
+const templateAction = new Word(':template');
 const evalAction = new Word('eval');
 
 export function lexer(a) {
@@ -87,7 +87,7 @@ function processNumeric(value: string): Decimal | number {
 }
 
 function templateString(val: string) {
-  return [val.slice(1, -1), templateAction, evalAction];
+  return [val.slice(1, -1), templateAction];
 }
 
 function doubleQuotedString(val: string): string {

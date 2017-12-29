@@ -1,29 +1,33 @@
 import * as punycode from 'punycode';
 
 import { Word, Sentence } from '../types/index';
+import { StackEnv } from '../env';
 
 const cap = '%-cap-%';
 const caplen = cap.length;
-const re = new RegExp(`(${cap}\\$\\(.*\\))`, 'g');
+const reReplace = /\$\([^\)]*\)/g;
+const reSplit = new RegExp(`(${cap}\\$\\([^\\)]*\\))`, 'g');
 
-export function generateTemplate(template: string): Array<Word | Sentence | string> {
-  const r: Array<Word | Sentence | string> = [''];
+export function template(this: StackEnv, template: string): string {
+  const r: string[] = [];
+  const c = this.createChild();
 
-  template
-    .replace(/\$\(.*\)/g, x => cap + x)
-    .split(re)
-    .forEach(s => {
+  return template
+    .replace(reReplace, x => cap + x)
+    .split(reSplit)
+    .map(s => {
       if (s.slice(0, caplen) === cap) {
-        r.push(s.slice(caplen + 1));
-        r.push(new Word('eval'));
-        r.push(new Word('string'));
-        r.push(new Word('+'));
-      } else {
-        r.push(unicodeEscape(s));
-        r.push(new Word('+'));
+        const ev = s.slice(caplen + 2, -1);
+        const stk = c
+          .eval(ev)
+          .stack;
+        c.clear();
+        return stk
+          .map(x => String(x))
+          .join(' ');
       }
-    });
-  return r;
+      return unicodeEscape(s);
+    }).join('');
 }
 
 export function unescapeString(x: string): string {
