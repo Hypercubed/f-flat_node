@@ -4,9 +4,7 @@ import { g, c } from './gamma';
 
 const precision = Math.pow(10, -<number>Decimal.precision + 5);
 
-const reRe = '[+-]?\\d+(?:e[+-]\\d+)?';
-const reIm = '[+-]\\d+(?:e[+-]\\d+)?';
-const reComplex = new RegExp(`^(${reRe})(${reIm})(?:\i)$`, 'i');
+const reComplex = /[+-]?[\d._]+(?:e[+-][\d._]+)?i?/gi;
 
 export class Complex {
   re: Decimal;
@@ -94,16 +92,26 @@ export class Complex {
     return dtimes(bb, u.sqrt());
   }
 
+  private sini() {
+    // returns sini such that = sini(i*x) = i*sin(x)
+    const eix = this.exp();
+    const enix = this.times(-1).exp();
+    return eix.minus(enix).div(2);
+  }
+
+  private cosi() {
+    // returns cosi such that = cosi(i*x) = cos(x)
+    const eix = this.exp();
+    const enix = this.times(-1).exp();
+    return eix.plus(enix).div(2);
+  }
+
   sin() {
-    const eix = this.times(I).exp();
-    const enix = this.times(I).times(-1).exp();
-    return eix.minus(enix).div(2).div(I);
+    return this.times(I).sini().div(I);
   }
 
   cos() {
-    const eix = this.times(I).exp();
-    const enix = this.times(I).times(-1).exp();
-    return eix.plus(enix).div(2);
+    return this.times(I).cosi();
   }
 
   tan() {
@@ -255,11 +263,9 @@ export class Complex {
   }*/
 
   exp(): Complex {
-    const r = this.re.exp();
-    const i = new Decimal(this.im);
-    let im = r.times((i as any).sin());
-    let re = r.times((i as any).cos()); // bug in Decimal.js causes t.im to mutate after cosine
-    return new Complex(re, im);
+    const a = this.re.exp();
+    const b = this.im;
+    return new Complex(b.cos().times(a), b.sin().times(a));
   }
 
   neg(): Complex {
@@ -421,11 +427,22 @@ export class Complex {
       return new Complex(a[0], a[1]);
     }
     if (typeof a === 'string') {
-      const tokens = reComplex.exec(a);
-      if (tokens !== null && tokens.length === 3) {
-        tokens[1] = tokens[1].replace(/^\+/, '');
-        tokens[2] = tokens[2].replace(/^\+/, '');
-        return new Complex(tokens[1], tokens[2]);
+      const tokens = a.match(reComplex);
+      if (tokens) {
+        let re = '0';
+        let im = '0';
+        tokens.forEach(token => {
+          if (token[0] === '+' && token[1] !== '-') {
+            token = token.slice(1);
+          }
+          token = token.replace(/_/g, '');
+          if (token[token.length - 1] === 'i') {
+            im = token.slice(0, -1);
+          } else {
+            re = token;
+          }
+        });
+        return new Complex(re, im);
       }
     }
     return new Complex(a);

@@ -62,9 +62,9 @@ odd?: [ even? ~ ] ;
 find-next: [ [ ++ dup ] swap + [ ~ ] + loop ] ;
 next-odd: [ [ odd? ] find-next ] ;
 next-even: [ [ even? ] find-next ] ;
-countup: [ over - [ succ ] swap ] ;
-countdown: [ dupd - [ pred ] swap ] ;
-range*: [ over over < [ countup ] [ countdown ] branch repn ] ;
+countup: [ over - [ succ ] swap * eval ] ;
+countdown: [ dupd - [ pred ] swap * eval ] ;
+range*: [ over over < [ countup ] [ countdown ] branch ] ;
 range: [ [ range* ] >> appl ] ;
 count: [ 1 swap range* ] ;
 
@@ -83,8 +83,17 @@ pow: [ -- dup [ [ dup ] swap times [ * ] ] dip times ] ;
 mul: [ -- dup [ [ dup ] swap times [ + ] ] dip times ] ;
 
 // Factorials
+p-fact-go: [
+  dup
+  [
+    0 [ drop ]
+    _ [ pred [ * ] dip p-fact-go ]
+  ]
+  pattern-branch
+] ;
+
 approx-fact: [ ++ gamma ] ;
-recur-fact: [ dup zero? [ drop 1 ] [ pred recur-fact * ] branch ] ;
+recur-fact: [ 1 swap p-fact-go ] ;;
 !: [ dup integer? [recur-fact] [approx-fact] branch ] ;;
 
 // Prob
@@ -92,14 +101,14 @@ npr: [ [ [ ! ] keep ] dip - ! / ] ;
 ncr: [ [ npr ] keep ! / round ] ;
 
 // reduce
-product: [ [ * ] reduce* ] ;
+product: [ [ * ] fold ] ;
 dot: [ [ * ] zipwith sum ] ;
 
 // math-ish
 integers: [ [ count ] appl ] ;
 factors: [ [ 2 [ dup2 2 ^ > ] [ dup2 divisor? [ tuck / over ] [ next-odd ] branch ] while drop ] appl ] ;
 next-fib: [ dup2 + ] ;
-fib: [ ( 0 1 [ next-fib ] ) dip -- repn drop ] ;
+fib: [ ( 0 1 [ next-fib ] ) dip -- times drop ] ;
 collatz: [ [ [ dup 1 > ] [ dup next-collatz ] while ] >> in ] ;
 next-collatz: [ dup even? [ 2 / ] [ 3 * 1 + ] branch ] ;
 divrem: [ [ \ ] [ % ] bi2 ] ;

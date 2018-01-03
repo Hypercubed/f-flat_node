@@ -20,7 +20,7 @@ import {
 } from '../types';
 import { StackEnv } from '../env';
 import { log } from '../utils';
-import { lexer } from '../parser/lexer';
+import { lexer } from '../parser/';
 
 typed.addConversion({
   from: 'string',

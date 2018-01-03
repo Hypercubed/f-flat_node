@@ -12,12 +12,26 @@ const memoize = require('memoizee');
 
 const pkg = require('../package.json');
 
-const welcome = `
+/* const welcome = `
 Welcome to F♭ REPL Interpreter
 F♭ Version ${pkg.version} (C) 2000-2017 ${pkg.author}
-`; // todo: Type ".help", ".copyright", ".credits" or ".license" for more information.
+(Type '.help' for help)
+`; */
 
-const initialPrompt = 'f♭>';
+const welcome = `
+          []]
+          []]
+[]]]]]]]] []] []]]      F♭ Version ${pkg.version}
+[]]       []]]   []]    Copyright (c) 2000-2018 by ${pkg.author}
+[]]       []]   []]
+[]]]]]]   []]  []]      Type '.help' for help
+[]]       []][]]        Type '.clear' to reset
+[]]
+[]]
+`
+
+const initialPrompt = 'f♭> ';
+const altPrompt = 'f♭] ';
 const inspectOptions = {
   showHidden: false,
   depth: null,
@@ -84,7 +98,7 @@ function exitOrStartREPL() {
 
 function startREPL() {
   const r = repl.start({
-    prompt: `${initialPrompt} `,
+    prompt: initialPrompt,
     eval: fEval,
     writer,
     ignoreUndefined: false,
@@ -133,6 +147,8 @@ function startREPL() {
 }
 
 function newStack() {
+  log.level = program.logLevel || 'warn';
+
   const f = Stack('true auto-undo', RootStack());
 
   const rl = stackRepl || readline.createInterface({
@@ -179,8 +195,12 @@ function fEval(code, _, __, cb) {
 
     f
       .next(buffer)
-      .then(result => cb(null, result))
+      .then(result => {
+        stackRepl.setPrompt(f.depth === 0 ? initialPrompt : altPrompt);
+        cb(null, result);
+      })
       .catch(err => {
+        stackRepl.setPrompt(f.depth === 0 ? initialPrompt : altPrompt);
         cb(err);
       });
 

@@ -266,8 +266,8 @@ test('filter and reduce', t => {
   );
   t.deepEqual(fSyncValues('10 integers 0 [ + ] reduce'), [55], 'reduce');
   t.deepEqual(fSyncValues('10 integers 1 [ * ] reduce'), [3628800], 'reduce');
-  t.deepEqual(fSyncValues('10 integers [ + ] reduce*'), [55], 'reduce');
-  t.deepEqual(fSyncValues('10 integers [ * ] reduce*'), [3628800], 'reduce');
+  t.deepEqual(fSyncValues('10 integers [ + ] fold'), [55], 'fold');
+  t.deepEqual(fSyncValues('10 integers [ * ] fold'), [3628800], 'fold');
 });
 
 test('zip, zipwith and dot', t => {
@@ -627,3 +627,23 @@ test('underscore seperators hexadecimal integer formats', t => {
   t.deepEqual(fSyncValues('-0xBE_EF'), [-0xBEEF]);
   t.deepEqual(fSyncValues('0xDE_AD_BE_EF'), [0xDEADBEEF]);
 });
+
+test('locals don\'t collide with definitions', t => {
+  t.deepEqual(fSyncValues(`
+    x: 128 ;
+    y: [ x x + ] ;;
+    [
+      x: 256 ;
+      y
+    ] fork
+  `), [ [ 256 ] ]);
+});
+
+test('should resolve', t => {
+  t.regex(fSyncValues('"core" resolve')[0], /^file:.*core$/);
+  t.regex(fSyncValues('"core.ff" resolve')[0], /^file:.*core.ff$/);
+  t.deepEqual(fSyncValues('"/home/core.ff" resolve'), ['file:///home/core.ff']);
+  t.deepEqual(fSyncValues('"file:///home/core.ff" resolve'), ['file:///home/core.ff']);
+  t.deepEqual(fSyncValues('"http://www.home.com/core.ff" resolve'), ['http://home.com/core.ff']);
+});
+

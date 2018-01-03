@@ -27,8 +27,6 @@ bury: [ swap swapd ] ;        // [c] [b] [a] -> [a] [c] [b]
 flip: [ swapd bury ] ;        // [c] [b] [a] -> [a] [b] [c]
 rot: [ bury swap ] ;          // [c] [b] [a] -> [a] [b] [c]
 
-repn: [ runn drop ] ;
-
 dip2: [ swap dipd ] ;            // [c] [b] [a] -> a [c] [b]
 dive: [ swap dipd ] ;            // [c] [b] [a] -> a [c] [b]   (aka dip2)
 

@@ -12,7 +12,8 @@ import {
   math,
   types,
   experimental,
-  node
+  node,
+  flags
 } from './core';
 
 let defaultRootStack: StackEnv;
@@ -30,7 +31,8 @@ export function RootStack(): StackEnv {
     ...math,
     ...types,
     ...experimental,
-    ...node
+    ...node,
+    ...flags
   };
 
   env.defineAction('prelude', prelude);

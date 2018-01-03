@@ -108,13 +108,18 @@ test('should @', t => {
   t.deepEqual(fSyncValues('( 4 5 6 ) 0 @'), [4]);
   t.deepEqual(fSyncValues('( 4 5 6 ) 1 @'), [5]);
   t.deepEqual(fSyncValues('( 4 5 6 ) 2 @'), [6]);
-  t.deepEqual(fSyncJSON('( 4 5 6 ) 10 @'), [null], 'should @');
+  
 });
 
 test('should @ from end', t => {
   t.deepEqual(fSyncValues('( 4 5 6 ) -1 @'), [6]);
   t.deepEqual(fSyncValues('( 4 5 6 ) -2 @'), [5]);
   t.deepEqual(fSyncValues('( 4 5 6 ) -3 @'), [4]);
+});
+
+test('should @ out of range', t => {
+  t.deepEqual(fSyncJSON('( 4 5 6 ) 10 @'), [null]);
+  t.deepEqual(fSyncJSON('( 4 5 6 ) -10 @'), [null]);
 });
 
 test('should pop and shift without mutation', t => {
@@ -164,6 +169,13 @@ test('should filter arrays of arrays', t => {
     fSyncValues('[ [10 2] [5] [3 1 6 7] [4 2 3] [4] [8 9] ] [ ln even? ] filter'),
     [[ [10, 2], [3, 1, 6, 7], [8, 9] ]]
   );
+});
+
+test('should foldl and foldr', t => {
+  t.deepEqual(fSyncValues('10 integers 0 [+] foldl'),[ 55 ]);
+  t.deepEqual(fSyncValues('10 integers 0 [+] foldr'),[ 55 ]);
+  t.deepEqual(fSyncValues('10 integers 0 [-] foldl'),[ -55 ]);
+  t.deepEqual(fSyncValues('10 integers 0 [-] foldr'),[ -5 ]);
 });
 
 

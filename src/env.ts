@@ -33,7 +33,7 @@ export class StackEnv {
   prevState: any | Object = null;
   depth = 0;
   silent = false;
-  undoable = true;
+  autoundo = true;
   parent: StackEnv;
   lastAction: Tokens;
   nextAction: Tokens;
@@ -266,7 +266,7 @@ export class StackEnv {
   }
 
   onError(err: Error): void {
-    if (this.undoable) {
+    if (this.autoundo) {
       this.undo();
     }
     this.status = ERR;
@@ -327,7 +327,7 @@ export class StackEnv {
       }
 
       if (lookup instanceof Word || lookup instanceof Sentence) {
-        return this.queueFront((lookup as Word).value);
+        return this.queueFront(lookup.value);
       }
 
       if (is.function(lookup)) {

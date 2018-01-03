@@ -1,138 +1,112 @@
-// Reference the Myna module
-import { Myna } from 'myna-parser';
+import { tokenize } from './tokenizer';
 
-// Construct a grammar object
-const g = Object.create(null);
+import {
+  Word,
+  Sentence,
+  Decimal,
+  Complex,
+  StackValue,
+  StackArray,
+  Just,
+  Seq,
+  I
+} from '../types';
+import { unescapeString } from '../utils/stringConversion';
 
-const DELIMITER = ' \t\n\r\f,';
-const BRACKETS = '[]{}()';
-const QUOTES = '\'"`';
-const COLON = ':';
+const makeAction = new Word(':');
+const atAction = new Word('@');
+const templateAction = new Word(':template');
+const evalAction = new Word('eval');
 
-// words
-g.bracket = Myna.char(BRACKETS).ast;
-g.identifierFirst = Myna.notChar(DELIMITER + QUOTES + BRACKETS);
-g.identifierNext = Myna.notChar(DELIMITER + QUOTES + BRACKETS + COLON);
-g.identifier = Myna.seq(g.identifierFirst, g.identifierNext.zeroOrMore, Myna.char(COLON).opt);
-g.word = g.identifier.copy.ast;
+export function lexer(a) {
+  if (Array.isArray(a)) {
+    return a;
+  }
+  if (typeof a === 'string') {
+    a = a.trim(); // fix this in parser
+    const nodes = tokenize(a).map(processParserTokens);
+    return Array.prototype.concat.apply([], nodes); // flatmap
+  }
+  return [a];
+}
 
-g.digit = Myna.choice(
-  Myna.digit,
-  Myna.char('_')
-);
+function processParserTokens(node): StackValue | undefined {
+  switch (node.name) {
+    // todo: more literal: infinity, -infinity, regex, complex, percent
+    case 'templateString':
+      return templateString(node.allText);
+    case 'singleQuotedString':
+      return singleQuotedString(node.allText);
+    case 'doubleQuotedString':
+      return doubleQuotedString(node.allText);
+    case 'symbol':
+      return Symbol(node.allText.slice(1));
+    case 'number':
+      const n = processNumeric(node.allText);
+      if (!isNaN(<any>n)) {
+        return <any>n;
+      } // else fall through
+    case 'word':
+      const id = node.allText.toLowerCase().trim();
+      if (id.length <= 0) {
+        return undefined;
+      } else if (id.length > 1) {
+        return convertLiteral(node.allText);
+      } // else fall through (all length)
+    case 'bracket':
+      return new Word(node.allText);
+    case 'null':
+      return null;
+    case 'bool':
+      return node.allText.toLowerCase() === 'true';
+    case 'nan':
+      return NaN;
+    case 'i':
+      return I;
+    default:
+      throw new Error(`Unknown type in lexer: ${node.name} ${node.allText}`);
+  }
+}
 
-g.digits = g.digit.oneOrMore;
+function processNumeric(value: string): Decimal | number {
+  if (typeof value !== 'string') {
+    return NaN;
+  }
+  if (value[0] === '+' && value[1] !== '-') {
+    value = value.slice(1, value.length);
+  }
+  value = value.replace(/_/g, '');
+  try {
+    if (value === '-0') return new Decimal('-0');
+    return value.slice(-1) === '%'
+        ? new Decimal(String(value.slice(0, -1))).div(100)
+        : new Decimal(String(value));
+  } catch (e) {
+    return NaN;
+  }
+}
 
-// decimal
-g.integer = Myna.seq(
-  Myna.digit.oneOrMore,
-  g.digit.zeroOrMore
-);
-g.fraction = Myna.seq('.', g.integer);
-g.plusOrMinus = Myna.char('+-');
-g.exponent = Myna.seq(Myna.char('eE'), g.plusOrMinus.opt, g.digits);
-g.decimal = Myna.seq(
-  g.plusOrMinus.opt,
-  g.integer,
-  g.fraction.opt,
-  g.exponent.opt,
-  Myna.char('%').opt
-).thenNot(g.identifierNext.or(Myna.digit));
-g.decimalFraction = Myna.seq(
-  g.plusOrMinus.opt,
-  g.integer.opt,
-  g.fraction,
-  g.exponent.opt,
-  Myna.char('%').opt
-).thenNot(g.identifierNext.or(Myna.digit));
+function templateString(val: string) {
+  return [val.slice(1, -1), templateAction];
+}
 
-// radix
-g.rawRadixDigit = Myna.char('0123456789abcdefABCDEF');
-g.radixDigit = Myna.choice(
-  g.rawRadixDigit,
-  Myna.char('_')
-);
-g.radixInteger = Myna.seq(
-  g.rawRadixDigit.oneOrMore,
-  g.radixDigit.zeroOrMore
-);
-g.radixFraction = Myna.seq('.', g.radixInteger);
-g.radixExponent = Myna.seq(
-  Myna.char('eEpP'),
-  g.plusOrMinus.opt,
-  g.radixDigit.oneOrMore
-);
-g.radix = Myna.seq(
-  g.plusOrMinus.opt,
-  '0',
-  Myna.char('oObBxF'),
-  g.radixInteger,
-  g.radixFraction.opt,
-  g.radixExponent.opt
-).thenNot(g.identifierNext.or(g.radixDigit));
+function doubleQuotedString(val: string): string {
+  const v = val.slice(1, -1);
+  return unescapeString(v); // todo-move to parser
+}
 
-g.number = Myna.choice(g.radix, g.decimal, g.decimalFraction, g.integer).ast;
+function singleQuotedString(val: string): string {
+  return val.slice(1, -1);
+}
 
-// Comments and whitespace
-g.untilEol = Myna.advanceWhileNot(Myna.newLine).then(Myna.newLine.opt);
-g.fullComment = Myna.seq('/*', Myna.advanceUntilPast('*/'));
-g.lineComment = Myna.seq('//', g.untilEol);
-g.comment = g.fullComment.or(g.lineComment);
-g.delimiter = Myna.char(DELIMITER).oneOrMore;
-g.ws = g.delimiter.or(Myna.atWs.then(Myna.advance)).zeroOrMore;
+function convertWord(value: string) {
+  return new Word(value);
+}
 
-// symbol
-g.symbol = Myna.seq(Myna.char('#'), g.identifier).ast;
-
-// literals
-g.bool = Myna.keywords('true', 'false', 'TRUE', 'FALSE').thenNot(
-  g.identifierNext
-).ast;
-g.null = Myna.keyword('null', 'NULL').thenNot(g.identifierNext).ast;
-g.nan = Myna.keyword('nan', 'NAN', 'NaN').thenNot(g.identifierNext).ast;
-g.i = Myna.char('iI').thenNot(g.identifierNext).ast;
-
-g.literal = Myna.choice(g.bool, g.null, g.nan, g.i);
-
-// strings
-g.escapedChar = Myna.char('\\').then(Myna.advance);
-g.templateString = Myna.guardedSeq('`', Myna.notChar('`').zeroOrMore, '`').ast;
-g.singleQuotedString = Myna.guardedSeq(
-  '\'',
-  Myna.notChar('\'').zeroOrMore,
-  '\''
-).ast;
-g.doubleQuotedString = Myna.guardedSeq(
-  '"',
-  Myna.notChar('"').zeroOrMore,
-  '"'
-).ast;
-g.string = Myna.choice(
-  g.templateString,
-  g.singleQuotedString,
-  g.doubleQuotedString
-);
-
-g.value = Myna.choice(
-  g.comment,
-  g.number,
-  g.symbol,
-  g.literal,
-  g.word,
-  g.string,
-  g.bracket
-);
-
-g.sequence = g.value.delimited(g.ws);
-
-Myna.registerGrammar('fflat', g, g.value);
-
-// Get the parser
-export const parser = function(text) {
-  return Myna.parse(g.sequence, text);
-};
-
-export const tokenize = function(text) {
-  const result = Myna.parse(g.sequence, text);
-  return result ? result.children : [];
-};
+function convertLiteral(value: string): StackValue | undefined { // move these to parser
+  if (value.slice(-1) === ':') { // this is a hack to push word literals, get rid of this
+    value = value.slice(0, -1);
+    value = <any>new Word(value);
+  }
+  return new Word(value);
+}

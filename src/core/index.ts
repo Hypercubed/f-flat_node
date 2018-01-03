@@ -6,3 +6,4 @@ export * from './math';
 export * from './node';
 export * from './objects';
 export * from './types';
+export * from './flags';

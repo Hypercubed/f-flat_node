@@ -10,6 +10,9 @@
 !!: [ null? ~ ] ;;
 ?@: [ [ dup !! ] dip [ @ ] >> [ drop null ] branch ] ;
 
+truthy?: [ boolean ] ;
+falsy?: [ truthy? ~ ] ;;
+
 // Misc
 compose: [ + ] ;
 prepose: [ swap + ] ;
@@ -30,7 +33,7 @@ check-for-all: [ for-all dup empty? [ '+++ OK, passed 100 tests.' println drop ]
 
 // generators
 next-fib*: [ tuck + ] ;
-fib*: [ ( 0 1 ) dip [ 0 1 [ tuck + ] yield ] [ in ] rolldown 2 - repn drop ] ;
+fib*: [ ( 0 1 ) dip [ 0 1 [ tuck + ] yield ] [ in ] rolldown 2 - times drop ] ;
 count*: [ [ 0 [ ++ dup yield: dip ] forever ] ] ;
 cycle*: [ [ [ 1 splitat swap [ + ] keep eval send suspend ] forever ] >> ] ;
 
@@ -80,31 +83,16 @@ f: [ [x: y: z:] => y 2 ^ x 2 ^ + y abs - ] lambda ;
 length: [ ln ] ;  // just an alias
 
 quicksort: [
-  dup length 1 <=             // if length < 1
-  [ ]                           // do nothing
-  [                           // otherwise:
-    xxs                         // split into first, rest
+  dup ln 1 >             // when length > 1
+  [
+    xxs                         // split into first [ ...rest ]
     over dup                    // shuffle
     [ [ <= ] >> filter ] >>     // filter values less than or equal to pivot
-    swap [ [ > ] >> filter ] >> // filter values greater than to pivot
+    swap [ [ > ] >> filter ] >> // filter values greater than the pivot
     bi
     [ quicksort ] bi@           // quicksort each sublist
     [ swap + ] dip +            // merge results 
-  ] branch
-] ;
-
-pattern-branch: [ pattern-choose eval ] ;
-
-/**
- * Factorial using pattern matching
- */
-p-fact: [
-  dup
-  [
-    0 [ drop 1 ]
-    _ [ pred p-fact * ]
-  ]
-  pattern-branch
+  ] when
 ] ;
 
 p-reverse: [

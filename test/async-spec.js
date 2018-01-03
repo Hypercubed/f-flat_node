@@ -11,7 +11,7 @@ const good = {
 };
 
 nock('https://api.github.com/')
-  .get('/users/Hypercubed/repos')
+  .get('/users/Hypercubed/repos/')
   .reply(200, good);
 
 test('yield', t => {
@@ -123,7 +123,7 @@ test('should work with async/await', async t => {
 
 test('should fetch', async t => {
   t.deepEqual(
-    await fAsyncJSON('"https://api.github.com/users/Hypercubed/repos" fetch-json'),
+    await fAsyncJSON('"https://api.github.com/users/Hypercubed/repos/" fetch-json'),
     [good],
     'should fetch'
   );

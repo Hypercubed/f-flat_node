@@ -29,12 +29,10 @@ const _rewrite = typed({
     }
     const path = Dictionary.makePath(action.value);
     const value = <StackValue>getIn(dictObject, path);
-    if (is.undefined(value) && (action.value as string)[0] !== IIF) {
-      return action;
-    }
-    if (is.function_(value)) {
-      return new Seq([action]);
-    }
+
+    if (is.undefined(value) && (action.value as string)[0] !== IIF) return action;
+    if (is.function_(value)) return new Seq([action]);
+
     wordPaths.push(action.value);
     const ret = _rewrite(value);
     wordPaths.pop();

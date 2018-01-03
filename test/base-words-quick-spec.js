@@ -173,7 +173,7 @@ test(
   check(options, ffString, gen.posInt, (t, a, b) => {
     const r = fSyncStack(`${a} ${b} @`);
     t.is(r.length, 1);
-    t.is(r[0], a.valueOf()[b] || '');
+    t.is(r[0], a.valueOf()[b] || null);
   })
 );
 

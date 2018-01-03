@@ -28,6 +28,19 @@ export const arrayMul = (lhs: any[], rhs: any) => {
   return acc;
 };
 
+export const arrayInvMul = (lhs: any[], rhs: any) => {
+  const len = lhs.length;
+  let acc: any[] = [];
+  if (len < 1) {
+    return acc;
+  }
+  let i = len;
+  while (--i > -1) {
+    acc = acc.concat([lhs[i]], rhs);
+  }
+  return acc;
+};
+
 function objEquiv(a: {}, b: {}): boolean {
   if (typeof a === 'undefined' || typeof b === 'undefined') return a === b;
   if (a === null || b === null) return a === b;
@@ -92,19 +105,12 @@ const __eql = typed('deepEquals', {
   },
   'Object, Object': objEquiv,
   'any, any': (a: any, b: any): boolean => {
-    if (Number.isNaN(a) && Number.isNaN(b)) {
-      return true;
-    }
-    return a === b;
+    return false;
   }
 });
 
 export function deepEquals(a: any, b: any): boolean {
-  if (a === b || a == b) { // tslint:disable-line
-    // eslint-disable-line eqeqeq
-    return true;
-  }
-  return __eql(a, b);
+  return (a === b) ? true : __eql(a, b);
 }
 
 export const toObject = typed('object', {

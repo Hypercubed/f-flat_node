@@ -1,7 +1,7 @@
 import { assign, merge, unshift, push, slice, getIn, assoc } from 'icepick';
 
 import { lexer } from '../parser';
-import { deepEquals, arrayRepeat, arrayMul } from '../utils';
+import { deepEquals, arrayRepeat, arrayMul, arrayInvMul } from '../utils';
 import { and, nand, or, xor, not, nor, cmp, mimpl, cimpl, mnonimpl, cnonimpl } from '../utils/kleene-logic';
 import {
   rAnd,
@@ -231,7 +231,7 @@ const sub = typed('sub', {
  */
 const mul = typed('mul', {
   /**
-   * - array intersparse
+   * - array/string intersparse
    *
    * ```
    * f♭> [ 'a' ] [ 'b' ] *
@@ -344,6 +344,18 @@ const mul = typed('mul', {
  */
 const div = typed('div', {
   /**
+   * - array/string inverse intersparse
+   *
+   * ```
+   * f♭> [ 'a' ] [ 'b' ] *
+   * [ [ 'a' 'b' ] ]
+   *```
+   */
+  'Array, Array | Word | Sentence | Function': arrayInvMul,
+  'string, Array | Word | Sentence | Function': (lhs, rhs) =>
+  arrayInvMul(lhs.split(''), rhs),
+
+  /**
    * - logical material nonimplication or abjunction
    *
    * p but not q
@@ -408,6 +420,8 @@ const div = typed('div', {
  *
  */
 const idiv = typed('idiv', {
+  'Array, Array | Word | Sentence | Function': (lhs, rhs) => new Sentence(arrayMul(lhs, rhs)),
+  'string, Array | Word | Sentence | Function': (lhs, rhs) => new Sentence(arrayMul(lhs.split(''), rhs)),
 
   /**
    * - Floored division.

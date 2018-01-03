@@ -177,3 +177,27 @@ test('length of booleans are zero', t => {
   t.deepEqual(fSyncJSON('true ln'), [0]);
   t.deepEqual(fSyncJSON('false ln'), [0]);
 });
+
+test('convert falsy values', t => {
+  t.deepEqual(fSyncJSON('false boolean'), [false]);
+  t.deepEqual(fSyncJSON('0 boolean'), [false]);
+  t.deepEqual(fSyncJSON('-0 boolean'), [false]);
+  t.deepEqual(fSyncJSON('"" boolean'), [false]);
+  t.deepEqual(fSyncJSON('null boolean'), [false]);
+  t.deepEqual(fSyncJSON('nan boolean'), [false]);
+});
+
+test('convert truthiness values', t => {
+  t.deepEqual(fSyncJSON('true boolean'), [true]);
+  t.deepEqual(fSyncJSON('1 boolean'), [true]);
+  t.deepEqual(fSyncJSON('-1 boolean'), [true]);
+  t.deepEqual(fSyncJSON('"false" boolean'), [true]);
+  t.deepEqual(fSyncJSON('"any string" boolean'), [true]);
+  t.deepEqual(fSyncJSON('[] boolean'), [true]);
+  t.deepEqual(fSyncJSON('{} boolean'), [true]);
+  t.deepEqual(fSyncJSON('infinity boolean'), [true]);
+  t.deepEqual(fSyncJSON('"1/1/1990" date boolean'), [true]);
+  t.deepEqual(fSyncJSON('1 0 / boolean'), [true]);
+  t.deepEqual(fSyncJSON('i boolean'), [true]);
+});
+

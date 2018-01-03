@@ -13,7 +13,7 @@ import {
   Complex,
   Decimal
 } from '../types';
-import { log, template, toObject } from '../utils';
+import { template, toObject } from '../utils';
 import { deepEquals } from '../utils/utils';
 import { patternMatch } from '../utils/pattern';
 import { StackEnv } from '../env';
@@ -70,13 +70,13 @@ export const core = {
      * [ 'c' ]
      * ```
      */
-    'string, number | null | string': (lhs, rhs) => {
+    'string, number': (lhs: string, rhs) => {
       rhs = Number(rhs) | 0;
       if (rhs < 0) {
         rhs = lhs.length + rhs;
       }
       const r = lhs.charAt(rhs);
-      return r === undefined ? null : r;
+      return r === '' ? null : r;
     },
 
     /**
@@ -87,7 +87,7 @@ export const core = {
      * [ 2 ]
      * ```
      */
-    'Array, number | null | string': (lhs, rhs) => {
+    'Array, number': (lhs, rhs) => {
       rhs = Number(rhs) | 0;
       if (rhs < 0) {
         rhs = lhs.length + rhs;
@@ -475,6 +475,8 @@ export const core = {
     return toObject(r);
   },
 
+  // 'self': () => Symbol.for('self'),
+
   /**
    * ## `template`
    * converts a string to a string template
@@ -506,39 +508,11 @@ export const core = {
   },
 
   /**
-   * ## `get-log-level`
-   * gets the current logging level
-   *
-   * ( -> {string} )
-   */
-  'get-log-level': () => log.level,
-
-  /**
-   * ## `set-log-level`
-   * sets the current logging level
-   *
-   * ( {string} -> )
-   */
-  'set-log-level': (a: string): void => {
-    log.level = a;
-  },
-
-  /**
    * ## `undo`
    * restores the stack to state before previous eval
    */
   undo(this: StackEnv): void {
     this.undo().undo();
-  },
-
-  /**
-   * ## `auto-undo`
-   * set flag to auto-undo on error
-   *
-   * ( {boolean} -> )
-   */
-  'auto-undo': function(this: StackEnv, a: boolean): void {
-    this.undoable = a;
   },
 
   /*

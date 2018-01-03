@@ -4,24 +4,29 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Bugs
 
-- [ ] @ for out of range works differently on string and array
-- [?] Bitwise ops on decimals
-- [ ] map over strings should return strings
-- [ ] `'0.03+0.86i':complex`
-- [ ] `'86i' complex`
+- [x] @ for out of range works differently on string and array
+- [x] `'0.03+0.86i':complex`
+- [x] `'86i' complex`
+- [ ] .clear should reset everything, including flags
+- [ ] Recursive private functions
+- [ ] Recursive name spaces words
 
 # Decide
-- [ ] Decide on macros, dupn!3, dup<5>, range<1, 100>, range!(1, 10). ?
-- [ ] ~ vs !
-- [ ] undef, null nan, nil, ComplexInfinity, Indeterminate, Undefined (http://www.wolframalpha.com/input/?i=ComplexInfinity)
-- [ ] Choose regex vs regexp
-- [ ] words and literals are equivelent? true: === true ?
+- [ ] Decide on macros, `dupn!3`, `dup<5>`, `range<1, 100>`, `range!(1, 10).` ?
+- [ ] `~` vs `!`, `!` vs `factorial`, `/=` or `!=`.
+- [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
+- [ ] Choose `regex` vs `regexp`
 - [ ] Ranges?
 - [ ] Symbols vs internal classes?
-- [ ] sto/rcl destructuring `1 2 3 [ x: y: z: ] sto`?
+- [ ] sto/rcl destructuring `1 2 3 [ x: y: z: ] sto` (replaces `=>`)?
+- [ ] Bitwise ops on decimals (`|` vs `bitwise-or`, etc).
+- [ ] map over strings should return strings?
 
 # Todo next:
 
+- [ ] Combine lambdas and pattern matching
+- [ ] Online help.
+- [ ] `undoable` -> `autoundo`, add `undoable` flag.
 - [ ] Fix API docs for base
 - [ ] Consistant and predictable display precision:
   - [ ] 1 acos = 0 (precision issue)
@@ -34,7 +39,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] Symbols `(`, `_`
   - [x] true, false
   - [x] null
-- [ ] Make scope lifting safe.  No user writes to scope.
+- [ ] Make scope lifting safe.  No user writes to scope.  No collisions with locals.
 - [ ] More tests for stack object immutablity
 - [ ] Better internal types
   - [ ] Just -> ReturnValue
@@ -42,8 +47,10 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [x] Action -> Words / Sentence
   - [ ] Token type? `a:`
 - [ ] Test all internal words
+  - [ ] Basis
+  - [ ] Core
   - [ ] Dictionary words
-- [ ] Test missing `usr.ff` and cwd
+- [ ] Test with missing `usr.ff` and cwd
 - [ ] JSON
   - [ ] to simplified JSON (Decimal -> number, regex, symbols, etc)
   - [ ] Decimal/Complex .fromJSON + Tests
@@ -52,13 +59,13 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] `q> q< ` -> ``
 - [ ] Ensure predictable cmp with null and nan
 
-# New Words
+# Words
 
 - [ ] `cld`: https://docs.julialang.org/en/stable/stdlib/math/#Base.cld
 - [ ] `isfinite?`, `isinf?`, `isnan?`
 - [ ] `sign`, `ispos?`, `isneg?`
-- [ ] `>>` and `>>>` ?
-- [ ] `sinpi`, `cospi`?
+- [ ] `>>>` ?
+- [ ] `sinpi`, `cospi` (more accurate than `cos(pi*x)`, especially for large `x`.)?
 - [ ] Better complex inputs
   - [ ] `1+2i` (Literal)
   - [x] `"1+2i" complex`
@@ -76,13 +83,15 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [x] `nd = (f, x, h) => (f(x + h) - f(x)) / h`
 - [ ] Move `prompt` into code?
 - [ ] Radix from number: `radix = (n, radix) => n.toString(radix)`
-  - [ ] Fix bin and oct floating point
-  - [ ] fix hex, bin, ect with neg values
-- [ ] Elvis operastor `?:` replaces choose
+  - [ ] Fix `bin` and `oct` floating point
+  - [ ] fix `hex`, `bin`, ect with neg values
+- [ ] Elvis operastor `?:` (replaces choose?)
 - [x] Safe at `?@` performs @ if lhs is not null
-- [ ] `..` creastes a range
+- [ ] `..` creastes a range, possibly infinite
 - [ ] Use standard words, `foldl`, etc
-- [ ] Use y vs. recursion?
+- [ ] `each*`, recursive each, no stack overflow?
+- [ ] Use `y` vs. recursion?
+- [x] `falsy?` null, 0, undefined, ""?
 
 # Docs
 
@@ -100,6 +109,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 # Todo:
 
 - [ ] Matrices
+- [ ] composite truth values?
 - [ ] Pattern substitution? `[_ _]` => `[a,b]`
 - [ ] Improve errors (FF errors should not have a JS stack)
 - [ ] Trig functions on complex

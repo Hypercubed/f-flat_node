@@ -12,9 +12,10 @@ sip: [ over slip ] ;;       // B [a] -> B a B    (aka keep)
 // diped
 dipd: [ q< dip q> ] ;;      // D C [b] A -> D b C A
 sipd: [ q< sip q> ] ;;      // C B [a] -> C a C B
-dupd: [ q< dup q> ] ;      // B A -> B B A
-slipd: [ q< slip q> ] ;;
+dupd: [ q< dup q> ] ;       // B A -> B B A
+slipd: [ q< slip q> ] ;;    // [c] B A -> c B A
 over: [ dupd swap ] ;;      // B A -> B A B  (aka peek)
+swapd: [ q< swap q> ] ;     // C B A -> B C A
 
 bi: [ sipd eval ] ;;        // C [b] [a] -> C b C a
 do: [ dup dipd ] ;;
@@ -22,7 +23,6 @@ do: [ dup dipd ] ;;
 // keep/check
 keep: [ over slip ] ;;      // B [a] -> B a B    (aka sip)
 check: [ dupd eval ] ;;     // B [a] -> B B a    (aka w)
-
 
 // Comparisons
 >: [ <=> 1 = ] ;
@@ -45,20 +45,30 @@ delay: [ [ sleep ] >> slip eval ] ;
 // control
 branch: [ choose eval ] ;
 when: [ [ ] branch ] ;
-ifte: [ slipd branch ] ;
+unless: [ [ ] swap branch ] ;
+ifte: [ slipd branch ] ;;
 if: [ slip when ] ;
 while: [ swap do + [ loop ] >> when ] ;
+
+each: [ * eval ] ;
+reverse-each: [ / eval ] ;
+foldl: [ swapd each ] ;;
+foldr: [ [ swap ] swap + swapd reverse-each ] ;;
+foldl1: [ [ xxs ] dip each ] ;;
+foldr1: [ [ xxs ] dip reverse-each ] ;;
+fold: [ foldl1 ] ;;
 runn: [ [ -- dup -1 > ] [ [ run ] dip ] while drop ] ;
-foreach: [ * eval ] ;
-foreach-rev: [ [ reverse ] dip * eval ] ;
 times: [ runn drop ] ;
 guard: [ [ keep ] >> dip branch ] ;
 orelse: [ [ null? ~ ] guard ] ;
 keepif: [ over unit if ] ;
-loop: [ [ eval ] keep 'loop' >> when ] ;
+loop: [ [ eval ] keep [ loop ] >> when ] ;
 until: [ [ [ ~ ] + ] dip while ] ;
 forever: [ [ eval ] keep forever: >> eval ] ;
 either?: [ bi + ] ;
+
+// pattern matching
+pattern-branch: [ pattern-choose eval ] ;
 
 appl: [ >> in ] ;
 y: [ [ dup >> ] swap + dup >> ] ;
@@ -84,9 +94,16 @@ startswith: [ dup ln [ head ] >> dip = ] ;;
 endswith: [ dup ln [ tail ] >> dip = ] ;;
 contains: [ indexof 1 > ] ;
 
-// aggregate recursion
-maximum: [ dup ln 1 <= [ 0 @ ] [ xxs maximum max ] branch ] ;
-minimum: [ dup ln 1 <= [ 0 @ ] [ xxs minimum min ] branch ] ;
+// functional
+chain: [ over nothing? ~ swap when ] ;
+fmap: [ eval ] ;
+map-reduce: [ [ map ] dip fold ] ;
+reduce: [ foldl ] ;;
+filter: [ [ dup empty swap ] dip [ keepif ] >> map swap * ] ;
+
+// aggregate reduction
+maximum: [ [ max ] fold ] ;;
+minimum: [ [ min ] fold ] ;;
 reverse: [ dup ln 1 <= [ ] [ xxs reverse swap + ] branch ] ;
 
 flatten*: [
@@ -96,17 +113,11 @@ flatten*: [
 ] ;
 flatten: [ [ flatten* ] appl ] ;
 
-// functional
-chain: [ over nothing? ~ swap when ] ;
-fmap: [ eval ] ;
-reduce*: [ [ xxs ] dip foreach ] ;
-map-reduce: [ [ map ] dip reduce* ] ;
-reduce: [ [ * ] >> dip swap eval ] ;
-filter: [ [ dup empty swap ] dip [ keepif ] >> map swap * ] ;
+
 
 // math
 neg: [ 0 swap - ] ;
-sum: [ [ + ] reduce* ] ;
+sum: [ [ + ] fold ] ;
 
 // incrementors
 --: [ 1 - ] ;

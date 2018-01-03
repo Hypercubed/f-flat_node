@@ -129,7 +129,8 @@ test('should @ from end', t => {
 });
 
 test('should @ from out of bounds', t => {
-  t.deepEqual(fSyncJSON('"abc" 10 @'), ['']);
+  t.deepEqual(fSyncJSON('"abc" 10 @'), [null]);
+  t.deepEqual(fSyncJSON('"abc" -10 @'), [null]);
 });
 
 test('should process string templates', t => {

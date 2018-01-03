@@ -2,17 +2,16 @@
  * # Module loader
  */
 
-// Compute boot file's directory based on the filename
+// Compute file's directory based on the filename
 __dirname: [ __filename dirname '/' + ] ;
 
 /**
  * ## `import-resolve`
- * Resolve path relative to boot file
+ * Resolve path relative to file
  */
 __import-resolve: [ ( __dirname ) >> resolve ] ;
 
 /**
- * ## `_public-dict`
  * returns the local dictionary, expect "private" words
  *
  * ( -> {array} )
@@ -25,7 +24,7 @@ __public-dict: [ locals [ dup 0 @ '_' = [ drop ] [ dup rcl ] choose eval ] map o
  *
  * ( -> {array} )
  */
-__scoped-dict: [ scoped [ dup rcl ] map object ] ;
+__scoped-dict: [ locals scoped + [ dup rcl ] map object ] ;
 
 /**
  * ## `create-module`

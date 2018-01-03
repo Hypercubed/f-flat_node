@@ -148,7 +148,7 @@ export const types = {
   /**
    * ## `boolean`
    */
-  boolean: Boolean,
+  boolean: (x: number) => x ? Boolean(x.valueOf()) : false,
 
   /**
    * ## `:` (action)

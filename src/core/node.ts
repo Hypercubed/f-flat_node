@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 import { readFileSync, writeFileSync, readFile, existsSync } from 'fs';
-import { dirname, join } from 'path';
+import { dirname, join, extname } from 'path';
 import * as fetch from 'isomorphic-fetch';
 import { promisify } from 'util';
 import * as normalizeUrl from 'normalize-url';
@@ -142,16 +142,12 @@ export const node = {
   /**
    * ## `resolve`
    *
-   * returns a URL href releative to teh current base
+   * returns a URL href releative to the current base
    *
    */
   resolve: typed('resolve', {
-    'string': (name: string): string => {
-      return normalizeUrl(resolve(name).href);
-    },
-    'Array': ([name, base]: string[]): string => {
-      return normalizeUrl(resolve(name, base).href);
-    },
+    'string': (name: string): string => normalizeUrl(resolve(name).href),
+    'Array': ([name, base]: string[]): string => normalizeUrl(resolve(name, base).href)
   }),
 
   /**
@@ -165,7 +161,7 @@ export const node = {
   /**
    * ## `read`
    *
-   * Pushes teh content of a fiel as a utf8 string
+   * Pushes the content of a file as a utf8 string
    *
    */
   read(name: string): string {
