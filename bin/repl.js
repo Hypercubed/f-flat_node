@@ -5,20 +5,15 @@
 const repl = require('repl');
 const readline = require('readline');
 const program = require('commander');
+const gradient = require('gradient-string');
+const memoize = require('memoizee');
 
 const { Stack, RootStack } = require('../dist/stack');
 const { log, formatValue, type } = require('../dist/utils');
-const memoize = require('memoizee');
 
 const pkg = require('../package.json');
 
-/* const welcome = `
-Welcome to F♭ REPL Interpreter
-F♭ Version ${pkg.version} (C) 2000-2017 ${pkg.author}
-(Type '.help' for help)
-`; */
-
-const welcome = `
+const welcome = gradient.rainbow(`
           []]
           []]
 []]]]]]]] []] []]]      F♭ Version ${pkg.version}
@@ -28,10 +23,10 @@ const welcome = `
 []]       []][]]        Type '.clear' to reset
 []]
 []]
-`
+`);
 
-const initialPrompt = 'f♭> ';
-const altPrompt = 'f♭] ';
+const initialPrompt = 'F♭> ';
+const altPrompt = 'F♭) ';
 const inspectOptions = {
   showHidden: false,
   depth: null,
@@ -67,11 +62,6 @@ if (program.logLevel) {
   log.level = program.logLevel;
 }
 
-process.on('uncaughtException', () => {
-  console.log('The event loop was blocked for longer than 2000 milliseconds');
-  process.exit(1);
-});
-
 let f = newStack();
 
 if (program.file) {
@@ -85,6 +75,10 @@ if (arg !== '') {
 if (!program.file && arg === '') {
   exitOrStartREPL();
 }
+
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at:', p, 'reason:', reason);
+});
 
 // functions
 

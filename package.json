@@ -34,6 +34,7 @@
     "decimal.js": "^7.4.0",
     "fantasy-helpers": "0.0.1",
     "fixed-width-string": "^1.0.0",
+    "gradient-string": "^1.0.0",
     "icepick": "^2.2.0",
     "isomorphic-fetch": "^2.2.1",
     "literalizer": "^0.4.0-a",
