@@ -104,7 +104,7 @@ filter: [ [ dup empty swap ] dip [ keepif ] >> map swap * ] ;
 // aggregate reduction
 maximum: [ [ max ] fold ] ;;
 minimum: [ [ min ] fold ] ;;
-reverse: [ dup ln 1 <= [ ] [ xxs reverse swap + ] branch ] ;
+reverse: [ dup ln 1 > [ xxs reverse swap + ] when ] ;
 
 flatten*: [
   dup array?
@@ -142,3 +142,15 @@ dict: [ locals [ dup rcl ] map object ] ;
   * ( -> )
   */
 nop: [] ;
+
+/**
+ * Calls the second quotation in the first pair whose first quotation yields a true value.
+ */
+cond: [
+  dup length 0 >
+  [
+    xxs slip slipd
+    [ cond ] >>
+    branch
+  ] when
+] ;
