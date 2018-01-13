@@ -167,11 +167,6 @@ function writer(_) {
 }
 
 function fEval(code, _, __, cb) {
-  code = code
-    .replace(/^\(([\s\S]*)\n\)$/m, '$1')
-    .replace(/[\s]/g, ' ')
-    .trim();
-
   if (code.slice(0, 2) === '({' && code.slice(-2) === '})') {
     code = code.slice(1, -1); // remove "(" and ")" added by node repl
   }

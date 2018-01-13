@@ -61,7 +61,7 @@ prompt
 
 ```
 /**
- * FizzBuzz using pattern branching
+ * FizzBuzz using branching
  */
 fizzbuzz: [
   dup 15 divisor?
@@ -81,7 +81,7 @@ fizzbuzz: [
 ] ;
 
 /**
- * FizzBuzz using conditional
+ * FizzBuzz using conditionals
  */
 c-fizzbuzz: [
   [

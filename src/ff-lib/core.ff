@@ -3,11 +3,12 @@
  */
 'types.ff' import use
 
-// Shuffle words
+// core shuffle words
 slip: [ q< eval q> ] ;      // [b] A -> b A
 run: [ dup slip ] ;;        // [a] -> a [a]
 dip: [ swap slip ] ;;       // B [a] -> a B
 sip: [ over slip ] ;;       // B [a] -> B a B    (aka keep)
+dive: [ swap dipd ] ;       // [c] [b] [a] -> a [c] [b]   (aka dip2)
 
 // diped
 dipd: [ q< dip q> ] ;;      // D C [b] A -> D b C A
@@ -23,6 +24,10 @@ do: [ dup dipd ] ;;
 // keep/check
 keep: [ over slip ] ;;      // B [a] -> B a B    (aka sip)
 check: [ dupd eval ] ;;     // B [a] -> B B a    (aka w)
+
+// truthy/falsy
+truthy?: [ boolean ] ;
+falsy?: [ truthy? ~ ] ;;
 
 // Comparisons
 >: [ <=> 1 = ] ;
@@ -43,19 +48,21 @@ yield: [ return suspend ] ;
 delay: [ [ sleep ] >> slip eval ] ;
 
 // control
-branch: [ choose eval ] ;
+_check: [ [ truthy? ] dive ] ;
+branch: [ _check choose eval ] ;
 when: [ [ ] branch ] ;
 unless: [ [ ] swap branch ] ;
 ifte: [ slipd branch ] ;;
 if: [ slip when ] ;
 while: [ swap do + [ loop ] >> when ] ;
 
+// folds
 each: [ * eval ] ;
 reverse-each: [ / eval ] ;
 foldl: [ swapd each ] ;;
 foldr: [ [ swap ] swap + swapd reverse-each ] ;;
-foldl1: [ [ xxs ] dip each ] ;;
-foldr1: [ [ xxs ] dip reverse-each ] ;;
+foldl1: [ [ uncons ] dip each ] ;;
+foldr1: [ [ uncons ] dip reverse-each ] ;;
 fold: [ foldl1 ] ;;
 runn: [ [ -- dup -1 > ] [ [ run ] dip ] while drop ] ;
 times: [ runn drop ] ;
@@ -67,13 +74,10 @@ until: [ [ [ ~ ] + ] dip while ] ;
 forever: [ [ eval ] keep forever: >> eval ] ;
 either?: [ bi + ] ;
 
-// pattern matching
-pattern-branch: [ pattern-choose eval ] ;
-
 appl: [ >> in ] ;
 y: [ [ dup >> ] swap + dup >> ] ;
 
-// Lists
+// lists
 unit: [ [ ] >> ] ;
 cons: [ >> ] ;
 pair: [ unit >> ] ;
@@ -89,7 +93,7 @@ last: [ -1 @ ] ;
 rest: [ 1 % ] ;
 head: [ \ ] ;
 tail: [ % ] ;
-xxs: [ [ first ] [ rest ] bi ] ;;
+uncons: [ [ first ] [ rest ] bi ] ;;
 startswith: [ dup ln [ head ] >> dip = ] ;;
 endswith: [ dup ln [ tail ] >> dip = ] ;;
 contains: [ indexof 1 > ] ;
@@ -104,7 +108,7 @@ filter: [ [ dup empty swap ] dip [ keepif ] >> map swap * ] ;
 // aggregate reduction
 maximum: [ [ max ] fold ] ;;
 minimum: [ [ min ] fold ] ;;
-reverse: [ dup ln 1 > [ xxs reverse swap + ] when ] ;
+reverse: [ dup ln 1 > [ uncons reverse swap + ] when ] ;
 
 flatten*: [
   dup array?
@@ -112,8 +116,6 @@ flatten*: [
   when
 ] ;
 flatten: [ [ flatten* ] appl ] ;
-
-
 
 // math
 neg: [ 0 swap - ] ;
@@ -124,8 +126,6 @@ sum: [ [ + ] fold ] ;
 ++: [ 1 + ] ;
 pred: [ dup -- ] ;
 succ: [ dup ++ ] ;
-
-// control
 
 /**
  * ## `dict`
@@ -144,13 +144,37 @@ dict: [ locals [ dup rcl ] map object ] ;
 nop: [] ;
 
 /**
- * Calls the second quotation in the first pair whose first quotation yields a true value.
+ * Calls the second quotation in the first pair whose first quotation yields a truthy value.
  */
 cond: [
-  dup length 0 >
+  dup empty?
   [
-    xxs slip slipd
+    uncons slip slipd
     [ cond ] >>
     branch
-  ] when
+  ] unless
+] ;
+
+/**
+ * Calls the second quotation in the first pair whose first quotation matchs the last item on the stack
+ */
+p-cond: [
+  dup empty?
+  [
+    uncons [ eval [ dupd =~ ] dip ] dip
+    [ p-cond ] >>
+    branch
+  ] unless
+] ;
+
+/**
+ * Returns the second item in the first pair whose first quotation matches the last item on the stack
+ */
+p-choose: [
+  dup empty?
+  [
+    uncons [ eval [ dupd =~ ] dip [ drop ] swap << ] dip
+    [ p-choose ] >>
+    branch
+  ] unless
 ] ;

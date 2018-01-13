@@ -98,11 +98,16 @@ test('should stack unstack', t => {
   t.deepEqual(fSyncValues('[ 1 2 3 ] <-'), [1, 2, 3], 'should unstack');
 });
 
-test('should choose', t => {
+test('should choose on true and false', t => {
   t.deepEqual(fSyncValues('true 3 4 choose'), [3]);
   t.deepEqual(fSyncValues('false 3 4 choose'), [4]);
+});
+
+test('should branch on truthy and falsy', t => {
   t.deepEqual(fSyncValues('5 false [ 2 + ] [ 2 * ] branch'), [10]);
   t.deepEqual(fSyncValues('5 true [ 2 + ] [ 2 * ] branch'), [7]);
+  t.deepEqual(fSyncValues('5 null [ 2 + ] [ 2 * ] branch'), [10]);
+  t.deepEqual(fSyncValues('5 "this is truthy" [ 2 + ] [ 2 * ] branch'), [7]);
 });
 
 test('in/fork', t => {
@@ -642,8 +647,8 @@ test('locals don\'t collide with definitions', t => {
 test('should resolve', t => {
   t.regex(fSyncValues('"core" resolve')[0], /^file:.*core$/);
   t.regex(fSyncValues('"core.ff" resolve')[0], /^file:.*core.ff$/);
-  t.deepEqual(fSyncValues('"/home/core.ff" resolve'), ['file:///home/core.ff']);
-  t.deepEqual(fSyncValues('"file:///home/core.ff" resolve'), ['file:///home/core.ff']);
+  t.regex(fSyncValues('"/home/core.ff" resolve')[0], /^file:\/\/\/.*home\/core.ff$/);
+  t.regex(fSyncValues('"file:///home/core.ff" resolve')[0], /^file:\/\/\/.*home\/core.ff$/);
   t.deepEqual(fSyncValues('"http://www.home.com/core.ff" resolve'), ['http://home.com/core.ff']);
 });
 

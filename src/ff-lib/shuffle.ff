@@ -28,7 +28,6 @@ flip: [ swapd bury ] ;        // [c] [b] [a] -> [a] [b] [c]
 rot: [ bury swap ] ;          // [c] [b] [a] -> [a] [b] [c]
 
 dip2: [ swap dipd ] ;            // [c] [b] [a] -> a [c] [b]
-dive: [ swap dipd ] ;            // [c] [b] [a] -> a [c] [b]   (aka dip2)
 
 bi2: [ q< keep2 q> eval ] ;;     // D C [b] [a] -> D C b D C a
 bi*: [ dipd eval ] ;;            // D C [b] [a] -> D b C a

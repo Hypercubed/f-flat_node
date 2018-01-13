@@ -12,13 +12,13 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Recursive name spaces words
 
 # Decide
-- [ ] Decide on macros, `dupn!3`, `dup<5>`, `range<1, 100>`, `range!(1, 10).` ?
+- [x] Decide on macros, `dupn!3`, `dup<5>`, `range<1, 100>`, `range:(1, 10).` ? Using `range:(1, 10).`
 - [ ] `~` vs `!`, `!` vs `factorial`, `/=` or `!=`.
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [ ] Choose `regex` vs `regexp`
 - [ ] Ranges?
 - [ ] Symbols vs internal classes?
-- [ ] sto/rcl destructuring `1 2 3 [ x: y: z: ] sto` (replaces `=>`)?
+- [-] sto/rcl destructuring `1 2 3 [ x: y: z: ] sto` (replaces `=>`)? Noe, internal words ahve devined arity.
 - [ ] Bitwise ops on decimals (`|` vs `bitwise-or`, etc).
 - [ ] map over strings should return strings?
 
@@ -26,10 +26,13 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 - [ ] Combine lambdas and pattern matching
 - [ ] Online help.
-- [ ] `undoable` -> `autoundo`, add `undoable` flag.
+- [ ] Undo flags
+  - [x] `undoable` -> `autoundo`,
+  - [ ] add `undoable` flag.
+  - [ ] reset by `.clear`
 - [ ] Fix API docs for base
 - [ ] Consistant and predictable display precision:
-  - [ ] 1 acos = 0 (precision issue)
+  - [ ] `1 acos` => `0` (precision issue)
   - [ ] precision in complex calculations (on print)
   - [ ] Pretty printing complex values: '5e-20+2i' -> '2i'
 - [ ] More literals in parser

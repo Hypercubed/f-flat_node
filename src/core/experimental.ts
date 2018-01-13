@@ -165,13 +165,5 @@ export const experimental = {
       };
       this.defineAction(name, memoize(fn, { length: n, primitive: true }));
     }
-  },
-
-  'pattern-choose': function(this: StackEnv, item: StackValue, arr: StackArray) {
-    for (let i = 0; i < arr.length; i += 2) {
-      if (patternMatch(item, arr[i])) {
-        return arr[i + 1];
-      }
-    }
   }
 };

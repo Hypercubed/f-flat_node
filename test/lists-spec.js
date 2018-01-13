@@ -146,8 +146,8 @@ test('should fine maximum and minimum', t => {
   );
 });
 
-test('should xxs', t => {
-  t.deepEqual(fSyncValues('(5 4 3) xxs'), [5, [4,3]]);
+test('should uncons', t => {
+  t.deepEqual(fSyncValues('(5 4 3) uncons'), [5, [4,3]]);
 });
 
 test('should quicksort', t => {

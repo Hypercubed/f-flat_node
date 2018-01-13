@@ -10,9 +10,6 @@
 !!: [ null? ~ ] ;;
 ?@: [ [ dup !! ] dip [ @ ] >> [ drop null ] branch ] ;
 
-truthy?: [ boolean ] ;
-falsy?: [ truthy? ~ ] ;;
-
 // Misc
 compose: [ + ] ;
 prepose: [ swap + ] ;
@@ -38,8 +35,8 @@ count*: [ [ 0 [ ++ dup yield: dip ] forever ] ] ;
 cycle*: [ [ [ 1 splitat swap [ + ] keep eval send suspend ] forever ] >> ] ;
 
 // async
-spawnsplit: [ spawn2 eval2 ] ;
 spawn2: [ [ spawn ] dip spawn ] ;
+spawnsplit: [ spawn2 eval2 ] ;
 
 // fetch
 fetch-json: [ read parse-json ] ;
@@ -63,11 +60,12 @@ case: [ [ stack-check ] dip when ] ;;
 switch: [ [ unstack case ] foreach ] ;;
 
 // lambdas
-=>: [ [ sto ] foreach-rev ] ;
+call: [ fork unstack ] ;
+=>: [ [ sto ] reverse-each ] ;
 lambda-eval: [
-  [ stack ] dip
-  unstack: swap >>
-  >> fork unstack
+  [ stack unstack: ] dip
+  >> >>
+  call
 ] ;
 lambda: [ 
   [ lambda-eval ] >>
@@ -85,7 +83,7 @@ length: [ ln ] ;  // just an alias
 quicksort: [
   dup ln 1 >             // when length > 1
   [
-    xxs                         // split into first [ ...rest ]
+    uncons                         // split into first [ ...rest ]
     over dup                    // shuffle
     [ [ <= ] >> filter ] >>     // filter values less than or equal to pivot
     swap [ [ > ] >> filter ] >> // filter values greater than the pivot
@@ -98,11 +96,11 @@ quicksort: [
 p-reverse: [
   dup ln
   [
-    0 []
-    1 []
-    _ [ xxs reverse swap + ]
+    [ 0 [] ]
+    [ 1 [] ]
+    [ _ [ uncons p-reverse swap + ] ]
   ]
-  pattern-branch
+  p-cond
 ] ;
 
 /**
@@ -113,3 +111,11 @@ quad: [
     b -1 * b b * 4 a c * * - sqrt -+
     [ 2 a * / ] bi@
 ] lambda ;
+
+s-test: [
+  `
+  Multi line string
+  Hello
+  World
+  `
+] ;

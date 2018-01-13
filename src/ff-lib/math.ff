@@ -83,17 +83,15 @@ pow: [ -- dup [ [ dup ] swap times [ * ] ] dip times ] ;
 mul: [ -- dup [ [ dup ] swap times [ + ] ] dip times ] ;
 
 // Factorials
-p-fact-go: [
-  dup
-  [
-    0 [ drop ]
-    _ [ pred [ * ] dip p-fact-go ]
-  ]
-  pattern-branch
+fact-go: [
+  dup zero?
+  [ drop ]
+  [ pred [ * ] dip fact-go ]
+  branch
 ] ;
 
 approx-fact: [ ++ gamma ] ;
-recur-fact: [ 1 swap p-fact-go ] ;;
+recur-fact: [ 1 swap fact-go ] ;;
 !: [ dup integer? [recur-fact] [approx-fact] branch ] ;;
 
 // Prob
