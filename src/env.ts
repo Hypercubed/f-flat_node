@@ -9,35 +9,32 @@ const is = require('@sindresorhus/is');
 
 import { lexer } from './parser';
 import {
-  log,
-  bar,
   FFlatError,
-  formatState,
-  stringifyStrict
+  serializer
 } from './utils';
 
-import { typed, Seq, Just, Dictionary, StackValue, StackArray, Future, Word, Sentence } from './types';
+import { typed, Seq, Just, Dictionary, StackValue, StackArray, Future, Word, Sentence, Tokens } from './types';
 import { MAXSTACK, MAXRUN, IDLE, DISPATCHING, YIELDING, ERR, IIF } from './constants';
-
-const nonInteractive = !process || !process.stdin.isTTY;
-
-type Tokens = Word | Sentence | Just | Seq | Future | Promise<any>;
 
 export class StackEnv {
   status = IDLE;
+
   completed = new MiniSignal();
+  before = new MiniSignal();
+  after = new MiniSignal();
+
   previousPromise: Promise<any> = Promise.resolve();
 
   queue: any[] = [];
   stack: StackArray = freeze([]);
   prevState: any | Object = null;
   depth = 0;
-  silent = false;
   autoundo = true;
   parent: StackEnv;
   lastAction: Tokens;
   nextAction: Tokens;
-  module = undefined;
+
+  dict: Dictionary;
 
   defineAction: Function = typed({
     'Function': (fn: Function) => {
@@ -59,14 +56,12 @@ export class StackEnv {
     'Word | string, any': (name: Word | string, a) => this.dict.set(String(name), a)
   });
 
-  dict: Dictionary;
-
   constructor (initalState: any = { parent: null }) {
     Object.assign(this, initalState);
     this.dict = new Dictionary(initalState.parent ? initalState.parent.dict : undefined);
   }
 
-  promise(s: StackValue): Promise<StackEnv> {
+  private promise(s: StackValue): Promise<StackEnv> {
     return new Promise((resolve, reject) => {
       this.completed.once(err => {
         if (err) {
@@ -87,102 +82,53 @@ export class StackEnv {
   }
 
   run(s?: StackValue): StackEnv {
-    s && this.queueFront(s);
+    const self = this;
 
-    if (this.status !== IDLE) {
-      return this;
+    s && self.queueFront(s);
+
+    if (self.status !== IDLE) {
+      return self;
     }
 
-    this.status = DISPATCHING;
+    self.status = DISPATCHING;
 
-    this.prevState = {  // store state for undo or on error
-      depth: this.depth,
-      prevState: this.prevState,
-      stack: this.stack,  // note: stack is immutable, this is a point in time copy.
+    self.prevState = {  // store state for undo or on error
+      depth: self.depth,
+      prevState: self.prevState,
+      stack: self.stack,  // note: stack is immutable, this is a point in time copy.
       queue: []
     };
 
-    // Actions to run before each dispatch
-    // Used to showTrace or show progress bar
-    const beforeEach = ((): Function => {
-      const showTrace = (log.level.toString() === 'trace');
-      const showBar = !nonInteractive || !this.silent && (log.level.toString() === 'warn');
-
-      if (showTrace) {
-        return () => {
-          console.log(formatState(this));
-        };
-      } else if (showBar) {
-        let qMax = this.stack.length + this.queue.length;
-        let c = 0;
-
-        return () => {
-          c++;
-          if (c % 1000 === 0) {
-            const q = this.stack.length + this.queue.length;
-            if (q > qMax) {
-              qMax = q;
-            }
-
-            let lastAction;
-
-            // todo: fix this, sometimes last action is a symbol
-            try {
-              lastAction = String(this.lastAction);
-            } catch (e) {
-              lastAction = '';
-            }
-
-            bar.update(this.stack.length / qMax, {
-              stack: this.stack.length,
-              queue: this.queue.length,
-              depth: this.depth,
-              lastAction
-            });
-          }
-        };
-      }
-      return function () {};
-    })();
-
-    // Actions to run after each dispatch
-    // Used to detech MAXSTACK and MAXRUN errors
-    const afterEach = (() => {
-      let loopCount = 0;
-      return () => {
-        if (this.stack.length > MAXSTACK || this.queue.length > MAXSTACK) {
-          throw new FFlatError('MAXSTACK exceeded', this);
-        }
-        if (loopCount++ > MAXRUN) {
-          throw new FFlatError('MAXRUN exceeded', this);
-        }
-      };
-    })();
+    let loopCount = 0;
 
     try {
-      // run loop
-      log.profile('dispatch');
-      while (this.status !== YIELDING && this.queue.length > 0) {
-        this.silent || beforeEach();
-        this.stackDispatchToken(this.queue.shift());
-        afterEach();
+      while (self.status !== YIELDING && self.queue.length > 0) {
+        self.before.dispatch(self);
+        self.stackDispatchToken(self.queue.shift());
+        self.after.dispatch(self);
+        checkMaxErrors();
       }
-      nonInteractive || bar.terminate();
       this.onCompleted();
     } catch (e) {
-      nonInteractive || bar.terminate();
       this.onError(e);
-    } finally {
-      log.profile('dispatch');
     }
 
-    return this;
+    return self;
+
+    // Actions to run after each dispatch
+    // Used to detect MAXSTACK and MAXRUN errors
+    function checkMaxErrors() {
+      if (self.stack.length > MAXSTACK || self.queue.length > MAXSTACK) {
+        throw new FFlatError('MAXSTACK exceeded', self);
+      }
+      if (loopCount++ > MAXRUN) {
+        throw new FFlatError('MAXRUN exceeded', self);
+      }
+    }
   }
 
   enqueue(s: StackValue): StackEnv {
-    if (s) {
-      this.queue.push(...lexer(s));
-    }
+    if (s) this.queue.push(...lexer(s));
     return this;
   }
 
@@ -195,33 +141,14 @@ export class StackEnv {
       }
       finished = true;
     });
-    this.run();
-    if (!finished) {
-      throw new FFlatError('Do Not Release Zalgo', <any>this);
-    }
-    return this;
-  }
 
-  exportAction(): StackEnv {
-    if (this.parent) {
-      /* const expanded = {};
-      for (const key in this.dict) {
-        if (Object.prototype.hasOwnProperty.call(this.dict, key)) {
-          expanded[key] = this.expandAction(this.dict[key]);
-        }
-      } */
-      this.parent.defineAction(this.dict);
-    }
+    this.run();
+    if (!finished) throw new FFlatError('Do Not Release Zalgo', this);
     return this;
   }
 
   clear(): StackEnv {
     this.stack = splice(this.stack, 0);
-    return this;
-  }
-
-  queueFront(s: StackValue): StackEnv {
-    this.queue.unshift(...lexer(s));
     return this;
   }
 
@@ -231,7 +158,7 @@ export class StackEnv {
 
   toJSON(): any[] {
     // todo: this should stringify all state
-    return JSON.parse(stringifyStrict(this.stack));
+    return serializer(this.stack);
   }
 
   createChildPromise(a: StackValue): Promise<StackValue[]> {
@@ -256,7 +183,12 @@ export class StackEnv {
     return Object.assign(this, this.prevState || {});
   }
 
-  onCompleted(): void {
+  private queueFront(s: StackValue): StackEnv {
+    this.queue.unshift(...lexer(s));
+    return this;
+  }
+
+  private onCompleted(): void {
     if (this.status === DISPATCHING) {
       this.status = IDLE;
     }
@@ -265,7 +197,7 @@ export class StackEnv {
     }
   }
 
-  onError(err: Error): void {
+  private onError(err: Error): void {
     if (this.autoundo) {
       this.undo();
     }

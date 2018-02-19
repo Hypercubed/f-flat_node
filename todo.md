@@ -4,10 +4,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Bugs
 
-- [x] @ for out of range works differently on string and array
-- [x] `'0.03+0.86i':complex`
-- [x] `'86i' complex`
-- [ ] .clear should reset everything, including flags
+- [?] .clear should reset everything, including flags
 - [ ] Recursive private functions
 - [ ] Recursive name spaces words
 
@@ -16,14 +13,19 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `~` vs `!`, `!` vs `factorial`, `/=` or `!=`.
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [ ] Choose `regex` vs `regexp`
-- [ ] Ranges?
+- [ ] Ranges?  Infinite ranges?
 - [ ] Symbols vs internal classes?
-- [-] sto/rcl destructuring `1 2 3 [ x: y: z: ] sto` (replaces `=>`)? Noe, internal words ahve devined arity.
+- [-] sto/rcl destructuring `1 2 3 [ x: y: z: ] sto` (replaces `=>`)? (should internal words have fixed arity?).
 - [ ] Bitwise ops on decimals (`|` vs `bitwise-or`, etc).
 - [ ] map over strings should return strings?
+- [ ] Store to symbols `#aword dup 123 sto rcl`
 
 # Todo next:
 
+- [ ] Finish JSON output
+- [ ] Serialize to ff
+- [ ] Advanced string literals `fn'${A}-${B}'` -> `${A fn}-${B fn}`
+- [ ] Mixed numeric and string indecies for arrays and maps `[ 1 2 x: 3 ]` `{ x: 1 y: 2 3 4 5}`
 - [ ] Combine lambdas and pattern matching
 - [ ] Online help.
 - [ ] Undo flags
@@ -35,7 +37,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] `1 acos` => `0` (precision issue)
   - [ ] precision in complex calculations (on print)
   - [ ] Pretty printing complex values: '5e-20+2i' -> '2i'
-- [ ] More literals in parser
+- [ ] More literals in parser?
   - [ ] regex?
   - [ ] i
   - [ ] +/-Infinity
@@ -70,7 +72,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `>>>` ?
 - [ ] `sinpi`, `cospi` (more accurate than `cos(pi*x)`, especially for large `x`.)?
 - [ ] Better complex inputs
-  - [ ] `1+2i` (Literal)
+  - [ ] `1+2i` (Literal)?
   - [x] `"1+2i" complex`
   - [x] `[1,2] complex`
   - [x] `complex:((1,2)).`
@@ -111,10 +113,10 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Todo:
 
-- [ ] Matrices
+- [ ] Matrices?
 - [ ] composite truth values?
-- [ ] Pattern substitution? `[_ _]` => `[a,b]`
-- [ ] Improve errors (FF errors should not have a JS stack)
+- [ ] Pattern matching substitution? `[_ _]` => `[a,b]`
+- [ ] Improve errors (FF errors should not have a JS stack, FF stack)
 - [ ] Trig functions on complex
   - [x] sin, cos, tan
   - [x] sinh, cosh, tanh
@@ -142,21 +144,21 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] More date base operations
   - [ ] Add Duration type... example: https://github.com/moment/moment/blob/develop/src/lib/duration/constructor.js
 - [ ] Improved `@`
-  - [ ] [ ... ] [ x y z ] @ => [ ... ][x][y][z]
-  - [ ] { ... } 'x.y.z' @ => [ ... ][x][y][z]
+  - [ ] `[ ... ] [ x y z ] @` => `[ ... ][x][y][z]`
+  - [ ] `{ ... } 'x.y.z' @` => `[ ... ][x][y][z]`
 - [ ] Private/Protected words?  Globals/parent scoped?
 - [ ] Preserved precision base on user input (2.50 vs 2.5)?
 - [ ] Pattern matching ???
 - [ ] Better JSON iterop
-  - [ ] StackEnv.prototype.toJSON should serialize entire state
+  - [ ] StackEnv.prototype.toJSON should serialize entire state?
   - [ ] FFlat Extended JSON, `{ value: i 2 * }`
   - [ ] Deserialize JSON
   - [ ] Simplified JSON
   - [ ] BSON?
-  - [ ] Nan, Infinity, etc.
+  - [x] Nan, Infinity, etc.
   - [x] BigNumber, Complex
-  - [ ] actions, 
-  - [ ] Dates
+  - [x] actions, 
+  - [x] Dates
 - [ ] RegExp
   - [?] Rewrite strings lib to use regex
   - [ ] Regex literal?
@@ -166,11 +168,11 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [x] OR {regexp} + {regexp} = {regexp} OR {regexp}
   - [x] AND {regexp} + {regexp} = {regexp} AND {regexp}
   - [x] NOT {regexp} ~ = NOT {regexp}
-  - [ ] JSON output
+  - [x] JSON output
 - [ ] Get strict on punctuation ??
 - [ ] Integer -> Float -> Decimal -> Complex, predictable type promotion
 - [ ] Parser / compiler output
-- [ ] Ranges? 1..4?
+- [ ] Infinite Ranges? 1..Infinity?
 - [ ] Pattern matching?
   - [x] place holder `_`
   - [x] rest pattern in arrays `[ 1 ... ]`

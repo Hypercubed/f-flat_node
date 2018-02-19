@@ -117,7 +117,7 @@ f♭> '3/17/2003' date dup 1000 +
 
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L232">[src]</a></div>
 
-- array intersparse
+- array/string intersparse
 
 ```
 f♭> [ 'a' ] [ 'b' ] *
@@ -202,6 +202,14 @@ f♭> 2 3 *
 
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L345">[src]</a></div>
 
+- array/string inverse intersparse
+
+```
+f♭> [ 'a' ] [ 'b' ] *
+[ [ 'a' 'b' ] ]
+```
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L355">[src]</a></div>
+
 - logical material nonimplication or abjunction
 
 p but not q
@@ -210,7 +218,7 @@ p but not q
 f♭> true true /
 [ false ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L357">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L369">[src]</a></div>
 
 - Split
 
@@ -220,7 +228,7 @@ Split a string into substrings using the specified a string or regexp seperator
 f♭> 'a;b;c' ';' /
 [ [ 'a' 'b' 'c' ] ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L369">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L381">[src]</a></div>
 
 - Array/string split at
 
@@ -228,7 +236,7 @@ f♭> 'a;b;c' ';' /
 f♭> 'abcdef' 3 /
 [ 'abc' 'def' ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L379">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L391">[src]</a></div>
 
 - arithmetic division
 
@@ -236,11 +244,11 @@ f♭> 'abcdef' 3 /
 f♭> 6 2 /
 [ 3 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L399">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L411">[src]</a></div>
 
 ## `\` (backslash)
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L411">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L423">[src]</a></div>
 
 - Floored division.
 
@@ -250,7 +258,7 @@ Largest integer less than or equal to x/y.
 f♭> 7 2 \
 [ 3 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L423">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L437">[src]</a></div>
 
 - Array/string head
 
@@ -260,7 +268,7 @@ Returns the head of string or array
 f♭> 'abcdef' 3 \
 [ 'abc' ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L439">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L453">[src]</a></div>
 
 - Split first
 
@@ -271,7 +279,7 @@ Returns the first
 f♭> 'a;b;c' ';' /
 [ 'a' ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L452">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L466">[src]</a></div>
 
 - logical converse non-implication, the negation of the converse of implication
 
@@ -279,11 +287,11 @@ f♭> 'a;b;c' ';' /
 f♭> true true \
 [ false ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L462">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L476">[src]</a></div>
 
 ## `%` (modulo)
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L469">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L483">[src]</a></div>
 
 - remainder after division
 
@@ -291,7 +299,7 @@ f♭> true true \
 f♭> 7 2 %
 [ 1 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L479">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L493">[src]</a></div>
 
 - Array/string tail
 
@@ -301,7 +309,7 @@ Returns tail of a string or array
 f♭> 'abcdef' 3 /
 [ 'def' ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L491">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L505">[src]</a></div>
 
 - Split rest
 
@@ -312,7 +320,7 @@ Returns the rest
 f♭> 'a;b;c' ';' %
 [ [ 'b' 'c' ] ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L504">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L518">[src]</a></div>
 
 - RegExp inverse join (nand)
 
@@ -323,7 +331,7 @@ That is the regexp does not match both inputs
 f♭> "skiing" regexp "sledding" regexp /
 [ /(?!(?=skiing)(?=sledding))/ ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L521">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L535">[src]</a></div>
 
 - boolean nand
 
@@ -331,11 +339,11 @@ f♭> "skiing" regexp "sledding" regexp /
 f♭> true false %
 [ true ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L531">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L545">[src]</a></div>
 
 ## `>>`
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L538">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L552">[src]</a></div>
 
 - unshift/cons
 
@@ -343,7 +351,7 @@ f♭> true false %
 f♭> 1 [ 2 3 ] >>
 [ 1 2 3 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L548">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L562">[src]</a></div>
 
 - concat
 
@@ -351,7 +359,7 @@ f♭> 1 [ 2 3 ] >>
 f♭> 'dead' 'beef' >>
 'deadbeef'
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L561">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L575">[src]</a></div>
 
 - string right shift
 
@@ -359,7 +367,7 @@ f♭> 'dead' 'beef' >>
 f♭> 'abcdef' 3 >>
 'abc'
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L571">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L585">[src]</a></div>
 
 - map merge
 
@@ -369,7 +377,7 @@ Deeply merge a lhs into the rhs
 f♭> { first: 'Manfred' } { last: 'von Thun' } >>
 [ { first: 'Manfred' last: 'von Thun' } ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L583">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L597">[src]</a></div>
 
 - Sign-propagating right shift
 
@@ -377,7 +385,7 @@ f♭> { first: 'Manfred' } { last: 'von Thun' } >>
 f♭> 64 2 >>
 [ 16 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L593">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L607">[src]</a></div>
 
 - logical material implication (P implies Q)
 
@@ -385,7 +393,7 @@ f♭> 64 2 >>
 f♭> true true >>
 [ true ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L603">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L617">[src]</a></div>
 
 - RegExp right seq
 
@@ -396,14 +404,14 @@ And uses the right-hand-side flags
 f♭> "/skiing/i" regexp "sledding" regexp >>
 [ /skiingsledding/ ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L616">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L630">[src]</a></div>
 
 ## `<<`
 Left shift
 
 ( x y -> z)
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L625">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L639">[src]</a></div>
 
 - push/snoc
 
@@ -411,7 +419,7 @@ Left shift
 f♭> [ 1 2 ] 3 <<
 [ [ 1 2 3 ] ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L635">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L649">[src]</a></div>
 
 - concat
 
@@ -419,7 +427,7 @@ f♭> [ 1 2 ] 3 <<
 f♭> 'dead' 'beef' <<
 'deadbeef'
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L646">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L660">[src]</a></div>
 
 - string left shift
 
@@ -427,7 +435,7 @@ f♭> 'dead' 'beef' <<
 f♭> 'abcdef' 3 <<
 'def'
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L656">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L670">[src]</a></div>
 
 - converse implication (p if q)
 
@@ -435,7 +443,7 @@ f♭> 'abcdef' 3 <<
 f♭> true true <<
 [ true ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L666">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L680">[src]</a></div>
 
 - object merge
 
@@ -446,7 +454,7 @@ Deeply merge a rhs into the lhs
 f♭> { first: 'Manfred' } { last: 'von Thun' } <<
 [ { first: 'Manfred' last: 'von Thun' } ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L679">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L693">[src]</a></div>
 
 - left shift
 
@@ -454,7 +462,7 @@ f♭> { first: 'Manfred' } { last: 'von Thun' } <<
 f♭> 64 2 <<
 [ 256 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L689">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L703">[src]</a></div>
 
 - RegExp right seq
 
@@ -465,11 +473,11 @@ And uses the left-hand-side flags
 f♭> "/skiing/i" regexp "sledding" regexp <<
 [ /skiingsledding/i ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L704">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L718">[src]</a></div>
 
 ## `^` (pow)
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L711">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L725">[src]</a></div>
 
 - pow function (base^exponent)
 
@@ -477,13 +485,13 @@ f♭> "/skiing/i" regexp "sledding" regexp <<
 f♭> 7 2 %
 [ 49 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L721">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L735">[src]</a></div>
 
 - string pow
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L729">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L743">[src]</a></div>
 
 - array pow
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L741">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L755">[src]</a></div>
 
 - boolean xor
 
@@ -491,7 +499,7 @@ f♭> 7 2 %
 f♭> true false ^
 [ true ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L758">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L772">[src]</a></div>
 
 - RegExp xor
 
@@ -502,15 +510,15 @@ That is the regexp that matches one, but not both patterns
 f♭> "skiing" regexp "sledding" regexp ^
 [ /(?=skiing|sledding)(?=(?!(?=skiing)(?=sledding)))/ ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L771">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L785">[src]</a></div>
 
 ## `ln`
 
 ( x -> {number} )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L778">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L792">[src]</a></div>
 
 - natural log
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L783">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L797">[src]</a></div>
 
 - length of the Array or string
 
@@ -518,7 +526,7 @@ f♭> "skiing" regexp "sledding" regexp ^
 > [ 1 2 3 ] length
 [ 3 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L797">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L811">[src]</a></div>
 
 - number of keys in a map
 
@@ -526,7 +534,7 @@ f♭> "skiing" regexp "sledding" regexp ^
 > { x: 1, y: 2, z: 3 } length
 [ 3 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L807">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L821">[src]</a></div>
 
 - "length" of a nan, null, and booleans are 0
 
@@ -534,10 +542,10 @@ f♭> "skiing" regexp "sledding" regexp ^
 > true length
 [ 0 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L817">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L831">[src]</a></div>
 
 ## `~` (not)
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L823">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L837">[src]</a></div>
 
 - number negate
 
@@ -545,7 +553,7 @@ f♭> "skiing" regexp "sledding" regexp ^
 f♭> 5 ~
 [ -5 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L833">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L847">[src]</a></div>
 
 - boolean (indeterminate) not
 
@@ -558,10 +566,10 @@ f♭> true ~
 f♭> NaN ~
 [ NaN ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L853">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L867">[src]</a></div>
 
 - regex avoid
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L858">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L872">[src]</a></div>
 
 - object/array invert
 
@@ -576,10 +584,10 @@ f♭> { first: 'Manfred', last: 'von Thun' } ~
 f♭> [ 'a' 'b' 'c' ] ~
 [ { a: '0' b: '1'  c: '2' } ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L875">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L889">[src]</a></div>
 
 ## `empty`
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L884">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L898">[src]</a></div>
 
 ## `cmp`
 Pushes a -1, 0, or 1 when x is logically 'less than', 'equal to', or 'greater than' y.
@@ -591,7 +599,7 @@ Push null if sort order is unknown
 f♭> 1 2 cmp
 [ -1 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L904">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L918">[src]</a></div>
 
 - number comparisons
 
@@ -601,7 +609,7 @@ give results of either 1, 0 or -1
 f♭> 1 0 cmp
 [ 1 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L916">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L930">[src]</a></div>
 
 - vector comparisons
 
@@ -611,7 +619,7 @@ the longer vector is always "greater" regardless of contents
 f♭> [1 2 3 4] [4 5 6] cmp
 [ 1 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L936">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L950">[src]</a></div>
 
 - string comparisons
 
@@ -623,7 +631,7 @@ compare strings in alphabetically
 f♭> "abc" "def" cmp
 [ -1 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L954">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L968">[src]</a></div>
 
 - boolean comparisons
 
@@ -631,7 +639,7 @@ f♭> "abc" "def" cmp
 f♭> false true cmp
 [ -1 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L966">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L980">[src]</a></div>
 
 - date comparisons
 
@@ -639,7 +647,7 @@ f♭> false true cmp
 f♭> now now cmp
 [ -1 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L978">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L992">[src]</a></div>
 
 - object comparisons
 
@@ -649,7 +657,7 @@ compares number of keys, regardless of contents
 f♭> { x: 123, z: 789 } { y: 456 } cmp
 [ 1 ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L994">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1008">[src]</a></div>
 
 ## `=` equal
 Pushes true if x is equal to y.
@@ -660,4 +668,4 @@ Pushes true if x is equal to y.
 f♭> 1 2 =
 [ false ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1029">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1043">[src]</a></div>

@@ -5,7 +5,7 @@
 
 'core.ff' import use
 
-drop2: [ drop drop ] ;        // B A ->
+drop2: [ drop drop ] ;        // B A -> (2drop in forth)
 
 m: [ dup eval ] ;             // [a] -> [a] a
 
@@ -13,19 +13,19 @@ dup2: [ over over ] ;         // B A -> B A B A
 
 keep2: [ q< dup2 q> dive ] ;  // [c] [b] [a] -> [c] [b] a [c] [b]   (aka 2keep)
 
-nip: [ swap drop ] ;          // B [a] -> [a]
-dropd: [ q< drop q> ] ;       // B [a] -> [a]          (aka nip)
-tuck: [ swap over ] ;         // [b] [a] -> [a] [b] [a]
+nip: [ swap drop ] ;          // B A -> A
+dropd: [ q< drop q> ] ;       // B A -> A          (aka nip)
+tuck: [ swap over ] ;         // B A -> A B A
 
-overd: [ q< over q> ] ;       // [c] [b] [a] -> [c] [b] [c] [a]
-pick: [ overd swap ] ;        // [c] [b] [a] -> [c] [b] [a] [c]
-dup3: [ pick pick pick ] ;    // [c] [b] [a] -> [c] [b] [a] [c] [b] [a]
-swapd: [ q< swap q> ] ;       // [c] [b] [a] -> [b] [c] [a]
-dig: [ swapd swap ] ;         // [c] [b] [a] -> [b] [a] [c]
-rolldown: [ swapd swap ] ;    // [c] [b] [a] -> [b] [a] [c] (aka dig)
-bury: [ swap swapd ] ;        // [c] [b] [a] -> [a] [c] [b]
-flip: [ swapd bury ] ;        // [c] [b] [a] -> [a] [b] [c]
-rot: [ bury swap ] ;          // [c] [b] [a] -> [a] [b] [c]
+overd: [ q< over q> ] ;       // C B A -> C B C A
+pick: [ overd swap ] ;        // C B A -> C B A C
+dup3: [ pick pick pick ] ;    // C B A -> C B A C B A
+swapd: [ q< swap q> ] ;       // C B A -> B C A
+dig: [ swapd swap ] ;         // C B A -> B A C (rot in forth)
+rolldown: [ swapd swap ] ;    // C B A -> B A C (aka dig)
+bury: [ swap swapd ] ;        // C B A -> A C B
+flip: [ swapd bury ] ;        // C B A -> A B C
+rot: [ bury swap ] ;          // C B A -> A B C
 
 dip2: [ swap dipd ] ;            // [c] [b] [a] -> a [c] [b]
 

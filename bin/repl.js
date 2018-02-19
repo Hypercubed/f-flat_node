@@ -9,9 +9,11 @@ const gradient = require('gradient-string');
 const memoize = require('memoizee');
 
 const { Stack, RootStack } = require('../dist/stack');
-const { log, formatValue, type } = require('../dist/utils');
+const { log, formatValue, type, formatState, bar } = require('../dist/utils');
 
 const pkg = require('../package.json');
+
+const nonInteractive = !process || !process.stdin.isTTY;
 
 const welcome = gradient.rainbow(`
           []]
@@ -143,13 +145,13 @@ function startREPL() {
 function newStack() {
   log.level = program.logLevel || 'warn';
 
-  const f = Stack('true auto-undo', RootStack());
+  const newParent = Stack('true set-auto-undo', RootStack());
 
   const rl = stackRepl || readline.createInterface({
     input: process.stdin
   });
 
-  f.defineAction('prompt', () => {
+  newParent.defineAction('prompt', () => {
     return new Promise(resolve => {
       rl.question('', resolve);
     });
@@ -158,8 +160,10 @@ function newStack() {
   if (!program.quiet) {
     console.log(welcome);
   }
-  
-  return f.createChild(undefined);
+
+  const child = newParent.createChild(undefined);
+  child.completed.add(() => bar.terminate());
+  return child;
 }
 
 function writer(_) {
@@ -182,18 +186,26 @@ function fEval(code, _, __, cb) {
       return;
     }
 
+    addBefore();
+
+    log.profile('dispatch');
     f
       .next(buffer)
       .then(result => {
-        stackRepl.setPrompt(f.depth === 0 ? initialPrompt : altPrompt);
+        fin();
         cb(null, result);
       })
       .catch(err => {
-        stackRepl.setPrompt(f.depth === 0 ? initialPrompt : altPrompt);
+        fin();
         cb(err);
       });
 
     buffer = '';
+
+    function fin() {
+      log.profile('dispatch');
+      stackRepl.setPrompt(f.depth === 0 ? initialPrompt : altPrompt);
+    }
   }
 }
 
@@ -219,4 +231,53 @@ function getKeys() {
     keys.push(prop);
   }
   return keys;
+}
+
+let beforeBinding;
+
+function addBefore() {
+  if (beforeBinding) {
+    beforeBinding.detach();
+  }
+
+  const showTrace = (log.level.toString() === 'trace');
+
+  if (showTrace) {
+    return f.before.add(() => {
+      console.log(formatState(f));
+    });
+  }
+
+  const showBar = !nonInteractive || !f.silent && (log.level.toString() === 'warn');
+
+  if (showBar) {
+    let qMax = f.stack.length + f.queue.length;
+    let c = 0;
+
+    return f.before.add(() => {
+      c++;
+      if (c % 1000 === 0) {
+        const q = f.stack.length + f.queue.length;
+        if (q > qMax) {
+          qMax = q;
+        }
+
+        let lastAction;
+
+        // todo: fix this, sometimes last action is a symbol
+        try {
+          lastAction = String(f.lastAction);
+        } catch (e) {
+          lastAction = '';
+        }
+
+        bar.update(f.stack.length / qMax, {
+          stack: f.stack.length,
+          queue: f.queue.length,
+          depth: f.depth,
+          lastAction
+        });
+      }
+    });
+  }
 }

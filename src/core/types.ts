@@ -156,6 +156,11 @@ export const types = {
   ':': a => new Just(action(a)),
 
   /**
+   * ## `#` (sdymbol)
+   */
+  '#': a => Symbol(a),
+
+  /**
    * ## `array`
    */
   array: n => new Array(n),
@@ -175,7 +180,7 @@ export const types = {
   /**
    * ## `of`
    */
-  of: (a, b) => (a.constructor ? new a.constructor(b) : undefined),
+  of: (a, b) => ((a !== null && a.constructor) ? new a.constructor(b) : null),
 
   /**
    * ## `is?`

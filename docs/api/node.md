@@ -58,10 +58,10 @@ returns a URL href releative to the current base
 
 Returns true if the file exists, false otherwise.
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L164">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L160">[src]</a></div>
 
 ## `read`
 
 Pushes the content of a file as a utf8 string
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L172">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L168">[src]</a></div>

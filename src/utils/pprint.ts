@@ -134,7 +134,7 @@ function formatSymbol(value: Symbol, opts: InspectOptions): string {
   return stylize(str, 'symbol', opts);
 }
 
-function formatArray(
+export function formatArray(
   arr: Array<any>,
   depth: number,
   opts: InspectOptions,

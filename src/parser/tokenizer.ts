@@ -13,21 +13,19 @@ const COLON = ':';
 g.bracket = Myna.char(BRACKETS).ast;
 g.identifierFirst = Myna.notChar(DELIMITER + QUOTES + BRACKETS);
 g.identifierNext = Myna.notChar(DELIMITER + QUOTES + BRACKETS + COLON);
-g.identifier = Myna.seq(g.identifierFirst, g.identifierNext.zeroOrMore, Myna.char(COLON).opt);
+g.identifier = Myna.seq(
+  g.identifierFirst,
+  g.identifierNext.zeroOrMore,
+  Myna.char(COLON).opt
+);
 g.word = g.identifier.copy.ast;
 
-g.digit = Myna.choice(
-  Myna.digit,
-  Myna.char('_')
-);
+g.digit = Myna.choice(Myna.digit, Myna.char('_'));
 
 g.digits = g.digit.oneOrMore;
 
 // decimal
-g.integer = Myna.seq(
-  Myna.digit.oneOrMore,
-  g.digit.zeroOrMore
-);
+g.integer = Myna.seq(Myna.digit.oneOrMore, g.digit.zeroOrMore);
 g.fraction = Myna.seq('.', g.integer);
 g.plusOrMinus = Myna.char('+-');
 g.exponent = Myna.seq(Myna.char('eE'), g.plusOrMinus.opt, g.digits);
@@ -48,14 +46,8 @@ g.decimalFraction = Myna.seq(
 
 // radix
 g.rawRadixDigit = Myna.char('0123456789abcdefABCDEF');
-g.radixDigit = Myna.choice(
-  g.rawRadixDigit,
-  Myna.char('_')
-);
-g.radixInteger = Myna.seq(
-  g.rawRadixDigit.oneOrMore,
-  g.radixDigit.zeroOrMore
-);
+g.radixDigit = Myna.choice(g.rawRadixDigit, Myna.char('_'));
+g.radixInteger = Myna.seq(g.rawRadixDigit.oneOrMore, g.radixDigit.zeroOrMore);
 g.radixFraction = Myna.seq('.', g.radixInteger);
 g.radixExponent = Myna.seq(
   Myna.char('eEpP'),
@@ -85,12 +77,13 @@ g.ws = g.delimiter.or(Myna.atWs.then(Myna.advance)).zeroOrMore;
 g.symbol = Myna.seq(Myna.char('#'), g.identifier).ast;
 
 // literals
-g.bool = Myna.keywords('true', 'false', 'TRUE', 'FALSE').thenNot(
-  g.identifierNext
-).ast;
-g.null = Myna.keyword('null', 'NULL').thenNot(g.identifierNext).ast;
-g.nan = Myna.keyword('nan', 'NAN', 'NaN').thenNot(g.identifierNext).ast;
-g.i = Myna.char('iI').thenNot(g.identifierNext).ast;
+g.bool = Myna.choice(
+  Myna.keywordAnyCase('true'),
+  Myna.keywordAnyCase('false')
+).thenNot(g.identifierNext).ast;
+g.null = Myna.keywordAnyCase('null').thenNot(g.identifierNext).ast;
+g.nan = Myna.keywordAnyCase('nan').thenNot(g.identifierNext).ast;
+g.i = Myna.keywordAnyCase('i').thenNot(g.identifierNext).ast;
 
 g.literal = Myna.choice(g.bool, g.null, g.nan, g.i);
 
@@ -98,9 +91,9 @@ g.literal = Myna.choice(g.bool, g.null, g.nan, g.i);
 g.escapedChar = Myna.char('\\').then(Myna.advance);
 g.templateString = Myna.guardedSeq('`', Myna.notChar('`').zeroOrMore, '`').ast;
 g.singleQuotedString = Myna.guardedSeq(
-  '\'',
-  Myna.notChar('\'').zeroOrMore,
-  '\''
+  `'`,
+  Myna.notChar(`'`).zeroOrMore,
+  `'`
 ).ast;
 g.doubleQuotedString = Myna.guardedSeq(
   '"',

@@ -652,3 +652,11 @@ test('should resolve', t => {
   t.deepEqual(fSyncValues('"http://www.home.com/core.ff" resolve'), ['http://home.com/core.ff']);
 });
 
+test('keywords are case insenstivive', t => {
+  t.deepEqual(fSyncValues('null NULL'), [null, null]);
+  t.deepEqual(fSyncValues('nan NAN NaN nAn'), [NaN, NaN, NaN, NaN]);
+  t.deepEqual(fSyncString('i I'), '0+1i,0+1i');
+  t.deepEqual(fSyncValues('true TRUE tRue'), [true, true, true]);
+  t.deepEqual(fSyncValues('false FALSE fAlsE'), [false, false, false]);
+});
+

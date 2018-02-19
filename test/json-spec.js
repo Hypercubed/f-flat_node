@@ -38,13 +38,20 @@ test('generate json for complex values', t => {
   });
 });
 
+test('generate json for actions', t => {
+  t.deepEqual(fSyncJSON('"word" :')[0], { '@@Action': 'word' });
+  t.deepEqual(fSyncJSON('[ "a" "b" ] :')[0], { '@@Action': ["a", "b"] });
+  t.deepEqual(fSyncJSON('[ 1 2 ] :')[0], { '@@Action': [{ $numberDecimal: '1' }, { $numberDecimal: '2' }] });
+  t.deepEqual(fSyncJSON('[ a b ] :')[0], { '@@Action': [{ '@@Action': 'a' }, { '@@Action': 'b' }] });
+});
+
 test('generate json for other values', t => {  // todo create better json rep
   t.deepEqual(fSyncJSON('null')[0], null);
-  t.deepEqual(fSyncJSON('nan')[0], D(NaN));
-  t.deepEqual(fSyncJSON('-0')[0], D(-0));
-  t.deepEqual(fSyncJSON('infinity')[0], D(Infinity));
-  t.deepEqual(fSyncJSON('-infinity')[0], D(-Infinity));
-  t.deepEqual(fSyncJSON('"1/1/1990" date')[0], { $date: '1990-01-01T07:00:00.000Z' }); // { "$date": "<date>" }
-  // regex { "$regex": "<sRegex>", "$options": "<sOptions>" }
-  // undefined? { "$undefined": true }
+  t.deepEqual(fSyncJSON('nan')[0], { $numberDecimal: 'NaN' });
+  t.deepEqual(fSyncJSON('-0')[0], { $numberDecimal: '-0' });
+  t.deepEqual(fSyncJSON('infinity')[0], { $numberDecimal: 'Infinity' });
+  t.deepEqual(fSyncJSON('-infinity')[0], { $numberDecimal: '-Infinity' });
+  t.deepEqual(fSyncJSON('"1/1/1990" date')[0], { $date: '1990-01-01T07:00:00.000Z' });
+  t.deepEqual(fSyncJSON('"/a./i" regexp')[0], { $regex: 'a.', $options: 'i' });
+  t.deepEqual(fSyncJSON('#word')[0], { $symbol: 'word' });
 });
