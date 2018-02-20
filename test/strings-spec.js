@@ -9,6 +9,11 @@ test('should push strings', t => {
   t.deepEqual(fSyncJSON('"Dog!🐶"'), ['Dog!🐶'], 'should support emoji');
 });
 
+test('should decode double quote', t => {
+  t.deepEqual(fSyncJSON('\'\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}\''), ['\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}']);
+  t.deepEqual(fSyncJSON('"\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}"'), ['Hello world']);
+});
+
 test('should quickcheck strings', t => {
   t.deepEqual(fSyncJSON('[rand-string] [ dup 1 * = ] for-all'), [[]]);
   t.deepEqual(
@@ -133,13 +138,7 @@ test('should @ from out of bounds', t => {
   t.deepEqual(fSyncJSON('"abc" -10 @'), [null]);
 });
 
-test('should process string templates', t => {
-  t.deepEqual(fSyncJSON('`-1 sqrt = $( -1 sqrt )`'), ['-1 sqrt = 0+1i']);
-  t.deepEqual(fSyncJSON('`0.1 0.2 + = $( 0.1 0.2 + )`'), ['0.1 0.2 + = 0.3']);
-  t.deepEqual(fSyncJSON('`$0.1 (0.2) + = $( 0.1 0.2 + )`'), ['$0.1 (0.2) + = 0.3']);
-  t.deepEqual(fSyncJSON('`$(0.1 dup dup +) + = $( 0.1 0.2 + )`'), ['0.1 0.2 + = 0.3']);
-  t.deepEqual(fSyncJSON('`true AND null = $( true null * )`'), ['true AND null = null']);
-});
+
 
 test('should reverse strings', t => {
   t.deepEqual(fSyncJSON('"timov,tab" reverse'), ['bat,vomit']);

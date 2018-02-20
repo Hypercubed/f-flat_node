@@ -1,33 +1,50 @@
 import * as punycode from 'punycode';
 
-import { Word, Sentence } from '../types/index';
+import { Word, Sentence, StackArray } from '../types/';
 import { StackEnv } from '../env';
 
-const cap = '%-cap-%';
-const caplen = cap.length;
-const reReplace = /\$\([^\)]*\)/g;
-const reSplit = new RegExp(`(${cap}\\$\\([^\\)]*\\))`, 'g');
+const cap = '${expression-hole}';
+const reExpression = /\$\([^\)]*\)/g;
 
-export function template(this: StackEnv, template: string): string {
-  const r: string[] = [];
-  const c = this.createChild();
+function parts(str: string) {
+  const queues: any = [];
 
-  return template
-    .replace(reReplace, x => cap + x)
-    .split(reSplit)
-    .map(s => {
-      if (s.slice(0, caplen) === cap) {
-        const ev = s.slice(caplen + 2, -1);
-        const stk = c
-          .eval(ev)
-          .stack;
-        c.clear();
-        return stk
-          .map(x => String(x))
-          .join(' ');
-      }
-      return unicodeEscape(s);
-    }).join('');
+  const raw = str
+    .replace(reExpression, x => {
+      queues.push(x.slice(2, -1));
+      return cap;
+    })
+    .split(cap);
+  return {raw, queues};
+}
+
+export function templateParts(stack: StackEnv, str: string, sen?: any): any {
+  const {raw, queues} = parts(str);
+
+  const strings = raw.map(s => unicodeEscape(s));
+  const stacks = queues.map(q => {
+    const c = stack.createChild().eval(q);
+    if (sen) c.eval(sen);
+    return c.stack;
+  });
+  return {raw, strings, stacks};
+}
+
+export function templateSubstitute(str: string, values: any[]) {
+  return str
+    .replace(reExpression, x => values.shift());
+}
+
+export function template(stack: StackEnv, template: string, sen?: any): string {
+  let {strings, stacks} = templateParts(stack, template, sen);
+  const values = stacks.map(s => unicodeEscape((s.map(x => String(x)).join(' '))));
+
+  return strings.reduce((acc, s) => {
+    acc.push(s);
+    const val = values.shift();
+    if (val) acc.push(val);
+    return acc;
+  }, []).join('');
 }
 
 export function unescapeString(x: string): string {

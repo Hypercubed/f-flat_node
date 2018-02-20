@@ -186,11 +186,6 @@ test('should undo', t => {
   t.deepEqual(fSyncJSON('10 [ 9 4 3 ] \\min rcl ||>', [10, 3]);
 }); */
 
-test('symbols', t => {
-  t.deepEqual(fSyncJSON('#test dup ='), [true]);
-  t.deepEqual(fSyncJSON('#test #test ='), [false]);
-});
-
 test('fork', t => {
   t.deepEqual(fSyncValues('[1 2 +] fork'), [[3]], 'fork');
 });

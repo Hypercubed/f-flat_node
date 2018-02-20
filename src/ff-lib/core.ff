@@ -37,8 +37,8 @@ falsy?: [ truthy? ~ ] ;;
 =<: [ > ~ ] ;;
 !=: [ = ~ ] ;
 
-max: [ dup2 q< q< > q> q> choose ] ;;
-min: [ dup2 q< q< < q> q> choose ] ;;
+max: [ dup2 q< q< > q> q> choose ] ;; // aka greater-of
+min: [ dup2 q< q< < q> q> choose ] ;; // lesser-of
 
 // 
 get: [ q< @ dup null? swap q> swap choose ] ;

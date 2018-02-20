@@ -13,7 +13,7 @@ import {
   Complex,
   Decimal
 } from '../types';
-import { template, toObject } from '../utils';
+import { template, templateParts, toObject } from '../utils';
 import { deepEquals } from '../utils/utils';
 import { patternMatch } from '../utils/pattern';
 import { StackEnv } from '../env';
@@ -403,12 +403,12 @@ export const core = {
    */
   zipinto: typed('zipinto', {
     'Array, Array, Array': (
-      a: StackArray[],
-      b: StackArray[],
-      c: StackArray[]
-    ): StackArray[] => {
+      a: StackArray,
+      b: StackArray,
+      c: StackArray
+    ): StackArray => {
       const l = a.length < b.length ? a.length : b.length;
-      const r: StackArray[] = [];
+      const r: StackArray = [];
       for (let i = 0; i < l; i++) {
         r.push(a[i], b[i], ...c);
       }
@@ -488,7 +488,17 @@ export const core = {
    * [ [ '' 'hello ' + '(world)' eval string + '' + ] ]
    * ```
    */
-  template,
+  template: function (this: StackEnv, str: string): string {
+    return template(this, str);
+  },
+
+  'template-with': function (this: StackEnv, str: string, action: any): string {
+    return template(this, str, action);
+  },
+
+  'template-parts': function (this: StackEnv, str: string): string {
+    return templateParts(this, str);
+  },
 
   /**
    * ## `sleep`

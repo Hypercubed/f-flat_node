@@ -18,13 +18,13 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [-] sto/rcl destructuring `1 2 3 [ x: y: z: ] sto` (replaces `=>`)? (should internal words have fixed arity?).
 - [ ] Bitwise ops on decimals (`|` vs `bitwise-or`, etc).
 - [ ] map over strings should return strings?
-- [ ] Store to symbols `#aword dup 123 sto rcl`
+- [ ] Store using symbols as keys `#aword dup 123 sto rcl`, collision free
 
 # Todo next:
 
 - [ ] Finish JSON output
 - [ ] Serialize to ff
-- [ ] Advanced string literals `fn'${A}-${B}'` -> `${A fn}-${B fn}`
+- [ ] Tagged templates `fn'${A}-${B}'` -> `${A fn}-${B fn}`
 - [ ] Mixed numeric and string indecies for arrays and maps `[ 1 2 x: 3 ]` `{ x: 1 y: 2 3 4 5}`
 - [ ] Combine lambdas and pattern matching
 - [ ] Online help.
@@ -97,6 +97,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `each*`, recursive each, no stack overflow?
 - [ ] Use `y` vs. recursion?
 - [x] `falsy?` null, 0, undefined, ""?
+- [ ] `=>` vs `sto`
 
 # Docs
 
