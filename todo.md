@@ -180,3 +180,4 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [-] OR patterns `1 | 2` (now using regex)
   - [-] ranges `1...4` (now using regex)
   - [ ] guards `3 >`
+- [ ] Classes/inheritance?

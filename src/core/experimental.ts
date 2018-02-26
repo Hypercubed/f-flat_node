@@ -1,4 +1,4 @@
-import { splice, push, pop } from 'icepick';
+import { splice, push, pop, unfreeze } from 'icepick';
 import memoize from 'memoizee';
 import { writeFileSync } from 'fs';
 
@@ -165,5 +165,15 @@ export const experimental = {
       };
       this.defineAction(name, memoize(fn, { length: n, primitive: true }));
     }
+  },
+
+  'create-object': function(obj: any): any {
+    return Object.create(obj);
+  },
+
+  'put': function(obj: any, key: any, value: any): any {
+    const proto = Object.getPrototypeOf(obj);
+    const newObj = Object.create(proto);
+    return Object.assign(newObj, {[key]: value});
   }
 };

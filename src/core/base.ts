@@ -515,7 +515,7 @@ const rem = typed('rem', {
    *```
    */
   'string, string | RegExp': (lhs: string, rhs: string) => {
-    const r = lhs.split(rhs)
+    const r = lhs.split(rhs);
     r.shift();
     return r;
   },
@@ -689,7 +689,7 @@ const pushFn = typed('push', {
    * [ { first: 'Manfred' last: 'von Thun' } ]
    * ```
    */
-  'map, map': (lhs, rhs) => merge(lhs, rhs),
+  'map | Object, map | Object': (lhs, rhs) => merge(lhs, rhs),
 
   /**
    * - left shift

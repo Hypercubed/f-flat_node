@@ -105,7 +105,7 @@ export const core = {
      * [ 'Manfred' ]
      * ```
      */
-    'map, Word | Sentence | string | null': (a, b) => {
+    'map | Object, Word | Sentence | string | null': (a, b) => {
       const path = String(b).split('.');
       const r = getIn(a, path);
       return r === undefined ? null : r;
