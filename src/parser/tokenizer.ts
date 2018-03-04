@@ -120,6 +120,8 @@ g.sequence = g.value.delimited(g.ws);
 
 Myna.registerGrammar('fflat', g, g.value);
 
+exports.fflatGrammar = Myna.grammars['fflat'];
+
 // Get the parser
 export const parser = function(text) {
   return Myna.parse(g.sequence, text);

@@ -230,7 +230,7 @@ export class StackEnv {
     if (token instanceof Seq) return this.stackPushValues(...token.value);
 
     if (token instanceof Future) {
-      return token.isResolved() ? this.stackPushValues(...token.value) : this.stackPushValues(token);
+      return token.isResolved() ? this.stackPushValues(...(token.value as StackArray)) : this.stackPushValues(token);
     }
 
     if (token instanceof Sentence && this.isImmediate(<Word>token)) return this.queueFront(token.value);

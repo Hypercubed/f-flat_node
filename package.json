@@ -24,7 +24,7 @@
   "author": "J. Harshbarger",
   "license": "MIT",
   "dependencies": {
-    "@sindresorhus/is": "^0.6.0",
+    "@sindresorhus/is": "^0.7.0",
     "@std/esm": "^0.16.0",
     "babel-register": "^6.26.0",
     "blessed": "^0.1.81",
@@ -43,7 +43,7 @@
     "memoizee": "^0.3.9",
     "mini-signals": "^1.1.1",
     "mongodb-extended-json": "^1.10.0",
-    "myna-parser": "^2.4.3",
+    "myna-parser": "^2.4.5",
     "normalize-url": "^2.0.0",
     "progress": "^1.1.8",
     "tslib": "^1.8.0",
@@ -54,6 +54,7 @@
     "@types/node": "^8.0.53",
     "ava": "^0.23.0",
     "ava-check": "git+https://github.com/Hypercubed/ava-check.git",
+    "grammkit": "^0.6.1",
     "nock": "^8.0.0",
     "np": "^2.18.1",
     "nyc": "^11.3.0",
@@ -61,7 +62,7 @@
     "rimraf": "^2.6.2",
     "ts-node": "^3.3.0",
     "tslint": "^5.8.0",
-    "typescript": "^2.6.1"
+    "typescript": "^2.7.2"
   },
   "@std/esm": {
     "esm": "all",

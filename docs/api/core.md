@@ -297,17 +297,17 @@ f♭> 'hello $(world)' template
 wait x milliseconds
 
 ( x -> )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L500">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L510">[src]</a></div>
 
 ## `undo`
 restores the stack to state before previous eval
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L515">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L525">[src]</a></div>
 
 ## `<q`
 push the top of the queue to the stack
 
 ( -> {any} )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L525">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L535">[src]</a></div>
 
 ## `match`
 
@@ -315,7 +315,7 @@ Matches a string a regex and returns an array containing the results of that sea
 
 {string} [regexp} -> {boolean}
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L537">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L547">[src]</a></div>
 
 ## `=~`
 
@@ -323,16 +323,16 @@ Returns a Boolean value that indicates whether or not the lhs matches the rhs.
 
 {any} {any} -> {boolean}
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L550">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L560">[src]</a></div>
 
 ## `_`
 
 Match symbol
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L558">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L568">[src]</a></div>
 
 ## `infinity`
 pushes the value Infinity
 
 ( -> Infinity )
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L566">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L576">[src]</a></div>

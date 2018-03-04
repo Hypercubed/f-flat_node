@@ -46,36 +46,39 @@ Convert an integer to a string in the given base
 ## `:` (action)
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L157">[src]</a></div>
 
-## `array`
+## `#` (sdymbol)
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L162">[src]</a></div>
 
-## `integer`
+## `array`
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L167">[src]</a></div>
 
-## `nan`
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L174">[src]</a></div>
+## `integer`
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L172">[src]</a></div>
 
-## `of`
+## `nan`
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L179">[src]</a></div>
 
-## `is?`
+## `of`
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L184">[src]</a></div>
 
-## `nothing?`
+## `is?`
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L189">[src]</a></div>
 
-## `date`
+## `nothing?`
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L194">[src]</a></div>
 
-## `now`
+## `date`
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L199">[src]</a></div>
 
-## `date-expand`
+## `now`
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L204">[src]</a></div>
 
-## `clock`
+## `date-expand`
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L209">[src]</a></div>
+
+## `clock`
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L214">[src]</a></div>
 
 ## `regexp`
 convert string to RegExp
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L215">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L220">[src]</a></div>
