@@ -14,21 +14,12 @@ const grammkit = require('grammkit');
 
 const map = new WeakMap();
 
-/* const parse = require('pegjs/lib/parser').parse;
-
-console.log(parse('Identifier = !ReservedWord IdentifierName').rules[0].expression);
-process.exit(); */
-
 function processRule(expr) {
   if (expr.name && map.has(expr)) return {
     type: 'rule_ref',
     name: expr.name || expr.toString()
   };
   map.set(expr, true);
-
-  if(expr.name === 'identifierFirst') {
-    console.log(expr);
-  }
 
   switch (expr.type) {
     case 'rule':
