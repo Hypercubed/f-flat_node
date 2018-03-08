@@ -1,6 +1,6 @@
 {
   "name": "@hypercubed/f-flat",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "F♭ (pronounced F-flat) is a toy language.",
   "main": "index.js",
   "bin": {
