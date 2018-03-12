@@ -39,10 +39,10 @@ const inputBox = blessed.textbox({
 
 const outputBox = blessed.log({
   parent: screen,
-  top: '0',
+  top: '2',
   left: 'center',
   width: '100%',
-  height: '100%-6',
+  height: '100%-7',
   border: false,
   scrollable: true,
   alwaysScroll: true,

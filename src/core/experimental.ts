@@ -171,6 +171,14 @@ export const experimental = {
     return Object.create(obj);
   },
 
+  'case-of?': function(obj: any, proto: any): any {
+    while (true) {
+      if (obj === null) return false;
+      if (proto === obj) return true;
+      obj = Object.getPrototypeOf(obj);
+    }
+  },
+
   'put': function(obj: any, key: any, value: any): any {
     const proto = Object.getPrototypeOf(obj);
     const newObj = Object.create(proto);

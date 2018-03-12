@@ -1,5 +1,6 @@
 import { typed } from './typed';
 import { formatValue } from '../utils/pprint';
+import { encode } from '../utils/json';
 import { StackValue } from './stackValue';
 
 function toString(x: any) {
@@ -28,7 +29,7 @@ class Action {
 
   toJSON(): any {
     return {
-      '@@Action': this.value
+      '@@Action': encode(this.value)
     };
   }
 
