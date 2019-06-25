@@ -43,5 +43,5 @@ export const objects = {
   /**
    * ## `vals`
    */
-  vals: (o: {}) => Object.values(o), // v: `o => Object.values(o)` js-raw ;
+  vals: (o: {}) => Object.values(o) // v: `o => Object.values(o)` js-raw ;
 };

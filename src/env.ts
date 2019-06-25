@@ -7,13 +7,29 @@ import { freeze, splice } from 'icepick';
 const is = require('@sindresorhus/is');
 
 import { lexer } from './parser';
-import {
-  FFlatError,
-  serializer
-} from './utils';
+import { FFlatError, serializer } from './utils';
 
-import { typed, Seq, Just, Dictionary, StackValue, StackArray, Future, Word, Sentence, Tokens } from './types';
-import { MAXSTACK, MAXRUN, IDLE, DISPATCHING, YIELDING, ERR, IIF } from './constants';
+import {
+  typed,
+  Seq,
+  Just,
+  Dictionary,
+  StackValue,
+  StackArray,
+  Future,
+  Word,
+  Sentence,
+  Tokens
+} from './types';
+import {
+  MAXSTACK,
+  MAXRUN,
+  IDLE,
+  DISPATCHING,
+  YIELDING,
+  ERR,
+  IIF
+} from './constants';
 
 export class StackEnv {
   status = IDLE;
@@ -36,11 +52,11 @@ export class StackEnv {
   dict: Dictionary;
 
   defineAction: Function = typed({
-    'Function': (fn: Function) => {
+    Function: (fn: Function) => {
       const name = functionName(fn);
       return this.defineAction(name, fn);
     },
-    'Object': (obj: Object) => {
+    Object: (obj: Object) => {
       for (const key in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           this.defineAction(key, obj[key]);
@@ -52,12 +68,15 @@ export class StackEnv {
       const act = new Sentence(lexer(fn));
       return this.defineAction(name, act);
     },
-    'Word | string, any': (name: Word | string, a) => this.dict.set(String(name), a)
+    'Word | string, any': (name: Word | string, a) =>
+      this.dict.set(String(name), a)
   });
 
-  constructor (initalState: any = { parent: null }) {
+  constructor(initalState: any = { parent: null }) {
     Object.assign(this, initalState);
-    this.dict = new Dictionary(initalState.parent ? initalState.parent.dict : undefined);
+    this.dict = new Dictionary(
+      initalState.parent ? initalState.parent.dict : undefined
+    );
   }
 
   private promise(s: StackValue): Promise<StackEnv> {
@@ -91,10 +110,11 @@ export class StackEnv {
 
     self.status = DISPATCHING;
 
-    self.prevState = {  // store state for undo or on error
+    self.prevState = {
+      // store state for undo or on error
       depth: self.depth,
       prevState: self.prevState,
-      stack: self.stack,  // note: stack is immutable, this is a point in time copy.
+      stack: self.stack, // note: stack is immutable, this is a point in time copy.
       queue: []
     };
 
@@ -191,7 +211,8 @@ export class StackEnv {
     if (this.status === DISPATCHING) {
       this.status = IDLE;
     }
-    if (this.status === IDLE) {  // may be yielding on next tick
+    if (this.status === IDLE) {
+      // may be yielding on next tick
       this.completed.dispatch(null, this);
     }
   }
@@ -216,7 +237,8 @@ export class StackEnv {
       return;
     }
 
-    if (is.promise(token)) {  // promise middleware
+    if (is.promise(token)) {
+      // promise middleware
       this.status = YIELDING;
       return (token as Promise<any>).then(f => {
         this.status = IDLE;
@@ -229,15 +251,19 @@ export class StackEnv {
     if (token instanceof Seq) return this.stackPushValues(...token.value);
 
     if (token instanceof Future) {
-      return token.isResolved() ? this.stackPushValues(...(token.value as StackArray)) : this.stackPushValues(token);
+      return token.isResolved()
+        ? this.stackPushValues(...(token.value as StackArray))
+        : this.stackPushValues(token);
     }
 
-    if (token instanceof Sentence && this.isImmediate(<Word>token)) return this.queueFront(token.value);
+    if (token instanceof Sentence && this.isImmediate(<Word>token))
+      return this.queueFront(token.value);
 
     if (token instanceof Word && this.isImmediate(<Word>token)) {
       let tokenValue = token.value;
 
-      if (!is.string(tokenValue)) {  // this is a hack to push word literals, get rid of this
+      if (!is.string(tokenValue)) {
+        // this is a hack to push word literals, get rid of this
         return this.stackPushValues(tokenValue);
       }
 
@@ -262,28 +288,30 @@ export class StackEnv {
       }
 
       if (is.function(lookup)) {
-        return this.dispatchFn((lookup as Function), functionLength(lookup), tokenValue);
+        return this.dispatchFn(
+          lookup as Function,
+          functionLength(lookup),
+          tokenValue
+        );
       }
 
       return this.stackPushValues(lookup);
     }
 
-    return this.stackPushValues((token as StackValue));
+    return this.stackPushValues(token as StackValue);
   }
 
   private isImmediate(c: Word | Sentence): boolean {
     return (
-      this.depth < 1 ||                // in immediate state
-      '[]{}'.indexOf(c.value) > -1 ||   // these quotes are always immediate
-      (
-        c.value[0] === IIF &&   // tokens prefixed with : are imediate
+      this.depth < 1 || // in immediate state
+      '[]{}'.indexOf(c.value) > -1 || // these quotes are always immediate
+      (c.value[0] === IIF && // tokens prefixed with : are imediate
         c.value[c.value.length - 1] !== IIF &&
-        c.value.length > 1
-      )
+        c.value.length > 1)
     );
   }
 
-  private dispatchFn (fn: Function, args?: number, name?: string): void {
+  private dispatchFn(fn: Function, args?: number, name?: string): void {
     args = typeof args === 'undefined' ? functionLength(fn) : args;
     if (args! < 1 || args! <= this.stack.length) {
       let argArray: StackArray = [];

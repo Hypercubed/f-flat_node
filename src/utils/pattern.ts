@@ -1,8 +1,4 @@
-import {
-  typed,
-  StackValue,
-  Word
-} from '../types';
+import { typed, StackValue, Word } from '../types';
 import { deepEquals } from './utils';
 
 export const patternMatch = typed('pattern', {

@@ -1,18 +1,21 @@
 import { Decimal } from '../types';
 
 function makePath(path: any[]): string {
-  return path.map(p => {
-    return typeof p === 'number' ? `[${p}]` : p;
-  }).join('/');
+  return path
+    .map(p => {
+      return typeof p === 'number' ? `[${p}]` : p;
+    })
+    .join('/');
 }
 
 class Encoder {
   private _types = new Map();
 
-  constructor(private options = {
-    pointers: false
-  }) {
-  }
+  constructor(
+    private options = {
+      pointers: false
+    }
+  ) {}
 
   encode(value: any) {
     const self = this;
@@ -26,7 +29,7 @@ class Encoder {
       if (type === 'object') {
         if (self.options.pointers) {
           if (repeated.has(value)) {
-            return { '$ref': makePath(repeated.get(value)) };
+            return { $ref: makePath(repeated.get(value)) };
           }
           repeated.set(value, path);
         }
@@ -53,7 +56,7 @@ class Encoder {
   private getType(val) {
     if (val === null) return 'null';
     let type = typeof val;
-    return (type === 'object') ? val.constructor : type;
+    return type === 'object' ? val.constructor : type;
   }
 }
 
@@ -72,7 +75,7 @@ encoder
   .registerType(Number, (v: any) => numberJSON(v.valueOf()))
   .registerType('number', numberJSON)
   .registerType('undefined', () => ({ $undefined: true }))
-  .registerType('symbol', v => ({'$symbol': String(v).slice(7, -1)}));
+  .registerType('symbol', v => ({ $symbol: String(v).slice(7, -1) }));
 
 encoder
   .registerType(Date, (v: any) => ({ $date: v.toISOString() }))
@@ -101,4 +104,3 @@ encoder
 export const serializer = encoder.encode.bind(encoder);
 export const encode = encoder.encode.bind(encoder);
 export const stringifyStrict = encoder.stringify.bind(encoder);
-

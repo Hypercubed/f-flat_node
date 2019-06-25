@@ -2,7 +2,19 @@ import { assign, merge, unshift, push, assoc } from 'icepick';
 
 import { lexer } from '../parser';
 import { deepEquals, arrayRepeat, arrayMul, arrayInvMul } from '../utils';
-import { and, nand, or, xor, not, nor, cmp, mimpl, cimpl, mnonimpl, cnonimpl } from '../utils/kleene-logic';
+import {
+  and,
+  nand,
+  or,
+  xor,
+  not,
+  nor,
+  cmp,
+  mimpl,
+  cimpl,
+  mnonimpl,
+  cnonimpl
+} from '../utils/kleene-logic';
 import {
   rAnd,
   rNot,
@@ -104,7 +116,8 @@ const add = typed('add', {
    * ```
    */
   'Complex, Complex': (lhs: Complex, rhs: Complex): Complex => lhs.plus(rhs),
-  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal): Decimal => lhs.plus(rhs),
+  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal): Decimal =>
+    lhs.plus(rhs),
 
   /**
    * - map assign/assoc
@@ -129,7 +142,8 @@ const add = typed('add', {
    */
   'Date, number': (lhs: Date, rhs: number) => new Date(lhs.valueOf() + rhs),
   'number, Date': (lhs: number, rhs: Date) => lhs + rhs.valueOf(),
-  'Date, Decimal': (lhs: Date, rhs: Decimal) => new Date(rhs.plus(lhs.valueOf()).valueOf()),
+  'Date, Decimal': (lhs: Date, rhs: Decimal) =>
+    new Date(rhs.plus(lhs.valueOf()).valueOf()),
   'Decimal, Date': (lhs: Decimal, rhs: Date) => lhs.plus(rhs.valueOf()),
 
   /**
@@ -140,10 +154,7 @@ const add = typed('add', {
    * [ "abcxyz" ]
    *```
    */
-  'string | number, string | number': (
-    lhs: string,
-    rhs: string
-  ) => lhs + rhs
+  'string | number, string | number': (lhs: string, rhs: string) => lhs + rhs
 });
 
 /**
@@ -328,7 +339,7 @@ const mul = typed('mul', {
    */
   'Complex, Complex': (lhs: Complex, rhs: Complex) =>
     lhs.times(rhs).normalize(),
-  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal) => lhs.times(rhs),
+  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal) => lhs.times(rhs)
 });
 
 /**
@@ -347,7 +358,8 @@ const div = typed('div', {
    *```
    */
   'Array, Array | Word | Sentence | Function': arrayInvMul,
-  'string, Array | Word | Sentence | Function': (lhs: string, rhs: any) => arrayInvMul(lhs.split(''), rhs),
+  'string, Array | Word | Sentence | Function': (lhs: string, rhs: any) =>
+    arrayInvMul(lhs.split(''), rhs),
 
   /**
    * - logical material nonimplication or abjunction
@@ -402,7 +414,10 @@ const div = typed('div', {
    * ```
    */
   'Complex, Complex': (lhs: Complex, rhs: Complex): Complex => lhs.div(rhs),
-  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal): Decimal | AbstractValue => {
+  'Decimal, Decimal | number': (
+    lhs: Decimal,
+    rhs: Decimal
+  ): Decimal | AbstractValue => {
     if (+rhs === 0 && +lhs !== 0) return complexInfinity;
     return lhs.div(rhs);
   },
@@ -414,8 +429,10 @@ const div = typed('div', {
  *
  */
 const idiv = typed('idiv', {
-  'Array, Array | Word | Sentence | Function': (lhs: any[], rhs: any) => new Sentence(arrayMul(lhs, rhs)),
-  'string, Array | Word | Sentence | Function': (lhs: string, rhs: any) => new Sentence(arrayMul(lhs.split(''), rhs)),
+  'Array, Array | Word | Sentence | Function': (lhs: any[], rhs: any) =>
+    new Sentence(arrayMul(lhs, rhs)),
+  'string, Array | Word | Sentence | Function': (lhs: string, rhs: any) =>
+    new Sentence(arrayMul(lhs.split(''), rhs)),
 
   /**
    * - Floored division.
@@ -427,8 +444,12 @@ const idiv = typed('idiv', {
    * [ 3 ]
    * ```
    */
-  'Complex, Complex': (lhs: Complex, rhs: Complex): Complex => lhs.divToInt(rhs),
-  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal): Decimal | AbstractValue => {
+  'Complex, Complex': (lhs: Complex, rhs: Complex): Complex =>
+    lhs.divToInt(rhs),
+  'Decimal, Decimal | number': (
+    lhs: Decimal,
+    rhs: Decimal
+  ): Decimal | AbstractValue => {
     if (+rhs === 0 && +lhs !== 0) return complexInfinity;
     return lhs.divToInt(rhs);
   },
@@ -443,7 +464,8 @@ const idiv = typed('idiv', {
    * [ 'abc' ]
    * ```
    */
-  'Array | string, number': (a: any[] | string, b: number) => a.slice(0, +b | 0),
+  'Array | string, number': (a: any[] | string, b: number) =>
+    a.slice(0, +b | 0),
 
   /**
    * - Split first
@@ -465,7 +487,7 @@ const idiv = typed('idiv', {
    * f♭> true true \
    * [ false ]
    *```
-  */
+   */
   'boolean | null, boolean | null': cnonimpl
 });
 
@@ -474,7 +496,6 @@ const idiv = typed('idiv', {
  *
  */
 const rem = typed('rem', {
-
   /**
    * - remainder after division
    *
@@ -483,7 +504,10 @@ const rem = typed('rem', {
    * [ 1 ]
    * ```
    */
-  'Decimal | Complex, Decimal | number': (lhs: Decimal | Complex, rhs: Decimal | number) => lhs.modulo(rhs),
+  'Decimal | Complex, Decimal | number': (
+    lhs: Decimal | Complex,
+    rhs: Decimal | number
+  ) => lhs.modulo(rhs),
 
   /**
    * - Array/string tail
@@ -538,7 +562,6 @@ const rem = typed('rem', {
   'boolean | null, boolean | null': nand
 });
 
-
 /**
  * ## `>>`
  *
@@ -552,9 +575,13 @@ const unshiftFn = typed('unshift', {
    * [ 1 2 3 ]
    * ```
    */
-  'any | Word | Sentence | Object, Array': (lhs: any, rhs: any[]) => unshift(rhs, lhs),
+  'any | Word | Sentence | Object, Array': (lhs: any, rhs: any[]) =>
+    unshift(rhs, lhs),
   'Array, string': (lhs: any[], rhs: any) => [lhs, new Word(rhs)],
-  'Array | Word | Sentence, Word | Sentence': (lhs: any, rhs: any) => [lhs, rhs],
+  'Array | Word | Sentence, Word | Sentence': (lhs: any, rhs: any) => [
+    lhs,
+    rhs
+  ],
   'Future, any': (f: Future, rhs: any) => f.map(lhs => unshiftFn(lhs, rhs)),
 
   /**
@@ -639,7 +666,8 @@ const pushFn = typed('push', {
    * [ [ 1 2 3 ] ]
    * ```
    */
-  'Array, any | Word | Sentence | Object': (lhs: any[], rhs: any) => push(lhs, rhs),
+  'Array, any | Word | Sentence | Object': (lhs: any[], rhs: any) =>
+    push(lhs, rhs),
   'Future, any': (f: Future, rhs: any) => f.map(lhs => pushFn(lhs, rhs)),
 
   /**
@@ -716,7 +744,6 @@ const pushFn = typed('push', {
  *
  */
 const pow = typed('pow', {
-
   /**
    * - pow function (base^exponent)
    *
@@ -725,9 +752,12 @@ const pow = typed('pow', {
    * [ 49 ]
    * ```
    */
-  'Complex, Decimal | Complex | number': (a: Complex, b: Decimal | Complex | number) =>
+  'Complex, Decimal | Complex | number': (
+    a: Complex,
+    b: Decimal | Complex | number
+  ) => new Sentence([b, a].concat(lexer('ln * exp'))),
+  'Decimal, Complex': (a: Decimal, b: Complex) =>
     new Sentence([b, a].concat(lexer('ln * exp'))),
-  'Decimal, Complex': (a: Decimal, b: Complex) => new Sentence([b, a].concat(lexer('ln * exp'))),
   'Decimal, Decimal | number': (a: Decimal, b: Decimal | number) => a.pow(b),
 
   /**
@@ -775,7 +805,7 @@ const pow = typed('pow', {
    * [ /(?=skiing|sledding)(?=(?!(?=skiing)(?=sledding)))/ ]
    * ```
    */
-  'RegExp, RegExp': rXor,
+  'RegExp, RegExp': rXor
 });
 
 /**
@@ -787,7 +817,7 @@ const ln = typed('ln', {
   /**
    * - natural log
    */
-  'Complex': (a: Complex) => a.ln(),
+  Complex: (a: Complex) => a.ln(),
   'Decimal | number': (a: Decimal | number) => {
     if (a <= 0) return new Complex(a).ln();
     return new Decimal(a).ln();
@@ -811,7 +841,7 @@ const ln = typed('ln', {
    * [ 3 ]
    * ```
    */
-  'map': (a: {}) => Object.keys(a).length,
+  map: (a: {}) => Object.keys(a).length,
 
   /**
    * - "length" of a nan, null, and booleans are 0
@@ -821,8 +851,8 @@ const ln = typed('ln', {
    * [ 0 ]
    * ```
    */
-  'null': (a: null) => 0, // eslint-disable-line
-  'any': (a: any) => 0
+  null: (a: null) => 0, // eslint-disable-line
+  any: (a: any) => 0
 });
 
 /**
@@ -874,13 +904,13 @@ const notFn = typed('not', {
    * [ { Manfred: 'first' von Thun: 'last' } ]
    * ```
    *
-  * ```
-    * f♭> [ 'a' 'b' 'c' ] ~
-    * [ { a: '0' b: '1'  c: '2' } ]
-    * ```
-    */
+   * ```
+   * f♭> [ 'a' 'b' 'c' ] ~
+   * [ { a: '0' b: '1'  c: '2' } ]
+   * ```
+   */
   'map | Array': invertObject,
-  'string': (a: string) => invertObject(a.split('')),
+  string: (a: string) => invertObject(a.split('')),
 
   any: not
 });
@@ -891,10 +921,10 @@ const notFn = typed('not', {
 const empty = typed('empty', {
   'Complex | Decimal | number': (a: Complex | Decimal | number) => 0,
   'boolean | null': (a: boolean) => null,
-  'string': (a: string) => '',
-  'Array': (a: any[]) => [],
-  'map': (a: any) => [],
-  'any': (a: any) => (a.empty ? a.empty() : new a.constructor())
+  string: (a: string) => '',
+  Array: (a: any[]) => [],
+  map: (a: any) => [],
+  any: (a: any) => (a.empty ? a.empty() : new a.constructor())
 });
 
 /**

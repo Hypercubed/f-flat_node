@@ -18,7 +18,8 @@ import {
 let defaultRootStack: StackEnv;
 
 export function RootStack(): StackEnv {
-  const env = new StackEnv({   // root
+  const env = new StackEnv({
+    // root
     silent: true
   });
 
@@ -48,4 +49,3 @@ export function Stack(s = '', root?) {
     silent: false
   }).enqueue(s);
 }
-

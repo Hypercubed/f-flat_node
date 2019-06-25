@@ -1,11 +1,6 @@
 import { tokenize } from './tokenizer';
 
-import {
-  Word,
-  Decimal,
-  StackValue,
-  I
-} from '../types';
+import { Word, Decimal, StackValue, I } from '../types';
 import { unescapeString } from '../utils/stringConversion';
 
 const templateAction = new Word(':template');
@@ -71,8 +66,8 @@ function processNumeric(value: string): Decimal | number {
   try {
     if (value === '-0') return new Decimal('-0');
     return value.slice(-1) === '%'
-        ? new Decimal(String(value.slice(0, -1))).div(100)
-        : new Decimal(String(value));
+      ? new Decimal(String(value.slice(0, -1))).div(100)
+      : new Decimal(String(value));
   } catch (e) {
     return NaN;
   }
@@ -95,8 +90,10 @@ function convertWord(value: string) {
   return new Word(value);
 }
 
-function convertLiteral(value: string): StackValue | undefined { // move these to parser
-  if (value.slice(-1) === ':') { // this is a hack to push word literals, get rid of this
+function convertLiteral(value: string): StackValue | undefined {
+  // move these to parser
+  if (value.slice(-1) === ':') {
+    // this is a hack to push word literals, get rid of this
     value = value.slice(0, -1);
     value = <any>new Word(value);
   }

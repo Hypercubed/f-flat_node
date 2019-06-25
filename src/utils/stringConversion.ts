@@ -14,11 +14,11 @@ function parts(str: string) {
       return cap;
     })
     .split(cap);
-  return {raw, queues};
+  return { raw, queues };
 }
 
 export function templateParts(stack: StackEnv, str: string, sen?: any): any {
-  const {raw, queues} = parts(str);
+  const { raw, queues } = parts(str);
 
   const strings = raw.map(s => unicodeEscape(s));
   const stacks = queues.map(q => {
@@ -26,24 +26,27 @@ export function templateParts(stack: StackEnv, str: string, sen?: any): any {
     if (sen) c.eval(sen);
     return c.stack;
   });
-  return {raw, strings, stacks};
+  return { raw, strings, stacks };
 }
 
 export function templateSubstitute(str: string, values: any[]) {
-  return str
-    .replace(reExpression, x => values.shift());
+  return str.replace(reExpression, x => values.shift());
 }
 
 export function template(stack: StackEnv, template: string, sen?: any): string {
-  let {strings, stacks} = templateParts(stack, template, sen);
-  const values = stacks.map(s => unicodeEscape((s.map(x => String(x)).join(' '))));
+  let { strings, stacks } = templateParts(stack, template, sen);
+  const values = stacks.map(s =>
+    unicodeEscape(s.map(x => String(x)).join(' '))
+  );
 
-  return strings.reduce((acc, s) => {
-    acc.push(s);
-    const val = values.shift();
-    if (val) acc.push(val);
-    return acc;
-  }, []).join('');
+  return strings
+    .reduce((acc, s) => {
+      acc.push(s);
+      const val = values.shift();
+      if (val) acc.push(val);
+      return acc;
+    }, [])
+    .join('');
 }
 
 export function unescapeString(x: string): string {
@@ -116,7 +119,7 @@ function convertjEsc2Char(str: string, shortEscapes: boolean): string {
     str = str.replace(/\\v/g, '\v');
     str = str.replace(/\\f/g, '\f');
     str = str.replace(/\\r/g, '\r');
-    str = str.replace(/\\'/g, '\'');
+    str = str.replace(/\\'/g, "'");
     str = str.replace(/\\"/g, '"');
     str = str.replace(/\\\\/g, '\\');
   }

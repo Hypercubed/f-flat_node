@@ -10,6 +10,7 @@
     "dist": "rimraf ./dist && tsc",
     "build": "npm run dist && npm run docs",
     "docs": "node ./scripts/generate-docs.js",
+    "prettier": "prettier \"{src, bin, test}/**/*.{ts, js}\" --write",
     "test": "ava ./test/*-spec.js",
     "test-watch": "ava ./test/*-spec.js --watch",
     "quick-tests": "env ava ./test/*-quick-spec.js",

@@ -5,7 +5,10 @@ import { StackValue } from './stackValue';
 export class Future {
   value: StackValue;
 
-  constructor(public action: Word | Sentence | undefined, public promise: Promise<any>) {
+  constructor(
+    public action: Word | Sentence | undefined,
+    public promise: Promise<any>
+  ) {
     if (typeof promise !== 'undefined') {
       promise.then(data => this.resolve(data));
     }
@@ -45,7 +48,7 @@ export class Future {
   }
 
   toJSON(): any {
-    let value: any = this.value || { '$undefined': true };
+    let value: any = this.value || { $undefined: true };
     return {
       '@@Future': value.toJSON ? value.toJSON() : value
     };

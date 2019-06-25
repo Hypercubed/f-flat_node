@@ -54,28 +54,37 @@ export const type = typed('type', {
 });
 
 export const formatValue: Function = typed('formatValue', {
-  'Symbol, any, any': (value: Symbol, depth: unknown, opts: any) => formatSymbol(value, opts),
+  'Symbol, any, any': (value: Symbol, depth: unknown, opts: any) =>
+    formatSymbol(value, opts),
 
   'Decimal | Complex | ComplexInfinity | number, any, any': (
     value: Decimal | any | number,
     depth: unknown,
     opts: any
   ) => stylize(value, 'number', opts),
-  'null, any, any': (value: null, depth: unknown, opts: any) => stylize('Null', 'null', opts),
-  'boolean, any, any': (value: boolean, depth: unknown, opts: any) => stylize(value, 'boolean', opts),
+  'null, any, any': (value: null, depth: unknown, opts: any) =>
+    stylize('Null', 'null', opts),
+  'boolean, any, any': (value: boolean, depth: unknown, opts: any) =>
+    stylize(value, 'boolean', opts),
 
-  'Word, any, any': (value: any, depth: unknown, opts: any) => stylize(value, 'name', opts),
-  'Sentence, any, any': (value: any, depth: unknown, opts: any) => stylize(value, 'name', opts),
+  'Word, any, any': (value: any, depth: unknown, opts: any) =>
+    stylize(value, 'name', opts),
+  'Sentence, any, any': (value: any, depth: unknown, opts: any) =>
+    stylize(value, 'name', opts),
 
-  'string, any, any': (value: string, depth: unknown, opts: any) => formatString(value, opts),
+  'string, any, any': (value: string, depth: unknown, opts: any) =>
+    formatString(value, opts),
 
   'Array, any, any': formatArray,
-  'Future, any, any': (value: any, depth: unknown, opts: any) => inspect(value, opts),
+  'Future, any, any': (value: any, depth: unknown, opts: any) =>
+    inspect(value, opts),
   'plainObject, any, any': formatMap,
 
-  'Date, any, any': (value: any, depth: unknown, opts: any) => stylize(value, 'name', opts),
+  'Date, any, any': (value: any, depth: unknown, opts: any) =>
+    stylize(value, 'name', opts),
 
-  'any, any, any': (value: any, depth: unknown, opts: any) => inspect(value, opts)
+  'any, any, any': (value: any, depth: unknown, opts: any) =>
+    inspect(value, opts)
 });
 
 function formatString(

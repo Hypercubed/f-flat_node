@@ -1,4 +1,3 @@
 import { StackValue } from './stackValue';
 
-export type map =  { [s: string]: StackValue; };
-
+export type map = { [s: string]: StackValue };

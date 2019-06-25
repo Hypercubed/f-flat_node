@@ -38,12 +38,10 @@ function getURLStringForCwd(): string | undefined {
 const percentRegEx = /%/g;
 function getURLFromFilePath(filepath: string) {
   const tmp = new URL('file://');
-  if (filepath.includes('%'))
-    filepath = filepath.replace(percentRegEx, '%25');
+  if (filepath.includes('%')) filepath = filepath.replace(percentRegEx, '%25');
   tmp.pathname = filepath;
   return tmp;
 }
-
 
 /**
  * # Internal Node Words
@@ -64,9 +62,7 @@ export const node = {
     try {
       stdout.clearLine();
       stdout.cursorTo(0);
-    } catch (e) {
-
-    }
+    } catch (e) {}
     console.log(a, ...b);
   },
 
@@ -80,9 +76,7 @@ export const node = {
     try {
       stdout.clearLine();
       stdout.cursorTo(0);
-    } catch (e) {
-
-    }
+    } catch (e) {}
     stdout.write(String(a));
   },
 
@@ -96,9 +90,7 @@ export const node = {
     try {
       stdout.clearLine();
       stdout.cursorTo(0);
-    } catch (e) {
-
-    }
+    } catch (e) {}
     console.info(a, ...b);
   },
 
@@ -145,8 +137,9 @@ export const node = {
    *
    */
   resolve: typed('resolve', {
-    'string': (name: string): string => normalizeUrl(resolve(name).href),
-    'Array': ([name, base]: string[]): string => normalizeUrl(resolve(name, base).href)
+    string: (name: string): string => normalizeUrl(resolve(name).href),
+    Array: ([name, base]: string[]): string =>
+      normalizeUrl(resolve(name, base).href)
   }),
 
   /**

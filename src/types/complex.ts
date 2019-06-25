@@ -2,7 +2,7 @@ import { typed } from './typed';
 import { Decimal, gammaDecimal, zero, pi, twoPiSqrt } from './decimal';
 import { g, c } from './gamma';
 
-const precision = Math.pow(10, -<number>Decimal.precision + 5);
+const precision = Math.pow(10, -(<number>Decimal.precision) + 5);
 
 const reComplex = /[+-]?[\d._]+(?:e[+-][\d._]+)?i?/gi;
 
@@ -17,16 +17,17 @@ export class Complex {
     this.re = new Decimal(re);
     this.im = new Decimal(im);
 
-    if (this.re.isNaN() && this.im.isNaN()) {  // NaN+NaNi -> NaN
+    if (this.re.isNaN() && this.im.isNaN()) {
+      // NaN+NaNi -> NaN
       this.im = copysign(0, this.im);
       return this;
     }
 
-    if (this.re.isNaN()) this.re = copysign(0, this.re);  // NaN+bi -> NaNi
-    if (this.im.isNaN()) this.im = copysign(0, this.im);  // a+NaNi -> NaN
+    if (this.re.isNaN()) this.re = copysign(0, this.re); // NaN+bi -> NaNi
+    if (this.im.isNaN()) this.im = copysign(0, this.im); // a+NaNi -> NaN
 
-    if (isinf(this.re)) this.im = copysign(0, this.im);  // inf+bi -> +-Inf
-    if (isinf(this.im)) this.re = copysign(0, this.re);  // a+infi -> +-Infi
+    if (isinf(this.re)) this.im = copysign(0, this.im); // inf+bi -> +-Inf
+    if (isinf(this.im)) this.re = copysign(0, this.re); // a+infi -> +-Infi
   }
 
   empty(): Decimal {
@@ -107,7 +108,9 @@ export class Complex {
   }
 
   sin() {
-    return this.times(I).sini().div(I);
+    return this.times(I)
+      .sini()
+      .div(I);
   }
 
   cos() {
@@ -116,7 +119,9 @@ export class Complex {
 
   tan() {
     const s = this.im.isNeg() ? -1 : 1;
-    const e2iz = this.times(I).times(2 * s).exp();
+    const e2iz = this.times(I)
+      .times(2 * s)
+      .exp();
     const u = e2iz.minus(1);
     const v = e2iz.plus(1);
     return u.div(v.times(I)).times(s);
@@ -124,12 +129,19 @@ export class Complex {
 
   asin() {
     const one = new Complex(1, 0);
-    const log = one.minus(this.times(this)).sqrt().plus(this.times(I)).ln();
+    const log = one
+      .minus(this.times(this))
+      .sqrt()
+      .plus(this.times(I))
+      .ln();
     return I.times(-1).times(log);
   }
 
   acos() {
-    return this.asin().times(2).minus(pi).times(1 / 2);
+    return this.asin()
+      .times(2)
+      .minus(pi)
+      .times(1 / 2);
   }
 
   atan() {
@@ -145,7 +157,10 @@ export class Complex {
     const omx = one.minus(ix);
     const opx = one.plus(ix);
     const u = omx.div(opx);
-    return u.ln().times(I).times(1 / 2);
+    return u
+      .ln()
+      .times(I)
+      .times(1 / 2);
   }
 
   modulo(c): Complex {
@@ -315,20 +330,18 @@ export class Complex {
       const doc = d.div(c);
       const docdoc = doc.times(doc);
       w = absc.sqrt().times(
-        dplus(
-          dplus(docdoc, 1).sqrt(),
-          1
-        ).times(1 / 2).sqrt()
+        dplus(dplus(docdoc, 1).sqrt(), 1)
+          .times(1 / 2)
+          .sqrt()
       );
     } else {
       const cod = c.div(d);
       const codcod = cod.times(cod);
       const abscod = cod.abs();
       w = absd.sqrt().times(
-        dplus(
-          dplus(codcod, 1).sqrt(),
-          abscod
-        ).times(1 / 2).sqrt()
+        dplus(dplus(codcod, 1).sqrt(), abscod)
+          .times(1 / 2)
+          .sqrt()
       );
     }
 

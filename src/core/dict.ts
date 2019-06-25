@@ -52,10 +52,11 @@ export const dict = {
     if (typeof r === 'undefined') {
       return null;
     }
-    if (!USE_STRICT && is.function_(r)) { // carefull pushing functions to stack, watch immutability
+    if (!USE_STRICT && is.function_(r)) {
+      // carefull pushing functions to stack, watch immutability
       return new Just(new Word(<any>r)); // hack
     }
-    return (r instanceof Word || r instanceof Sentence) ? new Just(r) : r;
+    return r instanceof Word || r instanceof Sentence ? new Just(r) : r;
   },
 
   /**
@@ -184,4 +185,3 @@ export const dict = {
    */
   rewrite
 };
-

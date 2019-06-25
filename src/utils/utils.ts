@@ -108,7 +108,7 @@ const __eql = typed('deepEquals', {
 });
 
 export function deepEquals(a: any, b: any): boolean {
-  return (a === b) ? true : __eql(a, b);
+  return a === b ? true : __eql(a, b);
 }
 
 export const toObject = typed('object', {

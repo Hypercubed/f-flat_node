@@ -1,5 +1,10 @@
 import {
-  sequence, flags, lookAhead, avoid, either, suffix
+  sequence,
+  flags,
+  lookAhead,
+  avoid,
+  either,
+  suffix
 } from 'compose-regexp';
 
 export function rAnd(lhs: RegExp, rhs: RegExp) {

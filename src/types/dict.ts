@@ -6,7 +6,6 @@ import { USE_STRICT } from '../constants';
 const SEP = '.';
 
 export class Dictionary {
-
   scope: {};
   locals: {};
   // todo: private?
@@ -29,8 +28,13 @@ export class Dictionary {
   set(key: string, value: StackValue): void {
     const path = Dictionary.makePath(key);
     const firstKey = <string>path.shift();
-    if (USE_STRICT && Object.prototype.hasOwnProperty.call(this.locals, firstKey)) {
-      throw new Error(`Cannot overwrite definitions in strict mode: ${firstKey}`);
+    if (
+      USE_STRICT &&
+      Object.prototype.hasOwnProperty.call(this.locals, firstKey)
+    ) {
+      throw new Error(
+        `Cannot overwrite definitions in strict mode: ${firstKey}`
+      );
     }
     if (path.length === 0) {
       if (typeof value === 'undefined') {
@@ -50,19 +54,27 @@ export class Dictionary {
   delete(key: string): void {
     const path = Dictionary.makePath(key);
     const firstKey = <string>path.shift();
-    if (USE_STRICT && Object.prototype.hasOwnProperty.call(this.locals, firstKey)) {
+    if (
+      USE_STRICT &&
+      Object.prototype.hasOwnProperty.call(this.locals, firstKey)
+    ) {
       throw new Error(`Cannot delete definitions in strict mode: ${firstKey}`);
     }
     if (path.length === 0) {
       this.locals[firstKey] = undefined;
       return;
     }
-    this.locals[firstKey] = assocIn(this.locals[firstKey] || {}, path, undefined);
+    this.locals[firstKey] = assocIn(
+      this.locals[firstKey] || {},
+      path,
+      undefined
+    );
   }
 
   allKeys(): string[] {
     const keys: string[] = [];
-    for (const prop in this.locals) { // eslint-disable-line guard-for-in
+    for (const prop in this.locals) {
+      // eslint-disable-line guard-for-in
       keys.push(prop);
     }
     return keys;
@@ -73,10 +85,12 @@ export class Dictionary {
   }
 
   toObject(): {} {
-    return {...this.locals};
+    return { ...this.locals };
   }
 
   static makePath(key: string) {
-    return String(key).toLowerCase().split(SEP);
+    return String(key)
+      .toLowerCase()
+      .split(SEP);
   }
 }

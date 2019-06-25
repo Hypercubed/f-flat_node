@@ -37,7 +37,7 @@ P.valueOf = function() {
 };
 
 P.toJSON = function() {
-  return { '$numberDecimal': this.toString() };
+  return { $numberDecimal: this.toString() };
 };
 
 P.inspect = function() {
@@ -135,7 +135,8 @@ export function gammaDecimal(a: Decimal) {
 
   if (a.lt(0.5)) {
     return pi.div(
-      a.times(pi)
+      a
+        .times(pi)
         .sin()
         .times(gammaDecimal(one.minus(a)))
     );

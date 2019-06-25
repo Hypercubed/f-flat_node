@@ -1,4 +1,3 @@
-
 export type bool = boolean | null;
 export type cmpValue = -1 | 0 | 1;
 

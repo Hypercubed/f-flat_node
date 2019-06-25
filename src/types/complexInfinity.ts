@@ -1,8 +1,7 @@
 import { typed } from './typed';
 
 export class AbstractValue {
-  constructor(public type: string) {
-  }
+  constructor(public type: string) {}
 
   toString(): string {
     return this.type;

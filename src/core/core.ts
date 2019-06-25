@@ -43,7 +43,8 @@ export const core = {
    */
   choose: typed('choose', {
     // todo: true / false / nan, null
-    'boolean | null, any, any': (b: boolean | null, t: any, f: any) => new Just(b ? t : f),
+    'boolean | null, any, any': (b: boolean | null, t: any, f: any) =>
+      new Just(b ? t : f),
     'Future, any, any': (ff: Future, t: any, f: any) => ff.map(b => (b ? t : f))
   }),
 
@@ -93,7 +94,8 @@ export const core = {
       const r = lhs[rhs];
       return r === undefined ? null : new Just(r);
     },
-    'Future, any': (f: Future, rhs: any) => f.map((lhs: any) => core['@'](lhs, rhs)),
+    'Future, any': (f: Future, rhs: any) =>
+      f.map((lhs: any) => core['@'](lhs, rhs)),
 
     /**
      * - map get by key
@@ -486,15 +488,15 @@ export const core = {
    * [ [ '' 'hello ' + '(world)' eval string + '' + ] ]
    * ```
    */
-  template: function (this: StackEnv, str: string): string {
+  template: function(this: StackEnv, str: string): string {
     return template(this, str);
   },
 
-  'template-with': function (this: StackEnv, str: string, action: any): string {
+  'template-with': function(this: StackEnv, str: string, action: any): string {
     return template(this, str, action);
   },
 
-  'template-parts': function (this: StackEnv, str: string): string {
+  'template-parts': function(this: StackEnv, str: string): string {
     return templateParts(this, str);
   },
 

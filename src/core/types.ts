@@ -10,13 +10,13 @@ function convertBase(str: string, baseIn: number, baseOut: number) {
   let i = 0;
   let strL = str.length;
 
-  for (; i < strL;) {
-    for (arrL = arr.length; arrL--;) arr[arrL] *= baseIn;
+  for (; i < strL; ) {
+    for (arrL = arr.length; arrL--; ) arr[arrL] *= baseIn;
     arr[0] += NUMERALS.indexOf(str.charAt(i++));
     for (j = 0; j < arr.length; j++) {
       if (arr[j] > baseOut - 1) {
         if (arr[j + 1] === void 0) arr[j + 1] = 0;
-        arr[j + 1] += arr[j] / baseOut | 0;
+        arr[j + 1] += (arr[j] / baseOut) | 0;
         arr[j] %= baseOut;
       }
     }
@@ -25,7 +25,8 @@ function convertBase(str: string, baseIn: number, baseOut: number) {
   return arr.reverse();
 }
 
-const action = typed('action', {  // todo: this should be part of the Action constructor?
+const action = typed('action', {
+  // todo: this should be part of the Action constructor?
   'Word | Sentence': (x: unknown) => x,
   Array: (x: any[]) => {
     if (x.length === 1 && (x[0] instanceof Word || x[0] instanceof Sentence)) {
@@ -52,7 +53,7 @@ export const types = {
    * ## `number`
    */
   number: typed('number', {
-    'Date': (x: Date) => x.valueOf(),
+    Date: (x: Date) => x.valueOf(),
     any: (x: any) => new Decimal(x)
   }),
 
@@ -121,15 +122,15 @@ export const types = {
       if (!lhs.isFinite() || lhs.isNaN() || base === 10) return lhs.toString();
 
       const d = Decimal.clone({
-        precision: (lhs.sd() * Math.LN10 / Math.log(base)) | 0,
+        precision: ((lhs.sd() * Math.LN10) / Math.log(base)) | 0,
         rounding: 4
       });
 
       switch (base) {
         case 2:
-          return (new d(lhs).toBinary() as any);
+          return new d(lhs).toBinary() as any;
         case 8:
-          return (new d(lhs).toOctal() as any);
+          return new d(lhs).toOctal() as any;
         case 10:
           return lhs.toString();
         case 16:
@@ -139,7 +140,11 @@ export const types = {
             .replace('P', 'p');
         default:
           const sgn = lhs.isNeg() ? '-' : '';
-          const arr = convertBase(new d(lhs).absoluteValue().toString(), 10, base);
+          const arr = convertBase(
+            new d(lhs).absoluteValue().toString(),
+            10,
+            base
+          );
           return sgn + arr.map(x => NUMERALS[x]).join('');
       }
     }
@@ -148,7 +153,7 @@ export const types = {
   /**
    * ## `boolean`
    */
-  boolean: (x: number) => x ? Boolean(x.valueOf()) : false,
+  boolean: (x: number) => (x ? Boolean(x.valueOf()) : false),
 
   /**
    * ## `:` (action)
@@ -180,7 +185,8 @@ export const types = {
   /**
    * ## `of`
    */
-  of: (a: any, b: any) => ((a !== null && a.constructor) ? new a.constructor(b) : null),
+  of: (a: any, b: any) =>
+    a !== null && a.constructor ? new a.constructor(b) : null,
 
   /**
    * ## `is?`
@@ -205,7 +211,8 @@ export const types = {
   /**
    * ## `date-expand`
    */
-  'date-expand': (a: any) => new Seq([a.getFullYear(), a.getMonth() + 1, a.getDate()]),
+  'date-expand': (a: any) =>
+    new Seq([a.getFullYear(), a.getMonth() + 1, a.getDate()]),
 
   /**
    * ## `clock`

@@ -174,9 +174,9 @@ export const experimental = {
     }
   },
 
-  'put': function(obj: any, key: any, value: any): any {
+  put: function(obj: any, key: any, value: any): any {
     const proto = Object.getPrototypeOf(obj);
     const newObj = Object.create(proto);
-    return Object.assign(newObj, {[key]: value});
+    return Object.assign(newObj, { [key]: value });
   }
 };

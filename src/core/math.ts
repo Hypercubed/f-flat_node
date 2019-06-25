@@ -1,6 +1,16 @@
-import { typed, Decimal, gammaDecimal, Complex, indeterminate, pi, complexInfinity, StackArray, AbstractValue } from '../types';
+import {
+  typed,
+  Decimal,
+  gammaDecimal,
+  Complex,
+  indeterminate,
+  pi,
+  complexInfinity,
+  StackArray,
+  AbstractValue
+} from '../types';
 
-const mod = (m: number, n: number) => ((m % n) + n ) % n;
+const mod = (m: number, n: number) => ((m % n) + n) % n;
 
 const erf = require('compute-erf');
 
@@ -16,7 +26,7 @@ export const math = {
    */
   re: typed('re', {
     'Decimal | number': (a: Decimal | number) => a,
-    'ComplexInfinity': (a: typeof complexInfinity) => indeterminate,
+    ComplexInfinity: (a: typeof complexInfinity) => indeterminate,
     Complex: (a: Complex) => a.re
   }),
 
@@ -28,7 +38,7 @@ export const math = {
    */
   im: typed('im', {
     'Decimal | number': (a: Decimal | number) => 0,
-    'ComplexInfinity': (a: typeof complexInfinity) => indeterminate,
+    ComplexInfinity: (a: typeof complexInfinity) => indeterminate,
     Complex: (a: Complex) => a.im
   }),
 
@@ -39,9 +49,9 @@ export const math = {
    *
    */
   arg: typed('arg', {
-    'Decimal': (a: Decimal) => (a.isPos() || a.isZero()) ? 0 : pi,
-    'number': (a: number) => a >= 0 ? 0 : pi,
-    'ComplexInfinity': (a: typeof complexInfinity) => indeterminate,
+    Decimal: (a: Decimal) => (a.isPos() || a.isZero() ? 0 : pi),
+    number: (a: number) => (a >= 0 ? 0 : pi),
+    ComplexInfinity: (a: typeof complexInfinity) => indeterminate,
     Complex: (a: Complex) => a.arg()
   }),
 
@@ -53,7 +63,7 @@ export const math = {
    */
   abs: typed('abs', {
     'Decimal | Complex': (a: Decimal | Complex) => a.abs(),
-    'ComplexInfinity': (a: typeof complexInfinity) => Infinity
+    ComplexInfinity: (a: typeof complexInfinity) => Infinity
   }),
 
   /**
@@ -63,7 +73,7 @@ export const math = {
    *
    */
   cos: typed('cos', {
-    'Complex': (a: Complex) => a.cos(),
+    Complex: (a: Complex) => a.cos(),
     'Decimal | number': (a: Decimal | number) => (Decimal as any).cos(a)
   }),
 
@@ -74,7 +84,7 @@ export const math = {
    *
    */
   sin: typed('sin', {
-    'Complex': (a: Complex) => a.sin(),
+    Complex: (a: Complex) => a.sin(),
     'Decimal | number': (a: Decimal | number) => (Decimal as any).sin(a)
   }),
 
@@ -85,7 +95,7 @@ export const math = {
    *
    */
   tan: typed('tan', {
-    'Complex': (a: Complex) => a.tan(),
+    Complex: (a: Complex) => a.tan(),
     'Decimal | number': (a: Decimal | number) => (Decimal as any).tan(a)
   }),
 
@@ -96,7 +106,7 @@ export const math = {
    *
    */
   asin: typed('asin', {
-    'Complex': (a: Complex) => a.asin(),
+    Complex: (a: Complex) => a.asin(),
     'Decimal | number': (a: Decimal | number) => {
       if (a === Infinity || a === -Infinity) return new Complex(0, -a);
       if (a > 1 || a < -1) return new Complex(a).asin();
@@ -111,7 +121,7 @@ export const math = {
    *
    */
   atan: typed('atan', {
-    'Complex': (a: Complex) => a.atan(),
+    Complex: (a: Complex) => a.atan(),
     'Decimal | number': (a: Decimal | number) => (Decimal as any).atan(a)
   }),
 
@@ -121,7 +131,8 @@ export const math = {
    * Four-quadrant inverse tangent
    *
    */
-  atan2: (a: Decimal | number, b: Decimal | number) => (Decimal as any).atan2(a, b),
+  atan2: (a: Decimal | number, b: Decimal | number) =>
+    (Decimal as any).atan2(a, b),
 
   /**
    * ## `round`
@@ -179,7 +190,7 @@ export const math = {
    *
    */
   conj: typed('conj', {
-    'Complex': (a: Complex) => a.conj()
+    Complex: (a: Complex) => a.conj()
   }),
 
   /**
@@ -199,8 +210,8 @@ export const math = {
    *
    */
   gamma: typed('gamma', {
-    'Decimal': gammaDecimal,
-    'Complex': (a: Complex) => a.gamma()
+    Decimal: gammaDecimal,
+    Complex: (a: Complex) => a.gamma()
   }),
 
   /**
@@ -253,13 +264,13 @@ export const math = {
    * bitwise xor
    *
    */
-  '$': (a: any, b: any) => +a ^ +b,
+  $: (a: any, b: any) => +a ^ +b,
 
   /**
    * ## `bitnot`
    *
    */
-  'bitnot': (a: any) => ~a,
+  bitnot: (a: any) => ~a,
 
   /**
    * ## `rand`
