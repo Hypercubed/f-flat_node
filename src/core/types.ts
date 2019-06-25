@@ -103,20 +103,20 @@ export const types = {
    * ## `atob`
    * ecodes a string of data which has been encoded using base-64 encoding
    */
-  atob: (x: string) => new Buffer(x, 'base64').toString('binary'),
+  atob: (x: string) => Buffer.from(x, 'base64').toString('binary'),
 
   /**
    * ## `btoa`
    * creates a base-64 encoded ASCII string from a String
    */
-  btoa: (x: string) => new Buffer(x, 'binary').toString('base64'),
+  btoa: (x: string) => Buffer.from(x, 'binary').toString('base64'),
 
   /**
    * ## `base`
    * Convert an integer to a string in the given base
    */
   base: typed('base', {
-    'Decimal, Decimal | number': (lhs: Decimal, base) => {
+    'Decimal, Decimal | number': (lhs: Decimal, base: Decimal | number) => {
       base = +base | 0;
       if (!lhs.isFinite() || lhs.isNaN() || base === 10) return lhs.toString();
 
