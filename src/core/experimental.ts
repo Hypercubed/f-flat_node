@@ -1,11 +1,8 @@
-import { splice, push, pop, unfreeze } from 'icepick';
 import memoize from 'memoizee';
 import { writeFileSync } from 'fs';
 
 import { stringifyStrict } from '../utils/json';
-import { deepEquals } from '../utils/utils';
 import { FFlatError } from '../utils/fflat-error';
-import { patternMatch } from '../utils/pattern';
 
 import {
   typed,
@@ -15,12 +12,10 @@ import {
   Just,
   Seq,
   StackValue,
-  StackArray,
-  Decimal
+  StackArray
 } from '../types';
 import { StackEnv } from '../env';
 import { log } from '../utils';
-import { lexer } from '../parser/';
 
 typed.addConversion({
   from: 'string',
@@ -38,14 +33,14 @@ export const experimental = {
   /**
    * ## `throw`
    */
-  throw: function(this: StackEnv, e) {
+  throw: function(this: StackEnv, e: string) {
     throw new FFlatError(e, this);
   },
 
   /**
    * ## `stringify`
    */
-  stringify: a => stringifyStrict(a),
+  stringify: (a: any) => stringifyStrict(a),
 
   /**
    * ## `parse-json`

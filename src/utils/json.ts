@@ -1,6 +1,4 @@
-import { serialize } from 'mongodb-extended-json';
-import { Word, Sentence } from '../types/words';
-import { Decimal, Complex } from '../types';
+import { Decimal } from '../types';
 
 function makePath(path: any[]): string {
   return path.map(p => {
@@ -69,15 +67,15 @@ const numberJSON = v => {
 };
 
 encoder
-  .registerType(String, v => v.valueOf())
-  .registerType(Boolean, v => v.valueOf())
-  .registerType(Number, v => numberJSON(v.valueOf()))
+  .registerType(String, (v: any) => v.valueOf())
+  .registerType(Boolean, (v: any) => v.valueOf())
+  .registerType(Number, (v: any) => numberJSON(v.valueOf()))
   .registerType('number', numberJSON)
   .registerType('undefined', () => ({ $undefined: true }))
   .registerType('symbol', v => ({'$symbol': String(v).slice(7, -1)}));
 
 encoder
-  .registerType(Date, v => ({ $date: v.toISOString() }))
+  .registerType(Date, (v: any) => ({ $date: v.toISOString() }))
   .registerType(RegExp, (v: RegExp) => ({
     $regex: v.source,
     $options: v.flags

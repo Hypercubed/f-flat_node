@@ -309,7 +309,7 @@ export class Complex {
     const absc = c.abs();
     const absd = d.abs();
 
-    let w;
+    let w: Decimal;
 
     if (absc.gte(absd)) {
       const doc = d.div(c);

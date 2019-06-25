@@ -1,4 +1,3 @@
-import { assocIn, getIn } from 'icepick';
 import is from '@sindresorhus/is';
 
 import { formatValue, FFlatError } from '../utils';
@@ -48,7 +47,7 @@ export const dict = {
    * [ [ dup * ] ]
    * ```
    */
-  rcl(this: StackEnv, a) {
+  rcl(this: StackEnv, a: string) {
     const r = this.dict.get(a);
     if (typeof r === 'undefined') {
       return null;

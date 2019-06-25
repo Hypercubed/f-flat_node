@@ -1,7 +1,7 @@
 import { typed } from './typed';
 
 export class AbstractValue {
-  constructor(public type) {
+  constructor(public type: string) {
   }
 
   toString(): string {
@@ -27,18 +27,18 @@ export const indeterminate = new AbstractValue('Indeterminate');
 
 typed.addType({
   name: 'ComplexInfinity',
-  test: x => x === complexInfinity
+  test: (x: unknown) => x === complexInfinity
 });
 
 typed.addType({
   name: 'Indeterminate',
-  test: x => x === indeterminate
+  test: (x: unknown) => x === indeterminate
 });
 
 typed.addConversion({
   from: 'ComplexInfinity',
   to: 'number',
-  convert: x => Infinity
+  convert: (x: unknown) => Infinity
 });
 
 /* typed.addType({
@@ -51,7 +51,7 @@ typed.addConversion({
 
 typed.addType({
   name: 'infinity',
-  test: x => {
+  test: (x: unknown) => {
     return x === Infinity || x === -Infinity;
   }
 });

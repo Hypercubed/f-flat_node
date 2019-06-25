@@ -1,8 +1,6 @@
-import { typed, Sentence, Decimal, gammaDecimal, Complex, indeterminate, pi, StackArray } from '../types';
-import { lexer } from '../parser';
-import { arrayMul } from '../utils';
+import { typed, Decimal, gammaDecimal, Complex, indeterminate, pi, complexInfinity, StackArray, AbstractValue } from '../types';
 
-const mod = (m, n) => ((m % n) + n ) % n;
+const mod = (m: number, n: number) => ((m % n) + n ) % n;
 
 const erf = require('compute-erf');
 
@@ -17,9 +15,9 @@ export const math = {
    *
    */
   re: typed('re', {
-    'Decimal | number': a => a,
-    'ComplexInfinity': a => indeterminate,
-    Complex: a => a.re
+    'Decimal | number': (a: Decimal | number) => a,
+    'ComplexInfinity': (a: typeof complexInfinity) => indeterminate,
+    Complex: (a: Complex) => a.re
   }),
 
   /**
@@ -29,9 +27,9 @@ export const math = {
    *
    */
   im: typed('im', {
-    'Decimal | number': a => 0,
-    'ComplexInfinity': a => indeterminate,
-    Complex: a => a.im
+    'Decimal | number': (a: Decimal | number) => 0,
+    'ComplexInfinity': (a: typeof complexInfinity) => indeterminate,
+    Complex: (a: Complex) => a.im
   }),
 
   /**
@@ -41,10 +39,10 @@ export const math = {
    *
    */
   arg: typed('arg', {
-    'Decimal': a => (a.isPos() || a.isZero()) ? 0 : pi,
-    'number': a => a >= 0 ? 0 : pi,
-    'ComplexInfinity': a => indeterminate,
-    Complex: a => a.arg()
+    'Decimal': (a: Decimal) => (a.isPos() || a.isZero()) ? 0 : pi,
+    'number': (a: number) => a >= 0 ? 0 : pi,
+    'ComplexInfinity': (a: typeof complexInfinity) => indeterminate,
+    Complex: (a: Complex) => a.arg()
   }),
 
   /**
@@ -54,8 +52,8 @@ export const math = {
    *
    */
   abs: typed('abs', {
-    'Decimal | Complex': a => a.abs(),
-    'ComplexInfinity': a => Infinity
+    'Decimal | Complex': (a: Decimal | Complex) => a.abs(),
+    'ComplexInfinity': (a: typeof complexInfinity) => Infinity
   }),
 
   /**
@@ -65,8 +63,8 @@ export const math = {
    *
    */
   cos: typed('cos', {
-    'Complex': a => a.cos(),
-    'Decimal | number': a => (Decimal as any).cos(a)
+    'Complex': (a: Complex) => a.cos(),
+    'Decimal | number': (a: Decimal | number) => (Decimal as any).cos(a)
   }),
 
   /**
@@ -76,8 +74,8 @@ export const math = {
    *
    */
   sin: typed('sin', {
-    'Complex': a => a.sin(),
-    'Decimal | number': a => (Decimal as any).sin(a)
+    'Complex': (a: Complex) => a.sin(),
+    'Decimal | number': (a: Decimal | number) => (Decimal as any).sin(a)
   }),
 
   /**
@@ -87,8 +85,8 @@ export const math = {
    *
    */
   tan: typed('tan', {
-    'Complex': a => a.tan(),
-    'Decimal | number': a => (Decimal as any).tan(a)
+    'Complex': (a: Complex) => a.tan(),
+    'Decimal | number': (a: Decimal | number) => (Decimal as any).tan(a)
   }),
 
   /**
@@ -98,8 +96,8 @@ export const math = {
    *
    */
   asin: typed('asin', {
-    'Complex': a => a.asin(),
-    'Decimal | number': a => {
+    'Complex': (a: Complex) => a.asin(),
+    'Decimal | number': (a: Decimal | number) => {
       if (a === Infinity || a === -Infinity) return new Complex(0, -a);
       if (a > 1 || a < -1) return new Complex(a).asin();
       return (Decimal as any).asin(a);
@@ -113,8 +111,8 @@ export const math = {
    *
    */
   atan: typed('atan', {
-    'Complex': a => a.atan(),
-    'Decimal | number': a => (Decimal as any).atan(a)
+    'Complex': (a: Complex) => a.atan(),
+    'Decimal | number': (a: Decimal | number) => (Decimal as any).atan(a)
   }),
 
   /**
@@ -123,7 +121,7 @@ export const math = {
    * Four-quadrant inverse tangent
    *
    */
-  atan2: (a, b) => (Decimal as any).atan2(a, b),
+  atan2: (a: Decimal | number, b: Decimal | number) => (Decimal as any).atan2(a, b),
 
   /**
    * ## `round`
@@ -132,7 +130,7 @@ export const math = {
    *
    */
   round: typed('round', {
-    'Decimal | Complex': a => a.round()
+    'Decimal | Complex': (a: Decimal | Complex) => a.round()
   }),
 
   /**
@@ -142,7 +140,7 @@ export const math = {
    *
    */
   floor: typed('floor', {
-    'Decimal | Complex': a => a.floor() // ,
+    'Decimal | Complex': (a: Decimal | Complex) => a.floor() // ,
     // 'any': a => a
   }),
 
@@ -153,7 +151,7 @@ export const math = {
    *
    */
   ceil: typed('ceil', {
-    'Decimal | Complex': a => a.ceil()
+    'Decimal | Complex': (a: Decimal | Complex) => a.ceil()
   }),
 
   /**
@@ -181,7 +179,7 @@ export const math = {
    *
    */
   conj: typed('conj', {
-    'Complex': a => a.conj()
+    'Complex': (a: Complex) => a.conj()
   }),
 
   /**
@@ -191,7 +189,7 @@ export const math = {
    *
    */
   exp: typed('exp', {
-    'Decimal | Complex': x => x.exp()
+    'Decimal | Complex': (a: Decimal | Complex) => a.exp()
   }),
 
   /**
@@ -202,7 +200,7 @@ export const math = {
    */
   gamma: typed('gamma', {
     'Decimal': gammaDecimal,
-    'Complex': a => a.gamma()
+    'Complex': (a: Complex) => a.gamma()
   }),
 
   /**
@@ -211,9 +209,9 @@ export const math = {
    * Nemes Gamma Function
    *
    */
-  nemes: typed('nemes', {
-    Decimal: a => a.nemesClosed()
-  }),
+  /* nemes: typed('nemes', {
+    'Decimal': (a: Decimal) => a.nemesClosed()
+  }), */
 
   /**
    * ## `spouge`
@@ -221,9 +219,9 @@ export const math = {
    * Sponge function
    *
    */
-  spouge: typed('spouge', {
-    Decimal: a => a.spouge()
-  }),
+  /* spouge: typed('spouge', {
+    'Decimal': (a: Decimal) => a.spouge()
+  }), */
 
   /**
    * ## `erf`
@@ -239,7 +237,7 @@ export const math = {
    * bitwise and
    *
    */
-  '&': (a, b) => +a & +b,
+  '&': (a: any, b: any) => +a & +b,
 
   /**
    * ## `|`
@@ -247,7 +245,7 @@ export const math = {
    * bitwise or
    *
    */
-  '|': (a, b) => +a | +b,
+  '|': (a: any, b: any) => +a | +b,
 
   /**
    * ## `$`
@@ -255,13 +253,13 @@ export const math = {
    * bitwise xor
    *
    */
-  '$': (a, b) => +a ^ +b,
+  '$': (a: any, b: any) => +a ^ +b,
 
   /**
    * ## `bitnot`
    *
    */
-  'bitnot': (a) => ~a,
+  'bitnot': (a: any) => ~a,
 
   /**
    * ## `rand`
@@ -277,7 +275,7 @@ export const math = {
    * Sets the internal decimal precision
    *
    */
-  'set-precision': x => {
+  'set-precision': (x: any) => {
     Decimal.config({ precision: Number(x) });
   },
 

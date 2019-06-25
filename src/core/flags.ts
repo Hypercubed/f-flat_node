@@ -12,7 +12,7 @@ export const flags = {
    * Sets the internal decimal precision
    *
    */
-  'set-precision': x => {
+  'set-precision': (x: any) => {
     Decimal.config({ precision: +x });
   },
 

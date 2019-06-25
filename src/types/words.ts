@@ -1,5 +1,4 @@
 import { typed } from './typed';
-import { formatValue } from '../utils/pprint';
 import { encode } from '../utils/json';
 import { StackValue } from './stackValue';
 
@@ -72,10 +71,10 @@ export class Sentence extends Action {
 
 typed.addType({
   name: 'Sentence',
-  test: item => item instanceof Sentence
+  test: (item: any): item is Sentence => item instanceof Sentence
 });
 
 typed.addType({
   name: 'Word',
-  test: item => item instanceof Word
+  test: (item: any): item is Word => item instanceof Word
 });

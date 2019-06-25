@@ -1,5 +1,4 @@
-import * as fetch from 'isomorphic-fetch';
-import { slice, splice, pop, push, getIn } from 'icepick';
+import { splice, pop, push, getIn } from 'icepick';
 
 import {
   typed,
@@ -14,7 +13,6 @@ import {
   Decimal
 } from '../types';
 import { template, templateParts, toObject } from '../utils';
-import { deepEquals } from '../utils/utils';
 import { patternMatch } from '../utils/pattern';
 import { StackEnv } from '../env';
 
@@ -45,8 +43,8 @@ export const core = {
    */
   choose: typed('choose', {
     // todo: true / false / nan, null
-    'boolean | null, any, any': (b, t, f) => new Just(b ? t : f),
-    'Future, any, any': (ff, t, f) => ff.map(b => (b ? t : f))
+    'boolean | null, any, any': (b: boolean | null, t: any, f: any) => new Just(b ? t : f),
+    'Future, any, any': (ff: Future, t: any, f: any) => ff.map(b => (b ? t : f))
   }),
 
   /**
@@ -70,7 +68,7 @@ export const core = {
      * [ 'c' ]
      * ```
      */
-    'string, number': (lhs: string, rhs) => {
+    'string, number': (lhs: string, rhs: number) => {
       rhs = Number(rhs) | 0;
       if (rhs < 0) {
         rhs = lhs.length + rhs;
@@ -87,7 +85,7 @@ export const core = {
      * [ 2 ]
      * ```
      */
-    'Array, number': (lhs, rhs) => {
+    'Array, number': (lhs: any[], rhs: number) => {
       rhs = Number(rhs) | 0;
       if (rhs < 0) {
         rhs = lhs.length + rhs;
@@ -95,7 +93,7 @@ export const core = {
       const r = lhs[rhs];
       return r === undefined ? null : new Just(r);
     },
-    'Future, any': (f, rhs) => f.map(lhs => core['@'](lhs, rhs)),
+    'Future, any': (f: Future, rhs: any) => f.map((lhs: any) => core['@'](lhs, rhs)),
 
     /**
      * - map get by key
@@ -105,7 +103,7 @@ export const core = {
      * [ 'Manfred' ]
      * ```
      */
-    'map | Object, Word | Sentence | string | null': (a, b) => {
+    'map | Object, Word | Sentence | string | null': (a: any, b: any) => {
       const path = String(b).split('.');
       const r = getIn(a, path);
       return r === undefined ? null : r;
@@ -278,11 +276,11 @@ export const core = {
    */
   eval: typed('_eval', {
     Future: (f: Future) => f.promise.then(a => new Sentence(a)),
-    Array: a => new Sentence(a),
-    string: a => new Word(a),
-    Word: a => a,
-    Sentence: a => a,
-    any: a => new Just(a)
+    Array: (a: any[]) => new Sentence(a),
+    string: (a: string) => new Word(a),
+    Word: (a: Word) => a,
+    Sentence: (a: Sentence) => a,
+    any: (a: any) => new Just(a)
   }),
 
   /**

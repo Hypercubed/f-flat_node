@@ -2,23 +2,15 @@ import { tokenize } from './tokenizer';
 
 import {
   Word,
-  Sentence,
   Decimal,
-  Complex,
   StackValue,
-  StackArray,
-  Just,
-  Seq,
   I
 } from '../types';
 import { unescapeString } from '../utils/stringConversion';
 
-const makeAction = new Word(':');
-const atAction = new Word('@');
 const templateAction = new Word(':template');
-const evalAction = new Word('eval');
 
-export function lexer(a) {
+export function lexer(a: unknown) {
   if (Array.isArray(a)) {
     return a;
   }
@@ -30,7 +22,7 @@ export function lexer(a) {
   return [a];
 }
 
-function processParserTokens(node): StackValue | undefined {
+function processParserTokens(node: any): StackValue | undefined {
   switch (node.name) {
     // todo: more literal: infinity, -infinity, regex, complex, percent
     case 'templateString':

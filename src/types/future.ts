@@ -1,5 +1,3 @@
-
-
 import { typed } from './typed';
 import { Sentence, Word } from './words';
 import { StackValue } from './stackValue';

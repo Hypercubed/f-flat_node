@@ -24,7 +24,7 @@ export function rNor(lhs: RegExp, rhs: RegExp) {
   return rNot(rOr(lhs, rhs));
 }
 
-export function rXor(lhs, rhs) {
+export function rXor(lhs: RegExp, rhs: RegExp) {
   return rAnd(rOr(lhs, rhs), rNot(rAnd(lhs, rhs)));
 }
 

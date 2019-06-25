@@ -1,6 +1,5 @@
 /* global window, global, process, require */
 
-import { USE_STRICT } from './constants';
 import { StackEnv } from './env';
 import { join } from 'path';
 

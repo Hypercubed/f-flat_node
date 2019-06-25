@@ -2,7 +2,7 @@ import { formatState } from './pprint';
 import { StackEnv } from '../env';
 
 export class FFlatError extends Error {
-  constructor(message = 'FFlatError', state: StackEnv | { stack, queue } = { stack: [], queue: [] }) {
+  constructor(message = 'FFlatError', state: StackEnv | { stack: unknown[], queue: unknown[] } = { stack: [], queue: [] }) {
     super(message);
 
     // extending Error is weird and does not propagate `message`

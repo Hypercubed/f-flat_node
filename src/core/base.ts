@@ -1,4 +1,4 @@
-import { assign, merge, unshift, push, slice, getIn, assoc } from 'icepick';
+import { assign, merge, unshift, push, assoc } from 'icepick';
 
 import { lexer } from '../parser';
 import { deepEquals, arrayRepeat, arrayMul, arrayInvMul } from '../utils';
@@ -17,10 +17,8 @@ import {
 import {
   Word,
   Sentence,
-  Just,
   Seq,
   typed,
-  I,
   StackValue,
   Future,
   Complex,
@@ -29,9 +27,8 @@ import {
   complexInfinity,
   AbstractValue
 } from '../types';
-import { StackEnv } from '../env';
 
-function assocAnd(obj1, obj2) {
+function assocAnd(obj1: any, obj2: any) {
   return Object.keys(obj2).reduce((obj, key) => {
     if (Object.prototype.hasOwnProperty.call(obj1, key)) {
       return assoc(obj, key, obj2[key]);
@@ -40,7 +37,7 @@ function assocAnd(obj1, obj2) {
   }, {});
 }
 
-function invertObject(source) {
+function invertObject(source: any) {
   return Object.keys(source).reduce((obj, key) => {
     return assoc(obj, source[key], key);
   }, {});
@@ -73,7 +70,7 @@ const add = typed('add', {
   ],
 
   'Future, any': (f: Future, rhs: StackValue): Future =>
-    f.map(lhs => lhs.concat(rhs)),
+    f.map((lhs: any[]) => lhs.concat(rhs)),
 
   /**
    * - boolean or
@@ -107,8 +104,7 @@ const add = typed('add', {
    * ```
    */
   'Complex, Complex': (lhs: Complex, rhs: Complex): Complex => lhs.plus(rhs),
-  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal): Decimal =>
-    lhs.plus(rhs),
+  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal): Decimal => lhs.plus(rhs),
 
   /**
    * - map assign/assoc
@@ -133,8 +129,7 @@ const add = typed('add', {
    */
   'Date, number': (lhs: Date, rhs: number) => new Date(lhs.valueOf() + rhs),
   'number, Date': (lhs: number, rhs: Date) => lhs + rhs.valueOf(),
-  'Date, Decimal': (lhs: Date, rhs: Decimal) =>
-    new Date(rhs.plus(lhs.valueOf()).valueOf()),
+  'Date, Decimal': (lhs: Date, rhs: Decimal) => new Date(rhs.plus(lhs.valueOf()).valueOf()),
   'Decimal, Date': (lhs: Decimal, rhs: Date) => lhs.plus(rhs.valueOf()),
 
   /**
@@ -241,7 +236,7 @@ const mul = typed('mul', {
   'Array, Array | Word | Sentence | Function': arrayMul,
   'string, Array | Word | Sentence | Function': (lhs, rhs) =>
     arrayMul(lhs.split(''), rhs),
-  'Future, any': (f, rhs) => f.map(lhs => mul(lhs, rhs)),
+  'Future, any': (f: Future, rhs: any) => f.map(lhs => mul(lhs, rhs)),
 
   /**
    * - Array join
@@ -251,7 +246,7 @@ const mul = typed('mul', {
    * [ 'a;b' ]
    *```
    */
-  'Array, string': (lhs, rhs) => lhs.join(rhs),
+  'Array, string': (lhs: any[], rhs: string) => lhs.join(rhs),
 
   /**
    * - string intersparse
@@ -261,7 +256,7 @@ const mul = typed('mul', {
    * [ [ 'x;y;z' ] ]
    *```
    */
-  'string, string': (lhs, rhs) => lhs.split('').join(rhs),
+  'string, string': (lhs: string, rhs: string) => lhs.split('').join(rhs),
   // todo: string * regexp?
 
   /**
@@ -320,8 +315,8 @@ const mul = typed('mul', {
    *```
    */
   // string intersparse?
-  'string, number': (a, b) => a.repeat(b),
-  'Array, number': (a, b) => arrayRepeat(a, b),
+  'string, number': (a: string, b: number) => a.repeat(b),
+  'Array, number': (a: any[], b: number) => arrayRepeat(a, b),
 
   /**
    * - arithmetic multiplication
@@ -352,8 +347,7 @@ const div = typed('div', {
    *```
    */
   'Array, Array | Word | Sentence | Function': arrayInvMul,
-  'string, Array | Word | Sentence | Function': (lhs, rhs) =>
-  arrayInvMul(lhs.split(''), rhs),
+  'string, Array | Word | Sentence | Function': (lhs: string, rhs: any) => arrayInvMul(lhs.split(''), rhs),
 
   /**
    * - logical material nonimplication or abjunction
@@ -387,12 +381,12 @@ const div = typed('div', {
    * [ 'abc' 'def' ]
    * ```
    */
-  'Array | string, number': (a, b) => {
+  'Array | string, number': (a: any[] | string, b: number) => {
     b = +b | 0;
     return new Seq([a.slice(0, b), a.slice(b)]);
   },
 
-  'Future, any': (f, rhs) => f.map(lhs => div(lhs, rhs)),
+  'Future, any': (f: Future, rhs: any) => f.map(lhs => div(lhs, rhs)),
   /* 'string | Array, number': (lhs, rhs) => {
     rhs = +rhs | 0;
     var len = lhs.length / rhs;
@@ -412,7 +406,7 @@ const div = typed('div', {
     if (+rhs === 0 && +lhs !== 0) return complexInfinity;
     return lhs.div(rhs);
   },
-  'number, number': (lhs, rhs) => lhs / rhs
+  'number, number': (lhs: number, rhs: number) => lhs / rhs
 });
 
 /**
@@ -420,8 +414,8 @@ const div = typed('div', {
  *
  */
 const idiv = typed('idiv', {
-  'Array, Array | Word | Sentence | Function': (lhs, rhs) => new Sentence(arrayMul(lhs, rhs)),
-  'string, Array | Word | Sentence | Function': (lhs, rhs) => new Sentence(arrayMul(lhs.split(''), rhs)),
+  'Array, Array | Word | Sentence | Function': (lhs: any[], rhs: any) => new Sentence(arrayMul(lhs, rhs)),
+  'string, Array | Word | Sentence | Function': (lhs: string, rhs: any) => new Sentence(arrayMul(lhs.split(''), rhs)),
 
   /**
    * - Floored division.
@@ -449,7 +443,7 @@ const idiv = typed('idiv', {
    * [ 'abc' ]
    * ```
    */
-  'Array | string, number': (a, b) => a.slice(0, +b | 0),
+  'Array | string, number': (a: any[] | string, b: number) => a.slice(0, +b | 0),
 
   /**
    * - Split first
@@ -489,7 +483,7 @@ const rem = typed('rem', {
    * [ 1 ]
    * ```
    */
-  'Decimal | Complex, Decimal | number': (lhs, rhs) => lhs.modulo(rhs),
+  'Decimal | Complex, Decimal | number': (lhs: Decimal | Complex, rhs: Decimal | number) => lhs.modulo(rhs),
 
   /**
    * - Array/string tail
@@ -501,7 +495,7 @@ const rem = typed('rem', {
    * [ 'def' ]
    * ```
    */
-  'Array | string, number': (a, b) => a.slice(+b | 0),
+  'Array | string, number': (a: any[] | string, b: number) => a.slice(+b | 0),
 
   /**
    * - Split rest
@@ -558,10 +552,10 @@ const unshiftFn = typed('unshift', {
    * [ 1 2 3 ]
    * ```
    */
-  'any | Word | Sentence | Object, Array': (lhs, rhs) => unshift(rhs, lhs),
-  'Array, string': (lhs, rhs) => [lhs, new Word(rhs)],
-  'Array | Word | Sentence, Word | Sentence': (lhs, rhs) => [lhs, rhs],
-  'Future, any': (f, rhs) => f.map(lhs => unshiftFn(lhs, rhs)),
+  'any | Word | Sentence | Object, Array': (lhs: any, rhs: any[]) => unshift(rhs, lhs),
+  'Array, string': (lhs: any[], rhs: any) => [lhs, new Word(rhs)],
+  'Array | Word | Sentence, Word | Sentence': (lhs: any, rhs: any) => [lhs, rhs],
+  'Future, any': (f: Future, rhs: any) => f.map(lhs => unshiftFn(lhs, rhs)),
 
   /**
    * - concat
@@ -581,7 +575,7 @@ const unshiftFn = typed('unshift', {
    * 'abc'
    * ```
    */
-  'string, number': (lhs, rhs) => lhs.slice(0, -rhs),
+  'string, number': (lhs: string, rhs: number) => lhs.slice(0, -rhs),
 
   /**
    * - map merge
@@ -593,7 +587,7 @@ const unshiftFn = typed('unshift', {
    * [ { first: 'Manfred' last: 'von Thun' } ]
    * ```
    */
-  'map, map': (lhs, rhs) => merge(rhs, lhs),
+  'map, map': (lhs: any, rhs: any) => merge(rhs, lhs),
 
   /**
    * - Sign-propagating right shift
@@ -603,7 +597,7 @@ const unshiftFn = typed('unshift', {
    * [ 16 ]
    * ```
    */
-  'number, number': (lhs, rhs) => lhs >> rhs,
+  'number, number': (lhs: number, rhs: number) => lhs >> rhs,
 
   /**
    * - logical material implication (P implies Q)
@@ -645,8 +639,8 @@ const pushFn = typed('push', {
    * [ [ 1 2 3 ] ]
    * ```
    */
-  'Array, any | Word | Sentence | Object': (lhs, rhs) => push(lhs, rhs),
-  'Future, any': (f, rhs) => f.map(lhs => pushFn(lhs, rhs)),
+  'Array, any | Word | Sentence | Object': (lhs: any[], rhs: any) => push(lhs, rhs),
+  'Future, any': (f: Future, rhs: any) => f.map(lhs => pushFn(lhs, rhs)),
 
   /**
    * - concat
@@ -666,7 +660,7 @@ const pushFn = typed('push', {
    * 'def'
    * ```
    */
-  'string, number': (lhs, rhs) => lhs.slice(-rhs),
+  'string, number': (lhs: string, rhs: number) => lhs.slice(-rhs),
 
   /**
    * - converse implication (p if q)
@@ -689,7 +683,7 @@ const pushFn = typed('push', {
    * [ { first: 'Manfred' last: 'von Thun' } ]
    * ```
    */
-  'map | Object, map | Object': (lhs, rhs) => merge(lhs, rhs),
+  'map | Object, map | Object': (lhs: any, rhs: any) => merge(lhs, rhs),
 
   /**
    * - left shift
@@ -699,9 +693,9 @@ const pushFn = typed('push', {
    * [ 256 ]
    * ```
    */
-  'Decimal, Decimal | number': (lhs, rhs) =>
+  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal | number) =>
     new Decimal(lhs.toBinary() + '0'.repeat(+rhs | 0)),
-  'number, number': (lhs, rhs) => lhs << rhs,
+  'number, number': (lhs: number, rhs: number) => lhs << rhs,
 
   /**
    * - RegExp right seq
@@ -731,15 +725,15 @@ const pow = typed('pow', {
    * [ 49 ]
    * ```
    */
-  'Complex, Decimal | Complex | number': (a, b) =>
+  'Complex, Decimal | Complex | number': (a: Complex, b: Decimal | Complex | number) =>
     new Sentence([b, a].concat(lexer('ln * exp'))),
-  'Decimal, Complex': (a, b) => new Sentence([b, a].concat(lexer('ln * exp'))),
-  'Decimal, Decimal | number': (a, b) => a.pow(b),
+  'Decimal, Complex': (a: Decimal, b: Complex) => new Sentence([b, a].concat(lexer('ln * exp'))),
+  'Decimal, Decimal | number': (a: Decimal, b: Decimal | number) => a.pow(b),
 
   /**
    * - string pow
    */
-  'string, number': (lhs, rhs) => {
+  'string, number': (lhs: string, rhs: number) => {
     let r = lhs;
     const l = +rhs | 0;
     for (let i = 1; i < l; i++) {
@@ -751,7 +745,7 @@ const pow = typed('pow', {
   /**
    * - array pow
    */
-  'Array, number': (lhs: StackArray, rhs) => {
+  'Array, number': (lhs: StackArray, rhs: number) => {
     let r = lhs;
     const l = +rhs | 0;
     for (let i = 1; i < l; i++) {
@@ -793,8 +787,8 @@ const ln = typed('ln', {
   /**
    * - natural log
    */
-  'Complex': a => a.ln(),
-  'Decimal | number': a => {
+  'Complex': (a: Complex) => a.ln(),
+  'Decimal | number': (a: Decimal | number) => {
     if (a <= 0) return new Complex(a).ln();
     return new Decimal(a).ln();
   },
@@ -807,7 +801,7 @@ const ln = typed('ln', {
    * [ 3 ]
    * ```
    */
-  'Array | string': a => a.length,
+  'Array | string': (a: any[] | string) => a.length,
 
   /**
    * - number of keys in a map
@@ -817,7 +811,7 @@ const ln = typed('ln', {
    * [ 3 ]
    * ```
    */
-  map: (a: {}) => Object.keys(a).length,
+  'map': (a: {}) => Object.keys(a).length,
 
   /**
    * - "length" of a nan, null, and booleans are 0
@@ -827,8 +821,8 @@ const ln = typed('ln', {
    * [ 0 ]
    * ```
    */
-  null: (a: null) => 0, // eslint-disable-line
-  any: a => 0
+  'null': (a: null) => 0, // eslint-disable-line
+  'any': (a: any) => 0
 });
 
 /**
@@ -843,8 +837,8 @@ const notFn = typed('not', {
    * [ -5 ]
    * ```
    */
-  'Decimal | Complex': (a: Decimal) => a.neg(),
-  number: a => {
+  'Decimal | Complex': (a: Decimal | Complex) => a.neg(),
+  number: (a: number) => {
     if (a === 0) return -0;
     if (a === -0) return 0;
     return Number.isNaN(a) ? NaN : -a;
@@ -895,12 +889,12 @@ const notFn = typed('not', {
  * ## `empty`
  */
 const empty = typed('empty', {
-  'Complex | Decimal | number': a => 0,
-  'boolean | null': a => null,
-  'string': a => '',
-  'Array': a => [],
-  'map': a => [],
-  any: a => (a.empty ? a.empty() : new a.constructor())
+  'Complex | Decimal | number': (a: Complex | Decimal | number) => 0,
+  'boolean | null': (a: boolean) => null,
+  'string': (a: string) => '',
+  'Array': (a: any[]) => [],
+  'map': (a: any) => [],
+  'any': (a: any) => (a.empty ? a.empty() : new a.constructor())
 });
 
 /**
@@ -946,10 +940,8 @@ const cmpFn = typed('<=>', {
    * [ 1 ]
    * ```
    */
-  'Array, Array': (lhs, rhs) => {
-    lhs = lhs.length;
-    rhs = rhs.length;
-    return numCmp(lhs, rhs);
+  'Array, Array': (lhs: any[], rhs: any[]) => {
+    return numCmp(lhs.length, rhs.length);
   },
 
   /**
@@ -964,7 +956,7 @@ const cmpFn = typed('<=>', {
    * [ -1 ]
    * ```
    */
-  'string, string': (lhs, rhs) => {
+  'string, string': (lhs: string, rhs: string) => {
     return numCmp(lhs, rhs);
   },
 
@@ -976,7 +968,7 @@ const cmpFn = typed('<=>', {
    * [ -1 ]
    * ```
    */
-  'boolean | null, boolean | null': (lhs, rhs) => {
+  'boolean | null, boolean | null': (lhs: boolean, rhs: boolean) => {
     return cmp(lhs, rhs);
   },
 
@@ -988,7 +980,7 @@ const cmpFn = typed('<=>', {
    * [ -1 ]
    * ```
    */
-  'Date | number, Date | number': (lhs, rhs) => {
+  'Date | number, Date | number': (lhs: Date | number, rhs: Date | number) => {
     lhs = +lhs;
     rhs = +rhs;
     return numCmp(lhs, rhs);
@@ -1004,7 +996,7 @@ const cmpFn = typed('<=>', {
    * [ 1 ]
    * ```
    */
-  'Object, Object': (lhs, rhs) => {
+  'Object, Object': (lhs: any, rhs: any) => {
     lhs = lhs ? Object.keys(lhs).length : null;
     rhs = rhs ? Object.keys(rhs).length : null;
     return numCmp(lhs, rhs);
@@ -1042,7 +1034,7 @@ export const base = {
   '=': deepEquals
 };
 
-function numCmp(lhs, rhs) {
+function numCmp(lhs: any, rhs: any) {
   if (Number.isNaN(lhs) || Number.isNaN(rhs)) {
     return Object.is(lhs, rhs) ? null : NaN;
   }

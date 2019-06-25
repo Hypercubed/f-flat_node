@@ -1,14 +1,14 @@
-import { typed, Word, Sentence, Just, Seq, Decimal, zero, Complex } from '../types';
+import { typed, Word, Sentence, Just, Seq, Decimal, Complex } from '../types';
 import { type } from '../utils';
 
 const NUMERALS = '0123456789ABCDEF';
 
-function convertBase(str, baseIn, baseOut) {
-  let j,
-    arr = [0],
-    arrL,
-    i = 0,
-    strL = str.length;
+function convertBase(str: string, baseIn: number, baseOut: number) {
+  let j: number;
+  let arr = [0];
+  let arrL: number;
+  let i = 0;
+  let strL = str.length;
 
   for (; i < strL;) {
     for (arrL = arr.length; arrL--;) arr[arrL] *= baseIn;
@@ -26,17 +26,17 @@ function convertBase(str, baseIn, baseOut) {
 }
 
 const action = typed('action', {  // todo: this should be part of the Action constructor?
-  'Word | Sentence': x => x,
-  Array: x => {
+  'Word | Sentence': (x: unknown) => x,
+  Array: (x: any[]) => {
     if (x.length === 1 && (x[0] instanceof Word || x[0] instanceof Sentence)) {
       return x[0];
     }
     return new Sentence(x);
   },
-  string: x => {
+  string: (x: string) => {
     return new Word(x);
   },
-  any: x => x
+  any: (x: unknown) => x
 });
 
 /**
@@ -52,15 +52,15 @@ export const types = {
    * ## `number`
    */
   number: typed('number', {
-    'Date': x => x.valueOf(),
-    any: x => new Decimal(x)
+    'Date': (x: Date) => x.valueOf(),
+    any: (x: any) => new Decimal(x)
   }),
 
   /**
    * ## `complex`
    */
   complex: typed('complex', {
-    any: x => Complex.parse(x)
+    any: (x: any) => Complex.parse(x)
   }),
 
   /**
@@ -82,34 +82,34 @@ export const types = {
   /**
    * ## `string`
    */
-  string: a => String(a),
+  string: (x: any) => String(x),
 
   /**
    * ## `valueof`
    */
-  valueof: x => x.valueOf(),
+  valueof: (x: any) => x.valueOf(),
 
   /**
    * ## `itoa`
    */
-  itoa: x => String.fromCharCode(x),
+  itoa: (x: number) => String.fromCharCode(x),
 
   /**
    * ## `atoi`
    */
-  atoi: x => x.charCodeAt(0),
+  atoi: (x: string) => x.charCodeAt(0),
 
   /**
    * ## `atob`
    * ecodes a string of data which has been encoded using base-64 encoding
    */
-  atob: x => new Buffer(x, 'base64').toString('binary'),
+  atob: (x: string) => new Buffer(x, 'base64').toString('binary'),
 
   /**
    * ## `btoa`
    * creates a base-64 encoded ASCII string from a String
    */
-  btoa: x => new Buffer(x, 'binary').toString('base64'),
+  btoa: (x: string) => new Buffer(x, 'binary').toString('base64'),
 
   /**
    * ## `base`
@@ -153,22 +153,22 @@ export const types = {
   /**
    * ## `:` (action)
    */
-  ':': a => new Just(action(a)),
+  ':': (x: any) => new Just(action(x)),
 
   /**
    * ## `#` (sdymbol)
    */
-  '#': a => Symbol(a),
+  '#': (x: any) => Symbol(x),
 
   /**
    * ## `array`
    */
-  array: n => new Array(n),
+  array: (x: any) => new Array(x),
 
   /**
    * ## `integer`
    */
-  integer: a => a | 0,
+  integer: (x: number) => x | 0,
 
   // 'null?': 'null =',
 
@@ -180,22 +180,22 @@ export const types = {
   /**
    * ## `of`
    */
-  of: (a, b) => ((a !== null && a.constructor) ? new a.constructor(b) : null),
+  of: (a: any, b: any) => ((a !== null && a.constructor) ? new a.constructor(b) : null),
 
   /**
    * ## `is?`
    */
-  'is?': (a, b) => a === b,
+  'is?': (a: any, b: any) => a === b,
 
   /**
    * ## `nothing?`
    */
-  'nothing?': a => a === null || typeof a === 'undefined',
+  'nothing?': (a: any) => a === null || typeof a === 'undefined',
 
   /**
    * ## `date`
    */
-  date: a => new Date(a),
+  date: (a: any) => new Date(a),
 
   /**
    * ## `now`
@@ -205,7 +205,7 @@ export const types = {
   /**
    * ## `date-expand`
    */
-  'date-expand': a => new Seq([a.getFullYear(), a.getMonth() + 1, a.getDate()]),
+  'date-expand': (a: any) => new Seq([a.getFullYear(), a.getMonth() + 1, a.getDate()]),
 
   /**
    * ## `clock`
@@ -217,6 +217,6 @@ export const types = {
    * convert string to RegExp
    */
   regexp: typed('regexp', {
-    RegExp: x => x // typed will convert string to RegExp
+    RegExp: (x: RegExp) => x // typed will convert string to RegExp
   })
 };

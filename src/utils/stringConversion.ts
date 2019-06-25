@@ -1,6 +1,5 @@
 import * as punycode from 'punycode';
 
-import { Word, Sentence, StackArray } from '../types/';
 import { StackEnv } from '../env';
 
 const cap = '${expression-hole}';

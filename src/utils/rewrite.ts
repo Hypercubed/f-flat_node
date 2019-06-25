@@ -1,8 +1,8 @@
 import is from '@sindresorhus/is';
-import { assocIn, getIn } from 'icepick';
+import { getIn } from 'icepick';
 
 import { StackValue, Sentence, Word, Seq, Dictionary, typed } from '../types';
-import { USE_STRICT, IIF } from '../constants';
+import { IIF } from '../constants';
 
 let wordPaths: string[] = [];
 let dictObject: Object | undefined;

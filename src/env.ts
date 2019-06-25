@@ -1,9 +1,8 @@
 /* global window, global, process, require */
 import { functionLength, functionName } from 'fantasy-helpers/src/functions';
-import * as cloneDeep from 'clone-deep';
 
 import * as MiniSignal from 'mini-signals';
-import { freeze, thaw, splice, push, merge } from 'icepick';
+import { freeze, splice } from 'icepick';
 
 const is = require('@sindresorhus/is');
 
@@ -63,7 +62,7 @@ export class StackEnv {
 
   private promise(s: StackValue): Promise<StackEnv> {
     return new Promise((resolve, reject) => {
-      this.completed.once(err => {
+      this.completed.once((err: Error) => {
         if (err) {
           reject(err);
         }

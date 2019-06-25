@@ -26,8 +26,8 @@ export const objects = {
    */
   'object?': typed('object_', {
     'Array | null | number | Complex': a => false, // eslint-disable-line no-unused-vars
-    map: a => true, // eslint-disable-line no-unused-vars
-    any: a => false // eslint-disable-line no-unused-vars
+    map: (a: unknown) => true, // eslint-disable-line no-unused-vars
+    any: (a: unknown) => false // eslint-disable-line no-unused-vars
   }),
 
   /**

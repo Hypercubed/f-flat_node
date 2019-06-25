@@ -1,13 +1,12 @@
 import { randomBytes } from 'crypto';
-import { readFileSync, writeFileSync, readFile, existsSync } from 'fs';
-import { dirname, join, extname } from 'path';
+import { readFileSync, readFile, existsSync } from 'fs';
+import { dirname, join } from 'path';
 import * as fetch from 'isomorphic-fetch';
 import { promisify } from 'util';
 import * as normalizeUrl from 'normalize-url';
 
 const readFileAsync = promisify(readFile);
 
-import { StackEnv } from '../env';
 import { log, FFlatError } from '../utils';
 import { typed } from '../types';
 
@@ -61,7 +60,7 @@ export const node = {
    * Prints the value followed by (newline)
    *
    */
-  println: (a, ...b) => {
+  println: (a: any, ...b: any[]) => {
     try {
       stdout.clearLine();
       stdout.cursorTo(0);
@@ -77,7 +76,7 @@ export const node = {
    * Prints the value
    *
    */
-  print: (a) => {
+  print: (a: any) => {
     try {
       stdout.clearLine();
       stdout.cursorTo(0);
@@ -93,7 +92,7 @@ export const node = {
    * Prints the value followed by (newline)
    *
    */
-  '?': (a, ...b) => {
+  '?': (a: any, ...b: any[]) => {
     try {
       stdout.clearLine();
       stdout.cursorTo(0);
@@ -109,7 +108,7 @@ export const node = {
    * terminate the process synchronously with an a status code
    *
    */
-  exit: a => {
+  exit: (a: any) => {
     process.exit(Number(a)); // exit: `process.exit` js-raw ;
   },
 
