@@ -15,9 +15,9 @@ import {
 const future = { '@@Future': { $undefined: true } };
 
 test('setup', t => {
-  t.not(new F().eval, undefined);
-  t.not(new F().promise, undefined);
-  t.not(new F().depth, undefined);
+  t.not(F().eval, undefined);
+  t.not(F().promise, undefined);
+  t.not(F().depth, undefined);
   t.deepEqual(fSyncJSON(''), [], 'should create an empty stack');
   t.deepEqual(
     fSyncValues('1 2 3'),
@@ -27,7 +27,7 @@ test('setup', t => {
 });
 
 test('should be chainable', t => {
-  const f = new F('1').eval('2 3');
+  const f = F('1').eval('2 3');
   t.deepEqual(f.toJSON(), [1, 2, 3].map(D));
   f.eval('4 +');
   t.deepEqual(f.toJSON(), [1, 2, 7].map(D));
@@ -84,7 +84,7 @@ test('should dup', t => {
 });
 
 test('should dup cl1', t => {
-  const f = new F().eval('[ 1 2 3 ] dup');
+  const f = F().eval('[ 1 2 3 ] dup');
   t.deepEqual(V(f.stack), [[1, 2, 3], [1, 2, 3]]);
   t.is(f.stack[0], f.stack[1]);
 });
@@ -152,7 +152,7 @@ test('map', t => {
 });
 
 test('should undo on error', t => {
-  const f = new F('1 2').eval();
+  const f = F('1 2').eval();
   t.deepEqual(V(f), [1, 2]);
 
   t.throws(() => f.eval('+ whatwhat'));
@@ -160,7 +160,7 @@ test('should undo on error', t => {
 });
 
 test('should undo', t => {
-  const f = new F('1').eval();
+  const f = F('1').eval();
 
   f.eval('2');
   t.deepEqual(V(f), [1, 2]);
@@ -309,25 +309,25 @@ test('operations with null, cont2', t => {
 
 test('errors on unknown command, sync', t => {
   t.throws(() => {
-    new F().eval('abc');
+    F().eval('abc');
   });
 });
 
 test('errors on unknown command in child', t => {
   t.throws(() => {
-    new F().eval('[ abc ] in');
+    F().eval('[ abc ] in');
   });
 });
 
 test('errors on async command in eval', t => {
   t.throws(() => {
-    new F().eval('[ 1 2 + ] await');
+    F().eval('[ 1 2 + ] await');
   });
 });
 
 test('errors on async child in eval', t => {
   t.throws(() => {
-    new F().eval('[ 100 sleep ] in');
+    F().eval('[ 100 sleep ] in');
   });
 });
 
@@ -347,7 +347,7 @@ test('can spawn a future in sync', t => {
 } */
 
 test('should spawn, returning a future', async t => {
-  const f = new F();
+  const f = F();
   f.eval('[ 100 sleep 10 ! ] spawn 4 5 +');
   t.deepEqual(f.toJSON(), [future, new Decimal(9).toJSON()]);
 

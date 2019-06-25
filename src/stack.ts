@@ -43,7 +43,7 @@ export function RootStack(): StackEnv {
   // todo: move usr.ff loading out of boot
 }
 
-export function Stack(s = '', root?) {
+export function Stack(s = '', root?: StackEnv): StackEnv {
   return new StackEnv({
     parent: root || defaultRootStack || (defaultRootStack = RootStack()),
     silent: false

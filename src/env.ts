@@ -51,6 +51,8 @@ export class StackEnv {
 
   dict: Dictionary;
 
+  private lastFnDispatch: any;
+
   defineAction: Function = typed({
     Function: (fn: Function) => {
       const name = functionName(fn);
@@ -79,7 +81,7 @@ export class StackEnv {
     );
   }
 
-  private promise(s: StackValue): Promise<StackEnv> {
+  promise(s?: StackValue): Promise<StackEnv> {
     return new Promise((resolve, reject) => {
       this.completed.once((err: Error) => {
         if (err) {
@@ -92,7 +94,7 @@ export class StackEnv {
     });
   }
 
-  next(s: StackValue): Promise<StackEnv> {
+  next(s?: StackValue): Promise<StackEnv> {
     const invoke = () => this.promise(s);
     const next = this.previousPromise.then(invoke, invoke);
     this.previousPromise = next;
@@ -146,12 +148,12 @@ export class StackEnv {
     }
   }
 
-  enqueue(s: StackValue): StackEnv {
+  enqueue(s?: StackValue): StackEnv {
     if (s) this.queue.push(...lexer(s));
     return this;
   }
 
-  eval(s: StackValue): StackEnv {
+  eval(s?: StackValue): StackEnv {
     this.enqueue(s);
     let finished = false;
     this.completed.once(err => {
@@ -218,8 +220,17 @@ export class StackEnv {
   }
 
   private onError(err: Error): void {
+    const {stack, queue, lastAction, lastFnDispatch} = this;
     if (this.autoundo) {
       this.undo();
+    }
+    if (err instanceof TypeError && (err as any).data) {
+      err = new FFlatError(err.message, {
+        stack,
+        queue,
+        lastAction,
+        ...lastFnDispatch
+      });
     }
     this.status = ERR;
     this.completed.dispatch(err, this);
@@ -319,6 +330,13 @@ export class StackEnv {
         argArray = this.stack.slice(-args!);
         this.stack = splice(this.stack, -args!);
       }
+
+      this.lastFnDispatch = {
+        fn,
+        args,
+        name,
+        argArray
+      };
 
       const r = fn.apply(this, argArray);
       if (r instanceof Word || r instanceof Sentence) {

@@ -71,13 +71,13 @@ test('should test equality', t => {
 });
 
 test('should eval lists', t => {
-  const f = new F();
+  const f = F();
   t.deepEqual(f.eval('( 1 2 )').toJSON(), D([[1, 2]]));
   t.deepEqual(f.eval('eval').toJSON(), D([1, 2]));
 });
 
 test('should zip lists', t => {
-  const f = new F();
+  const f = F();
   t.deepEqual(f.eval('( 1 2 3 ) ( 4 )').toJSON(), D([[1, 2, 3], [4]]));
   t.deepEqual(f.eval('*').toJSON(), D([[1, 4, 2, 4, 3, 4]]));
 });

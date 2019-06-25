@@ -19,8 +19,8 @@ test('should return sqrt of imaginary numbers', t => {
 });
 
 test('should return sqrt of complex numbers', t => {
-  const f = new F().eval('1 i + 4 * sqrt 1 i + sqrt /');
-  const cvalue = f.stack[0];
+  const f = F().eval('1 i + 4 * sqrt 1 i + sqrt /');
+  const cvalue = f.stack[0] as Complex;
   t.is(Number(cvalue.re), 2);
   t.truthy(nearly(Number(cvalue.im), 0));
 });
@@ -45,7 +45,7 @@ test('should calculate complex conj', t => {
 
 test('should evaluate Euler\'s Formula', t => {
   t.deepEqual(fSyncValues('i pi * exp 1 + re'), [0]);
-  t.truthy(nearly(new F().eval('i pi * exp 1 + im').toArray()[0], [0]));
+  t.truthy(nearly(F().eval('i pi * exp 1 + im').toArray()[0], [0]));
 });
 
 test('should use decimals', t => {

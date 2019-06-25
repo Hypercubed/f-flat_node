@@ -9,7 +9,7 @@ const gradient = require('gradient-string');
 const memoize = require('memoizee');
 
 const { Stack, RootStack } = require('../dist/stack');
-const { log, formatValue, type, formatState, bar } = require('../dist/utils');
+const { log, type, formatValue, formatState, bar } = require('../dist/utils');
 
 const pkg = require('../package.json');
 

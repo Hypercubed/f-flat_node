@@ -16,7 +16,7 @@ export { Stack as F };
 /**
  * Converts primitives to stack values
  */
-export const D = x => {
+export const D = (x: any) => {
   if (Array.isArray(x)) {
     return x.map(D);
   }
@@ -29,7 +29,7 @@ export const D = x => {
 /**
  * Converts stack values to primitives
  */
-export const V = x => {
+export const V = (x: any) => {
   if (x instanceof StackEnv) {
     return V(x.stack);
   }
@@ -45,39 +45,39 @@ export const V = x => {
   return x;
 };
 
-export function fSyncStack(a) {
-  return new Stack().eval(a).stack;
+export function fSyncStack(a: any) {
+  return Stack().eval(a).stack;
 }
 
-export function fSyncValues(a) {
+export function fSyncValues(a: any) {
   return V(fSyncStack(a));
 }
 
-export function fSyncJSON(a) {
-  return new Stack().eval(a).toJSON();
+export function fSyncJSON(a: any) {
+  return Stack().eval(a).toJSON();
 }
 
-export function fSyncString(a) {
-  return new Stack().eval(a).stack.toString();
+export function fSyncString(a: any) {
+  return Stack().eval(a).stack.toString();
 }
 
-export async function fAsyncJSON(a) {
-  const f = await new Stack().promise(a);
+export async function fAsyncJSON(a: any) {
+  const f = await Stack().promise(a);
   return f.toJSON();
 }
 
-export async function fAsyncStack(a) {
-  const f = await new Stack().promise(a);
+export async function fAsyncStack(a: any) {
+  const f = await Stack().promise(a);
   return f.stack;
 }
 
-export async function fAsyncValues(a) {
-  const f = await new Stack().promise(a);
+export async function fAsyncValues(a: any) {
+  const f = await Stack().promise(a);
   return V(f.stack);
 }
 
 const tolerance = 0.5 * Math.pow(10, -9);
-export function nearly(a, b) {
+export function nearly(a: any, b: any) {
   a = Number(a);
   b = Number(b);
   if (a === b) return true;
@@ -91,8 +91,11 @@ export const options = {
   maxSize: process.env.TESTS === 'full' ? 40 : 20,
 };
 
-class FFValue {
-  constructor(value, str) {
+/* class FFValue {
+  value: any;
+  string: string;
+
+  constructor(value: any, str?: string) {
     this.value = value;
     this.string = typeof str === 'undefined' ?
       JSON.stringify(value, undefined, 1) :
@@ -128,11 +131,11 @@ export const ffNumber = gen.number.then(a => {
 export const ffBoolean = gen.boolean.then(a => new FFValue(a));
 export const ffNull = gen.null.then(a => new FFValue(a, 'null'));
 
-export const fflatPrim = gen.oneOf([ffBoolean, ffString/*, ffNumber*/, ffNull]);  // todo: complex values
+export const fflatPrim = gen.oneOf([ffBoolean, ffString, ffNull]);  // todo: complex values
 
 export const ffArray = gen.nested(gen.array, fflatPrim).then(a => new FFValue(a));
 export const ffObject = gen.nested(gen.object, fflatPrim).then(a => new FFValue(a));
 
 // todo: dates and complex
-export const fflatValue = gen.oneOf([ffArray, ffObject, ffBoolean, ffString/*, ffNumber*/]);
+export const fflatValue = gen.oneOf([ffArray, ffObject, ffBoolean, ffString]); */
 

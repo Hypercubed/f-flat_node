@@ -1,13 +1,7 @@
 import test from 'ava';
 import {
-  F,
-  fSync,
   fSyncJSON,
-  fSyncStack,
-  fSyncValues,
-  Action,
   Decimal,
-  D,
   Complex,
   Word
 } from './setup';

@@ -11,8 +11,8 @@ test('should perform basic arithmetic', t => {
 });
 
 test('should div by zero, returns complex infinity', t => {
-  t.deepEqual(new F().eval('1 0 /').stack[0].type, 'ComplexInfinity');
-  t.deepEqual(new F().eval('1 0 \\').stack[0].type, 'ComplexInfinity');
+  t.deepEqual((F().eval('1 0 /').stack[0] as any).type, 'ComplexInfinity');
+  t.deepEqual((F().eval('1 0 \\').stack[0] as any).type, 'ComplexInfinity');
 });
 
 test('should quickcheck integer arithmetic', t => {
@@ -139,38 +139,36 @@ test('should define logn', t => {
 });
 
 test('should define gamma', t => {
-  let r = new F().eval('4 gamma').stack[0];
-  t.truthy(nearly(r, 6, '4 gamma'));
+  let r = F().eval('4 gamma').stack[0];
+  t.truthy(nearly(r, 6));
 
-  r = new F().eval('1 2 / gamma').stack[0];
-  t.truthy(nearly(r, Math.sqrt(Math.PI), '1 2 / gamma'));
+  r = F().eval('1 2 / gamma').stack[0];
+  t.truthy(nearly(r, Math.sqrt(Math.PI)));
 
-  r = new F().eval('-1 2 / gamma').stack[0];
-  t.truthy(nearly(r, -2 * Math.sqrt(Math.PI), '-1 2 / gamma'));
+  r = F().eval('-1 2 / gamma').stack[0];
+  t.truthy(nearly(r, -2 * Math.sqrt(Math.PI)));
 
-  r = new F().eval('-5 2 / gamma').stack[0];
-  t.truthy(nearly(r, -8 / 15 * Math.sqrt(Math.PI), '-5 2 / gamma'));
+  r = F().eval('-5 2 / gamma').stack[0];
+  t.truthy(nearly(r, -8 / 15 * Math.sqrt(Math.PI)));
 
-  r = new F().eval('102 gamma').stack[0];
-  t.truthy(nearly(r, 9.4259477598383563846e159, '102 gamma'));
+  r = F().eval('102 gamma').stack[0];
+  t.truthy(nearly(r, 9.4259477598383563846e159));
 });
 
 test('should define gamma, cont', t => {
-  let r = new F().eval('1.5 gamma').stack[0];
+  let r = F().eval('1.5 gamma').stack[0];
   t.truthy(
     nearly(
       r,
-      0.886226925452758013649083741670572591398774728061193564106,
-      '1.5 gamma'
+      0.886226925452758013649083741670572591398774728061193564106
     )
   );
 
-  r = new F().eval('0.1 gamma').stack[0];
+  r = F().eval('0.1 gamma').stack[0];
   t.truthy(
     nearly(
       r,
-      9.51350769866873183629248717726540219255057862608837734305,
-      '0.1 gamma'
+      9.51350769866873183629248717726540219255057862608837734305
     )
   );
 });
@@ -179,7 +177,7 @@ test('should define factorial', t => {
   t.deepEqual(fSyncValues('20 !'), [2432902008176640000], '20 !');
 
   const r = fSyncValues('100 !')[0];
-  t.truthy(nearly(r, 9.3326215443944152704e157, '100 !'));
+  t.truthy(nearly(r, 9.3326215443944152704e157));
 });
 
 test('should calculate exact powers', t => {

@@ -245,9 +245,9 @@ const mul = typed('mul', {
    *```
    */
   'Array, Array | Word | Sentence | Function': arrayMul,
-  'string, Array | Word | Sentence | Function': (lhs, rhs) =>
+  'string, Array | Word | Sentence | Function': (lhs: string, rhs: unknown) =>
     arrayMul(lhs.split(''), rhs),
-  'Future, any': (f: Future, rhs: any) => f.map(lhs => mul(lhs, rhs)),
+  'Future, any': (f: Future, rhs: any) => f.map((lhs: unknown) => mul(lhs, rhs)),
 
   /**
    * - Array join

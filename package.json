@@ -11,7 +11,7 @@
     "build": "npm run dist && npm run docs",
     "docs": "node ./scripts/generate-docs.js",
     "prettier": "prettier \"{src, bin, test}/**/*.{ts, js}\" --write",
-    "test": "ava ./test/*-spec.js",
+    "test": "ava ./test/*.spec.ts",
     "test-watch": "ava ./test/*-spec.js --watch",
     "quick-tests": "env ava ./test/*-quick-spec.js",
     "full-quick-tests": "env TESTS=full ava ./test/*-quick-spec.js",

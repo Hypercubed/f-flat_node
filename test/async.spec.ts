@@ -1,7 +1,7 @@
 import test from 'ava';
-import nock from 'nock';
+import * as nock from 'nock';
 
-import { F, fSyncJSON, fSyncValues, fAsyncJSON, fAsyncValues, D, Word } from './setup';
+import { F, fSyncJSON, fAsyncJSON, fAsyncValues, D, Word } from './setup';
 
 const future = { '@@Future': { '$undefined': true } };
 
@@ -77,7 +77,7 @@ test('should delay', async t => {
 });
 
 /* test('should fork', async t => {
-  const f = await new F().promise('[ 100 sleep 10 ! ] fork 4 5 +');
+  const f = await F().promise('[ 100 sleep 10 ! ] fork 4 5 +');
   t.deepEqual(f.toJSON(), [[], 9]);
 
   function done (err, f) {
@@ -100,7 +100,7 @@ test('all', async t => {
 });
 
 test('should generate promise 1', t => {
-  return new F().promise('100 sleep 10 !').then(f => {
+  return F().promise('100 sleep 10 !').then(f => {
     t.deepEqual(f.toJSON(), [D(3628800)]);
   });
 });
@@ -112,7 +112,7 @@ test('should generate promise 1', t => {
 }); */
 
 test('should resolve promise even on sync', async t => {
-  return new F().promise('10 !').then(f => {
+  return F().promise('10 !').then(f => {
     t.deepEqual(f.toJSON(), [D(3628800)]);
   });
 });
@@ -151,7 +151,7 @@ test('multiple async in children', async t => {
 });
 
 test('should await on multiple promises', async t => {
-  const f = new F();
+  const f = F();
   await f.promise('100 sleep 10 !');
   t.deepEqual(f.toJSON(), [D(3628800)]);
   await f.promise('100 sleep 9 +');
@@ -159,7 +159,7 @@ test('should await on multiple promises', async t => {
 });
 
 test('multiple promises', async t => {
-  const f = new F();
+  const f = F();
   f.promise('1000 sleep 10 !');
   t.deepEqual(f.toJSON(), []);
   f.promise('1000 sleep 9 +');
@@ -170,7 +170,7 @@ test('multiple promises', async t => {
 
 test('multiple promises correct order', async t => {
   // todo
-  const f = new F();
+  const f = F();
   f.next('1000 sleep 10 !').then(f => {
     t.deepEqual(f.toJSON(), [D(3628800)]);
   });
@@ -184,19 +184,19 @@ test('multiple promises correct order', async t => {
 });
 
 test('errors on unknown command, async', async t => {
-  await t.throwsAsync(() => new F().promise('abc'));
+  await t.throwsAsync(() => F().promise('abc'));
 });
 
 test('errors on unknown command in child, async', async t => {
-  await t.throwsAsync(() => new F().promise('[ abc ] in'));
+  await t.throwsAsync(() => F().promise('[ abc ] in'));
 });
 
 test('errors on unknown command in child, async 2', async t => {
-  await t.throwsAsync(() => new F().promise('[ abc ] await'));
+  await t.throwsAsync(() => F().promise('[ abc ] await'));
 });
 
 test('should await on a future', async t => {
-  const f = new F();
+  const f = F();
   f.eval('[ 100 sleep 10 ! ] spawn 4 5 +');
   t.deepEqual(f.toJSON(), [future, D(9)]);
 

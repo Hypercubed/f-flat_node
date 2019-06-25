@@ -116,7 +116,7 @@ test('should get max/min, alpha sorting', t => {
 });
 
 test('should eval strings', t => {
-  const f = new F();
+  const f = F();
   t.deepEqual(f.eval('"1 2 +"').toJSON(), ['1 2 +']);
   t.deepEqual(f.eval('eval').stack[0].valueOf(), 3);
 });

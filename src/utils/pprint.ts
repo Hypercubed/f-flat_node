@@ -5,6 +5,11 @@ import * as chalk from 'chalk';
 
 import { typed } from '../types/index';
 
+const maxOutputLength =
+  process.stdout && process.stdout.columns
+    ? process.stdout.columns
+    : 35; // todo: this should be an option input
+
 const styles = {
   number: chalk.magenta,
   boolean: chalk.magenta,
@@ -125,15 +130,25 @@ function stylize(
   return str;
 }
 
-export function formatState({ stack, queue }, opts = defaultOpts): string {
-  const maxOutputLength =
-    process.stdout && process.stdout.columns
-      ? process.stdout.columns / 2 - 5
-      : 35; // todo: this should be an option input
+export function lFormatArray(arr: any[], max = maxOutputLength, opts = defaultOpts) {
+  if (max < 0) {
+    max = maxOutputLength + max;
+  }
   opts.childOpts = { ...opts, maxArrayLength: 5, maxObjectKeys: 5 };
-  stack = lpad(formatArray(stack, 0, opts, '  '), maxOutputLength);
-  queue = rtrim(formatArray(queue, 0, opts, '  '), maxOutputLength);
-  return `${stack} <=> ${queue}`;
+  return lpad(formatArray(arr, 0, opts, '  '), max);
+}
+
+export function rFormatArray(arr: any[], max = maxOutputLength, opts = defaultOpts) {
+  if (max < 0) {
+    max = maxOutputLength + max;
+  }
+  opts.childOpts = { ...opts, maxArrayLength: 5, maxObjectKeys: 5 };
+  return rtrim(formatArray(arr, 0, opts, '  '), max);
+}
+
+export function formatState({ stack, queue }, opts = defaultOpts): string {
+  const max = maxOutputLength / 2 - 5;
+  return `${lFormatArray(stack, max, opts)} <=> ${rFormatArray(queue, max, opts)}`;
 }
 
 const sRE = /Symbol\(([^)]*)\).*/g;
@@ -145,8 +160,8 @@ function formatSymbol(value: Symbol, opts: InspectOptions): string {
 
 export function formatArray(
   arr: Array<any>,
-  depth: number,
-  opts: InspectOptions,
+  depth: number = 0,
+  opts: InspectOptions = defaultOpts,
   braces = '[]'
 ): string {
   const maxLength = opts.maxArrayLength || 100;

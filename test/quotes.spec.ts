@@ -7,7 +7,7 @@ test('should push quotes', t => {
 });
 
 test('should not eval within quote', t => {
-  const f = new F().eval('[ 1 ] [ 1 2 + ]');
+  const f = F().eval('[ 1 ] [ 1 2 + ]');
   t.is(f.stack.length, 2);
   t.deepEqual(f.toJSON()[0], [D(1)]);
   t.is(f.stack[1].toString(), '1,2,+');
@@ -42,17 +42,17 @@ test('should test equality', t => {
 });
 
 test('should eval quotes', t => {
-  const f = new F().eval('[1 2 +]');
+  const f = F().eval('[1 2 +]');
   t.is(f.stack.length, 1);
-  t.deepEqual(f.stack[0].length, 3);
+  t.deepEqual((f.stack[0] as any[]).length, 3);
   t.deepEqual(f.eval('eval').toJSON(), [D(3)]);
 });
 
 test('should zip quotes', t => {
-  const f = new F().eval('[ 1 2 + ] [ 4 ]');
+  const f = F().eval('[ 1 2 + ] [ 4 ]');
   t.deepEqual(f.stack.length, 2);
-  t.deepEqual(f.stack[0].length, 3);
-  t.deepEqual(f.stack[1].length, 1);
+  t.deepEqual((f.stack[0] as any[]).length, 3);
+  t.deepEqual((f.stack[1] as any[]).length, 1);
 
   f.eval('*');
   t.deepEqual(f.stack.length, 1);
@@ -60,10 +60,10 @@ test('should zip quotes', t => {
 });
 
 test('should join lists', t => {
-  const f = new F().eval('[ 1 2 + ] ","');
+  const f = F().eval('[ 1 2 + ] ","');
   t.deepEqual(f.stack.length, 2);
-  t.deepEqual(f.stack[0].length, 3);
-  t.deepEqual(f.stack[1].length, 1);
+  t.deepEqual((f.stack[0] as any).length, 3);
+  t.deepEqual((f.stack[1] as any).length, 1);
 
   f.eval('*');
   t.deepEqual(f.stack.length, 1);
