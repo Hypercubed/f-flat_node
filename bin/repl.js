@@ -102,11 +102,11 @@ function startREPL() {
     useGlobal: false,
     completer: memoize(completer, { maxAge: 10000 })
   });
-  
+
   r.on('reset', () => {
     f = newStack();
   });
-  
+
   r.defineCommand('silent', {
     help: 'Toggle silent mode',
     action() {
@@ -114,9 +114,9 @@ function startREPL() {
       this.displayPrompt();
     }
   });
-  
+
   const objectId = getUniqueObjectCounter();
-  
+
   r.defineCommand('s', {  // todo: move to core?
     help: 'Print the stack',
     action() {
@@ -136,7 +136,7 @@ function startREPL() {
       this.displayPrompt();
     }
   });
-  
+
   r.context = Object.create(null);
 
   stackRepl = r;

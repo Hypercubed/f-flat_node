@@ -121,7 +121,7 @@ test('should pattern match deep objects and wildcards', t => {
 
 test('should pattern match p-cond', t => {
   t.deepEqual(fSyncJSON(`
-  
+
   0
   [
     [0 [drop 'zero']]
@@ -132,7 +132,7 @@ test('should pattern match p-cond', t => {
   `), ['zero']);
 
   t.deepEqual(fSyncJSON(`
-  
+
   2
   [
     [0 [drop 'zero']]
@@ -143,7 +143,7 @@ test('should pattern match p-cond', t => {
   `), ['2 = other']);
 
   t.deepEqual(fSyncJSON(`
-  
+
   5
   [
     [0 [drop 'zero']]
@@ -157,7 +157,7 @@ test('should pattern match p-cond', t => {
 
 test('should pattern match p-choose', t => {
   t.deepEqual(fSyncJSON(`
-  
+
   0
   [
     [0 'zero']
@@ -168,7 +168,7 @@ test('should pattern match p-choose', t => {
   `), ['zero']);
 
   t.deepEqual(fSyncJSON(`
-  
+
   2
   [
     [0 'zero']
@@ -179,7 +179,7 @@ test('should pattern match p-choose', t => {
   `), ['other']);
 
   t.deepEqual(fSyncJSON(`
-  
+
   5
   [
     [0 'zero']

@@ -89,7 +89,7 @@ test('should join objects without mutations', t => {
   ]);
 });
 
-test('', t => {
+test('objects', t => {
   t.deepEqual(fSyncJSON('{ name: [ "Manfred" "von Thun" ] }'), [
     { name: ['Manfred', 'von Thun'] }
   ]);

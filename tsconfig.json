@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "target": "es6",
     "outDir": "dist",
     "moduleResolution": "node",

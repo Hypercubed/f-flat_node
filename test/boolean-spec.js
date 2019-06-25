@@ -27,7 +27,7 @@ test('should and', t => {
   t.deepEqual(fSyncStack('null true *'), [null]);
   t.deepEqual(fSyncStack('null false *'), [false]);
   t.deepEqual(fSyncStack('false null *'), [false]);
-  
+
   t.deepEqual(fSyncStack('null null *'), [null]);
 });
 
@@ -41,7 +41,7 @@ test('should or', t => {
   t.deepEqual(fSyncStack('null true +'), [true]);
   t.deepEqual(fSyncStack('null false +'), [null]);
   t.deepEqual(fSyncStack('false null +'), [null]);
-  
+
   t.deepEqual(fSyncStack('null null +'), [null]);
 });
 
@@ -55,7 +55,7 @@ test('should test equality', t => {
   t.deepEqual(fSyncStack('null true ='), [false]);
   t.deepEqual(fSyncStack('null false ='), [false]);
   t.deepEqual(fSyncStack('false null ='), [false]);
-  
+
   t.deepEqual(fSyncStack('null null ='), [true]);
 });
 

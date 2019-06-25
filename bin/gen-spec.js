@@ -1,13 +1,13 @@
-"use strict";
+'use strict';
 
-const Myna = require("myna-parser");
+const Myna = require('myna-parser');
 const g = require('../dist/parser/tokenizer').fflatGrammar;
 const fs = require('fs');
 
 const m = Myna.Myna;
-const pkg = JSON.parse(fs.readFileSync('./package.json', "utf8"));
+const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 const version = pkg.version;
-const schema = m.astSchemaToString('fflat'); 
+const schema = m.astSchemaToString('fflat');
 const grammar = m.grammarToString('fflat').replace(/fflat\./g, '');
 
 const grammkit = require('grammkit');
@@ -38,7 +38,7 @@ function processRule(expr) {
       return {
         type: 'sequence',
         elements: expr.rules.map(processRule)
-      }
+      };
     case 'advanceWhileNot':
     case 'repeatWhileNot':
       return {
@@ -52,13 +52,13 @@ function processRule(expr) {
       return {
         type: 'choice',
         alternatives: expr.rules.map(processRule)
-      }
+      };
     case 'text':
     case 'err':
       return {
         type: 'class',
         rawText: expr.toString()
-      }
+      };
     case 'zeroOrMore':
       return {
         type: 'zero_or_more',
@@ -107,7 +107,7 @@ Object.keys(g).forEach(k => {
 });
 
 const QUOTE = '```';
- 
+
 fs.writeFileSync('./spec.md', `
 
 # FFlat Specification ${version}
@@ -149,6 +149,6 @@ svg.railroad-diagram rect {
 }
 </style>
 
-`); 
- 
+`);
+
 process.exit();

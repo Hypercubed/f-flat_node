@@ -1,9 +1,9 @@
 import test from 'ava';
 
-import { Word, Sentence } from '../dist/types';
+import { Word, Sentence } from '../src/types';
 import { fSyncJSON, D } from './setup';
 
-test('should convert an arrya to an action', async t => {
+test('should convert an array to an action', async t => {
   const plus = new Word('+').toJSON();
   const sen = new Sentence(D([1, 2, plus])).toJSON();
   t.deepEqual(fSyncJSON('[ 1 2 + ] :'), [sen]);

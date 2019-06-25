@@ -1,11 +1,11 @@
 import { check, gen } from 'ava-check';
 
-import { Stack } from '../dist/stack';
-import { StackEnv } from '../dist/env';
-import { log } from '../dist/utils/logger';
-import { Decimal, Complex } from '../dist/types';
+import { Stack } from '../src/stack';
+import { StackEnv } from '../src/env';
+import { log } from '../src/utils/logger';
+import { Decimal, Complex } from '../src/types';
 
-export * from '../dist/types';
+export * from '../src/types';
 
 process.chdir('.');
 
@@ -24,7 +24,7 @@ export const D = x => {
     return x;
   }
   return new Decimal(x).toJSON();
-}
+};
 
 /**
  * Converts stack values to primitives
@@ -43,7 +43,7 @@ export const V = x => {
     return V(x.re);
   }
   return x;
-}
+};
 
 export function fSyncStack(a) {
   return new Stack().eval(a).stack;
@@ -73,7 +73,7 @@ export async function fAsyncStack(a) {
 
 export async function fAsyncValues(a) {
   const f = await new Stack().promise(a);
-  return V(f.stack)
+  return V(f.stack);
 }
 
 const tolerance = 0.5 * Math.pow(10, -9);
@@ -82,7 +82,7 @@ export function nearly(a, b) {
   b = Number(b);
   if (a === b) return true;
   if (Number.isNaN(b)) return Number.isNaN(a);
-  if (!Number.isFinite(b)) return !Number.isFinite(b); 
+  if (!Number.isFinite(b)) return !Number.isFinite(b);
   return Math.abs(a - b) / a < tolerance;
 }
 
@@ -92,11 +92,11 @@ export const options = {
 };
 
 class FFValue {
-  constructor(value, string) {
+  constructor(value, str) {
     this.value = value;
-    this.string = typeof string === 'undefined' ?
+    this.string = typeof str === 'undefined' ?
       JSON.stringify(value, undefined, 1) :
-      string;
+      str;
   }
 
   valueOf() {

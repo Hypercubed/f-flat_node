@@ -3,7 +3,7 @@ import nock from 'nock';
 
 import { F, fSyncJSON, fSyncValues, fAsyncJSON, fAsyncValues, D, Word } from './setup';
 
-const future = { '@@Future': { '$undefined':true } };
+const future = { '@@Future': { '$undefined': true } };
 
 const good = {
   id: 123456,
@@ -129,7 +129,7 @@ test('should fetch', async t => {
   );
 });
 
-test('', async t => {
+test('sleep', async t => {
   t.deepEqual(await fAsyncValues('10 100 sleep 20 +'), [30]);
 });
 
@@ -184,15 +184,15 @@ test('multiple promises correct order', async t => {
 });
 
 test('errors on unknown command, async', async t => {
-  await t.throws(new F().promise('abc'));
+  await t.throwsAsync(() => new F().promise('abc'));
 });
 
 test('errors on unknown command in child, async', async t => {
-  await t.throws(new F().promise('[ abc ] in'));
+  await t.throwsAsync(() => new F().promise('[ abc ] in'));
 });
 
 test('errors on unknown command in child, async 2', async t => {
-  await t.throws(new F().promise('[ abc ] await'));
+  await t.throwsAsync(() => new F().promise('[ abc ] await'));
 });
 
 test('should await on a future', async t => {

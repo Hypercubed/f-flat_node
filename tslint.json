@@ -58,7 +58,6 @@
         "no-trailing-whitespace": true,
         "no-unsafe-finally": true,
         "no-var-keyword": true,
-        "no-unused-variable": true,
         "one-line": [
             true,
             "check-open-brace",

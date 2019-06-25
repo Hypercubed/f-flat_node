@@ -3,7 +3,7 @@ import {
   fSyncJSON
 } from './setup';
 
-test('symbols equality', t => {
+test('symbols type', t => {
   t.deepEqual(fSyncJSON('#test type'), ['symbol']);
   t.deepEqual(fSyncJSON('"test" # type'), ['symbol']);
 });

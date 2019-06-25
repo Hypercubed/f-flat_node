@@ -84,7 +84,7 @@ function formatString(
 ): string {
   const x = JSON.stringify(value)
     .replace(/^"|"$/g, '')
-    .replace(/'/g, "\\'")
+    .replace(/'/g, `\\'`)
     .replace(/\\"/g, '"');
   return stylize(`'${x}'`, 'string', opts);
 }

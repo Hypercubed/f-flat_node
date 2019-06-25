@@ -59,7 +59,7 @@ test('should mod (cut rem)', t => {
   t.deepEqual(fSyncJSON('"abcd" 5 %'), ['']);
 });
 
-test('should div rem', t => {
+test('should div rem, number', t => {
   t.deepEqual(fSyncJSON('"aaX" [ 2 \\ ] [ 2 % ] bi +'), ['aaX']);
 });
 
@@ -75,7 +75,7 @@ test('should split string using string, rest', t => {
   t.deepEqual(fSyncValues('"a;b;c" ";" %'), [['b', 'c']]);
 });
 
-test('should div rem', t => {
+test('should div rem, string', t => {
   t.deepEqual(fSyncJSON('"a;b;c" [ ";" \\ ] [ ";" % ] bi'), ['a', ['b', 'c']]);
 });
 

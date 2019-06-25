@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const blessed = require("blessed");
+const blessed = require('blessed');
 const { Stack, RootStack } = require('../dist/stack');
 const { log, formatValue, formatArray, type, bar } = require('../dist/utils');
 
@@ -125,7 +125,7 @@ const f = newStack();
 f.silent = true;
 
 const history = [];
-let historyIndex = 0
+let historyIndex = 0;
 
 inputBox.on('submit', data => {
   inputBox.clearValue();

@@ -11,7 +11,7 @@ import {
   Complex,
   Word
 } from './setup';
-import { stringifyStrict } from '../dist/utils/json';
+import { stringifyStrict } from '../src/utils/json';
 
 test('prims', t => {
   testStringify('number', 42, '42');
@@ -43,11 +43,11 @@ test('special', t => {
 test('nested', t => {
   testStringify('Array', ['a', 'b', 'c'], '["a","b","c"]');
   testStringify('Array (empty)', [], '[]');
-  testStringify('Array (sparse)', [,'b',,], '[null,"b",null]');
+  testStringify('Array (sparse)', [, 'b', , ], '[null,"b",null]');
   testStringify('Object', {foo: 'bar', 'x-y': 'z'}, '{"foo":"bar","x-y":"z"}');
   testStringify('Set', new Set([1, 2, 3]), '{"$set":[1,2,3]}');
   testStringify('Map', new Map([['a', 'b']]), '{"$map":[["a","b"]]}');
-  
+
   function testStringify(name, input, expected) {
     t.deepEqual(stringifyStrict(input), expected, name);
   }
@@ -58,7 +58,7 @@ test('nested - special', t => {
   testStringify('Object', {foo: 'bar', 'x-y': new Date(1e12)}, '{"foo":"bar","x-y":{"$date":"2001-09-09T01:46:40.000Z"}}');
   testStringify('Set', new Set([1, new Date(1e12), 3]), '{"$set":[1,{"$date":"2001-09-09T01:46:40.000Z"},3]}');
   testStringify('Map', new Map([['a', new Date(1e12)]]), '{"$map":[["a",{"$date":"2001-09-09T01:46:40.000Z"}]]}');
-  
+
   function testStringify(name, input, expected) {
     t.deepEqual(stringifyStrict(input), expected, name);
   }
@@ -162,7 +162,7 @@ test('generate json for complex values', t => {
 
 test('generate json for actions', t => {
   t.deepEqual(fSyncJSON('"word" :')[0], { '@@Action': 'word' });
-  t.deepEqual(fSyncJSON('[ "a" "b" ] :')[0], { '@@Action': ["a", "b"] });
+  t.deepEqual(fSyncJSON('[ "a" "b" ] :')[0], { '@@Action': ['a', 'b'] });
   t.deepEqual(fSyncJSON('[ 1 2 ] :')[0], { '@@Action': [{ $numberDecimal: '1' }, { $numberDecimal: '2' }] });
   t.deepEqual(fSyncJSON('[ a b ] :')[0], { '@@Action': [{ '@@Action': 'a' }, { '@@Action': 'b' }] });
 });

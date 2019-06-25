@@ -118,7 +118,7 @@ test(
 /* DIV */
 
 test(
-  'should subtract numbers',
+  'should divide numbers',
   check(options, ffNumber, ffNumber, (t, a, b, c) => {
     const r = fSyncStack(`${a} ${b} /`);
     t.is(r.length, 1);
@@ -227,7 +227,7 @@ test(
 );
 
 test(
-  'should test equality',
+  'should test equality, 2',
   check(options, fflatValue, (t, a) => {
     // bug, should be fflatValue
     const r = fSyncStack(`${a} ${a} =`);
@@ -264,9 +264,9 @@ test(
   check(options, ffArray, ffArray, cmpCheck)
 );
 
-test(
+test.only(
   'should compare objects',
-  check(options, ffObject, ffObject,cmpCheck)
+  check(options, ffObject, ffObject, cmpCheck)
 );
 
 // memoize

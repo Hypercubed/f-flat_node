@@ -42,7 +42,7 @@ test('mul identities', t => {
 test('div identities', t => {
   t.deepEqual(fSyncValues('(1) 1 /'), [[1], []]);
   t.deepEqual(fSyncValues('(1 2) 1 /'), [[1], [2]]);
-  t.deepEqual(fSyncValues('(1 2 3 4) 2 /'), [[1, 2], [3,4]]);
+  t.deepEqual(fSyncValues('(1 2 3 4) 2 /'), [[1, 2], [3, 4]]);
 });
 
 test('add/sub identities', t => {
@@ -108,7 +108,7 @@ test('should @', t => {
   t.deepEqual(fSyncValues('( 4 5 6 ) 0 @'), [4]);
   t.deepEqual(fSyncValues('( 4 5 6 ) 1 @'), [5]);
   t.deepEqual(fSyncValues('( 4 5 6 ) 2 @'), [6]);
-  
+
 });
 
 test('should @ from end', t => {
@@ -147,7 +147,7 @@ test('should fine maximum and minimum', t => {
 });
 
 test('should uncons', t => {
-  t.deepEqual(fSyncValues('(5 4 3) uncons'), [5, [4,3]]);
+  t.deepEqual(fSyncValues('(5 4 3) uncons'), [5, [4, 3]]);
 });
 
 test('should quicksort', t => {
@@ -172,10 +172,10 @@ test('should filter arrays of arrays', t => {
 });
 
 test('should foldl and foldr', t => {
-  t.deepEqual(fSyncValues('10 integers 0 [+] foldl'),[ 55 ]);
-  t.deepEqual(fSyncValues('10 integers 0 [+] foldr'),[ 55 ]);
-  t.deepEqual(fSyncValues('10 integers 0 [-] foldl'),[ -55 ]);
-  t.deepEqual(fSyncValues('10 integers 0 [-] foldr'),[ -5 ]);
+  t.deepEqual(fSyncValues('10 integers 0 [+] foldl'), [ 55 ]);
+  t.deepEqual(fSyncValues('10 integers 0 [+] foldr'), [ 55 ]);
+  t.deepEqual(fSyncValues('10 integers 0 [-] foldl'), [ -55 ]);
+  t.deepEqual(fSyncValues('10 integers 0 [-] foldr'), [ -5 ]);
 });
 
 

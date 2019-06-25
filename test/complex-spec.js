@@ -1,20 +1,20 @@
 import test from 'ava';
 import { F, fSyncJSON, fSyncString, fSyncValues, nearly, Complex } from './setup';
 
-const C = (x, y) => new Complex(x, y).toJSON(); 
+const C = (x, y) => new Complex(x, y).toJSON();
 
 test('should parse i', t => {
-  t.deepEqual(fSyncJSON('i'), [C(0,1)]);
+  t.deepEqual(fSyncJSON('i'), [C(0, 1)]);
 });
 
 test('should return imaginary numbers from sqrt', t => {
-  t.deepEqual(fSyncJSON('-1 sqrt'), [C(0,1)]);
-  t.deepEqual(fSyncJSON('-4 sqrt'), [C(0,2)]);
-  t.deepEqual(fSyncJSON('-25 sqrt'), [C(0,5)]);
+  t.deepEqual(fSyncJSON('-1 sqrt'), [C(0, 1)]);
+  t.deepEqual(fSyncJSON('-4 sqrt'), [C(0, 2)]);
+  t.deepEqual(fSyncJSON('-25 sqrt'), [C(0, 5)]);
 });
 
 test('should return sqrt of imaginary numbers', t => {
-  t.deepEqual(fSyncJSON('8 i * sqrt'), [C(2,2)]);
+  t.deepEqual(fSyncJSON('8 i * sqrt'), [C(2, 2)]);
   t.deepEqual(fSyncJSON('50 i * sqrt'), [C(5, 5)]);
 });
 
@@ -26,7 +26,7 @@ test('should return sqrt of complex numbers', t => {
 });
 
 test('should perform basic arithmetic', t => {
-  t.deepEqual(fSyncJSON('i 3 * i +'), [C(0,4)]);
+  t.deepEqual(fSyncJSON('i 3 * i +'), [C(0, 4)]);
   t.deepEqual(fSyncJSON('i 3 * 1 +'), [C(1, 3)]);
   t.deepEqual(fSyncJSON('i 3 * i -'), [C(0, 2)]);
   t.deepEqual(fSyncJSON('i 3 * 1 -'), [C(-1, 3)]);
@@ -160,7 +160,7 @@ test('trig of complex', t => {
 test('inverse trig of complex', t => {
   t.deepEqual(fSyncString('i asin'), '0+0.88137358701954302524i');
   t.deepEqual(fSyncString('i acos'), '1.5707963267948966193-0.8813735870195430253i');
-  t.deepEqual(fSyncString('i 2 / atan'), '0+0.5493061443340548457i')
+  t.deepEqual(fSyncString('i 2 / atan'), '0+0.5493061443340548457i');
 });
 
 test('hyper trig of complex', t => {
