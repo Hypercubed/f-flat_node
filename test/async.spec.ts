@@ -1,7 +1,7 @@
 import test from 'ava';
 import * as nock from 'nock';
 
-import { F, fSyncJSON, fAsyncJSON, fAsyncValues, D, Word } from './setup';
+import { F, fJSON, fValues, D, Word } from './setup';
 
 const future = { '@@Future': { '$undefined': true } };
 
@@ -14,41 +14,41 @@ nock('https://api.github.com/')
   .get('/users/Hypercubed/repos/')
   .reply(200, good);
 
-test('yield', t => {
+test('yield', async t => {
   const yieldAction = new Word('yield').toJSON();
   const plus = new Word('+').toJSON();
   t.deepEqual(
-    fSyncJSON('[1 2 yield 4 5 yield 6 7] fork'),
+    await fJSON('[1 2 yield 4 5 yield 6 7] fork'),
     D([[1, 2], [4, 5, yieldAction, 6, 7]]),
     'yield and fork'
   );
   t.deepEqual(
-    fSyncJSON('[1 2 yield 4 5 yield 6 7] fork fork'),
+    await fJSON('[1 2 yield 4 5 yield 6 7] fork fork'),
     D([[1, 2], [4, 5], [6, 7]]),
     'yield and fork'
   );
   t.deepEqual(
-    fSyncJSON('[1 2 + yield 4 5 + ] fork'),
+    await fJSON('[1 2 + yield 4 5 + ] fork'),
     D([ [3], [4, 5, plus]]),
     'yield and fork'
   );
-  t.deepEqual(fSyncJSON('[1 2 + yield 4 5 + ] fork drop'), [[D(3)]], 'yield and next');
+  t.deepEqual(await fJSON('[1 2 + yield 4 5 + ] fork drop'), [[D(3)]], 'yield and next');
 });
 
-/* test('multiple yields', t => {
+/* test('multiple yields', async t => {
   t.deepEqual(
-    fSyncJSON('[1 2 + yield 4 5 + yield ] fork fork drop'),
+    await fJSON('[1 2 + yield 4 5 + yield ] fork fork drop'),
     [3, 9],
     'multiple yields'
   );
   t.deepEqual(
-    fSyncJSON('count* [ fork ] 10 times drop'),
+    await fJSON('count* [ fork ] 10 times drop'),
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     'multiple yields'
   );
 }); */
 
-/* test.cb('eval should yield on async with callback', t => {
+/* test.cb('eval should yield on async with callback', async t => {
   t.plan(2);
   var f = F('10 !').eval('100 sleep 4 5 + +', done);
   t.deepEqual(f.toJSON(), [3628800]);
@@ -60,7 +60,7 @@ test('yield', t => {
   }
 });
 
-test.cb('constructor should yield on async with callback', t => {
+test.cb('constructor should yield on async with callback', async t => {
   t.plan(2);
   var f = F('10 ! 100 sleep 4 5 + +', done);
   t.deepEqual(f.toJSON(), [3628800]);
@@ -73,7 +73,7 @@ test.cb('constructor should yield on async with callback', t => {
 }); */
 
 test('should delay', async t => {
-  t.deepEqual(await fAsyncValues('[ 10 ! ] 100 delay 4 5 + +'), [3628809]);
+  t.deepEqual(await fValues('[ 10 ! ] 100 delay 4 5 + +'), [3628809]);
 });
 
 /* test('should fork', async t => {
@@ -92,20 +92,20 @@ test('should delay', async t => {
 }); */
 
 test('should await', async t => {
-  t.deepEqual(await fAsyncValues('1 [ 100 sleep 10 ! ] await 4 5 +'), [1, [3628800], 9]);
+  t.deepEqual(await fValues('1 [ 100 sleep 10 ! ] await 4 5 +'), [1, [3628800], 9]);
 });
 
 test('all', async t => {
-  t.deepEqual(await fAsyncValues('[ 100 sleep 10 ! ] dup pair all'), [[[3628800], [3628800]]]);
+  t.deepEqual(await fValues('[ 100 sleep 10 ! ] dup pair all'), [[[3628800], [3628800]]]);
 });
 
-test('should generate promise 1', t => {
+test('should generate promise 1', async t => {
   return F().promise('100 sleep 10 !').then(f => {
     t.deepEqual(f.toJSON(), [D(3628800)]);
   });
 });
 
-/* test('should generate promise 2', t => {
+/* test('should generate promise 2', async t => {
   return F('100 sleep 10 !').promise().then((f) => {
     t.deepEqual(f.toJSON(), [3628800]);
   });
@@ -118,34 +118,34 @@ test('should resolve promise even on sync', async t => {
 });
 
 test('should work with async/await', async t => {
-  t.deepEqual(await fAsyncValues('100 sleep 10 !'), [3628800]);
+  t.deepEqual(await fValues('100 sleep 10 !'), [3628800]);
 });
 
 test('should fetch', async t => {
   t.deepEqual(
-    await fAsyncJSON('"https://api.github.com/users/Hypercubed/repos/" fetch-json'),
+    await fJSON('"https://api.github.com/users/Hypercubed/repos/" fetch-json'),
     [good],
     'should fetch'
   );
 });
 
 test('sleep', async t => {
-  t.deepEqual(await fAsyncValues('10 100 sleep 20 +'), [30]);
+  t.deepEqual(await fValues('10 100 sleep 20 +'), [30]);
 });
 
 test('multiple async', async t => {
-  t.deepEqual(await fAsyncValues('10 100 sleep 20 + 100 sleep 15 +'), [45]);
-  t.deepEqual(await fAsyncValues('10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 +'), [
+  t.deepEqual(await fValues('10 100 sleep 20 + 100 sleep 15 +'), [45]);
+  t.deepEqual(await fValues('10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 +'), [
     45
   ]);
 });
 
 test('multiple async in children', async t => {
-  t.deepEqual(await fAsyncValues('[ 10 100 sleep 20 + 100 sleep 15 + ] await'), [
+  t.deepEqual(await fValues('[ 10 100 sleep 20 + 100 sleep 15 + ] await'), [
     [45]
   ]);
   t.deepEqual(
-    await fAsyncValues('[ 10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 + ] await'),
+    await fValues('[ 10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 + ] await'),
     [[45]]
   );
 });

@@ -1,189 +1,189 @@
 import test from 'ava';
-import { F, fSyncJSON, fSyncValues } from './setup';
+import { F, fJSON, fValues } from './setup';
 
-test('should push strings', t => {
-  t.deepEqual(fSyncJSON('"a" "b"'), ['a', 'b']);
-  t.deepEqual(fSyncJSON('\'a\' \'b\''), ['a', 'b']);
-  t.deepEqual(fSyncJSON('"ab de"'), ['ab de'], 'should push strings with spaces');
-  t.deepEqual(fSyncJSON('""'), [''], 'should push empty strings');
-  t.deepEqual(fSyncJSON('"Dog!🐶"'), ['Dog!🐶'], 'should support emoji');
+test('should push strings', async t => {
+  t.deepEqual(await fJSON('"a" "b"'), ['a', 'b']);
+  t.deepEqual(await fJSON('\'a\' \'b\''), ['a', 'b']);
+  t.deepEqual(await fJSON('"ab de"'), ['ab de'], 'should push strings with spaces');
+  t.deepEqual(await fJSON('""'), [''], 'should push empty strings');
+  t.deepEqual(await fJSON('"Dog!🐶"'), ['Dog!🐶'], 'should support emoji');
 });
 
-test('should decode double quote', t => {
-  t.deepEqual(fSyncJSON('\'\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}\''), ['\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}']);
-  t.deepEqual(fSyncJSON('"\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}"'), ['Hello world']);
+test('should decode double quote', async t => {
+  t.deepEqual(await fJSON('\'\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}\''), ['\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}']);
+  t.deepEqual(await fJSON('"\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}"'), ['Hello world']);
 });
 
-test('should quickcheck strings', t => {
-  t.deepEqual(fSyncJSON('[rand-string] [ dup 1 * = ] for-all'), [[]]);
+test('should quickcheck strings', async t => {
+  t.deepEqual(await fJSON('[rand-string] [ dup 1 * = ] for-all'), [[]]);
   t.deepEqual(
-    fSyncJSON('[rand-string] [ [ ln 2 *] [2 * ln ] bi = ] for-all'),
+    await fJSON('[rand-string] [ [ ln 2 *] [2 * ln ] bi = ] for-all'),
     [[]]
   );
 });
 
-test('should push strings with nested quotes', t => {
-  t.deepEqual(fSyncJSON('"ab \'de\' fg"'), ['ab \'de\' fg']);
-  t.deepEqual(fSyncJSON('\'ab "de" fg\''), ['ab "de" fg']);
+test('should push strings with nested quotes', async t => {
+  t.deepEqual(await fJSON('"ab \'de\' fg"'), ['ab \'de\' fg']);
+  t.deepEqual(await fJSON('\'ab "de" fg\''), ['ab "de" fg']);
 });
 
-test('should add', t => {
-  t.deepEqual(fSyncJSON('"a" "b" +'), ['ab']);
+test('should add', async t => {
+  t.deepEqual(await fJSON('"a" "b" +'), ['ab']);
 });
 
-test('should multiply', t => {
-  t.deepEqual(fSyncJSON('"a" 2 *'), ['aa']);
-  t.deepEqual(fSyncJSON('"bc" 2 *'), ['bcbc']);
+test('should multiply', async t => {
+  t.deepEqual(await fJSON('"a" 2 *'), ['aa']);
+  t.deepEqual(await fJSON('"bc" 2 *'), ['bcbc']);
 });
 
-test('should split', t => {
-  t.deepEqual(fSyncJSON('"a-b-c" "-" /'), [['a', 'b', 'c']]);
+test('should split', async t => {
+  t.deepEqual(await fJSON('"a-b-c" "-" /'), [['a', 'b', 'c']]);
 });
 
-test('should / (split at)', t => {
-  t.deepEqual(fSyncJSON('"abc" 2 /'), ['ab', 'c']);
-  t.deepEqual(fSyncJSON('"abcd" 2 /'), ['ab', 'cd']);
-  t.deepEqual(fSyncJSON('"abcd" 5 /'), ['abcd', '']);
-  t.deepEqual(fSyncJSON('"aaX" 2 / +'), ['aaX']);
+test('should / (split at)', async t => {
+  t.deepEqual(await fJSON('"abc" 2 /'), ['ab', 'c']);
+  t.deepEqual(await fJSON('"abcd" 2 /'), ['ab', 'cd']);
+  t.deepEqual(await fJSON('"abcd" 5 /'), ['abcd', '']);
+  t.deepEqual(await fJSON('"aaX" 2 / +'), ['aaX']);
 });
 
-test('should div (cut)', t => {
-  t.deepEqual(fSyncJSON('"abc" 2 \\'), ['ab']);
-  t.deepEqual(fSyncJSON('"abcd" 2 \\'), ['ab']);
-  t.deepEqual(fSyncJSON('"abcd" 5 \\'), ['abcd']);
+test('should div (cut)', async t => {
+  t.deepEqual(await fJSON('"abc" 2 \\'), ['ab']);
+  t.deepEqual(await fJSON('"abcd" 2 \\'), ['ab']);
+  t.deepEqual(await fJSON('"abcd" 5 \\'), ['abcd']);
 });
 
-test('should mod (cut rem)', t => {
-  t.deepEqual(fSyncJSON('"abc" 2 %'), ['c']);
-  t.deepEqual(fSyncJSON('"abcd" 2 %'), ['cd']);
-  t.deepEqual(fSyncJSON('"abcd" 5 %'), ['']);
+test('should mod (cut rem)', async t => {
+  t.deepEqual(await fJSON('"abc" 2 %'), ['c']);
+  t.deepEqual(await fJSON('"abcd" 2 %'), ['cd']);
+  t.deepEqual(await fJSON('"abcd" 5 %'), ['']);
 });
 
-test('should div rem, number', t => {
-  t.deepEqual(fSyncJSON('"aaX" [ 2 \\ ] [ 2 % ] bi +'), ['aaX']);
+test('should div rem, number', async t => {
+  t.deepEqual(await fJSON('"aaX" [ 2 \\ ] [ 2 % ] bi +'), ['aaX']);
 });
 
-test('should split string using string', t => {
-  t.deepEqual(fSyncValues('"a;b;c" ";" /'), [['a', 'b', 'c']]);
+test('should split string using string', async t => {
+  t.deepEqual(await fValues('"a;b;c" ";" /'), [['a', 'b', 'c']]);
 });
 
-test('should split string using string, first', t => {
-  t.deepEqual(fSyncValues('"a;b;c" ";" \\'), ['a']);
+test('should split string using string, first', async t => {
+  t.deepEqual(await fValues('"a;b;c" ";" \\'), ['a']);
 });
 
-test('should split string using string, rest', t => {
-  t.deepEqual(fSyncValues('"a;b;c" ";" %'), [['b', 'c']]);
+test('should split string using string, rest', async t => {
+  t.deepEqual(await fValues('"a;b;c" ";" %'), [['b', 'c']]);
 });
 
-test('should div rem, string', t => {
-  t.deepEqual(fSyncJSON('"a;b;c" [ ";" \\ ] [ ";" % ] bi'), ['a', ['b', 'c']]);
+test('should div rem, string', async t => {
+  t.deepEqual(await fJSON('"a;b;c" [ ";" \\ ] [ ";" % ] bi'), ['a', ['b', 'c']]);
 });
 
-test('should test equality', t => {
-  t.deepEqual(fSyncJSON('"a" "b" ='), [false]);
-  t.deepEqual(fSyncJSON('"a" "a" ='), [true]);
+test('should test equality', async t => {
+  t.deepEqual(await fJSON('"a" "b" ='), [false]);
+  t.deepEqual(await fJSON('"a" "a" ='), [true]);
 });
 
-test('should <=>', t => {
-  t.deepEqual(fSyncJSON('"a" "a" <=>'), [0]);
-  t.deepEqual(fSyncJSON('"a" "b" <=>'), [-1]);
-  t.deepEqual(fSyncJSON('"b" "a" <=>'), [1]);
+test('should <=>', async t => {
+  t.deepEqual(await fJSON('"a" "a" <=>'), [0]);
+  t.deepEqual(await fJSON('"a" "b" <=>'), [-1]);
+  t.deepEqual(await fJSON('"b" "a" <=>'), [1]);
 });
 
-test('should test lt', t => {
-  t.deepEqual(fSyncJSON('"a" "a" <'), [false]);
-  t.deepEqual(fSyncJSON('"a" "b" <'), [true]);
-  t.deepEqual(fSyncJSON('"b" "a" <'), [false]);
+test('should test lt', async t => {
+  t.deepEqual(await fJSON('"a" "a" <'), [false]);
+  t.deepEqual(await fJSON('"a" "b" <'), [true]);
+  t.deepEqual(await fJSON('"b" "a" <'), [false]);
 });
 
-test('should test gt', t => {
-  t.deepEqual(fSyncJSON('"a" "a" >'), [false]);
-  t.deepEqual(fSyncJSON('"a" "b" >'), [false]);
-  t.deepEqual(fSyncJSON('"b" "a" >'), [true]);
+test('should test gt', async t => {
+  t.deepEqual(await fJSON('"a" "a" >'), [false]);
+  t.deepEqual(await fJSON('"a" "b" >'), [false]);
+  t.deepEqual(await fJSON('"b" "a" >'), [true]);
 });
 
-test('should get max/min, alpha sorting', t => {
-  t.deepEqual(fSyncJSON('"a" "a" max'), ['a']);
-  t.deepEqual(fSyncJSON('"a" "b" max'), ['b']);
-  t.deepEqual(fSyncJSON('"b" "a" max'), ['b']);
+test('should get max/min, alpha sorting', async t => {
+  t.deepEqual(await fJSON('"a" "a" max'), ['a']);
+  t.deepEqual(await fJSON('"a" "b" max'), ['b']);
+  t.deepEqual(await fJSON('"b" "a" max'), ['b']);
 
-  t.deepEqual(fSyncJSON('"a" "a" min'), ['a']);
-  t.deepEqual(fSyncJSON('"a" "b" min'), ['a']);
-  t.deepEqual(fSyncJSON('"b" "a" min'), ['a']);
+  t.deepEqual(await fJSON('"a" "a" min'), ['a']);
+  t.deepEqual(await fJSON('"a" "b" min'), ['a']);
+  t.deepEqual(await fJSON('"b" "a" min'), ['a']);
 
-  t.deepEqual(fSyncJSON('"abc" "xyz" min'), ['abc']);
-  t.deepEqual(fSyncJSON('"abc" "xyz" max'), ['xyz']);
+  t.deepEqual(await fJSON('"abc" "xyz" min'), ['abc']);
+  t.deepEqual(await fJSON('"abc" "xyz" max'), ['xyz']);
 });
 
-test('should eval strings', t => {
+test('should eval strings', async t => {
   const f = F();
   t.deepEqual(f.eval('"1 2 +"').toJSON(), ['1 2 +']);
   t.deepEqual(f.eval('eval').stack[0].valueOf(), 3);
 });
 
-test('should @', t => {
-  t.deepEqual(fSyncJSON('"abc" 0 @'), ['a']);
-  t.deepEqual(fSyncJSON('"abc" 1 @'), ['b']);
-  t.deepEqual(fSyncJSON('"abc" 2 @'), ['c']);
+test('should @', async t => {
+  t.deepEqual(await fJSON('"abc" 0 @'), ['a']);
+  t.deepEqual(await fJSON('"abc" 1 @'), ['b']);
+  t.deepEqual(await fJSON('"abc" 2 @'), ['c']);
 });
 
-test('should @ from end', t => {
-  t.deepEqual(fSyncJSON('"abc" -1 @'), ['c']);
-  t.deepEqual(fSyncJSON('"abc" -2 @'), ['b']);
-  t.deepEqual(fSyncJSON('"abc" -3 @'), ['a']);
+test('should @ from end', async t => {
+  t.deepEqual(await fJSON('"abc" -1 @'), ['c']);
+  t.deepEqual(await fJSON('"abc" -2 @'), ['b']);
+  t.deepEqual(await fJSON('"abc" -3 @'), ['a']);
 });
 
-test('should @ from out of bounds', t => {
-  t.deepEqual(fSyncJSON('"abc" 10 @'), [null]);
-  t.deepEqual(fSyncJSON('"abc" -10 @'), [null]);
+test('should @ from out of bounds', async t => {
+  t.deepEqual(await fJSON('"abc" 10 @'), [null]);
+  t.deepEqual(await fJSON('"abc" -10 @'), [null]);
 });
 
 
 
-test('should reverse strings', t => {
-  t.deepEqual(fSyncJSON('"timov,tab" reverse'), ['bat,vomit']);
-  t.deepEqual(fSyncJSON('"racecar" reverse'), ['racecar']);
+test('should reverse strings', async t => {
+  t.deepEqual(await fJSON('"timov,tab" reverse'), ['bat,vomit']);
+  t.deepEqual(await fJSON('"racecar" reverse'), ['racecar']);
 });
 
-test('should filter strings', t => {
-  t.deepEqual(fSyncJSON('"dead_beef_123" [alphanumeric?] filter'), ['deadbeef123']);
+test('should filter strings', async t => {
+  t.deepEqual(await fJSON('"dead_beef_123" [alphanumeric?] filter'), ['deadbeef123']);
 });
 
-test('should rot13 strings', t => {
-  t.deepEqual(fSyncJSON('"abc" rot13'), ['nop']);
-  t.deepEqual(fSyncJSON('"nop" rot13'), ['abc']);
+test('should rot13 strings', async t => {
+  t.deepEqual(await fJSON('"abc" rot13'), ['nop']);
+  t.deepEqual(await fJSON('"nop" rot13'), ['abc']);
 });
 
-test('should eval palindrome?', t => {
-  t.deepEqual(fSyncJSON('"abc" palindrome?'), [false]);
-  t.deepEqual(fSyncJSON('"racecar" palindrome?'), [true]);
-  t.deepEqual(fSyncJSON('"A man, a plan, a canal: Panama" palindrome?'), [true]);
+test('should eval palindrome?', async t => {
+  t.deepEqual(await fJSON('"abc" palindrome?'), [false]);
+  t.deepEqual(await fJSON('"racecar" palindrome?'), [true]);
+  t.deepEqual(await fJSON('"A man, a plan, a canal: Panama" palindrome?'), [true]);
 });
 
-test('should get string length', t => {
-  t.deepEqual(fSyncJSON('"abc" ln'), [3]);
-  t.deepEqual(fSyncJSON('"racecar" ln'), [7]);
-  t.deepEqual(fSyncJSON('"A man, a plan, a canal: Panama" ln'), [30]);
+test('should get string length', async t => {
+  t.deepEqual(await fJSON('"abc" ln'), [3]);
+  t.deepEqual(await fJSON('"racecar" ln'), [7]);
+  t.deepEqual(await fJSON('"A man, a plan, a canal: Panama" ln'), [30]);
 });
 
-test('should concat strings using << and >>', t => {
-  t.deepEqual(fSyncJSON('"dead" "XXXXXXXX" <<'), ['deadXXXXXXXX']);
-  t.deepEqual(fSyncJSON('"XXXXXXXX" "beef" >>'), ['XXXXXXXXbeef']);
+test('should concat strings using << and >>', async t => {
+  t.deepEqual(await fJSON('"dead" "XXXXXXXX" <<'), ['deadXXXXXXXX']);
+  t.deepEqual(await fJSON('"XXXXXXXX" "beef" >>'), ['XXXXXXXXbeef']);
 });
 
-test('should left and right shift', t => {
-  t.deepEqual(fSyncJSON('"deadbeef" 4 <<'), ['beef']);
-  t.deepEqual(fSyncJSON('"deadbeef" 4 >>'), ['dead']);
+test('should left and right shift', async t => {
+  t.deepEqual(await fJSON('"deadbeef" 4 <<'), ['beef']);
+  t.deepEqual(await fJSON('"deadbeef" 4 >>'), ['dead']);
 });
 
-test('should quicksort strings', t => {
+test('should quicksort strings', async t => {
   t.deepEqual(
-    fSyncValues('"the quick brown fox jumps over the lazy dog" quicksort'),
+    await fValues('"the quick brown fox jumps over the lazy dog" quicksort'),
     ['        abcdeeefghhijklmnoooopqrrsttuuvwxyz']
   );
 });
 
-test('string works as a "macro"', t => {
-  t.deepEqual(fSyncValues('5:string'), ['5']);
-  t.deepEqual(fSyncValues('[ 5:string ]'), [[ '5' ]]);
+test('string works as a "macro"', async t => {
+  t.deepEqual(await fValues('5:string'), ['5']);
+  t.deepEqual(await fValues('[ 5:string ]'), [[ '5' ]]);
 });

@@ -1,6 +1,6 @@
-import { check, gen } from 'ava-check';
+// import { check, gen } from 'ava-check';
 
-import { Stack } from '../src/stack';
+import { createStack } from '../src/stack';
 import { StackEnv } from '../src/env';
 import { log } from '../src/utils/logger';
 import { Decimal, Complex } from '../src/types';
@@ -11,7 +11,7 @@ process.chdir('.');
 
 log.level = process.env.NODE_ENV || 'error';
 
-export { Stack as F };
+export { createStack as F };
 
 /**
  * Converts primitives to stack values
@@ -45,35 +45,49 @@ export const V = (x: any) => {
   return x;
 };
 
-export function fSyncStack(a: any) {
-  return Stack().eval(a).stack;
+/**
+ * Evaluates the input async
+ * returns the stack as a string
+ */
+export async function fString(a: any): Promise<any> {
+  const f = await createStack().promise(a);
+  return f.stack.toString();
 }
 
-export function fSyncValues(a: any) {
-  return V(fSyncStack(a));
-}
-
-export function fSyncJSON(a: any) {
-  return Stack().eval(a).toJSON();
-}
-
-export function fSyncString(a: any) {
-  return Stack().eval(a).stack.toString();
-}
-
-export async function fAsyncJSON(a: any) {
-  const f = await Stack().promise(a);
+/**
+ * Evaluates the input async
+ * returns the env as a JSON object
+ */
+export async function fJSON(a: any): Promise<any> {
+  const f = await createStack().promise(a);
   return f.toJSON();
 }
 
-export async function fAsyncStack(a: any) {
-  const f = await Stack().promise(a);
+/**
+ * Evaluates the input async
+ * returns the stack as an array of stack values
+ */
+export async function fStack(a: any): Promise<any[]> {
+  const f = await createStack().promise(a);
   return f.stack;
 }
 
-export async function fAsyncValues(a: any) {
-  const f = await Stack().promise(a);
+/**
+ * Evaluates the input async
+ * returns the stack as an array of JS primitives
+ */
+export async function fValues(a: any): Promise<any[]> {
+  const f = await createStack().promise(a);
   return V(f.stack);
+}
+
+/**
+ * Evaluates the input async
+ * returns the last item on the stack as a JS primitives
+ */
+export async function fValue(a: any): Promise<any> {
+  const f = await createStack().promise(a);
+  return V(f.stack[0]);
 }
 
 const tolerance = 0.5 * Math.pow(10, -9);

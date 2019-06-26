@@ -1,16 +1,16 @@
 import test from 'ava';
 import {
-  fSyncJSON
+  fJSON
 } from './setup';
 
-test('symbols type', t => {
-  t.deepEqual(fSyncJSON('#test type'), ['symbol']);
-  t.deepEqual(fSyncJSON('"test" # type'), ['symbol']);
+test('symbols type', async t => {
+  t.deepEqual(await fJSON('#test type'), ['symbol']);
+  t.deepEqual(await fJSON('"test" # type'), ['symbol']);
 });
 
-test('symbols equality', t => {
-  t.deepEqual(fSyncJSON('#test dup ='), [true]);
-  t.deepEqual(fSyncJSON('#test #test ='), [false]);
-  t.deepEqual(fSyncJSON('"test" # dup ='), [true]);
-  t.deepEqual(fSyncJSON('"test" # "test" # ='), [false]);
+test('symbols equality', async t => {
+  t.deepEqual(await fJSON('#test dup ='), [true]);
+  t.deepEqual(await fJSON('#test #test ='), [false]);
+  t.deepEqual(await fJSON('"test" # dup ='), [true]);
+  t.deepEqual(await fJSON('"test" # "test" # ='), [false]);
 });

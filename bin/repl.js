@@ -8,7 +8,7 @@ const program = require('commander');
 const gradient = require('gradient-string');
 const memoize = require('memoizee');
 
-const { Stack, RootStack } = require('../dist/stack');
+const { Stack, createRootEnv } = require('../dist/stack');
 const { log, type, formatValue, formatState, bar } = require('../dist/utils');
 
 const pkg = require('../package.json');
@@ -145,7 +145,7 @@ function startREPL() {
 function newStack() {
   log.level = program.logLevel || 'warn';
 
-  const newParent = Stack('true set-auto-undo', RootStack());
+  const newParent = Stack('true set-auto-undo', createRootEnv());
 
   const rl = stackRepl || readline.createInterface({
     input: process.stdin

@@ -1,203 +1,203 @@
 import test from 'ava';
-import { F, fSyncJSON, fSyncStack, fSyncValues } from './setup';
+import { fJSON, fStack } from './setup';
 
-/* test('should parse', t => {
+/* test('should parse', async t => {
   var f = F();
   t.deepEqual(f.lexer('true', [true]);
   t.deepEqual(f.lexer('false', [false]);
 }); */
 
-test('should push booleans', t => {
-  t.deepEqual(fSyncJSON('true false'), [true, false], 'should push booleans');
+test('should push booleans', async t => {
+  t.deepEqual(await fJSON('true false'), [true, false], 'should push booleans');
 });
 
-test('should not', t => {
-  t.deepEqual(fSyncJSON('true ~'), [false]);
-  t.deepEqual(fSyncJSON('false ~'), [true]);
-  t.deepEqual(fSyncStack('null ~'), [null]);
+test('should not', async t => {
+  t.deepEqual(await fJSON('true ~'), [false]);
+  t.deepEqual(await fJSON('false ~'), [true]);
+  t.deepEqual(await fStack('null ~'), [null]);
 });
 
-test('should and', t => {
-  t.deepEqual(fSyncJSON('true true *'), [true]);
-  t.deepEqual(fSyncJSON('true false *'), [false]);
-  t.deepEqual(fSyncJSON('false true *'), [false]);
-  t.deepEqual(fSyncJSON('false false *'), [false]);
+test('should and', async t => {
+  t.deepEqual(await fJSON('true true *'), [true]);
+  t.deepEqual(await fJSON('true false *'), [false]);
+  t.deepEqual(await fJSON('false true *'), [false]);
+  t.deepEqual(await fJSON('false false *'), [false]);
 
-  t.deepEqual(fSyncStack('true null *'), [null]);
-  t.deepEqual(fSyncStack('null true *'), [null]);
-  t.deepEqual(fSyncStack('null false *'), [false]);
-  t.deepEqual(fSyncStack('false null *'), [false]);
+  t.deepEqual(await fStack('true null *'), [null]);
+  t.deepEqual(await fStack('null true *'), [null]);
+  t.deepEqual(await fStack('null false *'), [false]);
+  t.deepEqual(await fStack('false null *'), [false]);
 
-  t.deepEqual(fSyncStack('null null *'), [null]);
+  t.deepEqual(await fStack('null null *'), [null]);
 });
 
-test('should or', t => {
-  t.deepEqual(fSyncJSON('true true +'), [true]);
-  t.deepEqual(fSyncJSON('true false +'), [true]);
-  t.deepEqual(fSyncJSON('false true +'), [true]);
-  t.deepEqual(fSyncJSON('false false +'), [false]);
+test('should or', async t => {
+  t.deepEqual(await fJSON('true true +'), [true]);
+  t.deepEqual(await fJSON('true false +'), [true]);
+  t.deepEqual(await fJSON('false true +'), [true]);
+  t.deepEqual(await fJSON('false false +'), [false]);
 
-  t.deepEqual(fSyncStack('true null +'), [true]);
-  t.deepEqual(fSyncStack('null true +'), [true]);
-  t.deepEqual(fSyncStack('null false +'), [null]);
-  t.deepEqual(fSyncStack('false null +'), [null]);
+  t.deepEqual(await fStack('true null +'), [true]);
+  t.deepEqual(await fStack('null true +'), [true]);
+  t.deepEqual(await fStack('null false +'), [null]);
+  t.deepEqual(await fStack('false null +'), [null]);
 
-  t.deepEqual(fSyncStack('null null +'), [null]);
+  t.deepEqual(await fStack('null null +'), [null]);
 });
 
-test('should test equality', t => {
-  t.deepEqual(fSyncJSON('true true ='), [true]);
-  t.deepEqual(fSyncJSON('true false ='), [false]);
-  t.deepEqual(fSyncJSON('false true ='), [false]);
-  t.deepEqual(fSyncJSON('false false ='), [true]);
+test('should test equality', async t => {
+  t.deepEqual(await fJSON('true true ='), [true]);
+  t.deepEqual(await fJSON('true false ='), [false]);
+  t.deepEqual(await fJSON('false true ='), [false]);
+  t.deepEqual(await fJSON('false false ='), [true]);
 
-  t.deepEqual(fSyncStack('true null ='), [false]);
-  t.deepEqual(fSyncStack('null true ='), [false]);
-  t.deepEqual(fSyncStack('null false ='), [false]);
-  t.deepEqual(fSyncStack('false null ='), [false]);
+  t.deepEqual(await fStack('true null ='), [false]);
+  t.deepEqual(await fStack('null true ='), [false]);
+  t.deepEqual(await fStack('null false ='), [false]);
+  t.deepEqual(await fStack('false null ='), [false]);
 
-  t.deepEqual(fSyncStack('null null ='), [true]);
+  t.deepEqual(await fStack('null null ='), [true]);
 });
 
-test('should <=>', t => {
-  t.deepEqual(fSyncJSON('true true <=>'), [0]);
-  t.deepEqual(fSyncJSON('true false <=>'), [1]);
-  t.deepEqual(fSyncJSON('false true <=>'), [-1]);
-  t.deepEqual(fSyncJSON('false false <=>'), [0]);
+test('should <=>', async t => {
+  t.deepEqual(await fJSON('true true <=>'), [0]);
+  t.deepEqual(await fJSON('true false <=>'), [1]);
+  t.deepEqual(await fJSON('false true <=>'), [-1]);
+  t.deepEqual(await fJSON('false false <=>'), [0]);
 
-  t.deepEqual(fSyncStack('true null <=>'), [1]);
-  t.deepEqual(fSyncStack('null true <=>'), [-1]);
-  t.deepEqual(fSyncStack('null false <=>'), [1]);
-  t.deepEqual(fSyncStack('false null <=>'), [-1]);
+  t.deepEqual(await fStack('true null <=>'), [1]);
+  t.deepEqual(await fStack('null true <=>'), [-1]);
+  t.deepEqual(await fStack('null false <=>'), [1]);
+  t.deepEqual(await fStack('false null <=>'), [-1]);
 
-  t.deepEqual(fSyncStack('null null <=>'), [0]);
+  t.deepEqual(await fStack('null null <=>'), [0]);
 });
 
-test('should nand', t => {
-  t.deepEqual(fSyncJSON('true true %'), [false]);
-  t.deepEqual(fSyncJSON('true false %'), [true]);
-  t.deepEqual(fSyncJSON('false true %'), [true]);
-  t.deepEqual(fSyncJSON('false false %'), [true]);
+test('should nand', async t => {
+  t.deepEqual(await fJSON('true true %'), [false]);
+  t.deepEqual(await fJSON('true false %'), [true]);
+  t.deepEqual(await fJSON('false true %'), [true]);
+  t.deepEqual(await fJSON('false false %'), [true]);
 
-  t.deepEqual(fSyncStack('true null %'), [null]);
-  t.deepEqual(fSyncStack('null true %'), [null]);
-  t.deepEqual(fSyncStack('null false %'), [true]);
-  t.deepEqual(fSyncStack('false null %'), [true]);
+  t.deepEqual(await fStack('true null %'), [null]);
+  t.deepEqual(await fStack('null true %'), [null]);
+  t.deepEqual(await fStack('null false %'), [true]);
+  t.deepEqual(await fStack('false null %'), [true]);
 
-  t.deepEqual(fSyncStack('null null %'), [null]);
+  t.deepEqual(await fStack('null null %'), [null]);
 });
 
-test('should xor', t => {
-  t.deepEqual(fSyncJSON('true true ^'), [false]);
-  t.deepEqual(fSyncJSON('true false ^'), [true]);
-  t.deepEqual(fSyncJSON('false true ^'), [true]);
-  t.deepEqual(fSyncJSON('false false ^'), [false]);
+test('should xor', async t => {
+  t.deepEqual(await fJSON('true true ^'), [false]);
+  t.deepEqual(await fJSON('true false ^'), [true]);
+  t.deepEqual(await fJSON('false true ^'), [true]);
+  t.deepEqual(await fJSON('false false ^'), [false]);
 
-  t.deepEqual(fSyncStack('true null ^'), [null]);
-  t.deepEqual(fSyncStack('null true ^'), [null]);
-  t.deepEqual(fSyncStack('null false ^'), [null]);
-  t.deepEqual(fSyncStack('false null ^'), [null]);
+  t.deepEqual(await fStack('true null ^'), [null]);
+  t.deepEqual(await fStack('null true ^'), [null]);
+  t.deepEqual(await fStack('null false ^'), [null]);
+  t.deepEqual(await fStack('false null ^'), [null]);
 
-  t.deepEqual(fSyncStack('null null ^'), [null]);
+  t.deepEqual(await fStack('null null ^'), [null]);
 });
 
-test('should nor', t => {
-  t.deepEqual(fSyncJSON('true true -'), [false]);
-  t.deepEqual(fSyncJSON('true false -'), [false]);
-  t.deepEqual(fSyncJSON('false true -'), [false]);
-  t.deepEqual(fSyncJSON('false false -'), [true]);
+test('should nor', async t => {
+  t.deepEqual(await fJSON('true true -'), [false]);
+  t.deepEqual(await fJSON('true false -'), [false]);
+  t.deepEqual(await fJSON('false true -'), [false]);
+  t.deepEqual(await fJSON('false false -'), [true]);
 
-  t.deepEqual(fSyncStack('true null -'), [false]);
-  t.deepEqual(fSyncStack('null true -'), [false]);
-  t.deepEqual(fSyncStack('null false -'), [null]);
-  t.deepEqual(fSyncStack('false null -'), [null]);
+  t.deepEqual(await fStack('true null -'), [false]);
+  t.deepEqual(await fStack('null true -'), [false]);
+  t.deepEqual(await fStack('null false -'), [null]);
+  t.deepEqual(await fStack('false null -'), [null]);
 
-  t.deepEqual(fSyncStack('null null -'), [null]);
+  t.deepEqual(await fStack('null null -'), [null]);
 });
 
-test('should >> (material implication)', t => {
-  t.deepEqual(fSyncJSON('true true >>'), [true]);
-  t.deepEqual(fSyncJSON('true false >>'), [false]);
-  t.deepEqual(fSyncJSON('false true >>'), [true]);
-  t.deepEqual(fSyncJSON('false false >>'), [true]);
+test('should >> (material implication)', async t => {
+  t.deepEqual(await fJSON('true true >>'), [true]);
+  t.deepEqual(await fJSON('true false >>'), [false]);
+  t.deepEqual(await fJSON('false true >>'), [true]);
+  t.deepEqual(await fJSON('false false >>'), [true]);
 
-  t.deepEqual(fSyncStack('true null >>'), [null]);
-  t.deepEqual(fSyncStack('null true >>'), [true]);
-  t.deepEqual(fSyncStack('null false >>'), [null]);
-  t.deepEqual(fSyncStack('false null >>'), [true]);
+  t.deepEqual(await fStack('true null >>'), [null]);
+  t.deepEqual(await fStack('null true >>'), [true]);
+  t.deepEqual(await fStack('null false >>'), [null]);
+  t.deepEqual(await fStack('false null >>'), [true]);
 
-  t.deepEqual(fSyncStack('null null >>'), [null]);
+  t.deepEqual(await fStack('null null >>'), [null]);
 });
 
-test('should << (converse implication)', t => {
-  t.deepEqual(fSyncJSON('true true <<'), [true]);
-  t.deepEqual(fSyncJSON('true false <<'), [true]);
-  t.deepEqual(fSyncJSON('false true <<'), [false]);
-  t.deepEqual(fSyncJSON('false false <<'), [true]);
+test('should << (converse implication)', async t => {
+  t.deepEqual(await fJSON('true true <<'), [true]);
+  t.deepEqual(await fJSON('true false <<'), [true]);
+  t.deepEqual(await fJSON('false true <<'), [false]);
+  t.deepEqual(await fJSON('false false <<'), [true]);
 
-  t.deepEqual(fSyncStack('true null <<'), [true]);
-  t.deepEqual(fSyncStack('null true <<'), [null]);
-  t.deepEqual(fSyncStack('null false <<'), [true]);
-  t.deepEqual(fSyncStack('false null <<'), [null]);
+  t.deepEqual(await fStack('true null <<'), [true]);
+  t.deepEqual(await fStack('null true <<'), [null]);
+  t.deepEqual(await fStack('null false <<'), [true]);
+  t.deepEqual(await fStack('false null <<'), [null]);
 
-  t.deepEqual(fSyncStack('null null <<'), [null]);
+  t.deepEqual(await fStack('null null <<'), [null]);
 });
 
-test('should / (material non-implication)', t => {
-  t.deepEqual(fSyncJSON('true true /'), [false]);
-  t.deepEqual(fSyncJSON('true false /'), [true]);
-  t.deepEqual(fSyncJSON('false true /'), [false]);
-  t.deepEqual(fSyncJSON('false false /'), [false]);
+test('should / (material non-implication)', async t => {
+  t.deepEqual(await fJSON('true true /'), [false]);
+  t.deepEqual(await fJSON('true false /'), [true]);
+  t.deepEqual(await fJSON('false true /'), [false]);
+  t.deepEqual(await fJSON('false false /'), [false]);
 
-  t.deepEqual(fSyncStack('true null /'), [null]);
-  t.deepEqual(fSyncStack('null true /'), [false]);
-  t.deepEqual(fSyncStack('null false /'), [null]);
-  t.deepEqual(fSyncStack('false null /'), [false]);
+  t.deepEqual(await fStack('true null /'), [null]);
+  t.deepEqual(await fStack('null true /'), [false]);
+  t.deepEqual(await fStack('null false /'), [null]);
+  t.deepEqual(await fStack('false null /'), [false]);
 
-  t.deepEqual(fSyncStack('null null /'), [null]);
+  t.deepEqual(await fStack('null null /'), [null]);
 });
 
-test('should \ (converse non-implication)', t => {
-  t.deepEqual(fSyncJSON('true true \\'), [false]);
-  t.deepEqual(fSyncJSON('true false \\'), [false]);
-  t.deepEqual(fSyncJSON('false true \\'), [true]);
-  t.deepEqual(fSyncJSON('false false \\'), [false]);
+test('should \ (converse non-implication)', async t => {
+  t.deepEqual(await fJSON('true true \\'), [false]);
+  t.deepEqual(await fJSON('true false \\'), [false]);
+  t.deepEqual(await fJSON('false true \\'), [true]);
+  t.deepEqual(await fJSON('false false \\'), [false]);
 
-  t.deepEqual(fSyncStack('true null \\'), [false]);
-  t.deepEqual(fSyncStack('null true \\'), [null]);
-  t.deepEqual(fSyncStack('null false \\'), [false]);
-  t.deepEqual(fSyncStack('false null \\'), [null]);
+  t.deepEqual(await fStack('true null \\'), [false]);
+  t.deepEqual(await fStack('null true \\'), [null]);
+  t.deepEqual(await fStack('null false \\'), [false]);
+  t.deepEqual(await fStack('false null \\'), [null]);
 
-  t.deepEqual(fSyncStack('null null \\'), [null]);
+  t.deepEqual(await fStack('null null \\'), [null]);
 });
 
 ///
 
-test('length of booleans are zero', t => {
-  t.deepEqual(fSyncJSON('true ln'), [0]);
-  t.deepEqual(fSyncJSON('false ln'), [0]);
+test('length of booleans are zero', async t => {
+  t.deepEqual(await fJSON('true ln'), [0]);
+  t.deepEqual(await fJSON('false ln'), [0]);
 });
 
-test('convert falsy values', t => {
-  t.deepEqual(fSyncJSON('false boolean'), [false]);
-  t.deepEqual(fSyncJSON('0 boolean'), [false]);
-  t.deepEqual(fSyncJSON('-0 boolean'), [false]);
-  t.deepEqual(fSyncJSON('"" boolean'), [false]);
-  t.deepEqual(fSyncJSON('null boolean'), [false]);
-  t.deepEqual(fSyncJSON('nan boolean'), [false]);
+test('convert falsy values', async t => {
+  t.deepEqual(await fJSON('false boolean'), [false]);
+  t.deepEqual(await fJSON('0 boolean'), [false]);
+  t.deepEqual(await fJSON('-0 boolean'), [false]);
+  t.deepEqual(await fJSON('"" boolean'), [false]);
+  t.deepEqual(await fJSON('null boolean'), [false]);
+  t.deepEqual(await fJSON('nan boolean'), [false]);
 });
 
-test('convert truthiness values', t => {
-  t.deepEqual(fSyncJSON('true boolean'), [true]);
-  t.deepEqual(fSyncJSON('1 boolean'), [true]);
-  t.deepEqual(fSyncJSON('-1 boolean'), [true]);
-  t.deepEqual(fSyncJSON('"false" boolean'), [true]);
-  t.deepEqual(fSyncJSON('"any string" boolean'), [true]);
-  t.deepEqual(fSyncJSON('[] boolean'), [true]);
-  t.deepEqual(fSyncJSON('{} boolean'), [true]);
-  t.deepEqual(fSyncJSON('infinity boolean'), [true]);
-  t.deepEqual(fSyncJSON('"1/1/1990" date boolean'), [true]);
-  t.deepEqual(fSyncJSON('1 0 / boolean'), [true]);
-  t.deepEqual(fSyncJSON('i boolean'), [true]);
+test('convert truthiness values', async t => {
+  t.deepEqual(await fJSON('true boolean'), [true]);
+  t.deepEqual(await fJSON('1 boolean'), [true]);
+  t.deepEqual(await fJSON('-1 boolean'), [true]);
+  t.deepEqual(await fJSON('"false" boolean'), [true]);
+  t.deepEqual(await fJSON('"any string" boolean'), [true]);
+  t.deepEqual(await fJSON('[] boolean'), [true]);
+  t.deepEqual(await fJSON('{} boolean'), [true]);
+  t.deepEqual(await fJSON('infinity boolean'), [true]);
+  t.deepEqual(await fJSON('"1/1/1990" date boolean'), [true]);
+  t.deepEqual(await fJSON('1 0 / boolean'), [true]);
+  t.deepEqual(await fJSON('i boolean'), [true]);
 });
 

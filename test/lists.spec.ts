@@ -1,181 +1,181 @@
 import test from 'ava';
-import { F, fSyncJSON, fSyncValues, D } from './setup';
+import { F, fJSON, fValues, D } from './setup';
 
-test('should push lists', t => {
-  t.deepEqual(fSyncValues('( 1 ) ( 2 )'), [[1], [2]], 'should push');
-  t.deepEqual(fSyncValues('(1) (2)'), [[1], [2]], 'should handle missing whitespace');
-  t.deepEqual(fSyncValues('(1) (2 3 +)'), [[1], [5]], 'should eval within list');
+test('should push lists', async t => {
+  t.deepEqual(await fValues('( 1 ) ( 2 )'), [[1], [2]], 'should push');
+  t.deepEqual(await fValues('(1) (2)'), [[1], [2]], 'should handle missing whitespace');
+  t.deepEqual(await fValues('(1) (2 3 +)'), [[1], [5]], 'should eval within list');
 });
 
-test('should evaluate quoted lists', t => {
-  t.deepEqual(fSyncValues('[ ( 1 2 + ) ] in'), [[[3]]]);
+test('should evaluate quoted lists', async t => {
+  t.deepEqual(await fValues('[ ( 1 2 + ) ] in'), [[[3]]]);
 });
 
-test('should get length', t => {
-  t.deepEqual(fSyncValues('( 1 2 ) ln'), [2], 'should get length');
+test('should get length', async t => {
+  t.deepEqual(await fValues('( 1 2 ) ln'), [2], 'should get length');
 });
 
-test('should add', t => {
-  t.deepEqual(fSyncValues('(1) (2) +'), [[1, 2]], 'should add');
+test('should add', async t => {
+  t.deepEqual(await fValues('(1) (2) +'), [[1, 2]], 'should add');
   t.deepEqual(
-    fSyncValues('(1 2 3) dup (4 5 6) +'),
+    await fValues('(1 2 3) dup (4 5 6) +'),
     [[1, 2, 3], [1, 2, 3, 4, 5, 6]],
     'should add without mutation'
   );
 });
 
-test('should multiply', t => {
-  t.deepEqual(fSyncValues('(1) 2 *'), [[1, 1]]);
-  t.deepEqual(fSyncValues('(1) 3 *'), [[1, 1, 1]]);
-  t.deepEqual(fSyncValues('(1 2) 2 *'), [[1, 2, 1, 2]]);
-  t.deepEqual(fSyncValues('(1 2 +) 2 *'), [[3, 3]]);
-  t.deepEqual(fSyncValues('(1 2 +) 0 *'), [[]]);
+test('should multiply', async t => {
+  t.deepEqual(await fValues('(1) 2 *'), [[1, 1]]);
+  t.deepEqual(await fValues('(1) 3 *'), [[1, 1, 1]]);
+  t.deepEqual(await fValues('(1 2) 2 *'), [[1, 2, 1, 2]]);
+  t.deepEqual(await fValues('(1 2 +) 2 *'), [[3, 3]]);
+  t.deepEqual(await fValues('(1 2 +) 0 *'), [[]]);
 });
 
-test('mul identities', t => {
-  t.deepEqual(fSyncValues('(1) 3 * sum'), [3]);
-  t.deepEqual(fSyncValues('(2) 3 * sum'), [6]);
-  t.deepEqual(fSyncValues('(1) 3 * 3 / + sum'), [3]);
-  t.deepEqual(fSyncValues('(2) 3 * 3 / + sum'), [6]);
+test('mul identities', async t => {
+  t.deepEqual(await fValues('(1) 3 * sum'), [3]);
+  t.deepEqual(await fValues('(2) 3 * sum'), [6]);
+  t.deepEqual(await fValues('(1) 3 * 3 / + sum'), [3]);
+  t.deepEqual(await fValues('(2) 3 * 3 / + sum'), [6]);
 });
 
-test('div identities', t => {
-  t.deepEqual(fSyncValues('(1) 1 /'), [[1], []]);
-  t.deepEqual(fSyncValues('(1 2) 1 /'), [[1], [2]]);
-  t.deepEqual(fSyncValues('(1 2 3 4) 2 /'), [[1, 2], [3, 4]]);
+test('div identities', async t => {
+  t.deepEqual(await fValues('(1) 1 /'), [[1], []]);
+  t.deepEqual(await fValues('(1 2) 1 /'), [[1], [2]]);
+  t.deepEqual(await fValues('(1 2 3 4) 2 /'), [[1, 2], [3, 4]]);
 });
 
-test('add/sub identities', t => {
-  t.deepEqual(fSyncValues('(1) 2 + sum'), [3]);
-  // t.deepEqual(fSyncJSON('(1) 2 + 2 - sum', [1]); // ???
+test('add/sub identities', async t => {
+  t.deepEqual(await fValues('(1) 2 + sum'), [3]);
+  // t.deepEqual(await fJSON('(1) 2 + 2 - sum', [1]); // ???
 });
 
-test('pow identities', t => {
+test('pow identities', async t => {
   // right associative
-  t.deepEqual(fSyncValues('(1) 2 pow'), [[1, 1]]);
-  t.deepEqual(fSyncValues('(2) 3 pow'), [[2, 2, 2]]);
-  t.deepEqual(fSyncValues('(1 1) 3 pow'), [
+  t.deepEqual(await fValues('(1) 2 pow'), [[1, 1]]);
+  t.deepEqual(await fValues('(2) 3 pow'), [[2, 2, 2]]);
+  t.deepEqual(await fValues('(1 1) 3 pow'), [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
   ]);
-  t.deepEqual(fSyncValues('(1 2) 3 pow'), [
+  t.deepEqual(await fValues('(1 2) 3 pow'), [
     [1, 1, 1, 2, 2, 1, 2, 2, 1, 1, 2, 2, 1, 2]
   ]);
-  // t.deepEqual(fSyncJSON('(1) 2 + 2 - sum', [1]); // ???
+  // t.deepEqual(await fJSON('(1) 2 + 2 - sum', [1]); // ???
 });
 
-test('should test equality', t => {
-  t.deepEqual(fSyncJSON('(1 2) (1 2) ='), [true]);
-  t.deepEqual(fSyncJSON('(1) (2) ='), [false]);
-  t.deepEqual(fSyncJSON('(1 2)  (1) ='), [false]);
-  t.deepEqual(fSyncJSON('(1 2) (1 1) ='), [false]);
+test('should test equality', async t => {
+  t.deepEqual(await fJSON('(1 2) (1 2) ='), [true]);
+  t.deepEqual(await fJSON('(1) (2) ='), [false]);
+  t.deepEqual(await fJSON('(1 2)  (1) ='), [false]);
+  t.deepEqual(await fJSON('(1 2) (1 1) ='), [false]);
 });
 
-test('should eval lists', t => {
+test('should eval lists', async t => {
   const f = F();
   t.deepEqual(f.eval('( 1 2 )').toJSON(), D([[1, 2]]));
   t.deepEqual(f.eval('eval').toJSON(), D([1, 2]));
 });
 
-test('should zip lists', t => {
+test('should zip lists', async t => {
   const f = F();
   t.deepEqual(f.eval('( 1 2 3 ) ( 4 )').toJSON(), D([[1, 2, 3], [4]]));
   t.deepEqual(f.eval('*').toJSON(), D([[1, 4, 2, 4, 3, 4]]));
 });
 
-test('should join', t => {
-  t.deepEqual(fSyncJSON('( 1 2 3 ) "-" *'), ['1-2-3'], 'should join');
+test('should join', async t => {
+  t.deepEqual(await fJSON('( 1 2 3 ) "-" *'), ['1-2-3'], 'should join');
 });
 
-test('should <<', t => {
-  t.deepEqual(fSyncValues('( 1 2 3 ) 4 <<'), [[1, 2, 3, 4]], 'should <<');
+test('should <<', async t => {
+  t.deepEqual(await fValues('( 1 2 3 ) 4 <<'), [[1, 2, 3, 4]], 'should <<');
   t.deepEqual(
-    fSyncValues('( 1 2 3 ) dup 4 <<'),
+    await fValues('( 1 2 3 ) dup 4 <<'),
     [[1, 2, 3], [1, 2, 3, 4]],
     'should <<, immutable'
   );
 });
 
-test('should >>', t => {
-  t.deepEqual(fSyncValues('4 ( 1 2 3 ) >>'), [[4, 1, 2, 3]], 'should >>');
+test('should >>', async t => {
+  t.deepEqual(await fValues('4 ( 1 2 3 ) >>'), [[4, 1, 2, 3]], 'should >>');
   t.deepEqual(
-    fSyncValues('4 ( 1 2 3 ) tuck >>'),
+    await fValues('4 ( 1 2 3 ) tuck >>'),
     [[1, 2, 3], [4, 1, 2, 3]],
     'should >>, immutable'
   );
 });
 
-test('should @', t => {
-  t.deepEqual(fSyncValues('( 4 5 6 ) 0 @'), [4]);
-  t.deepEqual(fSyncValues('( 4 5 6 ) 1 @'), [5]);
-  t.deepEqual(fSyncValues('( 4 5 6 ) 2 @'), [6]);
+test('should @', async t => {
+  t.deepEqual(await fValues('( 4 5 6 ) 0 @'), [4]);
+  t.deepEqual(await fValues('( 4 5 6 ) 1 @'), [5]);
+  t.deepEqual(await fValues('( 4 5 6 ) 2 @'), [6]);
 
 });
 
-test('should @ from end', t => {
-  t.deepEqual(fSyncValues('( 4 5 6 ) -1 @'), [6]);
-  t.deepEqual(fSyncValues('( 4 5 6 ) -2 @'), [5]);
-  t.deepEqual(fSyncValues('( 4 5 6 ) -3 @'), [4]);
+test('should @ from end', async t => {
+  t.deepEqual(await fValues('( 4 5 6 ) -1 @'), [6]);
+  t.deepEqual(await fValues('( 4 5 6 ) -2 @'), [5]);
+  t.deepEqual(await fValues('( 4 5 6 ) -3 @'), [4]);
 });
 
-test('should @ out of range', t => {
-  t.deepEqual(fSyncJSON('( 4 5 6 ) 10 @'), [null]);
-  t.deepEqual(fSyncJSON('( 4 5 6 ) -10 @'), [null]);
+test('should @ out of range', async t => {
+  t.deepEqual(await fJSON('( 4 5 6 ) 10 @'), [null]);
+  t.deepEqual(await fJSON('( 4 5 6 ) -10 @'), [null]);
 });
 
-test('should pop and shift without mutation', t => {
+test('should pop and shift without mutation', async t => {
   t.deepEqual(
-    fSyncValues('( 1 2 3 ) dup pop'),
+    await fValues('( 1 2 3 ) dup pop'),
     [[1, 2, 3], [1, 2]],
     'should pop, without mutation'
   );
   t.deepEqual(
-    fSyncValues('( 1 2 3 ) dup shift'),
+    await fValues('( 1 2 3 ) dup shift'),
     [[1, 2, 3], [2, 3]],
     'should shift, without mutation'
   );
 });
 
-test('should fine maximum and minimum', t => {
+test('should fine maximum and minimum', async t => {
   t.deepEqual(
-    fSyncValues('( 2 3 1 6 3 ) maximum'),
+    await fValues('( 2 3 1 6 3 ) maximum'),
     [ 6 ]
   );
   t.deepEqual(
-    fSyncValues('( 2 3 1 6 3 ) minimum'),
+    await fValues('( 2 3 1 6 3 ) minimum'),
     [1]
   );
 });
 
-test('should uncons', t => {
-  t.deepEqual(fSyncValues('(5 4 3) uncons'), [5, [4, 3]]);
+test('should uncons', async t => {
+  t.deepEqual(await fValues('(5 4 3) uncons'), [5, [4, 3]]);
 });
 
-test('should quicksort', t => {
+test('should quicksort', async t => {
   t.deepEqual(
-    fSyncValues('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] quicksort'),
+    await fValues('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] quicksort'),
     [[ 1, 2, 2, 3, 3, 4, 4, 5, 6, 7, 8, 9, 10 ]]
   );
 });
 
-test('should filter', t => {
+test('should filter', async t => {
   t.deepEqual(
-    fSyncValues('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] [ even? ] filter'),
+    await fValues('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] [ even? ] filter'),
     [[ 10, 2, 6, 4, 2, 4, 8 ]]
   );
 });
 
-test('should filter arrays of arrays', t => {
+test('should filter arrays of arrays', async t => {
   t.deepEqual(
-    fSyncValues('[ [10 2] [5] [3 1 6 7] [4 2 3] [4] [8 9] ] [ ln even? ] filter'),
+    await fValues('[ [10 2] [5] [3 1 6 7] [4 2 3] [4] [8 9] ] [ ln even? ] filter'),
     [[ [10, 2], [3, 1, 6, 7], [8, 9] ]]
   );
 });
 
-test('should foldl and foldr', t => {
-  t.deepEqual(fSyncValues('10 integers 0 [+] foldl'), [ 55 ]);
-  t.deepEqual(fSyncValues('10 integers 0 [+] foldr'), [ 55 ]);
-  t.deepEqual(fSyncValues('10 integers 0 [-] foldl'), [ -55 ]);
-  t.deepEqual(fSyncValues('10 integers 0 [-] foldr'), [ -5 ]);
+test('should foldl and foldr', async t => {
+  t.deepEqual(await fValues('10 integers 0 [+] foldl'), [ 55 ]);
+  t.deepEqual(await fValues('10 integers 0 [+] foldr'), [ 55 ]);
+  t.deepEqual(await fValues('10 integers 0 [-] foldl'), [ -55 ]);
+  t.deepEqual(await fValues('10 integers 0 [-] foldr'), [ -5 ]);
 });
 
 

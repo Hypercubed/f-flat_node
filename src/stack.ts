@@ -17,7 +17,7 @@ import {
 
 let defaultRootStack: StackEnv;
 
-export function RootStack(): StackEnv {
+export function createRootEnv(): StackEnv {
   const env = new StackEnv({
     // root
     silent: true
@@ -43,9 +43,9 @@ export function RootStack(): StackEnv {
   // todo: move usr.ff loading out of boot
 }
 
-export function Stack(s = '', root?: StackEnv): StackEnv {
+export function createStack(s = '', root?: StackEnv): StackEnv {
   return new StackEnv({
-    parent: root || defaultRootStack || (defaultRootStack = RootStack()),
+    parent: root || defaultRootStack || (defaultRootStack = createRootEnv()),
     silent: false
   }).enqueue(s);
 }
