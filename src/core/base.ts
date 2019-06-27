@@ -315,7 +315,7 @@ const mul = typed('mul', {
    * [ /(?:skiing){3}/ ]
    * ```
    */
-  'RegExp, number': rRepeat,
+  'RegExp, Decimal | number': rRepeat,
 
   /**
    * - repeat sequence
@@ -326,8 +326,8 @@ const mul = typed('mul', {
    *```
    */
   // string intersparse?
-  'string, number': (a: string, b: number) => a.repeat(b),
-  'Array, number': (a: any[], b: number) => arrayRepeat(a, b),
+  'string, Decimal | number': (a: string, b: number) => a.repeat(+b),
+  'Array, Decimal | number': (a: any[], b: number) => arrayRepeat(a, +b),
 
   /**
    * - arithmetic multiplication
@@ -393,7 +393,7 @@ const div = typed('div', {
    * [ 'abc' 'def' ]
    * ```
    */
-  'Array | string, number': (a: any[] | string, b: number) => {
+  'Array | string, Decimal | number': (a: any[] | string, b: number) => {
     b = +b | 0;
     return new Seq([a.slice(0, b), a.slice(b)]);
   },
@@ -464,7 +464,7 @@ const idiv = typed('idiv', {
    * [ 'abc' ]
    * ```
    */
-  'Array | string, number': (a: any[] | string, b: number) =>
+  'Array | string, Decimal | number': (a: any[] | string, b: number) =>
     a.slice(0, +b | 0),
 
   /**
@@ -519,7 +519,7 @@ const rem = typed('rem', {
    * [ 'def' ]
    * ```
    */
-  'Array | string, number': (a: any[] | string, b: number) => a.slice(+b | 0),
+  'Array | string, Decimal | number': (a: any[] | string, b: number) => a.slice(+b | 0),
 
   /**
    * - Split rest
@@ -602,7 +602,7 @@ const unshiftFn = typed('unshift', {
    * 'abc'
    * ```
    */
-  'string, number': (lhs: string, rhs: number) => lhs.slice(0, -rhs),
+  'string, Decimal | number': (lhs: string, rhs: number) => lhs.slice(0, -rhs),
 
   /**
    * - map merge
@@ -624,7 +624,7 @@ const unshiftFn = typed('unshift', {
    * [ 16 ]
    * ```
    */
-  'number, number': (lhs: number, rhs: number) => lhs >> rhs,
+  'Decimal | number, Decimal | number': (lhs: number, rhs: number) => +lhs >> +rhs,
 
   /**
    * - logical material implication (P implies Q)
@@ -688,7 +688,7 @@ const pushFn = typed('push', {
    * 'def'
    * ```
    */
-  'string, number': (lhs: string, rhs: number) => lhs.slice(-rhs),
+  'string, Decimal | number': (lhs: string, rhs: number) => lhs.slice(-rhs),
 
   /**
    * - converse implication (p if q)

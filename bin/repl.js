@@ -162,7 +162,7 @@ function newStack() {
   }
 
   const child = newParent.createChild(undefined);
-  child.completed.add(() => bar.terminate());
+  child.idle.add(() => bar.terminate());
   return child;
 }
 

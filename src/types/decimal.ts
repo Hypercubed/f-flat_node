@@ -172,25 +172,8 @@ typed.addType({
 typed.addConversion({
   from: 'number',
   to: 'Decimal',
-  convert: x => {
+  convert: (x: number) => {
     return new Decimal(x);
   }
 });
 
-typed.addConversion({
-  from: 'Decimal',
-  to: 'number',
-  convert: x => {
-    return x.valueOf();
-  }
-});
-
-/* typed.addType({
-  name: 'notanumber',
-  test: x => {
-    if (x instanceof Decimal) {
-      return x.isNaN();
-    }
-    return Number.isNaN(x);
-  }
-}); */

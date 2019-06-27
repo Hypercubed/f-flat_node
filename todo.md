@@ -2,6 +2,9 @@
 
 _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
+# New TODOs
+- [ ] Decimal shift/unshift
+
 # Bugs
 
 - [?] .clear should reset everything, including flags

@@ -69,8 +69,8 @@ export const core = {
      * [ 'c' ]
      * ```
      */
-    'string, number': (lhs: string, rhs: number) => {
-      rhs = Number(rhs) | 0;
+    'string, Decimal | number': (lhs: string, rhs: number) => {
+      rhs = +rhs | 0;
       if (rhs < 0) {
         rhs = lhs.length + rhs;
       }
@@ -86,7 +86,7 @@ export const core = {
      * [ 2 ]
      * ```
      */
-    'Array, number': (lhs: any[], rhs: number) => {
+    'Array, Decimal | number': (lhs: any[], rhs: number) => {
       rhs = Number(rhs) | 0;
       if (rhs < 0) {
         rhs = lhs.length + rhs;
