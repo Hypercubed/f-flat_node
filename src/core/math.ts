@@ -6,13 +6,12 @@ import {
   indeterminate,
   pi,
   complexInfinity,
-  StackArray,
-  AbstractValue
+  StackArray
 } from '../types';
 
-const mod = (m: number, n: number) => ((m % n) + n) % n;
+import * as erf from 'compute-erf';
 
-const erf = require('compute-erf');
+const mod = (m: number, n: number) => ((m % n) + n) % n;
 
 /**
  * # Internal Math Words

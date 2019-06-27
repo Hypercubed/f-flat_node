@@ -1,6 +1,5 @@
 import { transports, Logger } from 'winston';
-
-const ProgressBar = require('progress');
+import * as ProgressBar from 'progress';
 
 export const log = new Logger({
   levels: {

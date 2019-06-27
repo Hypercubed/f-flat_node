@@ -119,7 +119,7 @@ function convertjEsc2Char(str: string, shortEscapes: boolean): string {
     str = str.replace(/\\v/g, '\v');
     str = str.replace(/\\f/g, '\f');
     str = str.replace(/\\r/g, '\r');
-    str = str.replace(/\\'/g, "'");
+    str = str.replace(/\\'/g, `'`);
     str = str.replace(/\\"/g, '"');
     str = str.replace(/\\\\/g, '\\');
   }

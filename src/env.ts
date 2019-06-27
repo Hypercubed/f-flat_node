@@ -1,10 +1,9 @@
-/* global window, global, process, require */
+/* global window, global, process */
 import { functionLength, functionName } from 'fantasy-helpers/src/functions';
 
 import * as MiniSignal from 'mini-signals';
 import { freeze, splice } from 'icepick';
-
-const is = require('@sindresorhus/is');
+import is from '@sindresorhus/is';
 
 import { lexer } from './parser';
 import { FFlatError, serializer } from './utils';
@@ -32,25 +31,23 @@ import {
 } from './constants';
 
 export class StackEnv {
-  status = IDLE;
-
-  completed = new MiniSignal();
-  before = new MiniSignal();
-  after = new MiniSignal();
-
-  previousPromise: Promise<any> = Promise.resolve();
-
+  dict: Dictionary;
   queue: any[] = [];
   stack: StackArray = freeze([]);
-  prevState: any | Object = null;
-  depth = 0;
-  autoundo = true;
   parent: StackEnv;
-  lastAction: Tokens;
-  nextAction: Tokens;
+  depth = 0;
 
-  dict: Dictionary;
+  autoundo = true;
 
+  private status = IDLE;
+
+  private idle = new MiniSignal();
+  private before = new MiniSignal();
+  private after = new MiniSignal();
+
+  private previousPromise: Promise<any> = Promise.resolve();
+  private prevState: any | Object = null;
+  private lastAction: Tokens;
   private lastFnDispatch: any;
 
   defineAction: Function = typed({
@@ -83,7 +80,7 @@ export class StackEnv {
 
   promise(s?: StackValue): Promise<StackEnv> {
     return new Promise((resolve, reject) => {
-      this.completed.once((err: Error) => {
+      this.idle.once((err: Error) => {
         if (err) {
           reject(err);
         }
@@ -101,7 +98,61 @@ export class StackEnv {
     return next;
   }
 
-  run(s?: StackValue): StackEnv {
+  enqueue(s?: StackValue): StackEnv {
+    if (s) this.queue.push(...lexer(s));
+    return this;
+  }
+
+  eval(s?: StackValue): StackEnv {
+    this.enqueue(s);
+    let finished = false;
+    this.idle.once((err: Error) => {
+      if (err) {
+        throw err;
+      }
+      finished = true;
+    });
+
+    this.run();
+    if (!finished) throw new FFlatError('Do Not Release Zalgo', this);
+    return this;
+  }
+
+  clear(): StackEnv {
+    this.stack = splice(this.stack, 0);
+    return this;
+  }
+
+  toArray(): any[] {
+    return [...this.stack];
+  }
+
+  toJSON(): any[] {
+    // todo: this should stringify all state
+    return serializer(this.stack);
+  }
+
+  async createChildPromise(a: StackValue): Promise<StackValue[]> {
+    try {
+      const child = await this.createChild().promise(a);
+      return child.stack;
+    } catch (err) {
+      this.onError(err);
+    }
+  }
+
+  createChild(initalState = {}): StackEnv {
+    return new StackEnv({
+      parent: this,
+      ...initalState
+    });
+  }
+
+  undo(): StackEnv {
+    return Object.assign(this, this.prevState || {});
+  }
+
+  private run(s?: StackValue): StackEnv {
     const self = this;
 
     s && self.queueFront(s);
@@ -129,7 +180,7 @@ export class StackEnv {
         self.after.dispatch(self);
         checkMaxErrors();
       }
-      this.onCompleted();
+      this.onIdle();
     } catch (e) {
       this.onError(e);
     }
@@ -148,74 +199,18 @@ export class StackEnv {
     }
   }
 
-  enqueue(s?: StackValue): StackEnv {
-    if (s) this.queue.push(...lexer(s));
-    return this;
-  }
-
-  eval(s?: StackValue): StackEnv {
-    this.enqueue(s);
-    let finished = false;
-    this.completed.once(err => {
-      if (err) {
-        throw err;
-      }
-      finished = true;
-    });
-
-    this.run();
-    if (!finished) throw new FFlatError('Do Not Release Zalgo', this);
-    return this;
-  }
-
-  clear(): StackEnv {
-    this.stack = splice(this.stack, 0);
-    return this;
-  }
-
-  toArray(): any[] {
-    return [...this.stack];
-  }
-
-  toJSON(): any[] {
-    // todo: this should stringify all state
-    return serializer(this.stack);
-  }
-
-  createChildPromise(a: StackValue): Promise<StackValue[]> {
-    return this.createChild()
-      .promise(a)
-      .then((f: any) => f.stack)
-      .catch(err => {
-        if (err) {
-          this.onError(err);
-        }
-      });
-  }
-
-  createChild(initalState = {}): StackEnv {
-    return new StackEnv({
-      parent: this,
-      ...initalState
-    });
-  }
-
-  undo(): StackEnv {
-    return Object.assign(this, this.prevState || {});
-  }
-
   private queueFront(s: StackValue): StackEnv {
     this.queue.unshift(...lexer(s));
     return this;
   }
 
-  private onCompleted(): void {
+  private onIdle(): void {
     if (this.status === DISPATCHING) {
       this.status = IDLE;
     }
     if (this.status === IDLE) {
       // may be yielding on next tick
-      this.completed.dispatch(null, this);
+      this.idle.dispatch(null, this);
     }
   }
 
@@ -233,7 +228,7 @@ export class StackEnv {
       });
     }
     this.status = ERR;
-    this.completed.dispatch(err, this);
+    this.idle.dispatch(err, this);
     this.status = IDLE;
     this.previousPromise = Promise.resolve();
   }
@@ -298,7 +293,7 @@ export class StackEnv {
         return this.queueFront(lookup.value);
       }
 
-      if (is.function(lookup)) {
+      if (is.function_(lookup)) {
         return this.dispatchFn(
           lookup as Function,
           functionLength(lookup),

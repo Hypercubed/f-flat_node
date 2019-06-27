@@ -1,19 +1,15 @@
 import { randomBytes } from 'crypto';
-import { readFileSync, readFile, existsSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { dirname, join } from 'path';
 import * as fetch from 'isomorphic-fetch';
-import { promisify } from 'util';
 import * as normalizeUrl from 'normalize-url';
+import { URL } from 'url';
 
-const readFileAsync = promisify(readFile);
-
-import { log, FFlatError } from '../utils';
+import { FFlatError } from '../utils';
 import { typed } from '../types';
 
 // const stdin = process.stdin;
 const stdout = <any>process.stdout;
-
-const { URL } = require('url');
 
 function resolve(input: string, base = getURLStringForCwd()) {
   return new URL(input, base);

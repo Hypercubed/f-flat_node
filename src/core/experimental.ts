@@ -9,7 +9,6 @@ import {
   Word,
   Sentence,
   Future,
-  Just,
   Seq,
   StackValue,
   StackArray

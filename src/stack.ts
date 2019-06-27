@@ -1,4 +1,4 @@
-/* global window, global, process, require */
+/* global window, global, process */
 
 import { StackEnv } from './env';
 import { join } from 'path';
