@@ -224,6 +224,10 @@ export const types = {
    * convert string to RegExp
    */
   regexp: typed('regexp', {
-    RegExp: (x: RegExp) => x // typed will convert string to RegExp
+    string: (str: string) => {
+      const match = str.match(new RegExp('^/(.*?)/([gimy]*)$'));
+      return match ? new RegExp(match[1], match[2]) : new RegExp(str);
+    },
+    RegExp: (x: RegExp) => x
   })
 };

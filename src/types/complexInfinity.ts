@@ -34,12 +34,6 @@ typed.addType({
   test: (x: unknown) => x === indeterminate
 });
 
-typed.addConversion({
-  from: 'ComplexInfinity',
-  to: 'number',
-  convert: (x: unknown) => Infinity
-});
-
 /* typed.addType({
   name: 'zero',
   test: x => {

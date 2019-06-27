@@ -469,7 +469,7 @@ export const I = Complex.I;
 
 typed.addType({
   name: 'Complex',
-  test: x => {
+  test: (x: any): x is Complex => {
     return x instanceof Complex;
   }
 });
@@ -477,15 +477,15 @@ typed.addType({
 typed.addConversion({
   from: 'number',
   to: 'Complex',
-  convert: x => {
-    return new Complex(Number(x), 0);
+  convert: (x: number) => {
+    return new Complex(x, 0);
   }
 });
 
 typed.addConversion({
   from: 'Decimal',
   to: 'Complex',
-  convert: x => {
+  convert: (x: Decimal) => {
     return new Complex(x, 0);
   }
 });

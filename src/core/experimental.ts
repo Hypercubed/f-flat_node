@@ -16,15 +16,6 @@ import {
 import { StackEnv } from '../env';
 import { log } from '../utils';
 
-typed.addConversion({
-  from: 'string',
-  to: 'RegExp',
-  convert: (str: string) => {
-    const match = str.match(new RegExp('^/(.*?)/([gimy]*)$'));
-    return match ? new RegExp(match[1], match[2]) : new RegExp(str);
-  }
-});
-
 /**
  * # Internal Experimental Words
  */
