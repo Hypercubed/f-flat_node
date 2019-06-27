@@ -1,5 +1,5 @@
 import test from 'ava';
-import { fJSON, fStack } from './setup';
+import { fJSON, fValue, fStack } from './setup';
 
 /* test('should parse', async t => {
   var f = F();
@@ -60,17 +60,17 @@ test('should test equality', async t => {
 });
 
 test('should <=>', async t => {
-  t.deepEqual(await fJSON('true true <=>'), [0]);
-  t.deepEqual(await fJSON('true false <=>'), [1]);
-  t.deepEqual(await fJSON('false true <=>'), [-1]);
-  t.deepEqual(await fJSON('false false <=>'), [0]);
+  t.deepEqual(await fValue('true true <=>'), 0);
+  t.deepEqual(await fValue('true false <=>'), 1);
+  t.deepEqual(await fValue('false true <=>'), -1);
+  t.deepEqual(await fValue('false false <=>'), 0);
 
-  t.deepEqual(await fStack('true null <=>'), [1]);
-  t.deepEqual(await fStack('null true <=>'), [-1]);
-  t.deepEqual(await fStack('null false <=>'), [1]);
-  t.deepEqual(await fStack('false null <=>'), [-1]);
+  t.deepEqual(await fValue('true null <=>'), 1);
+  t.deepEqual(await fValue('null true <=>'), -1);
+  t.deepEqual(await fValue('null false <=>'), 1);
+  t.deepEqual(await fValue('false null <=>'), -1);
 
-  t.deepEqual(await fStack('null null <=>'), [0]);
+  t.deepEqual(await fValue('null null <=>'), 0);
 });
 
 test('should nand', async t => {

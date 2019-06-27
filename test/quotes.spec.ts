@@ -1,5 +1,5 @@
 import test from 'ava';
-import { F, fJSON, fValues, D, Word } from './setup';
+import { F, fJSON, fValue, fValues, D, Word } from './setup';
 
 test('should push quotes', async t => {
   t.deepEqual(await fValues('[ 1 ] [ 2 ]'), [[1], [2]], 'should push');
@@ -71,7 +71,7 @@ test('should join lists', async t => {
 });
 
 test('should <=> arrays by length', async t => {
-  t.deepEqual(await fJSON('[1 2 3] [4 5 6] <=>'), [0]);
-  t.deepEqual(await fJSON('[1 2 3 4] [4 5 6] <=>'), [1]);
-  t.deepEqual(await fJSON('[1 2 3] [4 5 6 7] <=>'), [-1]);
+  t.deepEqual(await fValue('[1 2 3] [4 5 6] <=>'), 0);
+  t.deepEqual(await fValue('[1 2 3 4] [4 5 6] <=>'), 1);
+  t.deepEqual(await fValue('[1 2 3] [4 5 6 7] <=>'), -1);
 });

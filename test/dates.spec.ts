@@ -1,5 +1,5 @@
 import test from 'ava';
-import { fJSON } from './setup';
+import { fJSON, fValue } from './setup';
 
 test('should create dates', async t => {
   t.deepEqual(await fJSON('"1/1/1990" date'), [{$date: '1990-01-01T07:00:00.000Z'}], 'should create a date from a short date');
@@ -29,9 +29,9 @@ test('should test equality', async t => {
 });
 
 test('should compare', async t => {
-  t.deepEqual(await fJSON('"1/1/1990" date "1/1/1990" date <=>'), [0]);
-  t.deepEqual(await fJSON('"1/1/1990" date "1/1/1970" date <=>'), [1]);
-  t.deepEqual(await fJSON('"1/1/1990" date "1/1/2000" date <=>'), [-1]);
+  t.deepEqual(await fValue('"1/1/1990" date "1/1/1990" date <=>'), 0);
+  t.deepEqual(await fValue('"1/1/1990" date "1/1/1970" date <=>'), 1);
+  t.deepEqual(await fValue('"1/1/1990" date "1/1/2000" date <=>'), -1);
 });
 
 test('should test inequality', async t => {

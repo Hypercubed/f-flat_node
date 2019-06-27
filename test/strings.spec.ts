@@ -1,5 +1,5 @@
 import test from 'ava';
-import { F, fJSON, fValues } from './setup';
+import { F, fJSON, fValues, fValue } from './setup';
 
 test('should push strings', async t => {
   t.deepEqual(await fJSON('"a" "b"'), ['a', 'b']);
@@ -85,9 +85,9 @@ test('should test equality', async t => {
 });
 
 test('should <=>', async t => {
-  t.deepEqual(await fJSON('"a" "a" <=>'), [0]);
-  t.deepEqual(await fJSON('"a" "b" <=>'), [-1]);
-  t.deepEqual(await fJSON('"b" "a" <=>'), [1]);
+  t.deepEqual(await fValue('"a" "a" <=>'), 0);
+  t.deepEqual(await fValue('"a" "b" <=>'), -1);
+  t.deepEqual(await fValue('"b" "a" <=>'), 1);
 });
 
 test('should test lt', async t => {
