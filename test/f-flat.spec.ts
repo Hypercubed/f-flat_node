@@ -384,7 +384,7 @@ test('pick into object with default', async t => {
   t.deepEqual(await fJSON('{ a: 3 } q< { b: q> over @ 5 orelse }'), [
     { b: D(5) }
   ]);
-  t.snapshot(await fStack('{ a: 7 } q< { c: q> b: @ 11 orelse }')); // [{ c: 11 }]
+  t.deepEqual(await fJSON('{ a: 7 } q< { c: q> b: @ 11 orelse }'), [{ c: D(11) }]); // [{ c: 11 }]
 });
 
 test('pick into array', async t => {

@@ -2,6 +2,7 @@ import { inspect } from 'util';
 import * as fixedWidthString from 'fixed-width-string';
 import { stripColor, supportsColor } from 'chalk';
 import * as chalk from 'chalk';
+import { Decimal } from 'decimal.js';
 
 import { typed } from '../types/index';
 
