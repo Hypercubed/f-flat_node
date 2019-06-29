@@ -1,5 +1,6 @@
 import test from 'ava';
 import { fJSON, fString, fValues, fValue, fStack, nearly, Complex } from './setup';
+import Decimal from 'Decimal.js';
 
 const C = (x: Decimal.Value | Complex, y: Decimal.Value) => new Complex(x, y).toJSON();
 

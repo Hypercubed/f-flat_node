@@ -9,7 +9,6 @@ import {
   Sentence,
   Word,
   Just,
-  Complex,
   Decimal
 } from '../types';
 import { template, templateParts, toObject } from '../utils';

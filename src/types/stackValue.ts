@@ -23,4 +23,4 @@ export type StackValue =
 
 export interface StackArray extends Array<StackValue> {}
 
-export type Tokens = Word | Sentence | Just | Seq | Future | Promise<any>;
+export type Token = Word | Sentence | Just | Seq | Future | Promise<any>;

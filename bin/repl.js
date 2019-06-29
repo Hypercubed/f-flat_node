@@ -9,7 +9,7 @@ const gradient = require('gradient-string');
 const memoize = require('memoizee');
 
 const { createStack, createRootEnv } = require('../dist/stack');
-const { log, type, formatValue, formatState, bar } = require('../dist/utils');
+const { log, type, bar, FFlatPrettyPrinter } = require('../dist/utils');
 
 const pkg = require('../package.json');
 
@@ -29,12 +29,15 @@ const welcome = gradient.rainbow(`
 
 const initialPrompt = 'F♭> ';
 const altPrompt = 'F♭) ';
-const inspectOptions = {
+
+const pprint = new FFlatPrettyPrinter({
   showHidden: false,
-  depth: null,
+  depth: 5,
   colors: true,
-  indent: true
-};
+  indent: true,
+  maxArrayLength: 10,
+  maxObjectKeys: 10
+});
 
 let arg = '';
 let buffer = '';
@@ -123,7 +126,7 @@ function startREPL() {
       // const objectId = getUniqueObjectCounter();
       f.stack.forEach((d, i) => {
         const id = objectId(d).toString(16);
-        console.log(`${f.stack.length - i}: ${formatValue(d, null, inspectOptions)} [${type(d)}] (${id})`);
+        console.log(`${f.stack.length - i}: ${pprint.formatValue(d, null)} [${type(d)}] (${id})`);
       });
       this.displayPrompt();
     }
@@ -167,7 +170,7 @@ function newStack() {
 }
 
 function writer(_) {
-  return silent ? '' : `${formatValue(_.stack, null, inspectOptions)}\n`;
+  return silent ? '' : `${pprint.formatValue(_.stack, -1)}\n`;
 }
 
 function fEval(code, _, __, cb) {
@@ -233,19 +236,19 @@ function getKeys() {
   return keys;
 }
 
-let beforeBinding;
+let bindings = [];
 
 function addBefore() {
-  if (beforeBinding) {
-    beforeBinding.detach();
-  }
+  bindings.forEach(b => b.detach());
+  bindings = [];
 
-  const showTrace = (log.level.toString() === 'trace');
+  const showTrace = log.level.toString() === 'trace';
 
   if (showTrace) {
-    return f.before.add(() => {
-      console.log(formatState(f));
-    });
+    const printTrace = () => console.log(pprint.formatTrace(f));
+    bindings.push(f.before.add(printTrace));
+    bindings.push(f.beforeEach.add(printTrace));
+    bindings.push(f.idle.add(printTrace));
   }
 
   const showBar = !nonInteractive || !f.silent && (log.level.toString() === 'warn');
@@ -254,7 +257,7 @@ function addBefore() {
     let qMax = f.stack.length + f.queue.length;
     let c = 0;
 
-    return f.before.add(() => {
+    const b = () => {
       c++;
       if (c % 1000 === 0) {
         const q = f.stack.length + f.queue.length;
@@ -278,6 +281,8 @@ function addBefore() {
           lastAction
         });
       }
-    });
+    };
+
+    bindings.push(f.before.add(b));
   }
 }

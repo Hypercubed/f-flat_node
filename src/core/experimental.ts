@@ -168,5 +168,9 @@ export const experimental = {
     const proto = Object.getPrototypeOf(obj);
     const newObj = Object.create(proto);
     return Object.assign(newObj, { [key]: value });
-  }
+  },
+
+  /* assert(this: StackEnv, value: boolean, message: string) {
+    throw new FFlatError(`Asserion error: ${message}`, this);
+  } */
 };

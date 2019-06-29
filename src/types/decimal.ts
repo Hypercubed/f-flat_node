@@ -164,9 +164,7 @@ export function gammaDecimal(a: Decimal) {
 
 typed.addType({
   name: 'Decimal',
-  test: (x: any): x is Decimal => {
-    return x instanceof Decimal;
-  }
+  test: Decimal.isDecimal
 });
 
 typed.addConversion({

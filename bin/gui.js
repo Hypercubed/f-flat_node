@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 const blessed = require('blessed');
-const { Stack, createRootEnv } = require('../dist/stack');
-const { log, formatArray, type, bar } = require('../dist/utils');
+const { createStack, createRootEnv } = require('../dist/stack');
+const { log, formatArray, bar } = require('../dist/utils');
 
 const inspectOptions = {
   showHidden: false,
@@ -169,7 +169,7 @@ screen.render();
 
 function newStack() {
   log.level = 'warn';
-  return Stack('', createRootEnv().createChild(undefined));
+  return createStack('', createRootEnv().createChild(undefined));
 }
 
 function run(buffer) {

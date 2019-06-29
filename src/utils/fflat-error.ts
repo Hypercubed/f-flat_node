@@ -1,14 +1,10 @@
-import { formatState, lFormatArray, rFormatArray } from './pprint';
+import { ffPrettyPrint } from './pprint';
 import { StackEnv } from '../env';
 
 export class FFlatError extends Error {
   constructor(
     message = 'FFlatError',
-    state: any = {
-      args: null,
-      stack: [],
-      queue: []
-    }
+    state?: StackEnv
   ) {
     super(message);
 
@@ -23,19 +19,25 @@ export class FFlatError extends Error {
       value: 'FFlatError'
     });
 
-    const call = (state.args && state.lastAction) ? [...state.argArray, state.lastAction] : null;
+    let stackArray: string[];
+    if (state) {
+      stackArray = [
+        `${this.name}: ${this.message}`,
+        `stack/queue: ${state.stack.length} / ${state.queue.length}`
+      ];
 
-    const stack = [
-      `${this.name}: ${this.message}`,
-      `stack/queue: ${state.stack.length} / ${state.queue.length}`,
-      `stack: ${lFormatArray(state.stack, -10).trimLeft()}`,
-      call ? `call:  ${lFormatArray(call, -10).trimLeft()}` : null,
-      `queue: ${rFormatArray(state.queue, -10)}`
-    ].filter(Boolean).join('\n   ');
+      stackArray.push(`stack trace:`);
+
+      state.trace.forEach((s) => {
+        stackArray.push(`     ${ffPrettyPrint.formatTrace(s as any, -5)}`);
+      });
+    } else {
+      stackArray = [''];
+    }
 
     Reflect.defineProperty(this, 'stack', {
       enumerable: false,
-      value: stack
+      value: stackArray.join('\n')
     });
   }
 }

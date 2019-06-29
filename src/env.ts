@@ -18,7 +18,7 @@ import {
   Future,
   Word,
   Sentence,
-  Tokens
+  Token
 } from './types';
 import {
   MAXSTACK,
@@ -39,16 +39,19 @@ export class StackEnv {
 
   autoundo = true;
 
+  // Make readonly protected
+  lastFnDispatch: any;
+  currentAction: Token;
+  prevState: Partial<StackEnv> = null;
+  trace: Array<Partial<StackEnv>> = [];
+
+  before = new MiniSignal();
+  beforeEach = new MiniSignal();
+  afterEach = new MiniSignal();
+  idle = new MiniSignal();
+
   private status = IDLE;
-
-  private idle = new MiniSignal();
-  private before = new MiniSignal();
-  private after = new MiniSignal();
-
   private previousPromise: Promise<any> = Promise.resolve();
-  private prevState: any | Object = null;
-  private lastAction: Tokens;
-  private lastFnDispatch: any;
 
   defineAction: Function = typed({
     Function: (fn: Function) => {
@@ -67,7 +70,7 @@ export class StackEnv {
       const act = new Sentence(lexer(fn));
       return this.defineAction(name, act);
     },
-    'Word | string, any': (name: Word | string, a) =>
+    'Word | string, any': (name: Word | string, a: any) =>
       this.dict.set(String(name), a)
   });
 
@@ -149,47 +152,50 @@ export class StackEnv {
   }
 
   undo(): StackEnv {
-    return Object.assign(this, this.prevState || {});
+    const prevState = this.prevState || {};
+    prevState.queue = [];
+    return Object.assign(this, prevState);
   }
 
   private run(s?: StackValue): StackEnv {
-    const self = this;
+    s && this.enqueueFront(s);
 
-    s && self.queueFront(s);
-
-    if (self.status !== IDLE) {
-      return self;
+    if (this.status !== IDLE) {
+      return this;
     }
 
-    self.status = DISPATCHING;
+    this.status = DISPATCHING;
 
-    self.prevState = {
-      // store state for undo or on error
-      depth: self.depth,
-      prevState: self.prevState,
-      stack: self.stack, // note: stack is immutable, this is a point in time copy.
-      queue: []
-    };
+    this.prevState = this.stateSnapshot();
 
     let loopCount = 0;
 
+    this.currentAction = undefined;
+    this.trace = [this.stateSnapshot()];
+    this.before.dispatch(this);
+
     try {
-      while (self.status !== YIELDING && self.queue.length > 0) {
-        self.before.dispatch(self);
-        self.stackDispatchToken(self.queue.shift());
-        self.after.dispatch(self);
-        checkMaxErrors();
+      while (this.status !== YIELDING && this.queue.length > 0) {
+        checkMaxErrors(this);
+
+        this.currentAction = this.queue.shift();
+        this.trace.push(this.stateSnapshot());
+        this.trace = this.trace.slice(-10);
+        this.beforeEach.dispatch(this);
+        this.dispatchToken(this.currentAction);
+        this.afterEach.dispatch(this);
+        this.currentAction = undefined;
       }
       this.onIdle();
     } catch (e) {
       this.onError(e);
     }
 
-    return self;
+    return this;
 
     // Actions to run after each dispatch
     // Used to detect MAXSTACK and MAXRUN errors
-    function checkMaxErrors() {
+    function checkMaxErrors(self: StackEnv) {
       if (self.stack.length > MAXSTACK || self.queue.length > MAXSTACK) {
         throw new FFlatError('MAXSTACK exceeded', self);
       }
@@ -199,7 +205,7 @@ export class StackEnv {
     }
   }
 
-  private queueFront(s: StackValue): StackEnv {
+  private enqueueFront(s: StackValue): StackEnv {
     this.queue.unshift(...lexer(s));
     return this;
   }
@@ -209,23 +215,21 @@ export class StackEnv {
       this.status = IDLE;
     }
     if (this.status === IDLE) {
+      this.trace = [];
       // may be yielding on next tick
       this.idle.dispatch(null, this);
     }
   }
 
   private onError(err: Error): void {
-    const {stack, queue, lastAction, lastFnDispatch} = this;
     if (this.autoundo) {
       this.undo();
     }
     if (err instanceof TypeError && (err as any).data) {
-      err = new FFlatError(err.message, {
-        stack,
-        queue,
-        lastAction,
-        ...lastFnDispatch
-      });
+      const { data } = err as any;
+      const index = this.lastFnDispatch.args - data.index;
+      const message = `Unexpected type of argument in ${data.fn} (expected: ${data.expected.join(' or ')}, actual: ${data.actual}, index: ${index})`;
+      err = new FFlatError(message, this);
     }
     this.status = ERR;
     this.idle.dispatch(err, this);
@@ -233,12 +237,21 @@ export class StackEnv {
     this.previousPromise = Promise.resolve();
   }
 
-  private stackPushValues(...a: StackValue[]) {
+  private push(...a: StackValue[]) {
     this.stack = freeze([...this.stack, ...a]);
   }
 
-  private stackDispatchToken(token: Tokens): any {
-    this.lastAction = token;
+  private isImmediate(c: Word | Sentence): boolean {
+    return (
+      this.depth < 1 || // in immediate state
+      '[]{}'.indexOf(c.value) > -1 || // these quotes are always immediate
+      (c.value[0] === IIF && // tokens prefixed with : are imediate
+        c.value[c.value.length - 1] !== IIF &&
+        c.value.length > 1)
+    );
+  }
+
+  private dispatchToken(token: Token): any {
     if (typeof token === 'undefined') {
       return;
     }
@@ -252,31 +265,31 @@ export class StackEnv {
       });
     }
 
-    if (token instanceof Just) return this.stackPushValues(token.value);
+    if (token instanceof Just) return this.push(token.value);
 
-    if (token instanceof Seq) return this.stackPushValues(...token.value);
+    if (token instanceof Seq) return this.push(...token.value);
 
     if (token instanceof Future) {
       return token.isResolved()
-        ? this.stackPushValues(...(token.value as StackArray))
-        : this.stackPushValues(token);
+        ? this.push(...(token.value as StackArray))
+        : this.push(token);
     }
 
     if (token instanceof Sentence && this.isImmediate(<Word>token))
-      return this.queueFront(token.value);
+      return this.enqueueFront(token.value);
 
     if (token instanceof Word && this.isImmediate(<Word>token)) {
       let tokenValue = token.value;
 
       if (!is.string(tokenValue)) {
         // this is a hack to push word literals, get rid of this
-        return this.stackPushValues(tokenValue);
+        return this.push(tokenValue);
       }
 
       if (tokenValue.length > 1) {
         if (tokenValue[tokenValue.length - 1] === IIF) {
           tokenValue = tokenValue.slice(0, -1);
-          return this.stackPushValues(new Word(tokenValue));
+          return this.push(new Word(tokenValue));
         }
 
         if (tokenValue[0] === IIF) {
@@ -290,31 +303,21 @@ export class StackEnv {
       }
 
       if (lookup instanceof Word || lookup instanceof Sentence) {
-        return this.queueFront(lookup.value);
+        return this.enqueueFront(lookup.value);
       }
 
       if (is.function_(lookup)) {
         return this.dispatchFn(
-          lookup as Function,
+          lookup,
           functionLength(lookup),
           tokenValue
         );
       }
 
-      return this.stackPushValues(lookup);
+      return this.push(lookup);
     }
 
-    return this.stackPushValues(token as StackValue);
-  }
-
-  private isImmediate(c: Word | Sentence): boolean {
-    return (
-      this.depth < 1 || // in immediate state
-      '[]{}'.indexOf(c.value) > -1 || // these quotes are always immediate
-      (c.value[0] === IIF && // tokens prefixed with : are imediate
-        c.value[c.value.length - 1] !== IIF &&
-        c.value.length > 1)
-    );
+    return this.push(token as StackValue);
   }
 
   private dispatchFn(fn: Function, args?: number, name?: string): void {
@@ -335,15 +338,25 @@ export class StackEnv {
 
       const r = fn.apply(this, argArray);
       if (r instanceof Word || r instanceof Sentence) {
-        this.queueFront(r.value);
+        this.enqueueFront(r.value);
       } else if (typeof r !== 'undefined') {
-        this.stackDispatchToken(r);
+        this.dispatchToken(r);
       }
       return;
     }
     const argArray = this.stack.slice(0);
     this.stack = splice(this.stack, 0);
     argArray.push(new Word(<any>name));
-    this.stackPushValues(argArray);
+    this.push(argArray);
+  }
+
+  private stateSnapshot(): Partial<StackEnv> {
+    return {
+      currentAction: this.currentAction,
+      depth: this.depth,
+      prevState: this.prevState,
+      stack: this.stack,
+      queue: this.queue.slice()
+    };
   }
 }

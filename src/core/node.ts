@@ -106,7 +106,7 @@ export const node = {
    * Generates cryptographically strong pseudo-random with a givennumber of bytes to generate
    *
    */
-  'rand-u32': () => randomBytes(4).readUInt32BE(0, true),
+  'rand-u32': () => randomBytes(4).readUInt32BE(0),
 
   /**
    * ## `dirname`

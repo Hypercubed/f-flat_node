@@ -2,7 +2,6 @@ import test from 'ava';
 import {
   F,
   fJSON,
-  fStack,
   fValues,
   fValue,
   fString,
@@ -81,7 +80,7 @@ test('should drop swap slip', async t => {
 
 test('should dup', async t => {
   t.deepEqual(await fValues('1 2 dup 3'), [1, 2, 2, 3]);
-  t.deepEqual(await fValues('[ 1 2 + ] dup swap drop eval'), [3]);
+  t.deepEqual(await fValue('[ 1 2 + ] dup swap drop eval'), 3);
 });
 
 test('should dup cl1', async t => {

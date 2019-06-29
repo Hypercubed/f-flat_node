@@ -1,6 +1,6 @@
 import is from '@sindresorhus/is';
 
-import { formatValue, FFlatError } from '../utils';
+import { ffPrettyPrint, FFlatError } from '../utils';
 import { Sentence, Word, Just, StackValue } from '../types';
 import { USE_STRICT } from '../constants';
 import { StackEnv } from '../env';
@@ -144,7 +144,7 @@ export const dict = {
     if (r instanceof Word || r instanceof Sentence) {
       return r.displayString;
     }
-    return formatValue(r, 0, { colors: false, indent: false });
+    return ffPrettyPrint.formatValue(r, 0);
   },
 
   /**

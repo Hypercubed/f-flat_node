@@ -21,6 +21,7 @@ nth: [ -- @ ] ;
 dupn: [ [ dup ] swap times ] ;
 
 // side effects
+traceoff: [ warn: set-log-level ] ;
 trace: [ trace: set-log-level ] ;
 timing: [ timing: set-log-level ] ;
 
@@ -118,4 +119,17 @@ s-test: [
   Hello
   World
   `
+] ;
+
+ok?: [
+  'Assertion error'
+  [ throw ] >>
+  unless
+] ;
+
+assert: [
+  'Assertion error: '
+  swap +
+  [ throw ] >>
+  unless
 ] ;
