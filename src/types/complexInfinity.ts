@@ -1,4 +1,5 @@
 import { typed } from './typed';
+import { Complex } from './complex';
 
 export class AbstractValue {
   constructor(public type: string) {}
@@ -16,31 +17,58 @@ export class AbstractValue {
   }
 }
 
-export const complexInfinity = new AbstractValue('ComplexInfinity');
 export const indeterminate = new AbstractValue('Indeterminate');
 
-/* typed.addType({
-  name: 'AbstractValue',
-  test: x => x instanceof AbstractValue
-}); */
+export class ComplexInfinity extends AbstractValue {
+  static complexInfinity = new ComplexInfinity();
+
+  static get symbol() {
+    return '∞̅';
+  }
+
+  static times(rhs: Complex | ComplexInfinity) {
+    if (ComplexInfinity.isComplexInfinity(rhs)) {
+      return ComplexInfinity.complexInfinity;
+    }
+
+    if (rhs.cmp(0) !== 0) {
+      return ComplexInfinity.complexInfinity;
+    }
+
+    return indeterminate;
+  }
+
+  static div(rhs: Complex | ComplexInfinity) {
+    if (ComplexInfinity.isComplexInfinity(rhs)) {
+      return indeterminate;
+    }
+    return ComplexInfinity.complexInfinity;
+  }
+
+  static idiv(lhs: Complex | ComplexInfinity) {
+    return 0;
+  }
+
+  static isComplexInfinity(a: any): a is ComplexInfinity {
+    return a === ComplexInfinity.complexInfinity;
+  }
+
+  constructor() {
+    super('ComplexInfinity');
+  }
+}
+
+export const { complexInfinity } = ComplexInfinity;
 
 typed.addType({
   name: 'ComplexInfinity',
-  test: (x: unknown) => x === complexInfinity
+  test: ComplexInfinity.isComplexInfinity
 });
 
 typed.addType({
   name: 'Indeterminate',
   test: (x: unknown) => x === indeterminate
 });
-
-/* typed.addType({
-  name: 'zero',
-  test: x => {
-    console.log('zero', x, +x === 0);
-    return +x === 0;
-  }
-}); */
 
 typed.addType({
   name: 'infinity',

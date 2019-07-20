@@ -295,5 +295,7 @@ export const math = {
    * Gets the internal decimal precision
    *
    */
-  'get-precision': () => Decimal.precision
+  'get-precision': () => Decimal.precision,
+
+  'complexinfinity': () => complexInfinity
 };

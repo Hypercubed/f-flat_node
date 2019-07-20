@@ -241,7 +241,7 @@ export class Complex {
     return new Complex(re, im);
   }
 
-  cmp(rhs: Complex): number {
+  cmp(rhs: string | number | Complex | Decimal): number {
     rhs = new Complex(rhs);
     if (this.equals(rhs)) {
       return 0;
@@ -433,6 +433,10 @@ export class Complex {
     return new Complex(re, im);
   }
 
+  static isComplex(a: any): a is Complex {
+    return a instanceof Complex;
+  }
+
   static I = new Complex(0, 1);
 
   static parse(a: Decimal.Value | Complex) {
@@ -469,9 +473,7 @@ export const I = Complex.I;
 
 typed.addType({
   name: 'Complex',
-  test: (x: any): x is Complex => {
-    return x instanceof Complex;
-  }
+  test: Complex.isComplex
 });
 
 typed.addConversion({

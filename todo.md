@@ -4,6 +4,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # New TODOs
 - [ ] Decimal shift/unshift
+- [ ] More complexInfinit/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
+- [ ] stack underflow is an error!!
 
 # Bugs
 
@@ -69,7 +71,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Words
 
-- [ ] `cld`: https://docs.julialang.org/en/stable/stdlib/math/#Base.cld
+- [ ] `cld`: (Smallest integer larger than or equal to x/y)
 - [ ] `isfinite?`, `isinf?`, `isnan?`
 - [ ] `sign`, `ispos?`, `isneg?`
 - [ ] `>>>` ?

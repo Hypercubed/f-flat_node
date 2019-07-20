@@ -145,7 +145,7 @@ export class FFlatPrettyPrinter {
 
     this.formatValue = typed('formatValue', {
       'Symbol, number | null': (value: Symbol) => this.formatSymbol(value),
-      'Decimal | Complex | ComplexInfinity | number, number | null': this._stylizeNumber,
+      'Decimal | Complex | ComplexInfinity | Indeterminate | number, number | null': this._stylizeNumber,
       'null, number | null': this._stylizeNull,
       'boolean, number | null': this._stylizeBoolean,
       'Word | Sentence, number | null': this._stylizeName,

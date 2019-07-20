@@ -242,18 +242,14 @@ function addBefore() {
   bindings.forEach(b => b.detach());
   bindings = [];
 
-  const showTrace = log.level.toString() === 'trace';
+  const level = log.level.toString();
 
-  if (showTrace) {
+  if (level === 'trace') {
     const printTrace = () => console.log(pprint.formatTrace(f));
     bindings.push(f.before.add(printTrace));
     bindings.push(f.beforeEach.add(printTrace));
     bindings.push(f.idle.add(printTrace));
-  }
-
-  const showBar = !nonInteractive || !f.silent && (log.level.toString() === 'warn');
-
-  if (showBar) {
+  } else if (!nonInteractive || !f.silent && (level === 'warn')) {
     let qMax = f.stack.length + f.queue.length;
     let c = 0;
 

@@ -125,6 +125,8 @@ P.spouge = function() {
   return b.exp();
 }; */
 
+// TODO: gamma(0) === ComplexInfinity
+
 export function gammaDecimal(a: Decimal) {
   // more tests
   // The Lanczos approximation

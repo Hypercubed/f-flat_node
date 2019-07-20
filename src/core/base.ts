@@ -37,6 +37,7 @@ import {
   Decimal,
   StackArray,
   complexInfinity,
+  ComplexInfinity,
   AbstractValue
 } from '../types';
 
@@ -337,8 +338,9 @@ const mul = typed('mul', {
    * [ 6 ]
    * ```
    */
-  'Complex, Complex': (lhs: Complex, rhs: Complex) =>
-    lhs.times(rhs).normalize(),
+  'Complex, Complex': (lhs: Complex, rhs: Complex) => lhs.times(rhs).normalize(),
+  'ComplexInfinity, Complex | ComplexInfinity': (lhs: ComplexInfinity, rhs: Complex | ComplexInfinity) => ComplexInfinity.times(rhs),
+  'Complex, ComplexInfinity': (lhs: Complex, rhs: ComplexInfinity) => ComplexInfinity.times(lhs),
   'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal) => lhs.times(rhs)
 });
 
@@ -421,6 +423,8 @@ const div = typed('div', {
     if (+rhs === 0 && +lhs !== 0) return complexInfinity;
     return lhs.div(rhs);
   },
+  'ComplexInfinity, Complex | ComplexInfinity': (lhs: ComplexInfinity, rhs: Complex | ComplexInfinity) => ComplexInfinity.div(rhs),
+  'Complex, ComplexInfinity': (lhs: Complex, rhs: ComplexInfinity) => ComplexInfinity.idiv(lhs),
   'number, number': (lhs: number, rhs: number) => lhs / rhs
 });
 
@@ -818,6 +822,7 @@ const ln = typed('ln', {
    * - natural log
    */
   Complex: (a: Complex) => a.ln(),
+  ComplexInfinity: (a: Complex) => Infinity,
   'Decimal | number': (a: Decimal | number) => {
     if (a <= 0) return new Complex(a).ln();
     return new Decimal(a).ln();
