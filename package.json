@@ -26,7 +26,7 @@
   "author": "J. Harshbarger",
   "license": "MIT",
   "dependencies": {
-    "@hypercubed/dynamo": "^1.0.1",
+    "@hypercubed/dynamo": "^1.0.2",
     "@sindresorhus/is": "^0.17.1",
     "autobind-decorator": "^2.4.0",
     "blessed": "^0.1.81",
