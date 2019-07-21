@@ -1,16 +1,23 @@
-import { typed, StackValue, Word } from '../types';
+import { signature, Any } from '@hypercubed/dynamo';
+
+import { dynamo, StackValue, Word } from '../types';
 import { deepEquals } from './utils';
 
-export const patternMatch = typed('pattern', {
-  'any, Symbol': (a: any, b: Symbol): boolean => {
+class PatternMatch {
+  @signature(Any, Symbol)
+  'any, Symbol'(a: any, b: Symbol): boolean {
     if (b === Symbol.for('_')) return true;
     return typeof a === 'symbol' ? a === b : false;
-  },
-  'any, Word': (a: any, b: Word): boolean => {
+  }
+
+  @signature(Any, Word)
+  'any, Word'(a: any, b: Word): boolean {
     if (b.value === '_') return true;
     return a instanceof Word && a.value === b.value;
-  },
-  'Array, Array': (a: StackValue[], b: StackValue[]): boolean => {
+  }
+
+  @signature(Array, Array)
+  'Array, Array'(a: StackValue[], b: StackValue[]): boolean {
     if (a.length < b.length) {
       // todo: handle "rest" pattern '...'
       return false;
@@ -23,8 +30,10 @@ export const patternMatch = typed('pattern', {
       }
     }
     return true;
-  },
-  'map, map': (a: {}, b: {}): boolean => {
+  }
+
+  @signature(Object, Object)
+  'map, map'(a: {}, b: {}): boolean {
     const ak = Object.keys(a);
     const bk = Object.keys(b);
     if (ak.length < bk.length) {
@@ -41,7 +50,17 @@ export const patternMatch = typed('pattern', {
       }
     }
     return true;
-  },
-  'any, RegExp': (lhs: string, rhs: RegExp) => rhs.test(lhs),
-  'any, any': (a: any, b: any): boolean => deepEquals(a, b)
-});
+  }
+
+  @signature(Any, RegExp)
+  'any, RegExp'(lhs: string, rhs: RegExp) {
+    return rhs.test(lhs);
+  }
+
+  @signature(Any, Any)
+  'any, any'(a: any, b: any): boolean {
+    return deepEquals(a, b);
+  }
+}
+
+export const patternMatch = dynamo.function(PatternMatch);

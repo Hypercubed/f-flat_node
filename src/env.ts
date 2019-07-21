@@ -1,6 +1,6 @@
 /* global window, global, process */
 import { functionLength, functionName } from 'fantasy-helpers/src/functions';
-
+import { signature, Any } from '@hypercubed/dynamo';
 import * as MiniSignal from 'mini-signals';
 import { freeze, splice } from 'icepick';
 import is from '@sindresorhus/is';
@@ -9,7 +9,7 @@ import { lexer } from './parser';
 import { FFlatError, serializer } from './utils';
 
 import {
-  typed,
+  dynamo,
   Seq,
   Just,
   Dictionary,
@@ -53,32 +53,46 @@ export class StackEnv {
   private status = IDLE;
   private previousPromise: Promise<any> = Promise.resolve();
 
-  defineAction: Function = typed({
-    Function: (fn: Function) => {
-      const name = functionName(fn);
-      return this.defineAction(name, fn);
-    },
-    Object: (obj: Object) => {
-      for (const key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-          this.defineAction(key, obj[key]);
-        }
-      }
-      return this;
-    },
-    'Word | string, string': (name: Word | string, fn: string) => {
-      const act = new Sentence(lexer(fn));
-      return this.defineAction(name, act);
-    },
-    'Word | string, any': (name: Word | string, a: any) =>
-      this.dict.set(String(name), a)
-  });
+  defineAction: Function;
 
   constructor(initalState: any = { parent: null }) {
     Object.assign(this, initalState);
     this.dict = new Dictionary(
       initalState.parent ? initalState.parent.dict : undefined
     );
+
+    const self = this;
+
+    class DefinedAction {
+      @signature()
+      Function(fn: Function) {
+        const name = functionName(fn);
+        return self.defineAction(name, fn);
+      }
+
+      @signature()
+      Object(obj: Object) {
+        for (const key in obj) {
+          if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            self.defineAction(key, obj[key]);
+          }
+        }
+        return this;
+      }
+
+      @signature([Word, String], String)
+      'Word | string, string'(name: Word | string, fn: string) {
+        const act = new Sentence(lexer(fn));
+        return self.defineAction(name, act);
+      }
+
+      @signature([Word, String], Any)
+      'Word | string, any'(name: Word | string, a: any) {
+        return self.dict.set(String(name), a);
+      }
+    }
+
+    this.defineAction = dynamo.function(DefinedAction);
   }
 
   promise(s?: StackValue): Promise<StackEnv> {

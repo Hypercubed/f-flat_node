@@ -21,6 +21,6 @@ export type StackValue =
   | Decimal
   | map;
 
-export interface StackArray extends Array<StackValue> {}
+export class StackArray extends Array<StackValue> {}
 
 export type Token = Word | Sentence | Just | Seq | Future | Promise<any>;

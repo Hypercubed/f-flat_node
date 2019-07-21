@@ -85,16 +85,16 @@ encoder
   }));
 
 encoder
-  .registerType(Array, (v: Array<any>, path, cb) => {
+  .registerType(Array, (v: Array<any>, path: any, cb: (arg0: any, arg1: any[]) => void) => {
     return v.map((v, i) => cb(v, [...path, i]));
   })
-  .registerType(Map, (v: Array<any>, path, cb) => {
+  .registerType(Map, (v: Array<any>, path: any, cb: (arg0: any[], arg1: any) => void) => {
     return { $map: cb(Array.from(v), path) };
   })
-  .registerType(Set, (v: Array<any>, path, cb) => {
+  .registerType(Set, (v: Array<any>, path: any, cb: (arg0: any[], arg1: any) => void) => {
     return { $set: cb(Array.from(v), path) };
   })
-  .registerType(Object, (v: Array<any>, path, cb) => {
+  .registerType(Object, (v: Array<any>, path: any, cb: (arg0: any, arg1: any[]) => void) => {
     return Object.keys(v).reduce((acc, key) => {
       acc[key] = cb(v[key], [...path, key]);
       return acc;

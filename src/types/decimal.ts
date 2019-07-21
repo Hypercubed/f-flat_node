@@ -1,6 +1,6 @@
+import { guard, conversion } from '@hypercubed/dynamo';
 import { Decimal } from 'decimal.js';
 
-import { typed } from './typed';
 import { g, c } from './gamma';
 
 export { Decimal };
@@ -163,17 +163,3 @@ export function gammaDecimal(a: Decimal) {
     .times(t.neg().exp()) //  *exp(-(z+g+1/2))
     .times(agz); //  *Ag(z)
 }
-
-typed.addType({
-  name: 'Decimal',
-  test: Decimal.isDecimal
-});
-
-typed.addConversion({
-  from: 'number',
-  to: 'Decimal',
-  convert: (x: number) => {
-    return new Decimal(x);
-  }
-});
-

@@ -4,9 +4,10 @@ import { dirname, join } from 'path';
 import * as fetch from 'isomorphic-fetch';
 import * as normalizeUrl from 'normalize-url';
 import { URL } from 'url';
+import { signature, Any } from '@hypercubed/dynamo';
 
 import { FFlatError } from '../utils';
-import { typed } from '../types';
+import { dynamo } from '../types';
 
 // const stdin = process.stdin;
 const stdout = <any>process.stdout;
@@ -39,6 +40,18 @@ function getURLFromFilePath(filepath: string) {
   return tmp;
 }
 
+class Resolve {
+  @signature()
+  string(name: string): string {
+    return normalizeUrl(resolve(name).href);
+  }
+
+  @signature()
+  array([name, base]: string[]): string {
+    return normalizeUrl(resolve(name, base).href);
+  }
+}
+
 /**
  * # Internal Node Words
  */
@@ -46,7 +59,9 @@ export const node = {
   /**
    * ## `args`
    */
-  args: () => process.argv,
+  args() {
+    return process.argv;
+  },
 
   /**
    * ## `println`
@@ -54,7 +69,7 @@ export const node = {
    * Prints the value followed by (newline)
    *
    */
-  println: (a: any, ...b: any[]) => {
+  println(a: any, ...b: any[]) {
     try {
       stdout.clearLine();
       stdout.cursorTo(0);
@@ -68,7 +83,7 @@ export const node = {
    * Prints the value
    *
    */
-  print: (a: any) => {
+  print(a: any) {
     try {
       stdout.clearLine();
       stdout.cursorTo(0);
@@ -82,7 +97,7 @@ export const node = {
    * Prints the value followed by (newline)
    *
    */
-  '?': (a: any, ...b: any[]) => {
+  '?'(a: any, ...b: any[]) {
     try {
       stdout.clearLine();
       stdout.cursorTo(0);
@@ -96,7 +111,7 @@ export const node = {
    * terminate the process synchronously with an a status code
    *
    */
-  exit: (a: any) => {
+  exit(a: any) {
     process.exit(Number(a)); // exit: `process.exit` js-raw ;
   },
 
@@ -106,7 +121,9 @@ export const node = {
    * Generates cryptographically strong pseudo-random with a givennumber of bytes to generate
    *
    */
-  'rand-u32': () => randomBytes(4).readUInt32BE(0),
+  'rand-u32'() {
+    return randomBytes(4).readUInt32BE(0);
+  },
 
   /**
    * ## `dirname`
@@ -115,7 +132,9 @@ export const node = {
    * See https://nodejs.org/api/path.html#path_path_dirname_path
    *
    */
-  dirname: (name: string) => dirname(name),
+  dirname(name: string) {
+    return dirname(name);
+  },
 
   /**
    * ## `path-join`
@@ -124,7 +143,9 @@ export const node = {
    * See https://nodejs.org/api/path.html#path_path_join_paths
    *
    */
-  'path-join': (args: string[]) => join(...args),
+  'path-join'(args: string[]) {
+    return join(...args);
+  },
 
   /**
    * ## `resolve`
@@ -132,11 +153,7 @@ export const node = {
    * returns a URL href releative to the current base
    *
    */
-  resolve: typed('resolve', {
-    string: (name: string): string => normalizeUrl(resolve(name).href),
-    Array: ([name, base]: string[]): string =>
-      normalizeUrl(resolve(name, base).href)
-  }),
+  resolve: dynamo.function(Resolve),
 
   /**
    * ## `exists`
@@ -144,7 +161,9 @@ export const node = {
    * Returns true if the file exists, false otherwise.
    *
    */
-  exists: (name: string) => existsSync(name),
+  exists(name: string) {
+    return existsSync(name);
+  },
 
   /**
    * ## `read`

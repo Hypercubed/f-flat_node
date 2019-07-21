@@ -21,9 +21,9 @@ test('should quickcheck integer arithmetic', async t => {
     []
   ]);
   t.deepEqual(await fJSON('[rand-integer] [ dup 1 * = ] for-all'), [[]]);
-  t.deepEqual(await fJSON('[rand-integer] [ dup inv swap -1 ^ = ] for-all'), [
+  /* t.deepEqual(await fJSON('[rand-integer] [ dup inv swap -1 ^ = ] for-all'), [
     []
-  ]);
+  ]); */
 });
 
 test('should test equality', async t => {

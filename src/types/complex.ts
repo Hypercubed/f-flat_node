@@ -1,4 +1,5 @@
-import { typed } from './typed';
+import { guard, conversion } from '@hypercubed/dynamo';
+
 import { Decimal, gammaDecimal, zero, pi, twoPiSqrt } from './decimal';
 import { g, c } from './gamma';
 
@@ -429,12 +430,23 @@ export class Complex {
     return this.re.isFinite() && this.im.isFinite();
   }
 
-  static of(re, im) {
+  static of(re: string | number | Complex | Decimal, im: Decimal) {
     return new Complex(re, im);
   }
 
+  @guard()
   static isComplex(a: any): a is Complex {
     return a instanceof Complex;
+  }
+
+  @conversion(Number, Complex)
+  static fromNumber(a: number): Complex {
+    return new Complex(a, 0);
+  }
+
+  @conversion(Decimal, Complex)
+  static fromDecimal(a: Decimal): Complex {
+    return new Complex(a, 0);
   }
 
   static I = new Complex(0, 1);
@@ -470,27 +482,6 @@ export class Complex {
 // Complex.of = (re, im) => new Complex(re, im);
 
 export const I = Complex.I;
-
-typed.addType({
-  name: 'Complex',
-  test: Complex.isComplex
-});
-
-typed.addConversion({
-  from: 'number',
-  to: 'Complex',
-  convert: (x: number) => {
-    return new Complex(x, 0);
-  }
-});
-
-typed.addConversion({
-  from: 'Decimal',
-  to: 'Complex',
-  convert: (x: Decimal) => {
-    return new Complex(x, 0);
-  }
-});
 
 function isinf(u: Decimal) {
   return !u.isFinite();

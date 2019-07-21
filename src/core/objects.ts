@@ -1,11 +1,25 @@
-import { typed } from '../types';
+import { signature, Any } from '@hypercubed/dynamo';
+
+import { dynamo } from '../types';
 import { toObject } from '../utils';
+
+// TODO: use dynamo to get the guard
+class IsObject {
+  @signature()
+  map(a: object) {
+    return true;
+  }
+  @signature()
+  any(a: Any) {
+    return false;
+  }
+}
 
 /**
  * # Internal Object Words
  */
 export const objects = {
-  /* 'group': typed('group', {  // move
+  /* 'group': ('group', {  // move
     Array: a => {
       const r = [];
       const l = a.length;
@@ -24,24 +38,26 @@ export const objects = {
   /**
    * ## `object?`
    */
-  'object?': typed('object_', {
-    'Array | null | number | Complex': a => false, // eslint-disable-line no-unused-vars
-    map: (a: unknown) => true, // eslint-disable-line no-unused-vars
-    any: (a: unknown) => false // eslint-disable-line no-unused-vars
-  }),
+  'object?': dynamo.function(IsObject),
 
   /**
    * ## `contains?`
    */
-  'contains?': (a: {}, b: any) => b in a, // object by keys, array by values
+  'contains?'(a: {}, b: any) {
+    return b in a;
+  }, // object by keys, array by values
 
   /**
    * ## `keys`
    */
-  keys: (o: {}) => Object.keys(o), // v: `o => Object.values(o)` js-raw ;
+  keys(o: {}) {
+    return Object.keys(o);
+  }, // v: `o => Object.values(o)` js-raw ;
 
   /**
    * ## `vals`
    */
-  vals: (o: {}) => Object.values(o) // v: `o => Object.values(o)` js-raw ;
+  vals(o: {}) {
+    return Object.values(o);
+  } // v: `o => Object.values(o)` js-raw ;
 };

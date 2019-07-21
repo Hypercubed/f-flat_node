@@ -511,6 +511,9 @@ test('length', async t => {
 });
 
 test('base, pos integers', async t => {
+  t.deepEqual(await fJSON('5 16 base'), ['0x5']);
+  t.deepEqual(await fJSON('5 2 base'), ['0b101']);
+
   t.deepEqual(await fJSON('3735928559 16 base'), ['0xDEADBEEF']);
   t.deepEqual(await fJSON('3735928559 2 base'), ['0b11011110101011011011111011101111']);
 

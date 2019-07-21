@@ -1,4 +1,5 @@
 import { assign, merge, unshift, push, assoc } from 'icepick';
+import { signature, Any } from '@hypercubed/dynamo';
 
 import { lexer } from '../parser';
 import { deepEquals, arrayRepeat, arrayMul, arrayInvMul } from '../utils';
@@ -27,10 +28,10 @@ import {
   rRepeat
 } from '../utils/regex-logic';
 import {
+  dynamo,
   Word,
   Sentence,
   Seq,
-  typed,
   StackValue,
   Future,
   Complex,
@@ -66,7 +67,7 @@ function invertObject(source: any) {
  * ( x y -> z)
  *
  */
-const add = typed('add', {
+class Add {
   /**
    * - list concatenation/function composition
    *
@@ -75,15 +76,23 @@ const add = typed('add', {
    * [ [ 1 2 3 ] ]
    * ```
    */
-  'Array, any': (lhs: StackValue[], rhs: StackValue): StackValue[] =>
-    lhs.concat(rhs),
-  'Word | Sentence, Array': (lhs: Word, rhs: StackValue[]): StackValue[] => [
-    lhs,
-    ...rhs
-  ],
+  @signature(Array, Any)
+  array(lhs: StackValue[], rhs: StackValue): StackValue[] {
+    return lhs.concat(rhs);
+  }
 
-  'Future, any': (f: Future, rhs: StackValue): Future =>
-    f.map((lhs: any[]) => lhs.concat(rhs)),
+  @signature([Word, Sentence], Array)
+  word(lhs: Word, rhs: StackValue[]): StackValue[] {
+    return [
+      lhs,
+      ...rhs
+    ];
+  }
+
+  @signature(Future, Any)
+  future(f: Future, rhs: StackValue): Future {
+    return f.map((lhs: any[]) => lhs.concat(rhs));
+  }
 
   /**
    * - boolean or
@@ -93,7 +102,8 @@ const add = typed('add', {
    * [ true ]
    * ```
    */
-  'boolean | null, boolean | null': or,
+  @signature([Boolean, null], [Boolean, null])
+  boolean = or;
 
   /**
    * - RegExp union
@@ -106,7 +116,8 @@ const add = typed('add', {
    * [ /(?:skiing)|(?:sledding)/ ]
    * ```
    */
-  'RegExp, RegExp': rOr,
+  @signature(RegExp, RegExp)
+  regexp = rOr;
 
   /**
    * - arithmetic addition
@@ -116,9 +127,20 @@ const add = typed('add', {
    * [ 0.3 ]
    * ```
    */
-  'Complex, Complex': (lhs: Complex, rhs: Complex): Complex => lhs.plus(rhs),
-  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal): Decimal =>
-    lhs.plus(rhs),
+  @signature()
+  number(lhs: number, rhs: number): number {
+    return lhs + rhs;
+  }
+
+  @signature()
+  decimal(lhs: Decimal, rhs: Decimal): Decimal {
+    return lhs.plus(rhs);
+  }
+
+  @signature()
+  complex(lhs: Complex, rhs: Complex): Complex {
+    return lhs.plus(rhs);
+  }
 
   /**
    * - map assign/assoc
@@ -130,7 +152,8 @@ const add = typed('add', {
    * [ { first: 'Manfred' last: 'von Thun' } ]
    * ```
    */
-  'map, map': (lhs: {}, rhs: {}): {} => assign(lhs, rhs),
+  @signature(Object, Object)
+  object = assign;
 
   /**
    * - date addition
@@ -141,11 +164,25 @@ const add = typed('add', {
    *   Mon Mar 17 2003 00:00:01 GMT-0700 (MST) ]
    * ```
    */
-  'Date, number': (lhs: Date, rhs: number) => new Date(lhs.valueOf() + rhs),
-  'number, Date': (lhs: number, rhs: Date) => lhs + rhs.valueOf(),
-  'Date, Decimal': (lhs: Date, rhs: Decimal) =>
-    new Date(rhs.plus(lhs.valueOf()).valueOf()),
-  'Decimal, Date': (lhs: Decimal, rhs: Date) => lhs.plus(rhs.valueOf()),
+  @signature()
+  dateNumber(lhs: Date, rhs: number) {
+    return new Date(lhs.valueOf() + rhs);
+  }
+
+  @signature()
+  numberDate(lhs: number, rhs: Date) {
+    return lhs + rhs.valueOf();
+  }
+
+  @signature()
+  dateDecimal(lhs: Date, rhs: Decimal) {
+    return new Date(rhs.plus(lhs.valueOf()).valueOf());
+  }
+
+  @signature()
+  decimalDate(lhs: Decimal, rhs: Date) {
+    return lhs.plus(rhs.valueOf());
+  }
 
   /**
    * - string concatenation
@@ -155,8 +192,9 @@ const add = typed('add', {
    * [ "abcxyz" ]
    *```
    */
-  'string | number, string | number': (lhs: string, rhs: string) => lhs + rhs
-});
+  @signature([String, Number], [String, Number])
+  'string | number, string | number' = (lhs: string, rhs: string) => lhs + rhs
+}
 
 /**
  * ## `-` (minus)
@@ -164,7 +202,7 @@ const add = typed('add', {
  * ( x y -> z)
  *
  */
-const sub = typed('sub', {
+class Sub {
   /* 'Object, any': (lhs, rhs) => {  // dissoc
     const r = Object.assign({}, lhs);
     delete r[rhs];
@@ -183,7 +221,8 @@ const sub = typed('sub', {
    * [ false ]
    *```
    */
-  'boolean | null, boolean | null': nor,
+  @signature([Boolean, null], [Boolean, null])
+  boolean = nor;
 
   /**
    * - RegExp joint denial (nor)
@@ -196,7 +235,8 @@ const sub = typed('sub', {
    * [ /(?!skiing|sledding)/ ]
    * ```
    */
-  'RegExp, RegExp': rNor,
+  @signature(RegExp, RegExp)
+  regexp = rNor;
 
   /**
    * - arithmetic subtraction
@@ -206,11 +246,21 @@ const sub = typed('sub', {
    * [ 1 ]
    * ```
    */
-  'Complex, Complex': (lhs: Complex, rhs: Complex) => lhs.minus(rhs),
-  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal) => {
+  @signature()
+  number(lhs: number, rhs: number) {
+    return lhs - rhs;
+  }
+
+  @signature()
+  decimal(lhs: Decimal, rhs: Decimal) {
     if (lhs.isNaN() && lhs.isNaN()) return NaN;
     return lhs.minus(rhs);
-  },
+  }
+
+  @signature()
+  complex(lhs: Complex, rhs: Complex) {
+    return lhs.minus(rhs);
+  }
 
   /**
    * - date subtraction
@@ -221,14 +271,30 @@ const sub = typed('sub', {
    *   Sun Mar 16 2003 23:59:59 GMT-0700 (MST) ]
    *```
    */
-  'Date, number': (lhs: Date, rhs: number) => new Date(lhs.valueOf() - rhs),
-  'number, Date': (lhs: number, rhs: Date) => rhs.valueOf() - lhs,
-  'Date, Decimal': (lhs: Date, rhs: Decimal) =>
-    new Date(-rhs.minus(lhs.valueOf())),
-  'Decimal, Date': (lhs: Decimal, rhs: Date) => lhs.minus(rhs.valueOf()),
+  @signature()
+  dateNumber(lhs: Date, rhs: number): Date {
+    return new Date(lhs.valueOf() - rhs);
+  }
 
-  'any, any': (lhs: number, rhs: number) => lhs - rhs
-});
+  @signature()
+  numberDate(lhs: number, rhs: Date): number {
+    return rhs.valueOf() - lhs;
+  }
+
+  @signature()
+  dateDecimal(lhs: Date, rhs: Decimal): Date {
+    return new Date(-rhs.minus(lhs.valueOf()));
+  }
+
+  @signature()
+  decimalDate(lhs: Decimal, rhs: Date): Decimal {
+    return lhs.minus(rhs.valueOf());
+  }
+
+  // TODO: Why is this needed!!
+  @signature(Any, Any)
+  'any, any' = (lhs: any, rhs: any) => lhs - rhs
+}
 
 /**
  * ## `*` (times)
@@ -236,7 +302,7 @@ const sub = typed('sub', {
  * ( x y -> z)
  *
  */
-const mul = typed('mul', {
+class Mul {
   /**
    * - array/string intersparse
    *
@@ -245,10 +311,18 @@ const mul = typed('mul', {
    * [ [ 'a' 'b' ] ]
    *```
    */
-  'Array, Array | Word | Sentence | Function': arrayMul,
-  'string, Array | Word | Sentence | Function': (lhs: string, rhs: unknown) =>
-    arrayMul(lhs.split(''), rhs),
-  'Future, any': (f: Future, rhs: any) => f.map((lhs: unknown) => mul(lhs, rhs)),
+  @signature(Array, [Array, Word, Sentence, Function])
+  arrayIntersparse = arrayMul;
+
+  @signature(String, [Array, Word, Sentence, Function])
+  stringIntersparse(lhs: string, rhs: unknown) {
+    return arrayMul(lhs.split(''), rhs);
+  }
+
+  @signature(Future, Any)
+  futureIntersparse(f: Future, rhs: any) {
+    return f.map((lhs: Future) => mul(lhs, rhs));
+  }
 
   /**
    * - Array join
@@ -258,17 +332,23 @@ const mul = typed('mul', {
    * [ 'a;b' ]
    *```
    */
-  'Array, string': (lhs: any[], rhs: string) => lhs.join(rhs),
+  @signature()
+  arrayJoin(lhs: any[], rhs: string) {
+    return lhs.join(rhs);
+  }
 
   /**
-   * - string intersparse
+   * - string join
    *
    * ```
    * f♭> 'xyz' ';'
    * [ [ 'x;y;z' ] ]
    *```
    */
-  'string, string': (lhs: string, rhs: string) => lhs.split('').join(rhs),
+  @signature()
+  stringJoin(lhs: string, rhs: string) {
+    return lhs.split('').join(rhs);
+  }
   // todo: string * regexp?
 
   /**
@@ -279,7 +359,8 @@ const mul = typed('mul', {
    * [ true ]
    *```
    */
-  'boolean | null, boolean | null': and,
+  @signature([Boolean, null], [Boolean, null])
+  boolean = and;
 
   /**
    * - object and
@@ -291,7 +372,10 @@ const mul = typed('mul', {
    * [ { first: 'Manfred' } ]
    * ```
    */
-  'map, map': (lhs: {}, rhs: {}): {} => assocAnd(lhs, rhs),
+  @signature()
+  object(lhs: object, rhs: object): object {
+    return assocAnd(lhs, rhs);
+  }
 
   /**
    * - RegExp join (and)
@@ -304,7 +388,8 @@ const mul = typed('mul', {
    * [ /(?=skiing)(?=sledding)/ ]
    * ```
    */
-  'RegExp, RegExp': rAnd,
+  @signature(RegExp, RegExp)
+  regExp = rAnd;
 
   /**
    * - RegExp repeat (multiply)
@@ -316,7 +401,8 @@ const mul = typed('mul', {
    * [ /(?:skiing){3}/ ]
    * ```
    */
-  'RegExp, Decimal | number': rRepeat,
+  @signature(RegExp, [Number, Decimal])
+  repeatRegex = rRepeat;
 
   /**
    * - repeat sequence
@@ -327,8 +413,15 @@ const mul = typed('mul', {
    *```
    */
   // string intersparse?
-  'string, Decimal | number': (a: string, b: number) => a.repeat(+b),
-  'Array, Decimal | number': (a: any[], b: number) => arrayRepeat(a, +b),
+  @signature(String, [Number, Decimal])
+  'string, Decimal | number'(a: string, b: number) {
+    return a.repeat(+b);
+  }
+
+  @signature(Array, [Number, Decimal])
+  'Array, Decimal | number'(a: any[], b: number) {
+    return arrayRepeat(a, +b);
+  }
 
   /**
    * - arithmetic multiplication
@@ -338,11 +431,32 @@ const mul = typed('mul', {
    * [ 6 ]
    * ```
    */
-  'Complex, Complex': (lhs: Complex, rhs: Complex) => lhs.times(rhs).normalize(),
-  'ComplexInfinity, Complex | ComplexInfinity': (lhs: ComplexInfinity, rhs: Complex | ComplexInfinity) => ComplexInfinity.times(rhs),
-  'Complex, ComplexInfinity': (lhs: Complex, rhs: ComplexInfinity) => ComplexInfinity.times(lhs),
-  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal) => lhs.times(rhs)
-});
+  @signature()
+  number(lhs: number, rhs: number) {
+    return lhs * rhs;
+  }
+
+  @signature()
+  decimal(lhs: Decimal, rhs: Decimal) {
+    return lhs.times(rhs);
+  }
+
+  @signature()
+  complex(lhs: Complex, rhs: Complex) {
+    return lhs.times(rhs).normalize();
+  }
+
+  @signature(ComplexInfinity, [Complex, ComplexInfinity])
+  'ComplexInfinity, Complex | ComplexInfinity'(lhs: ComplexInfinity, rhs: Complex | ComplexInfinity) {
+    return ComplexInfinity.times(rhs);
+  }
+
+  @signature(Complex, [ComplexInfinity])
+  'Complex, ComplexInfinity'(lhs: Complex, rhs: ComplexInfinity) {
+    return ComplexInfinity.times(lhs);
+  }
+}
+const mul = dynamo.function(Mul);
 
 /**
  * ## `/` (forward slash)
@@ -350,18 +464,22 @@ const mul = typed('mul', {
  * ( x y -> z)
  *
  */
-const div = typed('div', {
+class Div {
   /**
    * - array/string inverse intersparse
    *
    * ```
-   * f♭> [ 'a' ] [ 'b' ] *
+   * f♭> [ 'a' ] [ 'b' ] /
    * [ [ 'a' 'b' ] ]
    *```
    */
-  'Array, Array | Word | Sentence | Function': arrayInvMul,
-  'string, Array | Word | Sentence | Function': (lhs: string, rhs: any) =>
-    arrayInvMul(lhs.split(''), rhs),
+  @signature(Array, [Array, Word, Sentence, Function])
+  arrayIntersparse = arrayInvMul;
+
+  @signature(Array, [Array, Word, Sentence, Function])
+  stringIntersparse(lhs: string, rhs: any) {
+    return arrayInvMul(lhs.split(''), rhs);
+  }
 
   /**
    * - logical material nonimplication or abjunction
@@ -373,7 +491,8 @@ const div = typed('div', {
    * [ false ]
    *```
    */
-  'boolean | null, boolean | null': mnonimpl,
+  @signature([Boolean, null], [Boolean, null])
+  abjunction = mnonimpl;
 
   /**
    * - Split
@@ -385,7 +504,10 @@ const div = typed('div', {
    * [ [ 'a' 'b' 'c' ] ]
    *```
    */
-  'string, string | RegExp': (lhs: string, rhs: string) => lhs.split(rhs),
+  @signature(String, [String, RegExp])
+  split(lhs: string, rhs: string) {
+    return lhs.split(rhs);
+  }
 
   /**
    * - Array/string split at
@@ -395,12 +517,17 @@ const div = typed('div', {
    * [ 'abc' 'def' ]
    * ```
    */
-  'Array | string, Decimal | number': (a: any[] | string, b: number) => {
+  @signature([Array, String], [Number, Decimal])
+  splitAt(a: any[] | string, b: number) {
     b = +b | 0;
     return new Seq([a.slice(0, b), a.slice(b)]);
-  },
+  }
 
-  'Future, any': (f: Future, rhs: any) => f.map(lhs => div(lhs, rhs)),
+  @signature(Future, Any)
+  future(f: Future, rhs: any) {
+    return f.map((lhs: Future) => div(lhs, rhs));
+  }
+
   /* 'string | Array, number': (lhs, rhs) => {
     rhs = +rhs | 0;
     var len = lhs.length / rhs;
@@ -415,28 +542,43 @@ const div = typed('div', {
    * [ 3 ]
    * ```
    */
-  'Complex, Complex': (lhs: Complex, rhs: Complex): Complex => lhs.div(rhs),
-  'Decimal, Decimal | number': (
-    lhs: Decimal,
-    rhs: Decimal
-  ): Decimal | AbstractValue => {
-    if (+rhs === 0 && +lhs !== 0) return complexInfinity;
+  @signature()
+  decimal(lhs: Decimal, rhs: Decimal): Decimal | AbstractValue {
+    if (rhs.isZero() && !lhs.isZero()) return complexInfinity;
     return lhs.div(rhs);
-  },
-  'ComplexInfinity, Complex | ComplexInfinity': (lhs: ComplexInfinity, rhs: Complex | ComplexInfinity) => ComplexInfinity.div(rhs),
-  'Complex, ComplexInfinity': (lhs: Complex, rhs: ComplexInfinity) => ComplexInfinity.idiv(lhs),
-  'number, number': (lhs: number, rhs: number) => lhs / rhs
-});
+  }
+
+  @signature()
+  complex(lhs: Complex, rhs: Complex): Complex {
+    return lhs.div(rhs);
+  }
+
+  @signature(ComplexInfinity, [Complex, ComplexInfinity])
+  complexInfinityComplex(lhs: ComplexInfinity, rhs: Complex | ComplexInfinity) {
+    return ComplexInfinity.div(rhs);
+  }
+
+  @signature(Complex, ComplexInfinity)
+  complexComplexInfinity(lhs: Complex, rhs: ComplexInfinity) {
+    return ComplexInfinity.idiv(lhs);
+  }
+}
+const div = dynamo.function(Div);
 
 /**
  * ## `\` (backslash)
  *
  */
-const idiv = typed('idiv', {
-  'Array, Array | Word | Sentence | Function': (lhs: any[], rhs: any) =>
-    new Sentence(arrayMul(lhs, rhs)),
-  'string, Array | Word | Sentence | Function': (lhs: string, rhs: any) =>
-    new Sentence(arrayMul(lhs.split(''), rhs)),
+class IDiv {
+  @signature(Array, [Array, Word, Sentence, Function])
+  arrayIntersparse(lhs: any[], rhs: any) {
+    return new Sentence(arrayMul(lhs, rhs));
+  }
+
+  @signature(String, [Array, Word, Sentence, Function])
+  stringIntersparse(lhs: string, rhs: any) {
+    return new Sentence(arrayMul(lhs.split(''), rhs));
+  }
 
   /**
    * - Floored division.
@@ -448,15 +590,16 @@ const idiv = typed('idiv', {
    * [ 3 ]
    * ```
    */
-  'Complex, Complex': (lhs: Complex, rhs: Complex): Complex =>
-    lhs.divToInt(rhs),
-  'Decimal, Decimal | number': (
-    lhs: Decimal,
-    rhs: Decimal
-  ): Decimal | AbstractValue => {
-    if (+rhs === 0 && +lhs !== 0) return complexInfinity;
+  @signature()
+  decimal(lhs: Decimal, rhs: Decimal): Decimal | AbstractValue {
+    if (rhs.isZero() && !lhs.isZero()) return complexInfinity;
     return lhs.divToInt(rhs);
-  },
+  }
+
+  @signature()
+  complex(lhs: Complex, rhs: Complex): Complex {
+    return lhs.divToInt(rhs);
+  }
 
   /**
    * - Array/string head
@@ -468,8 +611,10 @@ const idiv = typed('idiv', {
    * [ 'abc' ]
    * ```
    */
-  'Array | string, Decimal | number': (a: any[] | string, b: number) =>
-    a.slice(0, +b | 0),
+  @signature([Array, String], [Decimal, Number])
+  head(a: any[] | string, b: number) {
+    return a.slice(0, +b | 0);
+  }
 
   /**
    * - Split first
@@ -478,11 +623,14 @@ const idiv = typed('idiv', {
    * Returns the first
    *
    * ```
-   * f♭> 'a;b;c' ';' /
+   * f♭> 'a;b;c' ';' \
    * [ 'a' ]
    *```
    */
-  'string, string | RegExp': (lhs: string, rhs: string) => lhs.split(rhs)[0],
+  @signature(String, [String, RegExp])
+  splitFirst(lhs: string, rhs: string) {
+    return lhs.split(rhs)[0];
+  }
 
   /**
    * - logical converse non-implication, the negation of the converse of implication
@@ -492,14 +640,16 @@ const idiv = typed('idiv', {
    * [ false ]
    *```
    */
-  'boolean | null, boolean | null': cnonimpl
-});
+  @signature([Boolean, null], [Boolean, null])
+  boolean = cnonimpl;
+}
+const idiv = dynamo.function(IDiv);
 
 /**
  * ## `%` (modulo)
  *
  */
-const rem = typed('rem', {
+class Rem {
   /**
    * - remainder after division
    *
@@ -508,10 +658,15 @@ const rem = typed('rem', {
    * [ 1 ]
    * ```
    */
-  'Decimal | Complex, Decimal | number': (
-    lhs: Decimal | Complex,
-    rhs: Decimal | number
-  ) => lhs.modulo(rhs),
+  @signature()
+  decimal(lhs: Decimal, rhs: Decimal) {
+    return lhs.modulo(rhs);
+  }
+
+  @signature()
+  complex(lhs: Complex, rhs: Complex) {
+    return lhs.modulo(rhs);
+  }
 
   /**
    * - Array/string tail
@@ -523,7 +678,10 @@ const rem = typed('rem', {
    * [ 'def' ]
    * ```
    */
-  'Array | string, Decimal | number': (a: any[] | string, b: number) => a.slice(+b | 0),
+  @signature([Array, String], [Decimal, Number])
+  tail(a: any[] | string, b: number) {
+    return a.slice(+b | 0);
+  }
 
   /**
    * - Split rest
@@ -536,11 +694,12 @@ const rem = typed('rem', {
    * [ [ 'b' 'c' ] ]
    *```
    */
-  'string, string | RegExp': (lhs: string, rhs: string) => {
+  @signature(String, [String, RegExp])
+  splitRest(lhs: string, rhs: string | RegExp) {
     const r = lhs.split(rhs);
     r.shift();
     return r;
-  },
+  }
 
   /**
    * - RegExp inverse join (nand)
@@ -553,7 +712,8 @@ const rem = typed('rem', {
    * [ /(?!(?=skiing)(?=sledding))/ ]
    * ```
    */
-  'RegExp, RegExp': rNand,
+  @signature(RegExp, RegExp)
+  join = rNand;
 
   /**
    * - boolean nand
@@ -563,14 +723,16 @@ const rem = typed('rem', {
    * [ true ]
    * ```
    */
-  'boolean | null, boolean | null': nand
-});
+  @signature([Boolean, null], [Boolean, null])
+  nand = nand;
+}
+const rem = dynamo.function(Rem);
 
 /**
  * ## `>>`
  *
  */
-const unshiftFn = typed('unshift', {
+class Unshift {
   /**
    * - unshift/cons
    *
@@ -579,14 +741,26 @@ const unshiftFn = typed('unshift', {
    * [ 1 2 3 ]
    * ```
    */
-  'any | Word | Sentence | Object, Array': (lhs: any, rhs: any[]) =>
-    unshift(rhs, lhs),
-  'Array, string': (lhs: any[], rhs: any) => [lhs, new Word(rhs)],
-  'Array | Word | Sentence, Word | Sentence': (lhs: any, rhs: any) => [
-    lhs,
-    rhs
-  ],
-  'Future, any': (f: Future, rhs: any) => f.map(lhs => unshiftFn(lhs, rhs)),
+  @signature(Any, Array)
+  cons(lhs: any, rhs: any[]) {
+    return unshift(rhs, lhs);
+  }
+  @signature(Array, String)
+  consString(lhs: any[], rhs: string) {
+    return [lhs, new Word(rhs)];
+  }
+  @signature([Array, Word, Sentence], [Array, Word, Sentence])
+  consWord(lhs: any, rhs: any) {
+    return [
+      lhs,
+      rhs
+    ];
+  }
+
+  @signature(Future, Any)
+  future(f: Future, rhs: any) {
+    return f.map((lhs: Future) => unshiftFn(lhs, rhs));
+  }
 
   /**
    * - concat
@@ -596,7 +770,10 @@ const unshiftFn = typed('unshift', {
    * 'deadbeef'
    * ```
    */
-  'string, string': (lhs: string, rhs: string) => lhs + rhs,
+  @signature()
+  concat(lhs: string, rhs: string) {
+    return lhs + rhs;
+  }
 
   /**
    * - string right shift
@@ -606,7 +783,10 @@ const unshiftFn = typed('unshift', {
    * 'abc'
    * ```
    */
-  'string, Decimal | number': (lhs: string, rhs: number) => lhs.slice(0, -rhs),
+  @signature(String, [Decimal, Number])
+  rightShift(lhs: string, rhs: number) {
+    return lhs.slice(0, -rhs);
+  }
 
   /**
    * - map merge
@@ -618,7 +798,10 @@ const unshiftFn = typed('unshift', {
    * [ { first: 'Manfred' last: 'von Thun' } ]
    * ```
    */
-  'map, map': (lhs: any, rhs: any) => merge(rhs, lhs),
+  @signature()
+  merge(lhs: object, rhs: object) {
+    return merge(rhs, lhs);
+  }
 
   /**
    * - Sign-propagating right shift
@@ -628,7 +811,10 @@ const unshiftFn = typed('unshift', {
    * [ 16 ]
    * ```
    */
-  'Decimal | number, Decimal | number': (lhs: number, rhs: number) => +lhs >> +rhs,
+  @signature([Decimal, Number], [Decimal, Number])
+  number(lhs: number, rhs: number) {
+    return +lhs >> +rhs;
+  }
 
   /**
    * - logical material implication (P implies Q)
@@ -638,7 +824,8 @@ const unshiftFn = typed('unshift', {
    * [ true ]
    * ```
    */
-  'boolean | null, boolean | null': mimpl,
+  @signature([Boolean, null], [Boolean, null])
+  mimpl = mimpl;
 
   /**
    * - RegExp right seq
@@ -651,8 +838,10 @@ const unshiftFn = typed('unshift', {
    * [ /skiingsledding/ ]
    * ```
    */
-  'RegExp, RegExp': rRsh
-});
+  @signature(RegExp, RegExp)
+  regexp = rRsh;
+}
+const unshiftFn = dynamo.function(Unshift);
 
 /**
  * ## `<<`
@@ -661,7 +850,7 @@ const unshiftFn = typed('unshift', {
  * ( x y -> z)
  *
  */
-const pushFn = typed('push', {
+class Shift {
   /**
    * - push/snoc
    *
@@ -670,9 +859,15 @@ const pushFn = typed('push', {
    * [ [ 1 2 3 ] ]
    * ```
    */
-  'Array, any | Word | Sentence | Object': (lhs: any[], rhs: any) =>
-    push(lhs, rhs),
-  'Future, any': (f: Future, rhs: any) => f.map(lhs => pushFn(lhs, rhs)),
+  @signature(Array, Any)
+  array(lhs: any[], rhs: any) {
+    return push(lhs, rhs);
+  }
+
+  @signature(Future, Any)
+  future(f: Future, rhs: any) {
+    return f.map((lhs: any) => pushFn(lhs, rhs));
+  }
 
   /**
    * - concat
@@ -682,7 +877,10 @@ const pushFn = typed('push', {
    * 'deadbeef'
    * ```
    */
-  'string, string': (lhs: string, rhs: string) => lhs + rhs,
+  @signature()
+  string(lhs: string, rhs: string) {
+    return lhs + rhs;
+  }
 
   /**
    * - string left shift
@@ -692,7 +890,10 @@ const pushFn = typed('push', {
    * 'def'
    * ```
    */
-  'string, Decimal | number': (lhs: string, rhs: number) => lhs.slice(-rhs),
+  @signature(String, [Number, Decimal])
+  stringNumber(lhs: string, rhs: number) {
+    return lhs.slice(-rhs);
+  }
 
   /**
    * - converse implication (p if q)
@@ -702,7 +903,8 @@ const pushFn = typed('push', {
    * [ true ]
    * ```
    */
-  'boolean | null, boolean | null': cimpl,
+  @signature([Boolean, null], [Boolean, null])
+  boolean = cimpl;
 
   /**
    * - object merge
@@ -715,7 +917,10 @@ const pushFn = typed('push', {
    * [ { first: 'Manfred' last: 'von Thun' } ]
    * ```
    */
-  'map | Object, map | Object': (lhs: any, rhs: any) => merge(lhs, rhs),
+  @signature()
+  object(lhs: object, rhs: object) {
+    return merge(lhs, rhs);
+  }
 
   /**
    * - left shift
@@ -725,9 +930,15 @@ const pushFn = typed('push', {
    * [ 256 ]
    * ```
    */
-  'Decimal, Decimal | number': (lhs: Decimal, rhs: Decimal | number) =>
-    new Decimal(lhs.toBinary() + '0'.repeat(+rhs | 0)),
-  'number, number': (lhs: number, rhs: number) => lhs << rhs,
+  @signature()
+  number(lhs: number, rhs: number) {
+    return lhs << rhs;
+  }
+
+  @signature()
+  decimal(lhs: Decimal, rhs: Decimal) {
+    return new Decimal(lhs.toBinary() + '0'.repeat(+rhs | 0));
+  }
 
   /**
    * - RegExp right seq
@@ -740,14 +951,16 @@ const pushFn = typed('push', {
    * [ /skiingsledding/i ]
    * ```
    */
-  'RegExp, RegExp': rLsh
-});
+  @signature(RegExp, RegExp)
+  ewgexp = rLsh;
+}
+const pushFn = dynamo.function(Shift);
 
 /**
  * ## `^` (pow)
  *
  */
-const pow = typed('pow', {
+class Pow {
   /**
    * - pow function (base^exponent)
    *
@@ -756,37 +969,42 @@ const pow = typed('pow', {
    * [ 49 ]
    * ```
    */
-  'Complex, Decimal | Complex | number': (
-    a: Complex,
-    b: Decimal | Complex | number
-  ) => new Sentence([b, a].concat(lexer('ln * exp'))),
-  'Decimal, Complex': (a: Decimal, b: Complex) =>
-    new Sentence([b, a].concat(lexer('ln * exp'))),
-  'Decimal, Decimal | number': (a: Decimal, b: Decimal | number) => a.pow(b),
+  @signature()
+  decimal(lhs: Decimal, rhs: Decimal) {
+    if (+lhs === 0 && +rhs !== 0) return complexInfinity;
+    return lhs.pow(rhs);
+  }
+
+  @signature()
+  complex(a: Complex, b: Complex) {
+    return new Sentence([b, a].concat(lexer('ln * exp')));
+  }
 
   /**
    * - string pow
    */
-  'string, number': (lhs: string, rhs: number) => {
+  @signature()
+  string(lhs: string, rhs: number) {
     let r = lhs;
     const l = +rhs | 0;
     for (let i = 1; i < l; i++) {
       r = lhs.split('').join(r);
     }
     return r;
-  },
+  }
 
   /**
    * - array pow
    */
-  'Array, number': (lhs: StackArray, rhs: number) => {
+  @signature(Array, Number)
+  array(lhs: StackArray, rhs: number) {
     let r = lhs;
     const l = +rhs | 0;
     for (let i = 1; i < l; i++) {
       r = arrayMul(r, lhs);
     }
     return r;
-  },
+  }
 
   /**
    * - boolean xor
@@ -796,7 +1014,8 @@ const pow = typed('pow', {
    * [ true ]
    * ```
    */
-  'boolean | null, boolean | null': xor,
+  @signature([Boolean, null], [Boolean, null])
+  boolean = xor;
 
   /**
    * - RegExp xor
@@ -809,24 +1028,34 @@ const pow = typed('pow', {
    * [ /(?=skiing|sledding)(?=(?!(?=skiing)(?=sledding)))/ ]
    * ```
    */
-  'RegExp, RegExp': rXor
-});
+  @signature(RegExp, RegExp)
+  regExp = rXor;
+}
 
 /**
  * ## `ln`
  *
  * ( x -> {number} )
  */
-const ln = typed('ln', {
+class Ln {
   /**
    * - natural log
    */
-  Complex: (a: Complex) => a.ln(),
-  ComplexInfinity: (a: Complex) => Infinity,
-  'Decimal | number': (a: Decimal | number) => {
+  @signature([Number, Decimal])
+  number(a: Decimal | number) {
     if (a <= 0) return new Complex(a).ln();
     return new Decimal(a).ln();
-  },
+  }
+
+  @signature()
+  complex(a: Complex) {
+    return a.ln();
+  }
+
+  @signature()
+  complexInfinity(a: ComplexInfinity) {
+    return Infinity;
+  }
 
   /**
    * - length of the Array or string
@@ -836,7 +1065,10 @@ const ln = typed('ln', {
    * [ 3 ]
    * ```
    */
-  'Array | string': (a: any[] | string) => a.length,
+  @signature([Array, String])
+  array(a: any[] | string) {
+    return a.length;
+  }
 
   /**
    * - number of keys in a map
@@ -846,7 +1078,10 @@ const ln = typed('ln', {
    * [ 3 ]
    * ```
    */
-  map: (a: {}) => Object.keys(a).length,
+  @signature()
+  map(a: object) {
+    return Object.keys(a).length;
+  }
 
   /**
    * - "length" of a nan, null, and booleans are 0
@@ -856,14 +1091,16 @@ const ln = typed('ln', {
    * [ 0 ]
    * ```
    */
-  null: (a: null) => 0, // eslint-disable-line
-  any: (a: any) => 0
-});
+  @signature(Any)
+  any(a: any) {
+    return 0;
+  }
+}
 
 /**
  * ## `~` (not)
  */
-const notFn = typed('not', {
+class Not {
   /**
    * - number negate
    *
@@ -872,12 +1109,17 @@ const notFn = typed('not', {
    * [ -5 ]
    * ```
    */
-  'Decimal | Complex': (a: Decimal | Complex) => a.neg(),
-  number: (a: number) => {
+  @signature()
+  number(a: number) {
     if (a === 0) return -0;
     if (a === -0) return 0;
     return Number.isNaN(a) ? NaN : -a;
-  },
+  }
+
+  @signature([Decimal, Complex])
+  decimal(a: Decimal | Complex) {
+    return a.neg();
+  }
 
   /**
    * - boolean (indeterminate) not
@@ -892,12 +1134,14 @@ const notFn = typed('not', {
    * [ NaN ]
    * ```
    */
-  boolean: not,
+  @signature([Boolean, null])
+  boolean = not;
 
   /**
    * - regex avoid
    */
-  RegExp: rNot,
+  @signature(RegExp)
+  regExp = rNot;
 
   /**
    * - object/array invert
@@ -914,23 +1158,47 @@ const notFn = typed('not', {
    * [ { a: '0' b: '1'  c: '2' } ]
    * ```
    */
-  'map | Array': invertObject,
-  string: (a: string) => invertObject(a.split('')),
+  @signature([Object, Array])
+  object = invertObject;
 
-  any: not
-});
+  @signature()
+  string(a: string) {
+    return invertObject(a.split(''));
+  }
+
+  @signature(Any)
+  any = not;
+}
 
 /**
  * ## `empty`
  */
-const empty = typed('empty', {
-  'Complex | Decimal | number': (a: Complex | Decimal | number) => 0,
-  'boolean | null': (a: boolean) => null,
-  string: (a: string) => '',
-  Array: (a: any[]) => [],
-  map: (a: any) => [],
-  any: (a: any) => (a.empty ? a.empty() : new a.constructor())
-});
+class Empty {
+  @signature([Number, Decimal, Complex])
+  number(a: Complex | Decimal | number) {
+    return 0;
+  }
+  @signature([Boolean, null])
+  booleans(a: boolean) {
+    return null;
+  }
+  @signature()
+  string(a: string) {
+    return '';
+  }
+  @signature()
+  array(a: any[]) {
+    return [];
+  }
+  @signature()
+  map(a: Object) {
+    return [];
+  }
+  @signature(Any)
+  any(a: any) {
+    return (a.empty ? a.empty() : new a.constructor());
+  }
+}
 
 /**
  * ## `cmp`
@@ -944,7 +1212,7 @@ const empty = typed('empty', {
  * [ -1 ]
  * ```
  */
-const cmpFn = typed('<=>', {
+class Cmp {
   /**
    * - number comparisons
    *
@@ -955,7 +1223,16 @@ const cmpFn = typed('<=>', {
    * [ 1 ]
    * ```
    */
-  'Decimal | Complex, Decimal | Complex': (lhs: Decimal, rhs: Decimal) => {
+  @signature()
+  number(lhs: number, rhs: number) {
+    lhs = +lhs;
+    rhs = +rhs;
+    return numCmp(lhs, rhs);
+  }
+
+  @signature(Decimal, Decimal)
+  @signature(Complex, Complex)
+  decimal(lhs: Decimal, rhs: Decimal) {
     if (lhs.isNaN()) {
       return rhs.isNaN() ? null : NaN;
     }
@@ -963,7 +1240,7 @@ const cmpFn = typed('<=>', {
       return NaN;
     }
     return lhs.cmp(rhs);
-  },
+  }
 
   /**
    * - vector comparisons
@@ -975,9 +1252,10 @@ const cmpFn = typed('<=>', {
    * [ 1 ]
    * ```
    */
-  'Array, Array': (lhs: any[], rhs: any[]) => {
+  @signature()
+  array(lhs: any[], rhs: any[]) {
     return numCmp(lhs.length, rhs.length);
-  },
+  }
 
   /**
    * - string comparisons
@@ -991,9 +1269,10 @@ const cmpFn = typed('<=>', {
    * [ -1 ]
    * ```
    */
-  'string, string': (lhs: string, rhs: string) => {
+  @signature()
+  string(lhs: string, rhs: string) {
     return numCmp(lhs, rhs);
-  },
+  }
 
   /**
    * - boolean comparisons
@@ -1003,9 +1282,10 @@ const cmpFn = typed('<=>', {
    * [ -1 ]
    * ```
    */
-  'boolean | null, boolean | null': (lhs: boolean, rhs: boolean) => {
+  @signature([Boolean, null], [Boolean, null])
+  boolean(lhs: boolean, rhs: boolean) {
     return cmp(lhs, rhs);
-  },
+  }
 
   /**
    * - date comparisons
@@ -1015,11 +1295,12 @@ const cmpFn = typed('<=>', {
    * [ -1 ]
    * ```
    */
-  'Date | number, Date | number': (lhs: Date | number, rhs: Date | number) => {
+  @signature([Date, Number], [Date, Number])
+  date(lhs: Date | number, rhs: Date | number) {
     lhs = +lhs;
     rhs = +rhs;
     return numCmp(lhs, rhs);
-  },
+  }
 
   /**
    * - object comparisons
@@ -1031,29 +1312,33 @@ const cmpFn = typed('<=>', {
    * [ 1 ]
    * ```
    */
-  'Object, Object': (lhs: any, rhs: any) => {
-    lhs = lhs ? Object.keys(lhs).length : null;
-    rhs = rhs ? Object.keys(rhs).length : null;
-    return numCmp(lhs, rhs);
-  },
+  @signature()
+  object(lhs: object, rhs: object) {
+    const _lhs = lhs ? Object.keys(lhs).length : null;
+    const _rhs = rhs ? Object.keys(rhs).length : null;
+    return numCmp(_lhs, _rhs);
+  }
 
-  'any, any': (lhs, rhs) => null
-});
+  @signature(Any, Any)
+  any(lhs: any, rhs: any) {
+    return null;
+  }
+}
 
 export const base = {
-  '+': add,
-  '-': sub,
-  '*': mul,
-  '/': div,
+  '+': dynamo.function(Add),
+  '-': dynamo.function(Sub),
+  '*': dynamo.function(Mul),
+  '/': dynamo.function(Div),
   '>>': unshiftFn,
   '<<': pushFn,
-  ln,
-  '~': notFn,
-  '%': rem,
-  '^': pow,
-  '\\': idiv,
-  empty,
-  '<=>': cmpFn,
+  'ln': dynamo.function(Ln),
+  '~': dynamo.function(Not),
+  '%': dynamo.function(Rem),
+  '^': dynamo.function(Pow),
+  '\\': dynamo.function(IDiv),
+  'empty': dynamo.function(Empty),
+  '<=>': dynamo.function(Cmp),
 
   /**
    * ## `=` equal

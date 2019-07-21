@@ -12,7 +12,7 @@
     "docs": "node ./scripts/generate-docs.js",
     "prettier": "prettier \"{src, bin, test}/**/*.{ts, js}\" --write",
     "test": "ava ./test/*.spec.ts",
-    "test-watch": "ava ./test/*-spec.js --watch",
+    "test-watch": "ava ./test/*.spec.ts --watch",
     "quick-tests": "env ava ./test/*-quick-spec.js",
     "full-quick-tests": "env TESTS=full ava ./test/*-quick-spec.js",
     "lint": "tslint \"{src, bin, test}/**/*.{ts, js}\"",
@@ -26,6 +26,7 @@
   "author": "J. Harshbarger",
   "license": "MIT",
   "dependencies": {
+    "@hypercubed/dynamo": "^1.0.1",
     "@sindresorhus/is": "^0.17.1",
     "autobind-decorator": "^2.4.0",
     "blessed": "^0.1.81",
@@ -48,7 +49,6 @@
     "progress": "^1.1.8",
     "ts-node": "^8.3.0",
     "tslib": "^1.8.0",
-    "typed-function": "^0.10.7",
     "winston": "^2.2.0"
   },
   "devDependencies": {

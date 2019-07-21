@@ -4,8 +4,9 @@ import chalk from 'chalk';
 import stripAnsi from 'strip-ansi';
 import {boundMethod} from 'autobind-decorator';
 import is from '@sindresorhus/is';
+import { signature, Any } from '@hypercubed/dynamo';
 
-import { typed } from '../types/index';
+import { dynamo, Word, Sentence, Decimal, Complex, ComplexInfinity, Indeterminate, Future} from '../types/index';
 
 const STYLES = {
   number: chalk.magenta,
@@ -54,45 +55,39 @@ const DEFAULT_OPTS: InspectOptions = {
   hideQueue: false
 };
 
-// TODO: Move this
-export const type = typed('type', {
-  Word: (x: unknown) => 'action',
-  Sentence: (x: unknown) => 'action',
-  Array: (x: unknown) => 'array',
-  Decimal: (x: unknown) => 'number',
-  Complex: (x: unknown) => 'complex',
-  Date: (x: unknown) => 'date',
-  RegExp: (x: unknown) => 'regexp',
-  any: (x: unknown) => typeof x
-});
+class GetType {
+  @signature([Word, Sentence])
+  words(x: Word | Sentence) {
+    return 'action';
+  }
+  @signature(Array)
+  array(x: any[]) {
+    return 'array';
+  }
+  @signature([Number, Decimal])
+  Decimal(x: Decimal) {
+    return 'number';
+  }
+  @signature()
+  Complex(x: Complex) {
+    return 'complex';
+  }
+  @signature()
+  Date(x: Date) {
+    return 'date';
+  }
+  @signature()
+  RegExp(x: RegExp) {
+    return 'regexp';
+  }
+  @signature(Any)
+  any(x: unknown) {
+    return typeof x;
+  }
+}
 
-/* export const formatValue: (...args: any) => string = typed('formatValue', {
-  'Symbol, any, any': (value: Symbol, depth: unknown, opts: any) => formatSymbol(value, opts),
-  'Decimal | Complex | ComplexInfinity | number, any, any': (
-    value: Decimal | any | number,
-    depth: unknown,
-    opts: any
-  ) => stylize(value, 'number', opts),
-  'null, any, any': (value: null, depth: unknown, opts: any) => stylize('Null', 'null', opts),
-  'boolean, any, any': (value: boolean, depth: unknown, opts: any) => stylize(value, 'boolean', opts),
-  'Word, any, any': (value: any, depth: unknown, opts: any) => stylize(value, 'name', opts),
-  'Sentence, any, any': (value: any, depth: unknown, opts: any) => stylize(value, 'name', opts),
-  'string, any, any': (value: string, depth: unknown, opts: any) => formatString(value, opts),
-  'Array, any, any': formatArray,
-  'Future, any, any': (value: any, depth: unknown, opts: any) => inspect(value, opts),
-  'plainObject, any, any': formatMap,
-  'Date, any, any': (value: any, depth: unknown, opts: any) => stylize(value, 'name', opts),
-  'any, any, any': (value: any, depth: unknown, opts: any) => inspect(value, opts)
-});
-
-function formatString(value: any, opts?: InspectOptions): string {
-  opts = { ...DEFAULT_OPTS, colors: false, ...opts };
-  const x = JSON.stringify(value)
-    .replace(/^"|"$/g, '')
-    .replace(/'/g, `\\'`)
-    .replace(/\\"/g, '"');
-  return stylize(`'${x}'`, 'string', opts);
-} */
+// TODO: get type name from dynamo?
+export const type = dynamo.function(GetType);
 
 /**
  * The length of a string,
@@ -121,10 +116,7 @@ export class FFlatPrettyPrinter {
 
   private _stylizeSymbol: Function;
   private _stylizeString: Function;
-  private _stylizeNull: Function;
-  private _stylizeBoolean: Function;
   private _stylizeName: Function;
-  private _stylizeNumber: Function;
   private _stylizeDate: Function;
 
   formatValue: (item: any, depth?: number) => string;
@@ -137,25 +129,53 @@ export class FFlatPrettyPrinter {
 
     this._stylizeSymbol = this.getStyledFormater('symbol');
     this._stylizeString = this.getStyledFormater('string');
-    this._stylizeNull = this.getStyledFormater('null');
-    this._stylizeBoolean = this.getStyledFormater('boolean');
     this._stylizeName = this.getStyledFormater('name');
-    this._stylizeNumber = this.getStyledFormater('number');
     this._stylizeDate = this.getStyledFormater('date');
 
-    this.formatValue = typed('formatValue', {
-      'Symbol, number | null': (value: Symbol) => this.formatSymbol(value),
-      'Decimal | Complex | ComplexInfinity | Indeterminate | number, number | null': this._stylizeNumber,
-      'null, number | null': this._stylizeNull,
-      'boolean, number | null': this._stylizeBoolean,
-      'Word | Sentence, number | null': this._stylizeName,
-      'string, number | null': this.formatString,
-      'Array, number | null': this.formatArray,
-      'Future, number | null': (value: any, depth: number) => inspect(value, this.opts),
-      'plainObject, number | null': this.formatMap,
-      'Date, number | null': this.formatDate,
-      'any, number | null': (value: any, depth: number) => inspect(value, this.opts)
-    });
+    const self = this;
+
+    class FormatValue {
+      @signature(Symbol, Any)
+      symbol(value: Symbol) {
+        return self.formatSymbol(value);
+      }
+
+      @signature([Number, Decimal, Complex, ComplexInfinity, Indeterminate], Any)
+      number = self.getStyledFormater('number');
+
+      @signature(null, Any)
+      null = self.getStyledFormater('null');
+
+      @signature(Boolean, Any)
+      boolean = self.getStyledFormater('boolean');
+
+      @signature([Word, Sentence], Any)
+      word = self.getStyledFormater('name');
+
+      @signature(String, Any)
+      string = self.formatString;
+
+      @signature(Array, Any)
+      array = self.formatArray;
+
+      @signature(Future, Any)
+      future(value: any, depth: number) {
+        return inspect(value, self.opts);
+      }
+
+      @signature(Object, Any)
+      object = self.formatMap;
+
+      @signature(Date, Any)
+      date = self.formatDate;
+
+      @signature(Any, Any)
+      any(value: any, depth: number) {
+        return inspect(value, self.opts);
+      }
+    }
+
+    this.formatValue = dynamo.function(FormatValue);
   }
 
   @boundMethod
@@ -235,7 +255,7 @@ export class FFlatPrettyPrinter {
     const style = this.opts.colors ? this.opts.styles[styleType] : null;
 
     return function stylize(value: any): string {
-      const str = value.toString();
+      const str = String(value);
       return style ? style(str) : str;
     };
   }

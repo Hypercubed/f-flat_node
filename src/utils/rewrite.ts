@@ -1,26 +1,30 @@
+import { signature, Any } from '@hypercubed/dynamo';
 import is from '@sindresorhus/is';
 import { getIn } from 'icepick';
 
-import { StackValue, Sentence, Word, Seq, Dictionary, typed } from '../types';
+import { dynamo, StackValue, Sentence, Word, Seq, Dictionary } from '../types';
 import { IIF } from '../constants';
 
 let wordPaths: string[] = [];
 let dictObject: Object | undefined;
 
-const _rewrite = typed({
-  Array: (arr: any[]) => {
+class Rewrite {
+  @signature()
+  array(arr: any[]) {
     return arr.reduce((p, i) => {
       const n = _rewrite(i);
       n instanceof Seq ? p.push(...n.value) : p.push(n);
       return p;
     }, []);
-  },
-  Sentence: (action: Sentence) => {
+  }
+  @signature()
+  Sentence(action: Sentence) {
     const expandedValue = _rewrite(action.value);
     const newAction = new Sentence(expandedValue, action.displayString);
     return new Seq([newAction]);
-  },
-  Word: (action: Word) => {
+  }
+  @signature()
+  Word(action: Word) {
     if (wordPaths.includes(action.value)) {
       return action;
     }
@@ -35,8 +39,9 @@ const _rewrite = typed({
     const ret = _rewrite(value);
     wordPaths.pop();
     return ret;
-  },
-  plainObject: (obj: Object) => {
+  }
+  @signature()
+  plainObject(obj: Object) {
     return Object.keys(obj).reduce((p, key) => {
       const n = _rewrite(obj[key]); // todo: think about this, do we ever want to work on anything other than {string: Array}?
       n instanceof Seq
@@ -44,9 +49,14 @@ const _rewrite = typed({
         : (p[key] = n);
       return p;
     }, {});
-  },
-  any: y => y
-});
+  }
+  @signature(Any)
+  any(y: any) {
+    return y;
+  }
+}
+
+const _rewrite = dynamo.function(Rewrite);
 
 export function rewrite(x: Object, y: any) {
   wordPaths = [];

@@ -1,7 +1,8 @@
 import { splice, pop, push, getIn } from 'icepick';
+import { signature, Any } from '@hypercubed/dynamo';
 
 import {
-  typed,
+  dynamo,
   Seq,
   StackValue,
   StackArray,
@@ -28,8 +29,8 @@ function dequoteStack(env: StackEnv, s: StackValue) {
 /**
  * # Internal Core Words
  */
-export const core = {
-  /**
+
+   /**
    * ## `choose`
    * conditional (ternary) operator
    *
@@ -40,12 +41,15 @@ export const core = {
    * [ 1 ]
    * ```
    */
-  choose: typed('choose', {
-    // todo: true / false / nan, null
-    'boolean | null, any, any': (b: boolean | null, t: any, f: any) =>
-      new Just(b ? t : f),
-    'Future, any, any': (ff: Future, t: any, f: any) => ff.map(b => (b ? t : f))
-  }),
+class Choose {
+  name = 'choose';
+
+  @signature([Boolean, null], Any, Any)
+  booelan = (b: boolean | null, t: any, f: any) => new Just(b ? t : f)
+
+  @signature(Future, Any, Any)
+  future = (ff: Future, t: any, f: any) => ff.map((b: any) => (b ? t : f))
+}
 
   /**
    * ## `@` (at)
@@ -59,58 +63,189 @@ export const core = {
    * [ 2 ]
    * ```
    */
-  '@': typed('at', {
+class At {
     /**
-     * - string char at, zero based index
-     *
-     * ```
-     * f♭> 'abc' 2 @
-     * [ 'c' ]
-     * ```
-     */
-    'string, Decimal | number': (lhs: string, rhs: number) => {
-      rhs = +rhs | 0;
-      if (rhs < 0) {
-        rhs = lhs.length + rhs;
-      }
-      const r = lhs.charAt(rhs);
-      return r === '' ? null : r;
-    },
-
-    /**
-     * - array at, zero based index
-     *
-     * ```
-     * f♭> [ 1 2 3 ] 1 @
-     * [ 2 ]
-     * ```
-     */
-    'Array, Decimal | number': (lhs: any[], rhs: number) => {
-      rhs = Number(rhs) | 0;
-      if (rhs < 0) {
-        rhs = lhs.length + rhs;
-      }
-      const r = lhs[rhs];
-      return r === undefined ? null : new Just(r);
-    },
-    'Future, any': (f: Future, rhs: any) =>
-      f.map((lhs: any) => core['@'](lhs, rhs)),
-
-    /**
-     * - map get by key
-     *
-     * ```
-     * f♭> { first: 'Manfred' last: 'von Thun' } 'first' @
-     * [ 'Manfred' ]
-     * ```
-     */
-    'map | Object, Word | Sentence | string | null': (a: any, b: any) => {
-      const path = String(b).split('.');
-      const r = getIn(a, path);
-      return r === undefined ? null : r;
+   * - string char at, zero based index
+   *
+   * ```
+   * f♭> 'abc' 2 @
+   * [ 'c' ]
+   * ```
+   */
+  @signature(String, [Decimal, Number])
+  string(lhs: string, rhs: number) {
+    rhs = +rhs | 0;
+    if (rhs < 0) {
+      rhs = lhs.length + rhs;
     }
-    // number n @ -> get bin n (n >> 1 bitand)
-  }),
+    const r = lhs.charAt(rhs);
+    return r === '' ? null : r;
+  }
+
+  /**
+   * - array at, zero based index
+   *
+   * ```
+   * f♭> [ 1 2 3 ] 1 @
+   * [ 2 ]
+   * ```
+   */
+  @signature(Array, [Decimal, Number])
+  array(lhs: any[], rhs: number) {
+    rhs = +rhs | 0;
+    if (rhs < 0) {
+      rhs = lhs.length + rhs;
+    }
+    const r = lhs[rhs];
+    return r === undefined ? null : new Just(r);
+  }
+
+  @signature(Future, Any)
+  future = (f: Future, rhs: any) => f.map((lhs: any) => core['@'](lhs, rhs))
+
+  /**
+   * - map get by key
+   *
+   * ```
+   * f♭> { first: 'Manfred' last: 'von Thun' } 'first' @
+   * [ 'Manfred' ]
+   * ```
+   */
+  @signature(Object, Any) // 'map | Object, Word | Sentence | string | null'
+  object(a: any, b: any) {
+    const path = String(b).split('.');
+    const r = getIn(a, path);
+    return r === undefined ? null : r;
+  }
+}
+
+  /**
+   * ## `unstack`
+   * push items in a quote to the stack without evaluation
+   *
+   * ( [A B C] -> A B C )
+   *
+   * ```
+   * f♭> [ 1 2 * ] unstack
+   * [ 1 2 * ]
+   * ```
+   */
+class Unstack {
+  @signature(Array)
+  array(a: StackArray) {
+    return new Seq(a);
+  }
+
+  @signature()
+  async future(f: Future) {
+    const a = await f.promise;
+    return new Seq(a);
+  }
+
+  @signature(Any)
+  any(a: any) {
+    return a;
+  }
+}
+
+
+/**
+ * ## `eval`
+ * evaluate quote or string
+ *
+ * ( [A] -> a )
+ *
+ * ```
+ * f♭> [ 1 2 * ] eval
+ * [ 2 ]
+ * ```
+ */
+class Eval {
+  @signature()
+  async future(f: Future) {
+    const a = await f.promise;
+    return new Sentence(a);
+  }
+
+  @signature(Array)
+  array(a: StackArray) {
+    return new Sentence(a);
+  }
+
+  @signature()
+  string(a: string) {
+    return new Word(a);
+  }
+
+  @signature([Word, Sentence])
+  word(a: Word) {
+    return a;
+  }
+
+  @signature(Any)
+  any(a: any) {
+    return new Just(a);
+  }
+}
+
+/**
+ * ## `zip`
+ *
+ * ```
+ * f♭> [ 1 2 3 ] [ 4 5 6 ] zip
+ * [ 1 4 2 5 3 6 ]
+ * ```
+ */
+class Zip {
+  @signature(Array, Array)
+  array(a: StackArray[], b: StackArray[]): StackArray[] {
+    const l = a.length < b.length ? a.length : b.length;
+    const r: StackArray[] = [];
+    for (let i = 0; i < l; i++) {
+      r.push(a[i], b[i]);
+    }
+    return r;
+  }
+}
+
+/**
+ * ## `zipinto`
+ *
+ * ```
+ * f♭> [ 1 2 3 ] [ 4 5 6 ] [ 7 8 9 ] zipinto
+ * [ [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] ]
+ * ```
+ */
+class ZipInto {
+  @signature(Array, Array, Array)
+  array(a: StackArray, b: StackArray, c: StackArray): StackArray {
+    const l = a.length < b.length ? a.length : b.length;
+    const r: StackArray = [];
+    for (let i = 0; i < l; i++) {
+      r.push(a[i], b[i], ...c);
+    }
+    return r;
+  }
+}
+
+/**
+ * ## `match`
+ *
+ * Matches a string a regex and returns an array containing the results of that search.
+ *
+ * {string} {regexp | string} -> {boolean}
+ *
+ */
+class Match {
+  @signature(String, [RegExp, String])
+  stringRegex(lhs: string, rhs: RegExp) {
+    return lhs.match(rhs) || [];
+  }
+}
+
+export const core = {
+  choose: dynamo.function(Choose),
+  '@': dynamo.function(At),
 
   /**
    * ## `q<`
@@ -174,22 +309,7 @@ export const core = {
     return s;
   },
 
-  /**
-   * ## `unstack`
-   * push items in a quote to the stack without evaluation
-   *
-   * ( [A B C] -> A B C )
-   *
-   * ```
-   * f♭> [ 1 2 * ] unstack
-   * [ 1 2 * ]
-   * ```
-   */
-  unstack: typed('unstack', {
-    Array: (a: StackArray) => new Seq(a),
-    Future: (f: Future) => f.promise.then(a => new Seq(a)),
-    any: a => a
-  }),
+  unstack: dynamo.function(Unstack),
 
   /**
    * ## `<->` (s-q swap)
@@ -264,25 +384,7 @@ export const core = {
     return this.stack.length; // ,  or "stack [ unstack ] [ length ] bi", `"this.stack.length" js-raw`
   },
 
-  /**
-   * ## `eval`
-   * evaluate quote or string
-   *
-   * ( [A] -> a )
-   *
-   * ```
-   * f♭> [ 1 2 * ] eval
-   * [ 2 ]
-   * ```
-   */
-  eval: typed('_eval', {
-    Future: (f: Future) => f.promise.then(a => new Sentence(a)),
-    Array: (a: any[]) => new Sentence(a),
-    string: (a: string) => new Word(a),
-    Word: (a: Word) => a,
-    Sentence: (a: Sentence) => a,
-    any: (a: any) => new Just(a)
-  }),
+  eval: dynamo.function(Eval),
 
   /**
    * ## `fork`
@@ -381,16 +483,7 @@ export const core = {
    * [ 1 4 2 5 3 6 ]
    * ```
    */
-  zip: typed('zip', {
-    'Array, Array': (a: StackArray[], b: StackArray[]): StackArray[] => {
-      const l = a.length < b.length ? a.length : b.length;
-      const r: StackArray[] = [];
-      for (let i = 0; i < l; i++) {
-        r.push(a[i], b[i]);
-      }
-      return r;
-    }
-  }),
+  zip: dynamo.function(Zip),
 
   /**
    * ## `zipinto`
@@ -400,20 +493,7 @@ export const core = {
    * [ [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] ]
    * ```
    */
-  zipinto: typed('zipinto', {
-    'Array, Array, Array': (
-      a: StackArray,
-      b: StackArray,
-      c: StackArray
-    ): StackArray => {
-      const l = a.length < b.length ? a.length : b.length;
-      const r: StackArray = [];
-      for (let i = 0; i < l; i++) {
-        r.push(a[i], b[i], ...c);
-      }
-      return r;
-    }
-  }),
+  zipinto: dynamo.function(ZipInto),
 
   /**
    * ## `(` (immediate quote)
@@ -542,10 +622,7 @@ export const core = {
    * {string} [regexp} -> {boolean}
    *
    */
-  match: typed('match', {
-    'string, RegExp | string': (lhs: string, rhs: RegExp) =>
-      lhs.match(rhs) || []
-  }),
+  match: dynamo.function(Match),
 
   /**
    * ## `=~`

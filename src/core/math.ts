@@ -1,33 +1,42 @@
+import { signature, Any } from '@hypercubed/dynamo';
+import * as erf from 'compute-erf';
+
 import {
-  typed,
+  dynamo,
   Decimal,
   gammaDecimal,
   Complex,
   indeterminate,
   pi,
   complexInfinity,
-  StackArray
+  StackArray,
+  ComplexInfinity
 } from '../types';
-
-import * as erf from 'compute-erf';
-
-const mod = (m: number, n: number) => ((m % n) + n) % n;
 
 /**
  * # Internal Math Words
  */
-export const math = {
-  /**
+
+   /**
    * ## `re`
    *
    * Real part of a value
    *
    */
-  re: typed('re', {
-    'Decimal | number': (a: Decimal | number) => a,
-    ComplexInfinity: (a: typeof complexInfinity) => indeterminate,
-    Complex: (a: Complex) => a.re
-  }),
+class Re {
+  @signature([Decimal, Number])
+  number(a: Decimal | number) {
+    return a;
+  }
+  @signature(ComplexInfinity)
+  ComplexInfinity(a: typeof complexInfinity) {
+    return indeterminate;
+  }
+  @signature()
+  Complex(a: Complex) {
+    return a.re;
+  }
+}
 
   /**
    * ## `im`
@@ -35,24 +44,50 @@ export const math = {
    * Imaginary part of a value
    *
    */
-  im: typed('im', {
-    'Decimal | number': (a: Decimal | number) => 0,
-    ComplexInfinity: (a: typeof complexInfinity) => indeterminate,
-    Complex: (a: Complex) => a.im
-  }),
+class Im {
+  @signature([Number, Decimal])
+  number(a: Decimal | number) {
+    return 0;
+  }
 
-  /**
-   * ## `arg`
-   *
-   * Argument (polar angle) of a complex number
-   *
-   */
-  arg: typed('arg', {
-    Decimal: (a: Decimal) => (a.isPos() || a.isZero() ? 0 : pi),
-    number: (a: number) => (a >= 0 ? 0 : pi),
-    ComplexInfinity: (a: typeof complexInfinity) => indeterminate,
-    Complex: (a: Complex) => a.arg()
-  }),
+  @signature()
+  complex(a: Complex) {
+    return a.im;
+  }
+
+  @signature(ComplexInfinity)
+  complexInfinity(a: typeof complexInfinity) {
+    return indeterminate;
+  }
+}
+
+/**
+ * ## `arg`
+ *
+ * Argument (polar angle) of a complex number
+ *
+ */
+class Arg {
+  @signature()
+  number(a: number) {
+    return (a >= 0 ? 0 : pi);
+  }
+
+  @signature()
+  decimal(a: Decimal) {
+    return (a.isPos() || a.isZero() ? 0 : pi);
+  }
+
+  @signature()
+  ComplexInfinity(a: ComplexInfinity) {
+    return indeterminate;
+  }
+
+  @signature()
+  complex(a: Complex) {
+    return a.arg();
+  }
+}
 
   /**
    * ## `abs`
@@ -60,10 +95,17 @@ export const math = {
    * Absolute value and complex magnitude
    *
    */
-  abs: typed('abs', {
-    'Decimal | Complex': (a: Decimal | Complex) => a.abs(),
-    ComplexInfinity: (a: typeof complexInfinity) => Infinity
-  }),
+class Abs {
+  @signature([Decimal, Complex])
+  decimal(a: Decimal | Complex) {
+    return a.abs();
+  }
+
+  @signature()
+  complexInfinity(a: ComplexInfinity) {
+    return Infinity;
+  }
+}
 
   /**
    * ## `cos`
@@ -71,10 +113,17 @@ export const math = {
    * Cosine of argument in radians
    *
    */
-  cos: typed('cos', {
-    Complex: (a: Complex) => a.cos(),
-    'Decimal | number': (a: Decimal | number) => (Decimal as any).cos(a)
-  }),
+class Cos {
+  @signature([Number, Decimal])
+  decimal(a: Decimal) {
+    return Decimal.cos(a);
+  }
+
+  @signature()
+  complex(a: Complex) {
+    return a.cos();
+  }
+}
 
   /**
    * ## `sin`
@@ -82,10 +131,16 @@ export const math = {
    * Sine of argument in radians
    *
    */
-  sin: typed('sin', {
-    Complex: (a: Complex) => a.sin(),
-    'Decimal | number': (a: Decimal | number) => (Decimal as any).sin(a)
-  }),
+class Sin {
+  @signature([Number, Decimal])
+  decimal(a: Decimal) {
+    return Decimal.sin(a);
+  }
+  @signature()
+  complex(a: Complex) {
+    return a.sin();
+  }
+}
 
   /**
    * ## `tan`
@@ -93,10 +148,17 @@ export const math = {
    * Tangent of argument in radians
    *
    */
-  tan: typed('tan', {
-    Complex: (a: Complex) => a.tan(),
-    'Decimal | number': (a: Decimal | number) => (Decimal as any).tan(a)
-  }),
+class Tan {
+  @signature([Number, Decimal])
+  decimal(a: Decimal | number) {
+    return (Decimal as any).tan(a);
+  }
+
+  @signature()
+  Complex(a: Complex) {
+    return a.tan();
+  }
+}
 
   /**
    * ## `asin`
@@ -104,14 +166,19 @@ export const math = {
    * Inverse sine in radians
    *
    */
-  asin: typed('asin', {
-    Complex: (a: Complex) => a.asin(),
-    'Decimal | number': (a: Decimal | number) => {
-      if (a === Infinity || a === -Infinity) return new Complex(0, -a);
-      if (a > 1 || a < -1) return new Complex(a).asin();
-      return (Decimal as any).asin(a);
-    }
-  }),
+class Asin {
+  @signature([Number, Decimal])
+  decimal(a: Decimal | number) {
+    if (a === Infinity || a === -Infinity) return new Complex(0, -a);
+    if (a > 1 || a < -1) return new Complex(a).asin();
+    return (Decimal as any).asin(a);
+  }
+
+  @signature()
+  Complex(a: Complex) {
+    return a.asin();
+  }
+}
 
   /*
    * ## `atan`
@@ -119,19 +186,17 @@ export const math = {
    * Inverse tangent in radians
    *
    */
-  atan: typed('atan', {
-    Complex: (a: Complex) => a.atan(),
-    'Decimal | number': (a: Decimal | number) => (Decimal as any).atan(a)
-  }),
+class Atan {
+  @signature([Number, Decimal])
+  decimal(a: Decimal | number) {
+    return (Decimal as any).atan(a);
+  }
 
-  /**
-   * ## `atan2`
-   *
-   * Four-quadrant inverse tangent
-   *
-   */
-  atan2: (a: Decimal | number, b: Decimal | number) =>
-    (Decimal as any).atan2(a, b),
+  @signature()
+  Complex(a: Complex) {
+    return a.atan();
+  }
+}
 
   /**
    * ## `round`
@@ -139,9 +204,12 @@ export const math = {
    * Round to nearest decimal or integer
    *
    */
-  round: typed('round', {
-    'Decimal | Complex': (a: Decimal | Complex) => a.round()
-  }),
+class Round {
+  @signature([Decimal, Complex])
+  decimal(a: Decimal | Complex) {
+    return a.round();
+  }
+}
 
   /**
    * ## `floor`
@@ -149,10 +217,13 @@ export const math = {
    * Round toward negative infinity
    *
    */
-  floor: typed('floor', {
-    'Decimal | Complex': (a: Decimal | Complex) => a.floor() // ,
-    // 'any': a => a
-  }),
+class Floor {
+  @signature([Decimal, Complex])
+  decimal(a: Decimal | Complex) {
+    return a.floor();
+  } // ,
+  // 'any': a => a
+}
 
   /**
    * ## `ceil`
@@ -160,27 +231,35 @@ export const math = {
    * Round toward positive infinity
    *
    */
-  ceil: typed('ceil', {
-    'Decimal | Complex': (a: Decimal | Complex) => a.ceil()
-  }),
+class Ceil {
+  @signature([Decimal, Complex])
+  decimal(a: Decimal | Complex) {
+    return a.ceil();
+  }
+}
 
   /**
    * ## `sqrt`
    *
    * Square root
    */
-  sqrt: typed('sqrt', {
-    Complex: (x: Complex) => {
-      return x.sqrt();
-    },
-    Decimal: (x: Decimal) => {
-      return x.isNegative() ? new Complex(x, 0).sqrt() : x.sqrt();
-    },
-    'Array | string': (x: StackArray | string) => {
-      const n = Math.sqrt(x.length) | 0;
-      return x.slice(1, n + 1);
-    }
-  }),
+class Sqrt {
+  @signature()
+  Decimal(x: Decimal) {
+    return x.isNegative() ? new Complex(x, 0).sqrt() : x.sqrt();
+  }
+
+  @signature()
+  Complex(x: Complex) {
+    return x.sqrt();
+  }
+
+  @signature([Array, String])
+  array(x: StackArray | string) {
+    const n = Math.sqrt(x.length) | 0;
+    return x.slice(1, n + 1);
+  }
+}
 
   /**
    * ## `conj`
@@ -188,9 +267,12 @@ export const math = {
    * Complex conjugate
    *
    */
-  conj: typed('conj', {
-    Complex: (a: Complex) => a.conj()
-  }),
+class Conj {
+  @signature()
+  Complex(a: Complex) {
+    return a.conj();
+  }
+}
 
   /**
    * ## `exp`
@@ -198,9 +280,12 @@ export const math = {
    * Exponential
    *
    */
-  exp: typed('exp', {
-    'Decimal | Complex': (a: Decimal | Complex) => a.exp()
-  }),
+class Exp {
+  @signature([Decimal, Complex])
+  decimal(a: Decimal | Complex) {
+    return a.exp();
+  }
+}
 
   /**
    * ## `gamma`
@@ -208,10 +293,51 @@ export const math = {
    * Gamma function
    *
    */
-  gamma: typed('gamma', {
-    Decimal: gammaDecimal,
-    Complex: (a: Complex) => a.gamma()
-  }),
+class Gamma {
+  @signature(Decimal)
+  Decimal = gammaDecimal;
+
+  @signature(Complex)
+  Complex(a: Complex) {
+    return a.gamma();
+  }
+}
+
+export const math = {
+  re: dynamo.function(Re),
+  im: dynamo.function(Im),
+  arg: dynamo.function(Arg),
+
+
+  abs: dynamo.function(Abs),
+
+  cos: dynamo.function(Cos),
+  sin: dynamo.function(Sin),
+  tan: dynamo.function(Tan),
+
+  asin: dynamo.function(Asin),
+  atan: dynamo.function(Atan),
+
+  /**
+   * ## `atan2`
+   *
+   * Four-quadrant inverse tangent
+   *
+   */
+  atan2(a: Decimal | number, b: Decimal | number) {
+    return (Decimal as any).atan2(a, b);
+  },
+
+  round: dynamo.function(Round),
+  floor: dynamo.function(Floor),
+  ceil: dynamo.function(Ceil),
+
+  sqrt: dynamo.function(Sqrt),
+  exp: dynamo.function(Exp),
+
+  conj: dynamo.function(Conj),
+
+  gamma: dynamo.function(Gamma),
 
   /**
    * ## `nemes`
@@ -219,9 +345,7 @@ export const math = {
    * Nemes Gamma Function
    *
    */
-  /* nemes: typed('nemes', {
-    'Decimal': (a: Decimal) => a.nemesClosed()
-  }), */
+  /* nemes: 'Decimal': (a: Decimal) => a.nemesClosed() */
 
   /**
    * ## `spouge`
@@ -229,9 +353,7 @@ export const math = {
    * Sponge function
    *
    */
-  /* spouge: typed('spouge', {
-    'Decimal': (a: Decimal) => a.spouge()
-  }), */
+  /* spouge: 'Decimal': (a: Decimal) => a.spouge() */
 
   /**
    * ## `erf`
@@ -247,7 +369,9 @@ export const math = {
    * bitwise and
    *
    */
-  '&': (a: any, b: any) => +a & +b,
+  '&'(a: any, b: any) {
+    return +a & +b;
+  },
 
   /**
    * ## `|`
@@ -255,7 +379,9 @@ export const math = {
    * bitwise or
    *
    */
-  '|': (a: any, b: any) => +a | +b,
+  '|'(a: any, b: any) {
+    return +a | +b;
+  },
 
   /**
    * ## `$`
@@ -263,13 +389,17 @@ export const math = {
    * bitwise xor
    *
    */
-  $: (a: any, b: any) => +a ^ +b,
+  $(a: any, b: any) {
+    return +a ^ +b;
+  },
 
   /**
    * ## `bitnot`
    *
    */
-  bitnot: (a: any) => ~a,
+  bitnot(a: any) {
+    return ~a;
+  },
 
   /**
    * ## `rand`
@@ -285,7 +415,7 @@ export const math = {
    * Sets the internal decimal precision
    *
    */
-  'set-precision': (x: any) => {
+  'set-precision'(x: any) {
     Decimal.config({ precision: Number(x) });
   },
 
@@ -295,7 +425,11 @@ export const math = {
    * Gets the internal decimal precision
    *
    */
-  'get-precision': () => Decimal.precision,
+  'get-precision'() {
+    return Decimal.precision;
+  },
 
-  'complexinfinity': () => complexInfinity
+  'complexinfinity'() {
+    return complexInfinity;
+  }
 };

@@ -1,4 +1,4 @@
-import { typed } from './typed';
+import { guard } from '@hypercubed/dynamo';
 import { encode } from '../utils/json';
 import { StackValue } from './stackValue';
 
@@ -58,23 +58,23 @@ class Action {
 }
 
 export class Word extends Action {
+  @guard()
+  static isWord(x: unknown): x is Word {
+    return x instanceof Word;
+  }
+
   constructor(value: string, displayString?: string) {
     super(value, displayString);
   }
 }
 
 export class Sentence extends Action {
+  @guard()
+  static isSentence(x: unknown): x is Sentence {
+    return x instanceof Sentence;
+  }
+
   constructor(value: StackValue[], displayString?: string) {
     super(value, displayString);
   }
 }
-
-typed.addType({
-  name: 'Sentence',
-  test: (item: any): item is Sentence => item instanceof Sentence
-});
-
-typed.addType({
-  name: 'Word',
-  test: (item: any): item is Word => item instanceof Word
-});

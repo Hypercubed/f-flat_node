@@ -1,11 +1,12 @@
 import memoize from 'memoizee';
 import { writeFileSync } from 'fs';
+import { signature, Any } from '@hypercubed/dynamo';
 
 import { stringifyStrict } from '../utils/json';
 import { FFlatError } from '../utils/fflat-error';
 
 import {
-  typed,
+  dynamo,
   Word,
   Sentence,
   Future,
@@ -16,6 +17,13 @@ import {
 import { StackEnv } from '../env';
 import { log } from '../utils';
 
+class Apply {
+  @signature()
+  app(a: any[], b: Function) {
+    return Reflect.apply(b, null, a);
+  }
+}
+
 /**
  * # Internal Experimental Words
  */
@@ -23,26 +31,28 @@ export const experimental = {
   /**
    * ## `throw`
    */
-  throw: function(this: StackEnv, e: string) {
+  throw(this: StackEnv, e: string) {
     throw new FFlatError(e, this);
   },
 
   /**
    * ## `stringify`
    */
-  stringify: (a: any) => stringifyStrict(a),
+  stringify(a: any) {
+    return stringifyStrict(a);
+  },
 
   /**
    * ## `parse-json`
    */
-  'parse-json': (a: string) => JSON.parse(a), // global.JSON.parse
+  'parse-json'(a: string) {
+    return JSON.parse(a);
+  }, // global.JSON.parse
 
   /**
    * ## `||>` (apply)
    */
-  '||>': typed('ap', {
-    'Array, Function': (a: any[], b: Function) => Reflect.apply(b, null, a)
-  }),
+  '||>': dynamo.function(Apply),
 
   /**
    * ## `spawn`
@@ -60,7 +70,7 @@ export const experimental = {
    *
    * ( [A] -> [a] )
    */
-  ['await']: function(this: StackEnv, a: StackValue): Promise<any> {
+  ['await'](this: StackEnv, a: StackValue): Promise<any> {
     // rollup complains on await
     if (a instanceof Future) {
       return a.promise;
@@ -128,7 +138,7 @@ export const experimental = {
    *
    * ( {string} -> {any} )
    */
-  'js-raw': function(this: StackEnv, s: string): any {
+  'js-raw'(this: StackEnv, s: string): any {
     return new Function(`return ${s}`).call(this);
   },
 
@@ -152,11 +162,11 @@ export const experimental = {
     }
   },
 
-  'create-object': function(obj: any): any {
+  'create-object'(obj: any): any {
     return Object.create(obj);
   },
 
-  'case-of?': function(obj: any, proto: any): any {
+  'case-of?'(obj: any, proto: any): any {
     while (true) {
       if (obj === null) return false;
       if (proto === obj) return true;
@@ -164,7 +174,7 @@ export const experimental = {
     }
   },
 
-  put: function(obj: any, key: any, value: any): any {
+  put(obj: any, key: any, value: any): any {
     const proto = Object.getPrototypeOf(obj);
     const newObj = Object.create(proto);
     return Object.assign(newObj, { [key]: value });

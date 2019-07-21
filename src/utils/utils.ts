@@ -1,4 +1,5 @@
-import { typed, Word, Sentence, Decimal, StackValue } from '../types/index';
+import { signature, Any } from '@hypercubed/dynamo';
+import { dynamo, Word, Sentence, Decimal, Complex } from '../types/index';
 
 export const arrayRepeat = (a: any[], len: any) => {
   len = Number(len) | 0;
@@ -64,8 +65,9 @@ function objEquiv(a: {}, b: {}): boolean {
   return typeof a === typeof b;
 }
 
-const __eql = typed('deepEquals', {
-  'Array, Array': (a: any[], b: any[]): boolean => {
+class Equal {
+  @signature()
+  'Array, Array'(a: any[], b: any[]): boolean {
     if (a.length !== b.length) {
       return false;
     }
@@ -75,44 +77,63 @@ const __eql = typed('deepEquals', {
       }
     }
     return true;
-  },
-  'Word, Word': (a: Word, b: Word): boolean => {
+  }
+
+  @signature([Word, Sentence], [Word, Sentence])
+  'Word, Word'(a: Word, b: Word): boolean {
     return a.value === b.value;
-  },
-  'Sentence, Sentence': (a: Sentence, b: Sentence): boolean => {
-    return a.value === b.value;
-  },
-  'number, number': (a: number, b: number): boolean => {
+  }
+
+  @signature()
+  'number, number'(a: number, b: number): boolean {
     if (Object.is(a, -0)) return Object.is(b, -0);
     if (Number.isNaN(a)) return Number.isNaN(b);
     return a === b;
-  },
-  'Decimal | Complex, Decimal | Complex': (a: Decimal, b: Decimal): boolean => {
+  }
+
+  @signature()
+  'Decimal, Decimal'(a: Decimal, b: Decimal): boolean {
     // if (a.isZero() && b.isZero()) return a.isPos() === b.isPos();
     if (a.isNaN()) return b.isNaN();
     return a.equals(b);
-  },
-  'Date, any': (a: Date, b: any): boolean => {
+  }
+
+  @signature()
+  'Complex, Complex'(a: Complex, b: Complex): boolean {
+    // if (a.isZero() && b.isZero()) return a.isPos() === b.isPos();
+    if (a.isNaN()) return b.isNaN();
+    return a.equals(b);
+  }
+
+  @signature(Any, Date)
+  @signature(Date, Any)
+  'Date, any'(a: any, b: any): boolean {
     return +a === +b;
-  },
-  'any, Date': (a: any, b: Date): boolean => {
-    return +a === +b;
-  },
-  'RegExp, RegExp': (a: RegExp, b: RegExp): boolean => {
+  }
+
+  @signature()
+  'RegExp, RegExp'(a: RegExp, b: RegExp): boolean {
     return a.toString() === b.toString();
-  },
-  'Object, Object': objEquiv,
-  'any, any': (a: any, b: any): boolean => {
+  }
+
+  @signature(Object, Object)
+  'Object, Object' = objEquiv;
+
+  @signature(Any, Any)
+  'any, any'(a: any, b: any): boolean {
     return false;
   }
-});
+}
+
+const __eql = dynamo.function(Equal);
 
 export function deepEquals(a: any, b: any): boolean {
   return a === b ? true : __eql(a, b);
 }
 
-export const toObject = typed('object', {
-  Array: (a: any[]) => {
+class ToObject {
+  @signature()
+  array(a: any[]) {
     // hash-map
     const r = {};
     const l = a.length;
@@ -120,6 +141,10 @@ export const toObject = typed('object', {
       Object.assign(r, { [a[i++]]: a[i] });
     }
     return r;
-  },
-  any: Object
-});
+  }
+
+  @signature(Any)
+  any = Object;
+}
+
+export const toObject = dynamo.function(ToObject);

@@ -12,7 +12,7 @@ export const flags = {
    * Sets the internal decimal precision
    *
    */
-  'set-precision': (x: any) => {
+  'set-precision'(x: any) {
     Decimal.config({ precision: +x });
   },
 
@@ -22,7 +22,9 @@ export const flags = {
    * Gets the internal decimal precision
    *
    */
-  'get-precision': () => Decimal.precision,
+  'get-precision'() {
+    return Decimal.precision;
+  },
 
   /**
    * ## `set-log-level`
@@ -30,7 +32,7 @@ export const flags = {
    *
    * ( {string} -> )
    */
-  'set-log-level': (a: string): void => {
+  'set-log-level'(a: string): void {
     log.level = a;
   },
 
@@ -40,7 +42,9 @@ export const flags = {
    *
    * ( -> {string} )
    */
-  'get-log-level': () => log.level,
+  'get-log-level'() {
+    return log.level;
+  },
 
   /**
    * ## `auto-undo`
@@ -48,7 +52,7 @@ export const flags = {
    *
    * ( {boolean} -> )
    */
-  'set-auto-undo': function(this: StackEnv, a: boolean): void {
+  'set-auto-undo'(this: StackEnv, a: boolean): void {
     this.autoundo = a;
   }
 };

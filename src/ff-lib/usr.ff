@@ -47,7 +47,7 @@ site-war: [ dup [ [ site-size ] >> ] map all zip object ] ;
 // random
 rand-integer: [ rand-u32 ] ;
 rand-char: [ rand-integer 128 % itoa ] ;
-rand-seq: [ rand-integer 16 % ++ [ times ] >> >> in ] ;
+rand-seq: [ rand-integer 16 % ++ ++ ++ ++ [ times ] >> >> in ] ;
 rand-string: [ [ rand-char ] rand-seq sum ] ;
 rand-bool: [ rand-u32 even? ] ;
 

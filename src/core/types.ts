@@ -1,4 +1,6 @@
-import { typed, Word, Sentence, Just, Seq, Decimal, Complex } from '../types';
+import { signature, Any } from '@hypercubed/dynamo';
+
+import { dynamo, Word, Sentence, Just, Seq, Decimal, Complex } from '../types';
 import { type } from '../utils';
 
 const NUMERALS = '0123456789ABCDEF';
@@ -25,20 +27,104 @@ function convertBase(str: string, baseIn: number, baseOut: number) {
   return arr.reverse();
 }
 
-const action = typed('action', {
-  // todo: this should be part of the Action constructor?
-  'Word | Sentence': (x: unknown) => x,
-  Array: (x: any[]) => {
+// todo; make part of teh action object?
+class CreateAction {
+  @signature([Word, Sentence])
+  words(x: Word | Sentence): Word | Sentence {
+    return x;
+  }
+
+  @signature()
+  array(x: any[]): Sentence {
     if (x.length === 1 && (x[0] instanceof Word || x[0] instanceof Sentence)) {
       return x[0];
     }
     return new Sentence(x);
-  },
-  string: (x: string) => {
+  }
+
+  @signature()
+  string(x: string): Word {
     return new Word(x);
-  },
-  any: (x: unknown) => x
-});
+  }
+
+  @signature(Any)
+  any(x: any): any {
+    return x;
+  }
+}
+
+const action = dynamo.function(CreateAction);
+
+class CreateNumber {
+  @signature(Date)
+  Date(x: Date) {
+    return x.valueOf();
+  }
+  @signature(Any)
+  any(x: any) {
+    return new Decimal(x);
+  }
+}
+
+class IsNumber {
+  @signature([Number, Decimal, Complex])
+  number() {
+    return true;
+  }
+  @signature(Any)
+  any() {
+    return false;
+  }
+}
+
+class IsComplex {
+  @signature()
+  Complex(a: Complex) {
+    return !a.im.isZero();
+  }
+
+  @signature(Any)
+  'Decimal | number | any'() {
+    return false;
+  }
+}
+
+class Base {
+  @signature(Decimal, [Number, Decimal])
+  decimal(lhs: Decimal, base: Decimal | number) {
+    base = +base | 0;
+    if (!lhs.isFinite() || lhs.isNaN() || base === 10) return lhs.toString();
+
+    const precision = ((lhs.sd() * Math.LN10) / Math.log(base)) | 1;
+
+    const d = Decimal.clone({
+      precision,
+      rounding: 4
+    });
+
+    switch (base) {
+      case 2:
+        return new d(lhs).toBinary() as any;
+      case 8:
+        return new d(lhs).toOctal() as any;
+      case 10:
+        return lhs.toString();
+      case 16:
+        return (lhs.toHexadecimal() as any)
+          .toUpperCase()
+          .replace('X', 'x')
+          .replace('P', 'p');
+      default:
+        const sgn = lhs.isNeg() ? '-' : '';
+        const arr = convertBase(
+          new d(lhs).absoluteValue().toString(),
+          10,
+          base
+        );
+        return sgn + arr.map(x => NUMERALS[x]).join('');
+    }
+  }
+}
 
 /**
  * # Internal Type Words
@@ -52,128 +138,109 @@ export const types = {
   /**
    * ## `number`
    */
-  number: typed('number', {
-    Date: (x: Date) => x.valueOf(),
-    any: (x: any) => new Decimal(x)
-  }),
+  number: dynamo.function(CreateNumber),
 
   /**
    * ## `complex`
    */
-  complex: typed('complex', {
-    any: (x: any) => Complex.parse(x)
-  }),
+  complex(x: any) {
+    return Complex.parse(x);
+  },
 
   /**
    * ## `number?`
    */
-  'number?': typed('number_', {
-    'Decimal | Complex | number': () => true,
-    any: () => false
-  }),
+  'number?': dynamo.function(IsNumber),
 
   /**
    * ## `complex?`
    */
-  'complex?': typed('complex_', {
-    Complex: (a: Complex) => !a.im.isZero(),
-    'Decimal | number | any': () => false
-  }),
+  'complex?': dynamo.function(IsComplex),
 
   /**
    * ## `string`
    */
-  string: (x: any) => String(x),
+  string(x: any) {
+    return String(x);
+  },
 
   /**
    * ## `valueof`
    */
-  valueof: (x: any) => x.valueOf(),
+  valueof(x: any) {
+    return  x.valueOf();
+  },
 
   /**
    * ## `itoa`
    */
-  itoa: (x: number) => String.fromCharCode(x),
+  itoa(x: number) {
+    return  String.fromCharCode(x);
+  },
 
   /**
    * ## `atoi`
    */
-  atoi: (x: string) => x.charCodeAt(0),
+  atoi(x: string) {
+    return  x.charCodeAt(0);
+  },
 
   /**
    * ## `atob`
    * ecodes a string of data which has been encoded using base-64 encoding
    */
-  atob: (x: string) => Buffer.from(x, 'base64').toString('binary'),
+  atob(x: string) {
+    return Buffer.from(x, 'base64').toString('binary');
+  },
 
   /**
    * ## `btoa`
    * creates a base-64 encoded ASCII string from a String
    */
-  btoa: (x: string) => Buffer.from(x, 'binary').toString('base64'),
+  btoa(x: string) {
+    return Buffer.from(x, 'binary').toString('base64');
+  },
 
   /**
    * ## `base`
    * Convert an integer to a string in the given base
    */
-  base: typed('base', {
-    'Decimal, Decimal | number': (lhs: Decimal, base: Decimal | number) => {
-      base = +base | 0;
-      if (!lhs.isFinite() || lhs.isNaN() || base === 10) return lhs.toString();
-
-      const d = Decimal.clone({
-        precision: ((lhs.sd() * Math.LN10) / Math.log(base)) | 0,
-        rounding: 4
-      });
-
-      switch (base) {
-        case 2:
-          return new d(lhs).toBinary() as any;
-        case 8:
-          return new d(lhs).toOctal() as any;
-        case 10:
-          return lhs.toString();
-        case 16:
-          return (lhs.toHexadecimal() as any)
-            .toUpperCase()
-            .replace('X', 'x')
-            .replace('P', 'p');
-        default:
-          const sgn = lhs.isNeg() ? '-' : '';
-          const arr = convertBase(
-            new d(lhs).absoluteValue().toString(),
-            10,
-            base
-          );
-          return sgn + arr.map(x => NUMERALS[x]).join('');
-      }
-    }
-  }),
+  base: dynamo.function(Base),
 
   /**
    * ## `boolean`
    */
-  boolean: (x: number) => (x ? Boolean(x.valueOf()) : false),
+  boolean(x: number) {
+    return (x ? Boolean(x.valueOf()) : false);
+  },
 
   /**
    * ## `:` (action)
    */
-  ':': (x: any) => new Just(action(x)),
+  ':'(x: any) {
+    return new Just(action(x));
+  },
 
   /**
    * ## `#` (sdymbol)
    */
-  '#': (x: any) => Symbol(x),
+  '#'(x: any) {
+    return Symbol(x);
+  },
 
   /**
    * ## `array`
    */
-  array: (x: any) => new Array(x),
+  array(x: any) {
+    return new Array(x);
+  },
 
   /**
    * ## `integer`
    */
-  integer: (x: number) => x | 0,
+  integer(x: number) {
+    return x | 0;
+  },
 
   // 'null?': 'null =',
 
@@ -185,49 +252,59 @@ export const types = {
   /**
    * ## `of`
    */
-  of: (a: any, b: any) =>
-    a !== null && a.constructor ? new a.constructor(b) : null,
+  of(a: any, b: any) {
+    return a !== null && a.constructor ? new a.constructor(b) : null;
+  },
 
   /**
    * ## `is?`
    */
-  'is?': (a: any, b: any) => a === b,
+  'is?'(a: any, b: any) {
+    return a === b;
+  },
 
   /**
    * ## `nothing?`
    */
-  'nothing?': (a: any) => a === null || typeof a === 'undefined',
+  'nothing?'(a: any) {
+    return a === null || typeof a === 'undefined';
+  },
 
   /**
    * ## `date`
    */
-  date: (a: any) => new Date(a),
+  date(a: any) {
+    return new Date(a);
+  },
 
   /**
    * ## `now`
    */
-  now: () => new Date(), // now: `new Date()` js-raw ;
+  now() {
+    return new Date();
+  }, // now: `new Date()` js-raw ;
 
   /**
    * ## `date-expand`
    */
-  'date-expand': (a: any) =>
-    new Seq([a.getFullYear(), a.getMonth() + 1, a.getDate()]),
+  'date-expand'(a: any) {
+    return new Seq([a.getFullYear(), a.getMonth() + 1, a.getDate()]);
+  },
 
   /**
    * ## `clock`
    */
-  clock: (): number => new Date().getTime(),
+  clock(): number {
+    return new Date().getTime();
+  },
 
   /**
    * ## `regexp`
    * convert string to RegExp
    */
-  regexp: typed('regexp', {
-    string: (str: string) => {
-      const match = str.match(new RegExp('^/(.*?)/([gimy]*)$'));
-      return match ? new RegExp(match[1], match[2]) : new RegExp(str);
-    },
-    RegExp: (x: RegExp) => x
-  })
+  regexp(x: any) {
+    if (x instanceof RegExp) return x;
+    const match = x.match(new RegExp('^/(.*?)/([gimy]*)$'));
+    return match ? new RegExp(match[1], match[2]) : new RegExp(x);
+  }
 };

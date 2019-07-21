@@ -1,4 +1,4 @@
-export * from './typed';
+export * from './dynamo';
 export * from './decimal';
 export * from './complex';
 export * from './words';

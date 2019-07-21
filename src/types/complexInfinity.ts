@@ -1,4 +1,5 @@
-import { typed } from './typed';
+import { guard } from '@hypercubed/dynamo';
+
 import { Complex } from './complex';
 
 export class AbstractValue {
@@ -17,7 +18,18 @@ export class AbstractValue {
   }
 }
 
-export const indeterminate = new AbstractValue('Indeterminate');
+export class Indeterminate extends AbstractValue {
+  static indeterminate = new Indeterminate();
+
+  @guard()
+  static isIndeterminate(a: any): a is ComplexInfinity {
+    return a === Indeterminate.indeterminate;
+  }
+
+  constructor() {
+    super('Indeterminate');
+  }
+}
 
 export class ComplexInfinity extends AbstractValue {
   static complexInfinity = new ComplexInfinity();
@@ -49,6 +61,7 @@ export class ComplexInfinity extends AbstractValue {
     return 0;
   }
 
+  @guard()
   static isComplexInfinity(a: any): a is ComplexInfinity {
     return a === ComplexInfinity.complexInfinity;
   }
@@ -59,20 +72,4 @@ export class ComplexInfinity extends AbstractValue {
 }
 
 export const { complexInfinity } = ComplexInfinity;
-
-typed.addType({
-  name: 'ComplexInfinity',
-  test: ComplexInfinity.isComplexInfinity
-});
-
-typed.addType({
-  name: 'Indeterminate',
-  test: (x: unknown) => x === indeterminate
-});
-
-typed.addType({
-  name: 'infinity',
-  test: (x: unknown) => {
-    return x === Infinity || x === -Infinity;
-  }
-});
+export const { indeterminate } = Indeterminate;

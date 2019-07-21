@@ -1,8 +1,14 @@
-import { typed } from './typed';
+import { guard } from '@hypercubed/dynamo';
+
 import { Sentence, Word } from './words';
 import { StackValue } from './stackValue';
 
 export class Future {
+  @guard()
+  static isFuture(x: unknown): x is Future {
+    return x instanceof Future;
+  }
+
   value: StackValue;
 
   constructor(
@@ -62,12 +68,7 @@ export class Future {
     return this.value;
   }
 
-  map(fn): Future {
+  map(fn: any): Future {
     return new Future(this.action, this.promise.then(fn));
   }
 }
-
-typed.addType({
-  name: 'Future',
-  test: item => item instanceof Future
-});
