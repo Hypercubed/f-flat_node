@@ -242,7 +242,11 @@ export class StackEnv {
     if (err instanceof TypeError && (err as any).data) {
       const { data } = err as any;
       const index = this.lastFnDispatch.args - data.index;
-      const message = `Unexpected type of argument in ${data.fn} (expected: ${data.expected.join(' or ')}, actual: ${data.actual}, index: ${index})`;
+      const message = `Unexpected type of argument in ${
+        data.fn
+      } (expected: ${data.expected.join(' or ')}, actual: ${
+        data.actual
+      }, index: ${index})`;
       err = new FFlatError(message, this);
     }
     this.status = ERR;
@@ -321,11 +325,7 @@ export class StackEnv {
       }
 
       if (is.function_(lookup)) {
-        return this.dispatchFn(
-          lookup,
-          functionLength(lookup),
-          tokenValue
-        );
+        return this.dispatchFn(lookup, functionLength(lookup), tokenValue);
       }
 
       return this.push(lookup);

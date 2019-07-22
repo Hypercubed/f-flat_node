@@ -2,10 +2,7 @@ import { ffPrettyPrint } from './pprint';
 import { StackEnv } from '../env';
 
 export class FFlatError extends Error {
-  constructor(
-    message = 'FFlatError',
-    state?: StackEnv
-  ) {
+  constructor(message = 'FFlatError', state?: StackEnv) {
     super(message);
 
     // extending Error is weird and does not propagate `message`
@@ -28,7 +25,7 @@ export class FFlatError extends Error {
 
       stackArray.push(`stack trace:`);
 
-      state.trace.forEach((s) => {
+      state.trace.forEach(s => {
         stackArray.push(`     ${ffPrettyPrint.formatTrace(s as any, -5)}`);
       });
     } else {
@@ -41,4 +38,3 @@ export class FFlatError extends Error {
     });
   }
 }
-

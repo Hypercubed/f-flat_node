@@ -17,12 +17,12 @@ import {
  * # Internal Math Words
  */
 
-   /**
-   * ## `re`
-   *
-   * Real part of a value
-   *
-   */
+/**
+ * ## `re`
+ *
+ * Real part of a value
+ *
+ */
 class Re {
   @signature([Number, Decimal])
   number(a: Decimal | number) {
@@ -38,12 +38,12 @@ class Re {
   }
 }
 
-  /**
-   * ## `im`
-   *
-   * Imaginary part of a value
-   *
-   */
+/**
+ * ## `im`
+ *
+ * Imaginary part of a value
+ *
+ */
 class Im {
   @signature([Number, Decimal])
   number(a: Decimal | number) {
@@ -70,12 +70,12 @@ class Im {
 class Arg {
   @signature()
   number(a: number) {
-    return (a >= 0 ? 0 : pi);
+    return a >= 0 ? 0 : pi;
   }
 
   @signature()
   decimal(a: Decimal) {
-    return (a.isPos() || a.isZero() ? 0 : pi);
+    return a.isPos() || a.isZero() ? 0 : pi;
   }
 
   @signature()
@@ -89,12 +89,12 @@ class Arg {
   }
 }
 
-  /**
-   * ## `abs`
-   *
-   * Absolute value and complex magnitude
-   *
-   */
+/**
+ * ## `abs`
+ *
+ * Absolute value and complex magnitude
+ *
+ */
 class Abs {
   @signature([Decimal, Complex])
   decimal(a: Decimal | Complex) {
@@ -107,12 +107,12 @@ class Abs {
   }
 }
 
-  /**
-   * ## `cos`
-   *
-   * Cosine of argument in radians
-   *
-   */
+/**
+ * ## `cos`
+ *
+ * Cosine of argument in radians
+ *
+ */
 class Cos {
   @signature([Number, Decimal])
   decimal(a: Decimal) {
@@ -125,12 +125,12 @@ class Cos {
   }
 }
 
-  /**
-   * ## `sin`
-   *
-   * Sine of argument in radians
-   *
-   */
+/**
+ * ## `sin`
+ *
+ * Sine of argument in radians
+ *
+ */
 class Sin {
   @signature([Number, Decimal])
   decimal(a: Decimal) {
@@ -142,12 +142,12 @@ class Sin {
   }
 }
 
-  /**
-   * ## `tan`
-   *
-   * Tangent of argument in radians
-   *
-   */
+/**
+ * ## `tan`
+ *
+ * Tangent of argument in radians
+ *
+ */
 class Tan {
   @signature([Number, Decimal])
   decimal(a: Decimal | number) {
@@ -160,12 +160,12 @@ class Tan {
   }
 }
 
-  /**
-   * ## `asin`
-   *
-   * Inverse sine in radians
-   *
-   */
+/**
+ * ## `asin`
+ *
+ * Inverse sine in radians
+ *
+ */
 class Asin {
   @signature([Number, Decimal])
   decimal(a: Decimal | number) {
@@ -180,12 +180,12 @@ class Asin {
   }
 }
 
-  /*
-   * ## `atan`
-   *
-   * Inverse tangent in radians
-   *
-   */
+/*
+ * ## `atan`
+ *
+ * Inverse tangent in radians
+ *
+ */
 class Atan {
   @signature([Number, Decimal])
   decimal(a: Decimal | number) {
@@ -198,12 +198,12 @@ class Atan {
   }
 }
 
-  /**
-   * ## `round`
-   *
-   * Round to nearest decimal or integer
-   *
-   */
+/**
+ * ## `round`
+ *
+ * Round to nearest decimal or integer
+ *
+ */
 class Round {
   @signature([Decimal, Complex])
   decimal(a: Decimal | Complex) {
@@ -211,12 +211,12 @@ class Round {
   }
 }
 
-  /**
-   * ## `floor`
-   *
-   * Round toward negative infinity
-   *
-   */
+/**
+ * ## `floor`
+ *
+ * Round toward negative infinity
+ *
+ */
 class Floor {
   @signature([Decimal, Complex])
   decimal(a: Decimal | Complex) {
@@ -225,12 +225,12 @@ class Floor {
   // 'any': a => a
 }
 
-  /**
-   * ## `ceil`
-   *
-   * Round toward positive infinity
-   *
-   */
+/**
+ * ## `ceil`
+ *
+ * Round toward positive infinity
+ *
+ */
 class Ceil {
   @signature([Decimal, Complex])
   decimal(a: Decimal | Complex) {
@@ -238,11 +238,11 @@ class Ceil {
   }
 }
 
-  /**
-   * ## `sqrt`
-   *
-   * Square root
-   */
+/**
+ * ## `sqrt`
+ *
+ * Square root
+ */
 class Sqrt {
   @signature()
   Decimal(x: Decimal) {
@@ -261,12 +261,12 @@ class Sqrt {
   }
 }
 
-  /**
-   * ## `conj`
-   *
-   * Complex conjugate
-   *
-   */
+/**
+ * ## `conj`
+ *
+ * Complex conjugate
+ *
+ */
 class Conj {
   @signature()
   Complex(a: Complex) {
@@ -274,12 +274,12 @@ class Conj {
   }
 }
 
-  /**
-   * ## `exp`
-   *
-   * Exponential
-   *
-   */
+/**
+ * ## `exp`
+ *
+ * Exponential
+ *
+ */
 class Exp {
   @signature([Decimal, Complex])
   decimal(a: Decimal | Complex) {
@@ -287,12 +287,12 @@ class Exp {
   }
 }
 
-  /**
-   * ## `gamma`
-   *
-   * Gamma function
-   *
-   */
+/**
+ * ## `gamma`
+ *
+ * Gamma function
+ *
+ */
 class Gamma {
   @signature(Decimal)
   Decimal = gammaDecimal;
@@ -307,7 +307,6 @@ export const math = {
   re: dynamo.function(Re),
   im: dynamo.function(Im),
   arg: dynamo.function(Arg),
-
 
   abs: dynamo.function(Abs),
 
@@ -429,7 +428,7 @@ export const math = {
     return Decimal.precision;
   },
 
-  'complexinfinity'() {
+  complexinfinity() {
     return complexInfinity;
   }
 };

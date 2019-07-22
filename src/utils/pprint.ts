@@ -2,11 +2,20 @@ import { inspect } from 'util';
 import * as fixedWidthString from 'fixed-width-string';
 import chalk from 'chalk';
 import stripAnsi from 'strip-ansi';
-import {boundMethod} from 'autobind-decorator';
+import { boundMethod } from 'autobind-decorator';
 import is from '@sindresorhus/is';
 import { signature, Any } from '@hypercubed/dynamo';
 
-import { dynamo, Word, Sentence, Decimal, Complex, ComplexInfinity, Indeterminate, Future} from '../types/index';
+import {
+  dynamo,
+  Word,
+  Sentence,
+  Decimal,
+  Complex,
+  ComplexInfinity,
+  Indeterminate,
+  Future
+} from '../types/index';
 
 const STYLES = {
   number: chalk.magenta,
@@ -35,7 +44,7 @@ interface InspectOptions {
   indent?: boolean;
   childOpts?: InspectOptions;
   maxOutputLength: number;
-  styles: { [key: string ]: any };
+  styles: { [key: string]: any };
   arrayBraces: string;
   mapBraces: string;
   hideQueue: boolean;
@@ -140,7 +149,10 @@ export class FFlatPrettyPrinter {
         return self.formatSymbol(value);
       }
 
-      @signature([Number, Decimal, Complex, ComplexInfinity, Indeterminate], Any)
+      @signature(
+        [Number, Decimal, Complex, ComplexInfinity, Indeterminate],
+        Any
+      )
       number = self.getStyledFormater('number');
 
       @signature(null, Any)
@@ -193,15 +205,24 @@ export class FFlatPrettyPrinter {
   }
 
   @boundMethod
-  formatTrace({ stack, queue, currentAction }, max = FFlatPrettyPrinter.consoleWidth): string {
-    const maxOutputWidth = this.opts.maxOutputLength || FFlatPrettyPrinter.consoleWidth;
-    max = (max < 0) ? maxOutputWidth / 2 + max : max / 2;
+  formatTrace(
+    { stack, queue, currentAction },
+    max = FFlatPrettyPrinter.consoleWidth
+  ): string {
+    const maxOutputWidth =
+      this.opts.maxOutputLength || FFlatPrettyPrinter.consoleWidth;
+    max = max < 0 ? maxOutputWidth / 2 + max : max / 2;
     max -= 16;
 
     const stackString = this.formatArray(stack, 0);
-    const lastActionString = is.undefined(currentAction) ? '' : this.formatValue(currentAction, 0);
+    const lastActionString = is.undefined(currentAction)
+      ? ''
+      : this.formatValue(currentAction, 0);
     const queueString = this.formatArray(queue, 0);
-    return `${lpad(stackString, max)}> ${fixedWidthString(lastActionString, 16)} <${rtrim(queueString,  max)}`;
+    return `${lpad(stackString, max)}> ${fixedWidthString(
+      lastActionString,
+      16
+    )} <${rtrim(queueString, max)}`;
   }
 
   @boundMethod
@@ -212,18 +233,17 @@ export class FFlatPrettyPrinter {
 
   @boundMethod
   formatArray(arr: Array<any>, depth: number = 0): string {
-    const opts = (depth > 0 && this.opts.childOpts) ? this.opts.childOpts : this.opts;
+    const opts =
+      depth > 0 && this.opts.childOpts ? this.opts.childOpts : this.opts;
     const braces = this.opts.arrayBraces;
     if (!is.nullOrUndefined(opts.depth) && depth >= opts.depth) {
       return `${braces[0]}Array${braces[1]}`;
     }
     const maxLength = opts.maxArrayLength || 100;
 
-    const output = arr
-      .slice(0, maxLength)
-      .map(x => {
-        return this.formatValue(x, depth + 1).replace(/\n/g, '\n  ');
-      });
+    const output = arr.slice(0, maxLength).map(x => {
+      return this.formatValue(x, depth + 1).replace(/\n/g, '\n  ');
+    });
 
     if (arr.length > output.length) {
       output.push('…');
@@ -233,7 +253,8 @@ export class FFlatPrettyPrinter {
 
   @boundMethod
   formatMap(value: Object, depth: number): string {
-    const opts = (depth > 0 && this.opts.childOpts) ? this.opts.childOpts : this.opts;
+    const opts =
+      depth > 0 && this.opts.childOpts ? this.opts.childOpts : this.opts;
     const braces = this.opts.mapBraces;
     if (!is.nullOrUndefined(opts.depth) && depth >= opts.depth) {
       return `${braces[0]}Object${braces[1]}`;
@@ -242,7 +263,10 @@ export class FFlatPrettyPrinter {
     const keys = Object.keys(value);
     const output = keys.slice(0, maxLength).map(key => {
       const skey = this._stylizeName(String(key));
-      const svalue = this.formatValue(value[key], depth + 1).replace(/\n/g, '\n  ');
+      const svalue = this.formatValue(value[key], depth + 1).replace(
+        /\n/g,
+        '\n  '
+      );
       return `${skey}: ${svalue}`;
     });
     if (keys.length > output.length) {
@@ -267,7 +291,10 @@ export class FFlatPrettyPrinter {
    */
   private reduceToSingleString(output: string[], braces: string): string {
     const joined = `${braces[0]} ${output.join('  ')} ${braces[1]}`;
-    if (this.opts.indent && strLen(joined) > this.opts.maxOutputLength || FFlatPrettyPrinter.consoleWidth) {
+    if (
+      (this.opts.indent && strLen(joined) > this.opts.maxOutputLength) ||
+      FFlatPrettyPrinter.consoleWidth
+    ) {
       return `${braces[0]} ${output.join('\n  ')} ${braces[1]}`;
     }
     return joined;

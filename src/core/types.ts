@@ -168,21 +168,21 @@ export const types = {
    * ## `valueof`
    */
   valueof(x: any) {
-    return  x.valueOf();
+    return x.valueOf();
   },
 
   /**
    * ## `itoa`
    */
   itoa(x: number) {
-    return  String.fromCharCode(x);
+    return String.fromCharCode(x);
   },
 
   /**
    * ## `atoi`
    */
   atoi(x: string) {
-    return  x.charCodeAt(0);
+    return x.charCodeAt(0);
   },
 
   /**
@@ -211,7 +211,7 @@ export const types = {
    * ## `boolean`
    */
   boolean(x: number) {
-    return (x ? Boolean(x.valueOf()) : false);
+    return x ? Boolean(x.valueOf()) : false;
   },
 
   /**

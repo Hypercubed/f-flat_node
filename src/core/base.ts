@@ -83,10 +83,7 @@ class Add {
 
   @signature([Word, Sentence], Array)
   word(lhs: Word, rhs: StackValue[]): StackValue[] {
-    return [
-      lhs,
-      ...rhs
-    ];
+    return [lhs, ...rhs];
   }
 
   @signature(Future, Any)
@@ -193,7 +190,9 @@ class Add {
    *```
    */
   @signature([String, Number], [String, Number])
-  'string | number, string | number' = (lhs: string, rhs: string) => lhs + rhs
+  string(lhs: string, rhs: string) {
+    return lhs + rhs;
+  }
 }
 
 /**
@@ -293,7 +292,9 @@ class Sub {
 
   // TODO: Why is this needed!!
   @signature(Any, Any)
-  'any, any' = (lhs: any, rhs: any) => lhs - rhs
+  any(lhs: any, rhs: any) {
+    return lhs - rhs;
+  }
 }
 
 /**
@@ -414,12 +415,12 @@ class Mul {
    */
   // string intersparse?
   @signature(String, [Number, Decimal])
-  'string, Decimal | number'(a: string, b: number) {
+  string(a: string, b: number) {
     return a.repeat(+b);
   }
 
   @signature(Array, [Number, Decimal])
-  'Array, Decimal | number'(a: any[], b: number) {
+  array(a: any[], b: number) {
     return arrayRepeat(a, +b);
   }
 
@@ -447,12 +448,12 @@ class Mul {
   }
 
   @signature(ComplexInfinity, [Complex, ComplexInfinity])
-  'ComplexInfinity, Complex | ComplexInfinity'(lhs: ComplexInfinity, rhs: Complex | ComplexInfinity) {
+  complexInfinity(lhs: ComplexInfinity, rhs: Complex | ComplexInfinity) {
     return ComplexInfinity.times(rhs);
   }
 
   @signature(Complex, [ComplexInfinity])
-  'Complex, ComplexInfinity'(lhs: Complex, rhs: ComplexInfinity) {
+  complexComplexInfinity(lhs: Complex, rhs: ComplexInfinity) {
     return ComplexInfinity.times(lhs);
   }
 }
@@ -751,10 +752,7 @@ class Unshift {
   }
   @signature([Array, Word, Sentence], [Array, Word, Sentence])
   consWord(lhs: any, rhs: any) {
-    return [
-      lhs,
-      rhs
-    ];
+    return [lhs, rhs];
   }
 
   @signature(Future, Any)
@@ -1196,7 +1194,7 @@ class Empty {
   }
   @signature(Any)
   any(a: any) {
-    return (a.empty ? a.empty() : new a.constructor());
+    return a.empty ? a.empty() : new a.constructor();
   }
 }
 
@@ -1332,12 +1330,12 @@ export const base = {
   '/': dynamo.function(Div),
   '>>': unshiftFn,
   '<<': pushFn,
-  'ln': dynamo.function(Ln),
+  ln: dynamo.function(Ln),
   '~': dynamo.function(Not),
   '%': dynamo.function(Rem),
   '^': dynamo.function(Pow),
   '\\': dynamo.function(IDiv),
-  'empty': dynamo.function(Empty),
+  empty: dynamo.function(Empty),
   '<=>': dynamo.function(Cmp),
 
   /**

@@ -30,39 +30,43 @@ function dequoteStack(env: StackEnv, s: StackValue) {
  * # Internal Core Words
  */
 
-   /**
-   * ## `choose`
-   * conditional (ternary) operator
-   *
-   * ( {boolean} [A] [B] -> {A|B} )
-   *
-   * ```
-   * f♭> true 1 2 choose
-   * [ 1 ]
-   * ```
-   */
+/**
+ * ## `choose`
+ * conditional (ternary) operator
+ *
+ * ( {boolean} [A] [B] -> {A|B} )
+ *
+ * ```
+ * f♭> true 1 2 choose
+ * [ 1 ]
+ * ```
+ */
 class Choose {
   name = 'choose';
 
   @signature([Boolean, null], Any, Any)
-  booelan = (b: boolean | null, t: any, f: any) => new Just(b ? t : f)
+  booelan(b: boolean | null, t: any, f: any) {
+    return new Just(b ? t : f);
+  }
 
   @signature(Future, Any, Any)
-  future = (ff: Future, t: any, f: any) => ff.map((b: any) => (b ? t : f))
+  future(ff: Future, t: any, f: any) {
+    return ff.map((b: any) => (b ? t : f));
+  }
 }
 
-  /**
-   * ## `@` (at)
-   *
-   * returns the item at the specified index/key
-   *
-   * ( {seq} {index} -> {item} )
-   *
-   * ```
-   * > [ 1 2 3 ] 1 @
-   * [ 2 ]
-   * ```
-   */
+/**
+ * ## `@` (at)
+ *
+ * returns the item at the specified index/key
+ *
+ * ( {seq} {index} -> {item} )
+ *
+ * ```
+ * > [ 1 2 3 ] 1 @
+ * [ 2 ]
+ * ```
+ */
 class At {
   /**
    * - string char at, zero based index
@@ -116,7 +120,9 @@ class At {
   }
 
   @signature(Future, Any)
-  future = (f: Future, rhs: any) => f.map((lhs: any) => core['@'](lhs, rhs))
+  future(f: Future, rhs: any) {
+    return f.map((lhs: any) => core['@'](lhs, rhs));
+  }
 
   /**
    * - map get by key
@@ -134,17 +140,17 @@ class At {
   }
 }
 
-  /**
-   * ## `unstack`
-   * push items in a quote to the stack without evaluation
-   *
-   * ( [A B C] -> A B C )
-   *
-   * ```
-   * f♭> [ 1 2 * ] unstack
-   * [ 1 2 * ]
-   * ```
-   */
+/**
+ * ## `unstack`
+ * push items in a quote to the stack without evaluation
+ *
+ * ( [A B C] -> A B C )
+ *
+ * ```
+ * f♭> [ 1 2 * ] unstack
+ * [ 1 2 * ]
+ * ```
+ */
 class Unstack {
   @signature(Array)
   array(a: StackArray) {
@@ -162,7 +168,6 @@ class Unstack {
     return a;
   }
 }
-
 
 /**
  * ## `eval`

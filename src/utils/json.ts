@@ -1,4 +1,14 @@
-import {  Smykowski, toJSON, encodeSpecialNumbers, encodeUndefined, encodeDates, encodeRegexps, encodeSymbols, encodeSet, encodeMap } from 'smykowski';
+import {
+  Smykowski,
+  toJSON,
+  encodeSpecialNumbers,
+  encodeUndefined,
+  encodeDates,
+  encodeRegexps,
+  encodeSymbols,
+  encodeSet,
+  encodeMap
+} from 'smykowski';
 
 const smykowski = new Smykowski()
   .addEncoder(encodeSpecialNumbers)
@@ -12,4 +22,3 @@ const smykowski = new Smykowski()
 
 export const encode = smykowski.encode.bind(smykowski);
 export const stringifyStrict = smykowski.stringify.bind(smykowski);
-

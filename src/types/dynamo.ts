@@ -16,8 +16,12 @@ class IsSymbol {
 }
 
 dynamo.add(
-  Future, Word, Sentence,
-  DecimalDef, Complex,
-  ComplexInfinity, Indeterminate,
+  Future,
+  Word,
+  Sentence,
+  DecimalDef,
+  Complex,
+  ComplexInfinity,
+  Indeterminate,
   IsSymbol
 );

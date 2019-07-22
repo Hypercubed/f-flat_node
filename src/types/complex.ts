@@ -11,7 +11,10 @@ export class Complex {
   re: Decimal;
   im: Decimal;
 
-  constructor(re: string | number | Decimal | Complex, im: string | number | Decimal = 0) {
+  constructor(
+    re: string | number | Decimal | Complex,
+    im: string | number | Decimal = 0
+  ) {
     if (re instanceof Complex) {
       return re;
     }
