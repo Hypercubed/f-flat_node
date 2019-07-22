@@ -24,7 +24,7 @@ import {
    *
    */
 class Re {
-  @signature([Decimal, Number])
+  @signature([Number, Decimal])
   number(a: Decimal | number) {
     return a;
   }

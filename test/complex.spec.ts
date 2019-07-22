@@ -1,8 +1,8 @@
 import test from 'ava';
 import { fJSON, fString, fValues, fValue, fStack, nearly, Complex } from './setup';
-import Decimal from 'Decimal.js';
+import { Decimal } from '../src/types/decimal';
 
-const C = (x: Decimal.Value | Complex, y: Decimal.Value) => new Complex(x, y).toJSON();
+const C = (x: Decimal | string | number | Complex, y: Decimal | string | number) => new Complex(x, y).toJSON();
 
 test('should parse i', async t => {
   t.deepEqual(await fJSON('i'), [C(0, 1)]);

@@ -611,7 +611,7 @@ class IDiv {
    * [ 'abc' ]
    * ```
    */
-  @signature([Array, String], [Decimal, Number])
+  @signature([Array, String], [Number, Decimal])
   head(a: any[] | string, b: number) {
     return a.slice(0, +b | 0);
   }
@@ -678,7 +678,7 @@ class Rem {
    * [ 'def' ]
    * ```
    */
-  @signature([Array, String], [Decimal, Number])
+  @signature([Array, String], [Number, Decimal])
   tail(a: any[] | string, b: number) {
     return a.slice(+b | 0);
   }
@@ -783,7 +783,7 @@ class Unshift {
    * 'abc'
    * ```
    */
-  @signature(String, [Decimal, Number])
+  @signature(String, [Number, Decimal])
   rightShift(lhs: string, rhs: number) {
     return lhs.slice(0, -rhs);
   }
@@ -811,7 +811,7 @@ class Unshift {
    * [ 16 ]
    * ```
    */
-  @signature([Decimal, Number], [Decimal, Number])
+  @signature([Number, Decimal], [Number, Decimal])
   number(lhs: number, rhs: number) {
     return +lhs >> +rhs;
   }

@@ -64,7 +64,7 @@ class Choose {
    * ```
    */
 class At {
-    /**
+  /**
    * - string char at, zero based index
    *
    * ```
@@ -72,7 +72,7 @@ class At {
    * [ 'c' ]
    * ```
    */
-  @signature(String, [Decimal, Number])
+  @signature(String, [Number, Decimal])
   string(lhs: string, rhs: number) {
     rhs = +rhs | 0;
     if (rhs < 0) {
@@ -90,7 +90,7 @@ class At {
    * [ 2 ]
    * ```
    */
-  @signature(Array, [Decimal, Number])
+  @signature(Array, [Number, Decimal])
   array(lhs: any[], rhs: number) {
     rhs = +rhs | 0;
     if (rhs < 0) {
@@ -98,6 +98,21 @@ class At {
     }
     const r = lhs[rhs];
     return r === undefined ? null : new Just(r);
+  }
+
+  /**
+   * - digit at, zero based index
+   *
+   * ```
+   * f♭> 3.14159 2 @
+   * [ 4 ]
+   * ```
+   */
+  @signature(Decimal, [Number, Decimal])
+  number(lhs: Decimal, rhs: number) {
+    const digits = (lhs as any).digits();
+    const r = At.prototype.string(digits, rhs);
+    return r === null ? null : +r;
   }
 
   @signature(Future, Any)

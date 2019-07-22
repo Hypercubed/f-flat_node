@@ -11,7 +11,7 @@ export class Complex {
   re: Decimal;
   im: Decimal;
 
-  constructor(re: Decimal.Value | Complex, im: Decimal.Value = 0) {
+  constructor(re: string | number | Decimal | Complex, im: string | number | Decimal = 0) {
     if (re instanceof Complex) {
       return re;
     }
@@ -235,7 +235,7 @@ export class Complex {
     return new Complex(re, im);
   }
 
-  minus(rhs: Complex | number): Complex {
+  minus(rhs: Complex | Decimal | number): Complex {
     rhs = new Complex(rhs);
     const re = dminus(this.re, rhs.re);
     const im = dminus(this.im, rhs.im);
@@ -451,7 +451,7 @@ export class Complex {
 
   static I = new Complex(0, 1);
 
-  static parse(a: Decimal.Value | Complex) {
+  static parse(a: string | number | Decimal | Complex) {
     if (Array.isArray(a) && a.length === 2) {
       return new Complex(a[0], a[1]);
     }

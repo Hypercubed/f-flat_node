@@ -12,7 +12,8 @@ import {
   Future,
   Seq,
   StackValue,
-  StackArray
+  StackArray,
+  Decimal
 } from '../types';
 import { StackEnv } from '../env';
 import { log } from '../utils';
@@ -183,4 +184,8 @@ export const experimental = {
   /* assert(this: StackEnv, value: boolean, message: string) {
     throw new FFlatError(`Asserion error: ${message}`, this);
   } */
+
+  digits(n: Decimal) {
+    return (n as any).digits();
+  }
 };

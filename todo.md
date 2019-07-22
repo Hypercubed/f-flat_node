@@ -3,6 +3,7 @@
 _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # New TODOs
+- [ ] Number subtypes: integer (BigInt), real (decimaljs), rational (tbd), complex (internal)
 - [ ] Decimal shift/unshift
 - [ ] More complexInfinit/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
 - [ ] stack underflow is an error!!

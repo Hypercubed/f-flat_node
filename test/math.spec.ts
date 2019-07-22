@@ -357,3 +357,16 @@ test('number works as a "macro"', async t => {
   t.deepEqual(await fValues('"5":number'), [5]);
   t.deepEqual(await fValues('[ "5":number ]'), [[ 5 ]]);
 });
+
+test('get digits from a decimal', async t => {
+  // 3.1415926535897932385
+  t.deepEqual(await fValues('pi 2 @'), [4]);
+  t.deepEqual(await fValues('pi -2 @'), [8]);
+  t.deepEqual(await fValues('pi 20 @'), [null]);
+
+  t.deepEqual(await fValues('42 0 @'), [4]);
+  t.deepEqual(await fValues('42 1 @'), [2]);
+  t.deepEqual(await fValues('42 -1 @'), [2]);
+  t.deepEqual(await fValues('42 -2 @'), [4]);
+  t.deepEqual(await fValues('42 3 @'), [null]);
+});
