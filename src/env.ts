@@ -6,7 +6,7 @@ import { freeze, splice } from 'icepick';
 import is from '@sindresorhus/is';
 
 import { lexer } from './parser';
-import { FFlatError, serializer } from './utils';
+import { FFlatError, encode } from './utils';
 
 import {
   dynamo,
@@ -146,7 +146,7 @@ export class StackEnv {
 
   toJSON(): any[] {
     // todo: this should stringify all state
-    return serializer(this.stack);
+    return encode(this.stack);
   }
 
   async createChildPromise(a: StackValue): Promise<StackValue[]> {

@@ -35,7 +35,7 @@ test('nested', t => {
   testStringify('Set', new Set([1, 2, 3]), '{"$set":[1,2,3]}');
   testStringify('Map', new Map([['a', 'b']]), '{"$map":[["a","b"]]}');
 
-  function testStringify(name, input, expected) {
+  function testStringify(name: string, input: any, expected: string) {
     t.deepEqual(stringifyStrict(input), expected, name);
   }
 });
@@ -46,7 +46,7 @@ test('nested - special', t => {
   testStringify('Set', new Set([1, new Date(1e12), 3]), '{"$set":[1,{"$date":"2001-09-09T01:46:40.000Z"},3]}');
   testStringify('Map', new Map([['a', new Date(1e12)]]), '{"$map":[["a",{"$date":"2001-09-09T01:46:40.000Z"}]]}');
 
-  function testStringify(name, input, expected) {
+  function testStringify(name: string, input: any, expected: string) {
     t.deepEqual(stringifyStrict(input), expected, name);
   }
 });

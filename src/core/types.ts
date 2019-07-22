@@ -253,7 +253,17 @@ export const types = {
    * ## `of`
    */
   of(a: any, b: any) {
-    return a !== null && a.constructor ? new a.constructor(b) : null;
+    if (a !== null && a.constructor) {
+      switch (a.constructor) {
+        case Number:
+          return +b;
+        case String:
+          return '' + b;
+        default:
+          return new a.constructor(b);
+      }
+    }
+    return null;
   },
 
   /**
