@@ -5,13 +5,36 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 # New TODOs
 - [ ] Number subtypes: integer (BigInt), real (decimaljs), rational (tbd), complex (internal)
 - [ ] Decimal shift/unshift
-- [ ] More complexInfinit/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
+- [ ] More complexInfinity/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
 - [ ] stack underflow is an error!!
+- [ ] finish and use https://github.com/Hypercubed/real
+
+# Improved scoping and namespaces
+- [ ] global immutable store (ex. `slip%8df57134`)
+- [ ] names are scoped (ex. `slip` -> `slip%8df57134`)
+- [ ] ":" (`toAction`) converts names to unique ids (`[ dup slip ] :` -> `[ dup%0eb15022 slip%8df5713 ]`)
+- [ ] uuid or hash?
+- [ ] mutually recursive definitions? (https://www.unisonweb.org/docs/faq/#how-does-hashing-work-for-mutually-recursive-definitions)
+
+# Improved module system
+- [ ] `include` loads file (url) inline (`[ read eval ]`)
+- [ ] `import` loads file in a sub env and "sends" the resolved dictionary
+- [ ] `use` (ex. `'xyz' import use`, `xyz: use`)?
+- [ ] `use-from` `[ pluck use ]`?
+
+# Testing words
+- [ ] assertions
+- [ ] TDD words (`suite`, `test`)
+- [ ] option to run tets on load?
+
+# Improved user space
+- [ ] `add` - adds a word to the user's persistant dictionary?
+- [ ] `pull` - loads a into the users startup scripts?
 
 # Bugs
 
 - [?] .clear should reset everything, including flags
-- [ ] Recursive private functions
+- [ ] Recursive private functions (disallow recursion or co-recursive functions?)
 - [ ] Recursive name spaces words
 
 # Decide
@@ -19,30 +42,31 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `~` vs `!`, `!` vs `factorial`, `/=` or `!=`.
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [ ] Choose `regex` vs `regexp`
-- [ ] Ranges?  Infinite ranges?
+- [ ] Ranges?  Infinite ranges? generators?
 - [ ] Symbols vs internal classes?
 - [-] sto/rcl destructuring `1 2 3 [ x: y: z: ] sto` (replaces `=>`)? (should internal words have fixed arity?).
 - [ ] Bitwise ops on decimals (`|` vs `bitwise-or`, etc).
 - [ ] map over strings should return strings?
-- [ ] Store using symbols as keys `#aword dup 123 sto rcl`, collision free
+- [ ] Store using symbols as keys `#aword dup 123 sto rcl`, collision free?
 
-# Todo next:
+# Todo:
 
 - [ ] Finish JSON output
 - [ ] Serialize to ff
-- [ ] Tagged templates `fn'${A}-${B}'` -> `${A fn}-${B fn}`
+- [ ] Tagged templates `fn'${A}-${B}'` -> `${A fn}-${B fn}`?
 - [ ] Mixed numeric and string indecies for arrays and maps `[ 1 2 x: 3 ]` `{ x: 1 y: 2 3 4 5}`
-- [ ] Combine lambdas and pattern matching
-- [ ] Online help.
+- [ ] Combine lambdas and pattern matching?
+- [ ] Online help?
 - [ ] Undo flags
   - [x] `undoable` -> `autoundo`,
   - [ ] add `undoable` flag.
   - [ ] reset by `.clear`
 - [ ] Fix API docs for base
+    - [ ] Move docs from gitbook?
 - [ ] Consistant and predictable display precision:
   - [ ] `1 acos` => `0` (precision issue)
   - [ ] precision in complex calculations (on print)
-  - [ ] Pretty printing complex values: '5e-20+2i' -> '2i'
+  - [ ] Pretty printing complex values: '5e-20+2i' -> '2i'?
 - [ ] More literals in parser?
   - [ ] regex?
   - [ ] i
@@ -50,7 +74,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] Symbols `(`, `_`
   - [x] true, false
   - [x] null
-- [ ] Make scope lifting safe.  No user writes to scope.  No collisions with locals.
 - [ ] More tests for stack object immutablity
 - [ ] Better internal types
   - [ ] Just -> ReturnValue
@@ -61,14 +84,13 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] Basis
   - [ ] Core
   - [ ] Dictionary words
-- [ ] Test with missing `usr.ff` and cwd
 - [ ] JSON
   - [ ] to simplified JSON (Decimal -> number, regex, symbols, etc)
   - [ ] Decimal/Complex .fromJSON + Tests
-- [ ] rewrite should also simplify sequences
+- [ ] rewrite rules?  user-defined?
   - [ ] `dup drop` -> ``
   - [ ] `q> q< ` -> ``
-- [ ] Ensure predictable cmp with null and nan
+- [ ] Ensure predictable cmp with `null` and `nan`
 
 # Words
 

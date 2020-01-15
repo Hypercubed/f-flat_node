@@ -5,70 +5,68 @@ import { USE_STRICT } from '../constants';
 
 const SEP = '.';
 
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+
+function _getFrom(key: string, set: { [key: string]: StackValue }): StackValue {
+  const path = Dictionary.makePath(key);
+  const rootKey = path.shift();
+  const rootValue = set[rootKey];
+  return path.length > 0 ? getIn(rootValue, path) : rootValue;
+}
+
 export class Dictionary {
-  scope: {};
-  locals: {};
-  // todo: private?
+  static makePath(key: string) {
+    return String(key)
+      .toLowerCase()
+      .split(SEP);
+  }
+
+  readonly scope: { [key: string]: StackValue };
+  readonly locals: { [key: string]: StackValue };
 
   constructor(public parent?: Dictionary) {
-    this.scope = <any>Object.create(parent ? parent.locals : null);
+    this.scope = Object.create(parent ? parent.locals : null);
     this.locals = Object.create(this.scope);
   }
 
   get(key: string): StackValue {
-    const path = Dictionary.makePath(key);
-    return <StackValue>getIn(this.locals, path);
+    return _getFrom(key, this.locals);
   }
 
   getScope(key: string): StackValue {
-    const path = Dictionary.makePath(key);
-    return <StackValue>getIn(this.scope, path);
+    return _getFrom(key, this.scope);
   }
 
   set(key: string, value: StackValue): void {
     const path = Dictionary.makePath(key);
-    const firstKey = <string>path.shift();
-    if (
-      USE_STRICT &&
-      Object.prototype.hasOwnProperty.call(this.locals, firstKey)
-    ) {
-      throw new Error(
-        `Cannot overwrite definitions in strict mode: ${firstKey}`
-      );
+    const rootKey = path.shift();
+    if (USE_STRICT && hasOwnProperty.call(this.locals, rootKey)) {
+      throw new Error(`Cannot overwrite definitions in strict mode: ${rootKey}`);
     }
-    if (path.length === 0) {
-      if (typeof value === 'undefined') {
-        this.locals[firstKey] = undefined;
-        return;
-      }
-      if (value === null) {
-        this.locals[firstKey] = null;
-        return;
-      }
-      this.locals[firstKey] = value;
+
+    if (path.length > 0) {
+      this.locals[rootKey] = assocIn(this.locals[rootKey] || {}, path, value);
       return;
     }
-    this.locals[firstKey] = assocIn(this.locals[firstKey] || {}, path, value);
+
+    // if (typeof value === 'undefined') {
+    //   this.locals[key] = undefined;
+    //   return;
+    // }
+    // if (value === null) {
+    //   this.locals[key] = null;
+    //   return;
+    // }
+    this.locals[rootKey] = value;
   }
 
   delete(key: string): void {
     const path = Dictionary.makePath(key);
-    const firstKey = <string>path.shift();
-    if (
-      USE_STRICT &&
-      Object.prototype.hasOwnProperty.call(this.locals, firstKey)
-    ) {
-      throw new Error(`Cannot delete definitions in strict mode: ${firstKey}`);
+    const rootKey = path.shift();
+    if ( USE_STRICT && hasOwnProperty.call(this.locals, rootKey) ) {
+      throw new Error(`Cannot delete definitions in strict mode: ${rootKey}`);
     }
-    if (path.length === 0) {
-      this.locals[firstKey] = undefined;
-      return;
-    }
-    this.locals[firstKey] = assocIn(
-      this.locals[firstKey] || {},
-      path,
-      undefined
-    );
+    this.set(key, undefined);
   }
 
   allKeys(): string[] {
@@ -84,13 +82,7 @@ export class Dictionary {
     return Object.keys(this.locals);
   }
 
-  toObject(): {} {
-    return { ...this.locals };
-  }
-
-  static makePath(key: string) {
-    return String(key)
-      .toLowerCase()
-      .split(SEP);
-  }
+  // toObject(): {} {
+  //   return { ... this.locals };
+  // }
 }

@@ -11,7 +11,7 @@
     "listFiles": false,
     "traceResolution": false,
     "pretty": true,
-    "lib": ["es2015", "es2017", "dom"],
+    "lib": ["es2018", "dom"],
     "types": ["node"],
     "allowJs": true,
     "sourceMap": true

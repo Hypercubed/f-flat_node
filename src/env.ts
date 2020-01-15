@@ -136,7 +136,7 @@ export class StackEnv {
   }
 
   clear(): StackEnv {
-    this.stack = splice(this.stack, 0);
+    this.stack = splice(this.stack, 0, this.stack.length);
     return this;
   }
 
@@ -340,7 +340,7 @@ export class StackEnv {
       let argArray: StackArray = [];
       if (args! > 0) {
         argArray = this.stack.slice(-args!);
-        this.stack = splice(this.stack, -args!);
+        this.stack = splice(this.stack, -args!, this.stack.length);
       }
 
       this.lastFnDispatch = {
@@ -359,7 +359,7 @@ export class StackEnv {
       return;
     }
     const argArray = this.stack.slice(0);
-    this.stack = splice(this.stack, 0);
+    this.stack = splice(this.stack, 0, this.stack.length);
     argArray.push(new Word(<any>name));
     this.push(argArray);
   }

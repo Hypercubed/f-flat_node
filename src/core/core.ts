@@ -325,7 +325,7 @@ export const core = {
    */
   stack(this: StackEnv): StackArray {
     const s = this.stack.slice();
-    this.stack = splice(this.stack, 0);
+    this.stack = splice(this.stack, 0, this.stack.length);
     return s;
   },
 
