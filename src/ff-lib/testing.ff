@@ -1,0 +1,25 @@
+assert: [
+  [ 'Assertion error' throw ]
+  unless
+] ;;
+
+assert_equal: [
+  =
+  assert
+] ;;
+
+assert_zero: [
+  5e-20 <=
+  assert
+] ;;
+
+assert_length: [
+  [ ln ] dip =
+  assert
+] ;;
+
+test: [
+  [ throws? '✘ ' '✔ ' choose ] dip
+  + ?
+] ;;
+

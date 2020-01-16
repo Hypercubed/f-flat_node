@@ -10,7 +10,7 @@
 'module-loader.ff'
   __filename dirname                          // __dirname
   swap [ ] >> >> path-join resolve            // resolve
-  [ read eval __create-module send ] >> fork  // eval and export
+  [ read eval '__create-module' eval send ] >> fork  // eval and export
   drop use                                    // use module loader
 
 core: 'core.ff' import ;

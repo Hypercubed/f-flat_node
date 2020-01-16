@@ -277,7 +277,7 @@ export class StackEnv {
     if (is.promise(token)) {
       // promise middleware
       this.status = YIELDING;
-      return (token as Promise<any>).then(f => {
+      return token.then(f => {
         this.status = IDLE;
         this.run([f]);
       });
@@ -330,6 +330,17 @@ export class StackEnv {
 
       return this.push(lookup);
     }
+
+    /**
+     * Testing requiring tokenst to be defined at first use
+     */
+    // if (token instanceof Word) {
+    //   let tokenValue = token.value;
+    //   const lookup = this.dict.get(tokenValue);
+    //   if (is.undefined(lookup)) {
+    //     console.log(`Warning: ${tokenValue} was referenced before it was defined`);
+    //   }
+    // }
 
     return this.push(token as StackValue);
   }

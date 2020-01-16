@@ -7,13 +7,6 @@ const SEP = '.';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
-function _getFrom(key: string, set: { [key: string]: StackValue }): StackValue {
-  const path = Dictionary.makePath(key);
-  const rootKey = path.shift();
-  const rootValue = set[rootKey];
-  return path.length > 0 ? getIn(rootValue, path) : rootValue;
-}
-
 export class Dictionary {
   static makePath(key: string) {
     return String(key)
@@ -21,43 +14,28 @@ export class Dictionary {
       .split(SEP);
   }
 
-  readonly scope: { [key: string]: StackValue };
-  readonly locals: { [key: string]: StackValue };
+  private readonly globals: Map<string, StackValue>;
+
+  readonly scope: { [key: string]: string };
+  readonly locals: { [key: string]: string };
 
   constructor(public parent?: Dictionary) {
-    this.scope = Object.create(parent ? parent.locals : null);
+    this.globals = parent?.globals || new Map();
+    // chained inheritance
+    this.scope = Object.create(parent?.locals || null);
     this.locals = Object.create(this.scope);
   }
 
   get(key: string): StackValue {
-    return _getFrom(key, this.locals);
+    return this._getFrom(key, this.locals);
   }
 
   getScope(key: string): StackValue {
-    return _getFrom(key, this.scope);
+    return this._getFrom(key, this.scope);
   }
 
   set(key: string, value: StackValue): void {
-    const path = Dictionary.makePath(key);
-    const rootKey = path.shift();
-    if (USE_STRICT && hasOwnProperty.call(this.locals, rootKey)) {
-      throw new Error(`Cannot overwrite definitions in strict mode: ${rootKey}`);
-    }
-
-    if (path.length > 0) {
-      this.locals[rootKey] = assocIn(this.locals[rootKey] || {}, path, value);
-      return;
-    }
-
-    // if (typeof value === 'undefined') {
-    //   this.locals[key] = undefined;
-    //   return;
-    // }
-    // if (value === null) {
-    //   this.locals[key] = null;
-    //   return;
-    // }
-    this.locals[rootKey] = value;
+    return this._setIn(key, value, this.locals);
   }
 
   delete(key: string): void {
@@ -66,7 +44,7 @@ export class Dictionary {
     if ( USE_STRICT && hasOwnProperty.call(this.locals, rootKey) ) {
       throw new Error(`Cannot delete definitions in strict mode: ${rootKey}`);
     }
-    this.set(key, undefined);
+    this._setIn(key, undefined, this.locals);
   }
 
   allKeys(): string[] {
@@ -85,4 +63,63 @@ export class Dictionary {
   // toObject(): {} {
   //   return { ... this.locals };
   // }
+
+  use(dict: { [key: string]: StackValue}) {
+    Object.keys(dict).forEach(key => {
+      this._setIn(key, dict[key], this.scope, false)
+    });
+  }
+
+  getLocalObject() {
+    const obj = {};
+    this.allKeys().forEach(key => {
+      obj[key] = this.locals[key]
+    });
+    return obj;
+  }
+
+  getResolvedLocalObject() {
+    const obj = {};
+    this.allKeys().forEach(key => {
+      const ukey = this.locals[key];
+      obj[key] = this.globals.get(ukey)
+    });
+    return obj;
+  }
+
+  private _setIn(key: string, value: StackValue, set: { [key: string]: string }, strict = USE_STRICT) {
+    const path = Dictionary.makePath(key);
+    const rootKey = path.shift();
+    if (strict && hasOwnProperty.call(this.locals, rootKey)) {
+      throw new Error(`Cannot overwrite definitions in strict mode: ${rootKey}`);
+    }
+
+    if (path.length > 0) {
+      // Copies the old object and inserts new value
+      const oldukey = set[rootKey];
+      value = path.length > 0 ? assocIn(this.globals.get(oldukey) || {}, path, value) : value;
+    }
+
+    const ukey = this._hash(key);
+    set[rootKey] = ukey;
+    this.globals.set(ukey, value);
+  }
+
+  private _getFrom(key: string, set: { [key: string]: string }): StackValue {
+    const path = Dictionary.makePath(key);
+    const rootKey = path.shift();
+    const rootValue = this.globals.get(set[rootKey] || rootKey);
+    return path.length > 0 ? getIn(rootValue, path) : rootValue;
+  }
+
+  /**
+   * Not yet a hash
+   */
+  private _hash(key: string) {
+    let ukey: string;
+    do {
+      ukey = Math.random().toString(36).slice(2);
+    } while (this.globals.has(ukey))
+    return `${key}%${ukey}`;
+  }
 }

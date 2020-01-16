@@ -7,16 +7,17 @@
 slip: [ q< eval q> ] ;      // [b] A -> b A
 run: [ dup slip ] ;;        // [a] -> a [a]
 dip: [ swap slip ] ;;       // B [a] -> a B
-sip: [ over slip ] ;;       // B [a] -> B a B    (aka keep)
-dive: [ swap dipd ] ;       // [c] [b] [a] -> a [c] [b]   (aka dip2)
 
 // diped
+dupd: [ q< dup q> ] ;       // B A -> B B A
+over: [ dupd swap ] ;;      // B A -> B A B  (aka peek)
+sip: [ over slip ] ;;       // B [a] -> B a B    (aka keep)
 dipd: [ q< dip q> ] ;;      // D C [b] A -> D b C A
 sipd: [ q< sip q> ] ;;      // C B [a] -> C a C B
-dupd: [ q< dup q> ] ;       // B A -> B B A
 slipd: [ q< slip q> ] ;;    // [c] B A -> c B A
-over: [ dupd swap ] ;;      // B A -> B A B  (aka peek)
 swapd: [ q< swap q> ] ;     // C B A -> B C A
+dive: [ swap dipd ] ;       // [c] [b] [a] -> a [c] [b]   (aka dip2)
+dup2: [ over over ] ;         // B A -> B A B A
 
 bi: [ sipd eval ] ;;        // C [b] [a] -> C b C a
 do: [ dup dipd ] ;;
@@ -28,6 +29,12 @@ check: [ dupd eval ] ;;     // B [a] -> B B a    (aka w)
 // truthy/falsy
 truthy?: [ boolean ] ;
 falsy?: [ truthy? ~ ] ;;
+
+// incrementors
+--: [ 1 - ] ;
+++: [ 1 + ] ;
+pred: [ dup -- ] ;
+succ: [ dup ++ ] ;
 
 // Comparisons
 >: [ <=> 1 = ] ;
@@ -54,7 +61,30 @@ when: [ [ ] branch ] ;
 unless: [ [ ] swap branch ] ;
 ifte: [ slipd branch ] ;;
 if: [ slip when ] ;
+loop: [ [ eval ] keep [ loop ] >> when ] ;
 while: [ swap do + [ loop ] >> when ] ;
+
+// aggregates
+slice: [ [ % ] dip \ ] ;
+pop: [ -1 \ ] ;
+shift: [ 1 % ] ;
+car: [ 0 @ ] ;
+cdr: [ 1 % ] ;
+first: [ 0 @ ] ;
+last: [ -1 @ ] ;
+rest: [ 1 % ] ;
+head: [ \ ] ;
+tail: [ % ] ;
+startswith: [ dup ln [ head ] >> dip = ] ;;
+endswith: [ dup ln [ tail ] >> dip = ] ;;
+contains: [ indexof 1 > ] ;
+
+// lists
+empty?: [ ln 0 = ] ;
+unit: [ [ ] >> ] ;
+cons: [ >> ] ;
+pair: [ unit >> ] ;
+uncons: [ [ first ] [ rest ] bi ] ;;
 
 // folds
 each: [ * eval ] ;
@@ -69,34 +99,12 @@ times: [ runn drop ] ;
 guard: [ [ keep ] >> dip branch ] ;
 orelse: [ [ null? ~ ] guard ] ;
 keepif: [ over unit if ] ;
-loop: [ [ eval ] keep [ loop ] >> when ] ;
 until: [ [ [ ~ ] + ] dip while ] ;
-forever: [ [ eval ] keep forever: >> eval ] ;
+forever: [ [ eval ] keep [ forever ] >> eval ] ;
 either?: [ bi + ] ;
 
 appl: [ >> in ] ;
 y: [ [ dup >> ] swap + dup >> ] ;
-
-// lists
-unit: [ [ ] >> ] ;
-cons: [ >> ] ;
-pair: [ unit >> ] ;
-
-// aggregates
-slice: [ [ % ] dip \ ] ;
-pop: [ -1 \ ] ;
-shift: [ 1 % ] ;
-car: [ 0 @ ] ;
-cdr: [ 1 % ] ;
-first: [ 0 @ ] ;
-last: [ -1 @ ] ;
-rest: [ 1 % ] ;
-head: [ \ ] ;
-tail: [ % ] ;
-uncons: [ [ first ] [ rest ] bi ] ;;
-startswith: [ dup ln [ head ] >> dip = ] ;;
-endswith: [ dup ln [ tail ] >> dip = ] ;;
-contains: [ indexof 1 > ] ;
 
 // functional
 chain: [ over nothing? ~ swap when ] ;
@@ -108,24 +116,18 @@ filter: [ [ dup empty swap ] dip [ keepif ] >> map swap * ] ;
 // aggregate reduction
 maximum: [ [ max ] fold ] ;;
 minimum: [ [ min ] fold ] ;;
-reverse: [ dup ln 1 > [ uncons reverse swap + ] when ] ;
+reverse: [ dup ln 1 > [ uncons 'reverse' eval swap + ] when ] ;
 
-flatten*: [
-  dup array?
-  [ [ flatten* ] foreach ]
-  when
-] ;
-flatten: [ [ flatten* ] appl ] ;
+// flatten*: [
+//   dup array?
+//   [ [ 'flatten*' eval ] foreach ]
+//   when
+// ] ;
+// flatten: [ [ flatten* ] appl ] ;
 
 // math
 neg: [ 0 swap - ] ;
 sum: [ [ + ] fold ] ;
-
-// incrementors
---: [ 1 - ] ;
-++: [ 1 + ] ;
-pred: [ dup -- ] ;
-succ: [ dup ++ ] ;
 
 /**
  * ## `dict`

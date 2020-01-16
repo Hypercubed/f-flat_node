@@ -4,6 +4,7 @@
 'strings.ff' import use
 'types.ff' import use
 'datetime.ff' import use
+'testing.ff' import use
 
 .: [ [ unstack ] >> dip eval ] ;
 
@@ -21,9 +22,9 @@ nth: [ -- @ ] ;
 dupn: [ [ dup ] swap times ] ;
 
 // side effects
-traceoff: [ warn: set-log-level ] ;
-trace: [ trace: set-log-level ] ;
-timing: [ timing: set-log-level ] ;
+traceoff: [ 'warn' set-log-level ] ;
+trace: [ 'trace' set-log-level ] ;
+timing: [ 'timing' set-log-level ] ;
 
 // quick check
 for-all: [ [ [ 100 times ] >> in ] dip [ ~ ] + filter ] ;
@@ -33,7 +34,7 @@ check-for-all: [ for-all dup empty? [ '+++ OK, passed 100 tests.' println drop ]
 next-fib*: [ tuck + ] ;
 fib*: [ ( 0 1 ) dip [ 0 1 [ tuck + ] yield ] [ in ] rolldown 2 - times drop ] ;
 count*: [ [ 0 [ ++ dup yield: dip ] forever ] ] ;
-cycle*: [ [ [ 1 splitat swap [ + ] keep eval send suspend ] forever ] >> ] ;
+// cycle*: [ [ [ 1 splitat swap [ + ] keep eval send suspend ] forever ] >> ] ;
 
 // async
 spawn2: [ [ spawn ] dip spawn ] ;
@@ -58,7 +59,7 @@ cls: [ "\u001B[2J\u001B[0;0f" println ] ;
 stack-copy: [ stack run ] ;
 stack-check: [ q< stack-copy q> =~ ] ;;
 case: [ [ stack-check ] dip when ] ;;
-switch: [ [ unstack case ] foreach ] ;;
+// switch: [ [ unstack case ] foreach ] ;;
 
 // lambdas
 call: [ fork unstack ] ;
@@ -79,7 +80,7 @@ f: [ [x: y: z:] => y 2 ^ x 2 ^ + y abs - ] lambda ;
 &&: [ slip when ] ;;
 ||: [ slip [] swap branch ] ;;
 
-length: [ ln ] ;  // just an alias
+// length: [ ln ] ;  // just an alias
 
 quicksort: [
   dup ln 1 >             // when length > 1
@@ -123,13 +124,6 @@ s-test: [
 
 ok?: [
   'Assertion error'
-  [ throw ] >>
-  unless
-] ;
-
-assert: [
-  'Assertion error: '
-  swap +
   [ throw ] >>
   unless
 ] ;

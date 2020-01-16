@@ -5,6 +5,7 @@ import { Sentence, Word, Just, StackValue } from '../types';
 import { USE_STRICT } from '../constants';
 import { StackEnv } from '../env';
 import { rewrite } from '../utils/rewrite';
+import { compile } from '../utils/compile';
 
 // For all deictionay actions, note:
 // * The dictionary is mutable
@@ -92,7 +93,7 @@ export const dict = {
     if (typeof dict === 'string') {
       dict = this.dict.get(dict);
     } */
-    Object.assign(this.dict.scope, dict);
+    this.dict.use(dict);
   },
 
   /**
@@ -111,18 +112,35 @@ export const dict = {
   },
 
   /**
-   * ## `expand`
-   * expand a quote
+   * ## `compile`
+   * compile a quote,
+   * replaces words with globally unique terms
    *
-   * ( [A] -> [a b c])
+   * ( [A B C] -> [a b c])
    *
    * ```
-   * f♭> [ sqr ] expand
-   * [ [ dup * ] ]
+   * f♭> [ 2 sq ] compile
+   * [ [ 2 sq%asdfgf ] ]
    * ```
    */
-  expand(this: StackEnv, x: Word | Sentence) {
-    return rewrite(this.dict.locals, x);
+  compile(this: StackEnv, x: Word | Sentence) {
+    return compile(this.dict.getLocalObject(), x);
+  },
+
+  /**
+   * ## `inline`
+   * inline a quote,
+   * recursively expands defined words to core words
+   *
+   * ( [A B C] -> [a b c])
+   *
+   * ```
+   * f♭> [ 2 sqr ] inline
+   * [ [ 2 dup * ] ]
+   * ```
+   */
+  inline(this: StackEnv, x: Word | Sentence) {
+    return rewrite(this.dict.getResolvedLocalObject(), x);
   },
 
   /**

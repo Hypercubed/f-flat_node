@@ -10,32 +10,46 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] finish and use https://github.com/Hypercubed/real
 
 # Improved scoping and namespaces
-- [ ] global immutable store (ex. `slip%8df57134`)
+- [x] global immutable store (ex. `slip%8df57134`)
+  - [ ] add tests for rcl/execute using hash
+  - [ ] use hash?
 - [ ] names are scoped (ex. `slip` -> `slip%8df57134`)
 - [ ] ":" (`toAction`) converts names to unique ids (`[ dup slip ] :` -> `[ dup%0eb15022 slip%8df5713 ]`)
-- [ ] uuid or hash?
 - [ ] mutually recursive definitions? (https://www.unisonweb.org/docs/faq/#how-does-hashing-work-for-mutually-recursive-definitions)
+- [ ] compile words in place?
+- [ ] ensure pretty display for glogally unique words.
+- [ ] Test compile
+- [ ] disallow shadowing guid
+- [ ] allow finding words by name (`abc`), hash (`%xyz`), or both (`abc%xyz`).
 
 # Improved module system
-- [ ] `include` loads file (url) inline (`[ read eval ]`)
-- [ ] `import` loads file in a sub env and "sends" the resolved dictionary
+- [x] `include` loads file (url) inline (`[ read eval ]`)
+- [ ] `import` loads file in a sub env and "sends" the resolved dictionary?
 - [ ] `use` (ex. `'xyz' import use`, `xyz: use`)?
 - [ ] `use-from` `[ pluck use ]`?
 
 # Testing words
-- [ ] assertions
+- [ ] `try` `[ T ] [ C ] [ F ]`
+- [x] assertions
 - [ ] TDD words (`suite`, `test`)
-- [ ] option to run tets on load?
+- [ ] option to run test on load?
 
 # Improved user space
 - [ ] `add` - adds a word to the user's persistant dictionary?
 - [ ] `pull` - loads a into the users startup scripts?
 
+# Safer?
+- [ ] remove `sto` and `rcl`?
+- [ ] disable deep definitions (`x.y.z: [ ] ;`)
+- [ ] words must be defined before refence (breaks lambdas)
+
 # Bugs
 
 - [?] .clear should reset everything, including flags
 - [ ] Recursive private functions (disallow recursion or co-recursive functions?)
+- [ ] can't compile/expand recursive definitions
 - [ ] Recursive name spaces words
+- [ ] `inline` after `compile`?
 
 # Decide
 - [x] Decide on macros, `dupn!3`, `dup<5>`, `range<1, 100>`, `range:(1, 10).` ? Using `range:(1, 10).`

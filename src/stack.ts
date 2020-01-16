@@ -36,7 +36,7 @@ export function createRootEnv(): StackEnv {
   };
 
   env.defineAction('prelude', prelude);
-  Object.assign(env.dict.scope, prelude);
+  env.dict.use(prelude);
 
   const bootFile = join('file://', __dirname, '../src/ff-lib/boot.ff');
   return env.eval(`'${bootFile}' dup '__filename' sto read eval`);

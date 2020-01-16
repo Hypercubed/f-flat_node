@@ -1,13 +1,12 @@
 import { signature, Any } from '@hypercubed/dynamo';
 import is from '@sindresorhus/is';
-import { getIn } from 'icepick';
 
-import { dynamo, StackValue, Sentence, Word, Seq, Dictionary } from '../types';
+import { dynamo, Sentence, Word, Seq, Dictionary } from '../types';
 import { IIF } from '../constants';
 
-function create(dictObject: Object | undefined) {
-  const wordPaths: string[] = [];
+type D = { [key: string]: string };
 
+function create(dictObject: D) {
   class Rewrite {
     @signature()
     array(arr: any[]) {
@@ -25,20 +24,14 @@ function create(dictObject: Object | undefined) {
     }
     @signature()
     Word(action: Word) {
-      if (wordPaths.includes(action.value)) {
-        return action;
-      }
-      const path = Dictionary.makePath(action.value);
-      const value: StackValue = getIn(dictObject, path);
+      const path = Dictionary.makePath(action.value).shift();
+      const value: string = dictObject[path];
   
       if (is.undefined(value) && (action.value as string)[0] !== IIF)
         return action;
       if (is.function_(value)) return new Seq([action]);
   
-      wordPaths.push(action.value);
-      const ret = _rewrite(value);
-      wordPaths.pop();
-      return ret;
+      return new Word(value);
     }
     @signature()
     plainObject(obj: Object) {
@@ -60,7 +53,7 @@ function create(dictObject: Object | undefined) {
   return _rewrite;
 }
 
-export function rewrite(x: Object, y: any) {
+export function compile(x: D, y: any) {
   const _rewrite = create(x);
   try {
     return _rewrite(y);

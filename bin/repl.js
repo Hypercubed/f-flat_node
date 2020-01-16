@@ -16,6 +16,7 @@ const pkg = require('../package.json');
 const nonInteractive = !process || !process.stdin.isTTY;
 
 const welcome = gradient.rainbow(`
+
           []]
           []]
 []]]]]]]] []] []]]      F♭ Version ${pkg.version}
@@ -70,7 +71,7 @@ if (program.logLevel) {
 let f = newStack();
 
 if (program.file) {
-  f.promise(`"${program.file}" read eval`).then(exitOrStartREPL);
+  f.promise(`"${program.file}" read await`).then(exitOrStartREPL);
 }
 
 if (arg !== '') {
@@ -123,7 +124,6 @@ function startREPL() {
   r.defineCommand('s', {  // todo: move to core?
     help: 'Print the stack',
     action() {
-      // const objectId = getUniqueObjectCounter();
       f.stack.forEach((d, i) => {
         const id = objectId(d).toString(16);
         console.log(`${f.stack.length - i}: ${pprint.formatValue(d, null)} [${type(d)}] (${id})`);
@@ -170,6 +170,9 @@ function newStack() {
 }
 
 function writer(_) {
+  if (_ instanceof Error) {
+    return _.stack;
+  }
   return silent ? '' : `${pprint.formatValue(_.stack, -1)}\n`;
 }
 

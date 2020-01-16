@@ -36,6 +36,15 @@ export const experimental = {
     throw new FFlatError(e, this);
   },
 
+  'throws?'(this: StackEnv, a: StackValue) {
+    try {
+      const child = this.createChild().eval(a);
+      return false;
+    } catch(err) {
+      return true;
+    }
+  },
+
   /**
    * ## `stringify`
    */

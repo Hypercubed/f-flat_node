@@ -631,7 +631,7 @@ test('underscore seperators hexadecimal integer formats', async t => {
   t.deepEqual(await fValues('0xDE_AD_BE_EF'), [0xDEADBEEF]);
 });
 
-test('locals don\'t collide with definitions', async t => {
+test(`locals don't collide with definitions`, async t => {
   t.deepEqual(await fValues(`
     x: 128 ;
     y: [ x x + ] ;;

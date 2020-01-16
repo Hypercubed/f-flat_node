@@ -9,8 +9,6 @@ drop2: [ drop drop ] ;        // B A -> (2drop in forth)
 
 m: [ dup eval ] ;             // [a] -> [a] a
 
-dup2: [ over over ] ;         // B A -> B A B A
-
 keep2: [ q< dup2 q> dive ] ;  // [c] [b] [a] -> [c] [b] a [c] [b]   (aka 2keep)
 
 nip: [ swap drop ] ;          // B A -> A

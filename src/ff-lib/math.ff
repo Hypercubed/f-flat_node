@@ -4,10 +4,7 @@
  
 'core.ff' import use
 'shuffle.ff' import use
-
-// inverse trig
-acos: [ asin 2 * pi swap - 1 2 / * ] ;
-// atan: [ dup dup * 1 + sqrt / asin ] ;
+'testing.ff' import use
 
 // lazy constants to match precision
 pi: [ 1 atan 4 * ] ;
@@ -22,10 +19,21 @@ sqrt2: [ 2 sqrt ] ;         // square root of 2
 sqrt1_2: [ 1 2 / sqrt ] ;   // square root of 1/2
 radians: [ pi 180 / ] ;
 
+// inverse trig
+acos: [ asin 2 * pi swap - 1 2 / * ] ;
+// atan: [ dup dup * 1 + sqrt / asin ] ;
+
+// [ 0 acos pi 2 / assert_equal ] 'calculates acos(0) = pi/2' test
+// [ 1 acos assert_zero ] 'calculates acos(1) = 0' test
+
 // Log errfn
 erfc: [ 1 swap erf - ] ;
+
 log: [ ln ln10 / ] ;
 logn: [ [ ln ] dip ln / ] ;
+
+// [ 1e10 log 10 assert_equal ] 'calculates log(10^10) = 10' test
+// [ 1 log 0 assert_equal ] 'calculates log(1) = 1' test
 
 // Misc
 +-: [ [ + ] [ - ] bi2 ] ;
@@ -77,8 +85,8 @@ next-prime: [ dup 2 < [ drop 2 ] [ next-odd [ dup prime? ] [ 2 + ] until ] branc
 nth-prime: [ [ 0 [ next-prime ] ] dip times ] ;
 
 // Kunth
-^^^: [ -- dup [ [ dup ] swap times [ ^^ ] ] dip times ] ;
 ^^: [ -- dup [ [ dup ] swap times [ ^ ] ] dip times ] ;
+^^^: [ -- dup [ [ dup ] swap times [ ^^ ] ] dip times ] ;
 pow: [ -- dup [ [ dup ] swap times [ * ] ] dip times ] ;
 mul: [ -- dup [ [ dup ] swap times [ + ] ] dip times ] ;
 
@@ -90,9 +98,10 @@ fact-go: [
   branch
 ] ;
 
-approx-fact: [ ++ gamma ] ;
-recur-fact: [ 1 swap fact-go ] ;;
-!: [ dup integer? [recur-fact] [approx-fact] branch ] ;;
+_approx-fact: [ ++ gamma ] ;
+_recur-fact: [ 1 swap fact-go ] ;
+
+!: [ dup integer? [_recur-fact] [_approx-fact] branch ] ;
 
 // Prob
 npr: [ [ [ ! ] keep ] dip - ! / ] ;
@@ -107,13 +116,13 @@ integers: [ [ count ] appl ] ;
 factors: [ [ 2 [ dup2 2 ^ > ] [ dup2 divisor? [ tuck / over ] [ next-odd ] branch ] while drop ] appl ] ;
 next-fib: [ dup2 + ] ;
 fib: [ ( 0 1 [ next-fib ] ) dip -- times drop ] ;
-collatz: [ [ [ dup 1 > ] [ dup next-collatz ] while ] >> in ] ;
 next-collatz: [ dup even? [ 2 / ] [ 3 * 1 + ] branch ] ;
+collatz: [ [ [ dup 1 > ] [ dup next-collatz ] while ] >> in ] ;
 divrem: [ [ \ ] [ % ] bi2 ] ;
 gcd: [ [ dup 0 > ] [ dup bury % ] while drop ] ;
 lcm: [ dup2 [ [ * abs ] dip ] dip gcd / ] ;
 coprime?: [ gcd 1 = ] ;
-totient: [ dup integers swap [ coprime? ] >> filter length ] ;
+totient: [ dup integers swap [ coprime? ] >> filter ln ] ;
 
 // calculus-ish
 nd: [ dup [ over + rot bi@ - ] dip / ] ;  // first-order divided difference
