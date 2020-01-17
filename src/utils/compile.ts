@@ -19,8 +19,7 @@ function create(dictObject: D) {
     @signature()
     Sentence(action: Sentence) {
       const expandedValue = _rewrite(action.value);
-      const newAction = new Sentence(expandedValue, action.displayString);
-      return new Seq([newAction]);
+      return new Sentence(expandedValue, action.displayString);
     }
     @signature()
     Word(action: Word) {
@@ -29,9 +28,10 @@ function create(dictObject: D) {
   
       if (is.undefined(value) && (action.value as string)[0] !== IIF)
         return action;
-      if (is.function_(value)) return new Seq([action]);
+      if (is.function_(value))
+        return new Seq([action]);
   
-      return new Word(value);
+      return new Word(value, action.displayString);
     }
     @signature()
     plainObject(obj: Object) {

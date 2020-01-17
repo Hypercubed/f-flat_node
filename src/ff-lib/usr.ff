@@ -127,3 +127,7 @@ ok?: [
   [ throw ] >>
   unless
 ] ;
+
+tests_run: [
+  './math.spec.ff' include
+] ;

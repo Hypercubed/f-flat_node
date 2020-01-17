@@ -1,7 +1,10 @@
 import { assocIn, getIn } from 'icepick';
 
 import { StackValue } from './stackValue';
+import { Word, Sentence } from './words';
 import { USE_STRICT } from '../constants';
+import { compile } from '../utils/compile';
+import { rewrite } from '../utils/rewrite';
 
 const SEP = '.';
 
@@ -30,10 +33,6 @@ export class Dictionary {
     return this._getFrom(key, this.locals);
   }
 
-  getScope(key: string): StackValue {
-    return this._getFrom(key, this.scope);
-  }
-
   set(key: string, value: StackValue): void {
     return this._setIn(key, value, this.locals);
   }
@@ -47,7 +46,7 @@ export class Dictionary {
     this._setIn(key, undefined, this.locals);
   }
 
-  allKeys(): string[] {
+  words(): string[] {
     const keys: string[] = [];
     for (const prop in this.locals) {
       // eslint-disable-line guard-for-in
@@ -56,35 +55,66 @@ export class Dictionary {
     return keys;
   }
 
-  keys(): string[] {
+  localWords(): string[] {
     return Object.keys(this.locals);
   }
 
-  // toObject(): {} {
-  //   return { ... this.locals };
-  // }
+  scopedWords(): string[] {
+    return Object.keys(this.locals);
+  }
 
   use(dict: { [key: string]: StackValue}) {
     Object.keys(dict).forEach(key => {
-      this._setIn(key, dict[key], this.scope, false)
+      if (!(key.length > 1 && key.startsWith('_'))) {
+        // TODO: this is bad... creates duplicate globals
+        this._setIn(key, dict[key], this.scope, false)
+      }
     });
   }
 
-  getLocalObject() {
-    const obj = {};
-    this.allKeys().forEach(key => {
-      obj[key] = this.locals[key]
+  compiledLocals() {
+    const locals = Object.create(this.locals);
+
+    // For each local, create a global
+    Object.keys(this.locals).forEach(key => {
+      const ukey = locals[key];
+      const action = this.globals.get(ukey);  // TODO: find a way to delete old globals
+
+      const ukey2 = this._hash(key);
+      // TODO: this is bad... creates duplicate globals
+      this.globals.set(ukey2, action);
+      locals[key] = ukey2;
     });
-    return obj;
+
+    // Compile new globals against locals
+    Object.keys(locals).forEach(key => {
+      const ukey = locals[key];
+      const action = this.globals.get(ukey);
+      const compiled = compile(locals, action);
+      this.globals.set(ukey, compiled);
+    });
+
+    // Returns the resolved/compiled actions
+    Object.keys(locals).forEach(key => {
+      const ukey = locals[key];
+      locals[key] = this.globals.get(ukey);
+    });
+
+    return { ... locals };
   }
 
-  getResolvedLocalObject() {
-    const obj = {};
-    this.allKeys().forEach(key => {
+  compile(x: Word | Sentence) {
+    return compile(this.locals, x);
+  }
+
+  rewrite(x: Word | Sentence) {
+    const resolvedActions = {};
+    for (const key in this.locals) {
+      // eslint-disable-line guard-for-in
       const ukey = this.locals[key];
-      obj[key] = this.globals.get(ukey)
-    });
-    return obj;
+      resolvedActions[key] = this.globals.get(ukey)
+    }
+    return rewrite(resolvedActions, x);
   }
 
   private _setIn(key: string, value: StackValue, set: { [key: string]: string }, strict = USE_STRICT) {

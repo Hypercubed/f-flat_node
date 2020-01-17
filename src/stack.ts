@@ -23,6 +23,12 @@ export function createRootEnv(): StackEnv {
     silent: true
   });
 
+  // TODO: these should not be default
+  // todo: move usr.ff loading out of boot
+
+  const sysPath = join('file://', __dirname, '../src/ff-lib/');
+  const bootPath = join(sysPath, 'boot.ff');
+
   const prelude = {
     ...core,
     ...base,
@@ -32,15 +38,15 @@ export function createRootEnv(): StackEnv {
     ...types,
     ...experimental,
     ...node,
-    ...flags
+    ...flags,
+    '__sys_path__': sysPath,  // TODO: this should not be constant
   };
 
   env.defineAction('prelude', prelude);
   env.dict.use(prelude);
 
-  const bootFile = join('file://', __dirname, '../src/ff-lib/boot.ff');
-  return env.eval(`'${bootFile}' dup '__filename' sto read eval`);
-  // todo: move usr.ff loading out of boot
+  // TODO: this should be optional
+  return env.eval(`'${bootPath}' read eval`);
 }
 
 export function createStack(s = '', root?: StackEnv): StackEnv {

@@ -2,61 +2,31 @@
  * # Module loader
  */
 
- /**
- * ## `load`
- * Reads a file onto the stack as a string and evaluates the content
- */
-include: [ read eval ] ;;
-
-// Compute file's directory based on the filename
-__dirname: [ __filename dirname '/' + ] ;
-
 /**
  * ## `import-resolve`
  * Resolve path relative to file
  */
-__import-resolve: [ ( __dirname ) >> resolve ] ;
+__import-resolve: [ ( prelude.__sys_path__ ) >> resolve ] ;
 
-/**
- * returns the local dictionary, except "private" words
- * private words exclude words starting with an underscore
- *
- * ( -> {array} )
+__include: [ read eval ] ;;
+
+ /**
+ * ## `load`
+ * Reads a file onto the stack as a string and evaluates the content
  */
-__public-dict: [ locals [ dup 0 @ '_' = [ drop ] [ dup rcl ] choose eval ] map object ] ;
-
-/**
- * ## `_scoped-dict`
- * returns the scoped dictionary,
- * includes locals and scoped words
- *
- * ( -> {array} )
- */
-__scoped-dict: [ locals scoped + [ dup rcl ] map object ] ;
-
-/**
- * ## `create-module`
- * Creates a module from the locally defined words by
- *   1 - rewrite: expands local words using the scoped dictionary
- *   2 - compile: replaces words to globally unique words
- */
-__create-module: [ __scoped-dict __public-dict rewrite compile ] ;
-// __create-module: [ __public-dict inline compile ] ;
-
-// Definition of `import-module`
-// Loads and executes a file in a child, expands out defintions, and defines a module
+include: [ __import-resolve __include ] ;;
 
 /**
  * ## `import-module`
  * Loads and creates a module from a file
  */
-__load-module: [ [ include __create-module send ] >> fork drop ] ;
+__load-module: [ [ dup '__filename__' sto __include compiled-locals send ] >> fork drop ] ;
 __load-and-sto-module: [ dup __load-module swap btoa sto ] ;
 
 import: [
   __import-resolve dup
   btoa rcl dup boolean
-    [ ]
+    [ swap drop ]
     [ drop dup __load-and-sto-module btoa rcl ]
     choose eval
 ] ;;
@@ -65,4 +35,4 @@ import: [
  * ## `if-exists-load`
  * Loads a file if it exists
  */
-if-exists-load: [ dup exists swap [ include ] >> [ ] choose eval ] ;;
+if-exists-load: [ dup exists swap [ __include ] >> [ ] choose eval ] ;;

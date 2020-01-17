@@ -181,5 +181,15 @@ export const node = {
     } catch (e) {
       throw new FFlatError(e, this);
     }
+  },
+
+  /**
+   * ## `cwd`
+   *
+   * Pushes the current working directory
+   *
+   */
+  cwd(): string {
+    return getURLStringForCwd();
   }
 };

@@ -5,7 +5,6 @@ import { Sentence, Word, Just, StackValue } from '../types';
 import { USE_STRICT } from '../constants';
 import { StackEnv } from '../env';
 import { rewrite } from '../utils/rewrite';
-import { compile } from '../utils/compile';
 
 // For all deictionay actions, note:
 // * The dictionary is mutable
@@ -124,7 +123,11 @@ export const dict = {
    * ```
    */
   compile(this: StackEnv, x: Word | Sentence) {
-    return compile(this.dict.getLocalObject(), x);
+    return this.dict.compile(x);
+  },
+
+  'compiled-locals'() {
+    return this.dict.compiledLocals();
   },
 
   /**
@@ -140,7 +143,7 @@ export const dict = {
    * ```
    */
   inline(this: StackEnv, x: Word | Sentence) {
-    return rewrite(this.dict.getResolvedLocalObject(), x);
+    return this.dict.rewrite(x);
   },
 
   /**
@@ -172,7 +175,7 @@ export const dict = {
    * ( -> {array} )
    */
   words(this: StackEnv): string[] {
-    return this.dict.allKeys();
+    return this.dict.words();
   },
 
   /**
@@ -182,7 +185,7 @@ export const dict = {
    * ( -> {array} )
    */
   locals(this: StackEnv): string[] {
-    return this.dict.keys();
+    return this.dict.localWords();
   },
 
   /**
@@ -193,13 +196,5 @@ export const dict = {
    */
   scoped(this: StackEnv): string[] {
     return Object.keys(this.dict.scope);
-  },
-
-  /**
-   * ## `rewrite`
-   * rewrites an expression using a set of rewrite rules
-   *
-   * ( {object} {express} -> {expression} )
-   */
-  rewrite
+  }
 };

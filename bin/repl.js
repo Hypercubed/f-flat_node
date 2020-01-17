@@ -68,6 +68,9 @@ if (program.logLevel) {
   log.level = program.logLevel;
 }
 
+// TODO: start in user directory
+process.chdir('./src/ff-lib/');
+
 let f = newStack();
 
 if (program.file) {

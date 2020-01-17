@@ -3,16 +3,21 @@
  */
 
 'pre-core.ff'
-  __filename dirname                          // __dirname
+  prelude.__sys_path__ 
   swap [ ] >> >> path-join resolve            // resolve
   read eval                                   // eval and export
 
 'module-loader.ff'
-  __filename dirname                          // __dirname
+  prelude.__sys_path__
   swap [ ] >> >> path-join resolve            // resolve
-  [ read eval '__create-module' eval send ] >> fork  // eval and export
+  [ 
+    __filename: sto
+    __filename read eval
+    compiled-locals send
+  ] >> fork  // eval and export
   drop use                                    // use module loader
 
+// Imports but doesn't use
 core: 'core.ff' import ;
 shuffle: 'shuffle.ff' import ;
 math: 'math.ff' import ;
@@ -22,4 +27,4 @@ strings: 'strings.ff' import ;
 types: 'types.ff' import ;
 node: 'node.ff' import ;
 
-'./src/ff-lib/usr.ff' if-exists-load 
+'usr.ff' if-exists-load 

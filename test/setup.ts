@@ -7,7 +7,8 @@ import { Decimal, Complex } from '../src/types';
 
 export * from '../src/types';
 
-process.chdir('.');
+// TODO: create test user directory fixtures
+process.chdir('./src/ff-lib/');
 
 log.level = process.env.NODE_ENV || 'error';
 

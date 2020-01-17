@@ -121,8 +121,8 @@ test('should execute stored actions', async t => {
 
 test('should return null on undefined', async t => {
   // maybe should be undefined?
-  t.deepEqual(await fJSON('x: rcl'), [null]);
-  t.deepEqual(await fJSON('x.y.z: rcl'), [null]);
+  t.deepEqual(await fJSON('%uuid%x: rcl'), [null]);
+  t.deepEqual(await fJSON('%uuid%x.y.z: rcl'), [null]);
 });
 
 test('create actions', async t => {

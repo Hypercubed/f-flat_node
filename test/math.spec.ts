@@ -175,7 +175,7 @@ test('should calculate exact powers', async t => {
   t.deepEqual(await fValues('e 1 ^'), [Math.E]);
 });
 
-test('should do Knuth\'s up-arrow notation', async t => {
+test(`should do Knuth's up-arrow notation`, async t => {
   t.deepEqual(await fValues('3 2 ^^^'), [7625597484987]);
 });
 
