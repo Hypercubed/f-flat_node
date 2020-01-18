@@ -36,7 +36,6 @@ import {
   Future,
   Complex,
   Decimal,
-  StackArray,
   complexInfinity,
   ComplexInfinity,
   AbstractValue
@@ -995,7 +994,7 @@ class Pow {
    * - array pow
    */
   @signature(Array, Number)
-  array(lhs: StackArray, rhs: number) {
+  array(lhs: StackValue[], rhs: number) {
     let r = lhs;
     const l = +rhs | 0;
     for (let i = 1; i < l; i++) {

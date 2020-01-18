@@ -14,11 +14,10 @@ import {
   Just,
   Dictionary,
   StackValue,
-  StackArray,
+  QueueValue,
   Future,
   Word,
-  Sentence,
-  Token
+  Sentence
 } from './types';
 import {
   MAXSTACK,
@@ -32,8 +31,8 @@ import {
 
 export class StackEnv {
   dict: Dictionary;
-  queue: any[] = [];
-  stack: StackArray = freeze([]);
+  queue: QueueValue[] = [];
+  stack: StackValue[] = freeze([]);
   parent: StackEnv;
   depth = 0;
 
@@ -41,7 +40,7 @@ export class StackEnv {
 
   // Make readonly protected
   lastFnDispatch: any;
-  currentAction: Token;
+  currentAction: QueueValue;
   prevState: Partial<StackEnv> = null;
   trace: Array<Partial<StackEnv>> = [];
 
@@ -196,7 +195,7 @@ export class StackEnv {
         this.trace.push(this.stateSnapshot());
         this.trace = this.trace.slice(-10);
         this.beforeEach.dispatch(this);
-        this.dispatchToken(this.currentAction);
+        this.dispatchToken(this.currentAction as any);
         this.afterEach.dispatch(this);
         this.currentAction = undefined;
       }
@@ -269,7 +268,7 @@ export class StackEnv {
     );
   }
 
-  private dispatchToken(token: Token): any {
+  private dispatchToken(token: QueueValue): any {
     if (typeof token === 'undefined') {
       return;
     }
@@ -289,7 +288,7 @@ export class StackEnv {
 
     if (token instanceof Future) {
       return token.isResolved()
-        ? this.push(...(token.value as StackArray))
+        ? this.push(...(token.value as StackValue[]))
         : this.push(token);
     }
 
@@ -348,7 +347,7 @@ export class StackEnv {
   private dispatchFn(fn: Function, args?: number, name?: string): void {
     args = typeof args === 'undefined' ? functionLength(fn) : args;
     if (args! < 1 || args! <= this.stack.length) {
-      let argArray: StackArray = [];
+      let argArray: StackValue[] = [];
       if (args! > 0) {
         argArray = this.stack.slice(-args!);
         this.stack = splice(this.stack, -args!, this.stack.length);

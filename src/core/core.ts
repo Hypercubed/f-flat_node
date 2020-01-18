@@ -5,7 +5,6 @@ import {
   dynamo,
   Seq,
   StackValue,
-  StackArray,
   Future,
   Sentence,
   Word,
@@ -17,7 +16,7 @@ import { patternMatch } from '../utils/pattern';
 import { StackEnv } from '../env';
 
 function dequoteStack(env: StackEnv, s: StackValue) {
-  const r: StackArray = [];
+  const r: StackValue[] = [];
   while (env.stack.length > 0 && s !== Symbol.for('(')) {
     r.unshift(s);
     s = env.stack[env.stack.length - 1];
@@ -153,7 +152,7 @@ class At {
  */
 class Unstack {
   @signature(Array)
-  array(a: StackArray) {
+  array(a: StackValue[]) {
     return new Seq(a);
   }
 
@@ -188,7 +187,7 @@ class Eval {
   }
 
   @signature(Array)
-  array(a: StackArray) {
+  array(a: StackValue[]) {
     return new Sentence(a);
   }
 
@@ -218,9 +217,9 @@ class Eval {
  */
 class Zip {
   @signature(Array, Array)
-  array(a: StackArray[], b: StackArray[]): StackArray[] {
+  array(a: StackValue[][], b: StackValue[][]): StackValue[][] {
     const l = a.length < b.length ? a.length : b.length;
-    const r: StackArray[] = [];
+    const r: StackValue[][] = [];
     for (let i = 0; i < l; i++) {
       r.push(a[i], b[i]);
     }
@@ -238,9 +237,9 @@ class Zip {
  */
 class ZipInto {
   @signature(Array, Array, Array)
-  array(a: StackArray, b: StackArray, c: StackArray): StackArray {
+  array(a: StackValue[], b: StackValue[], c: StackValue[]): StackValue[] {
     const l = a.length < b.length ? a.length : b.length;
-    const r: StackArray = [];
+    const r: StackValue[] = [];
     for (let i = 0; i < l; i++) {
       r.push(a[i], b[i], ...c);
     }
@@ -323,7 +322,7 @@ export const core = {
    * [ [ 1 2 3 ] ]
    * ```
    */
-  stack(this: StackEnv): StackArray {
+  stack(this: StackEnv): StackValue[] {
     const s = this.stack.slice();
     this.stack = splice(this.stack, 0, this.stack.length);
     return s;
@@ -418,7 +417,7 @@ export const core = {
    * [ [ 2 ] ]
    * ```
    */
-  fork(this: StackEnv, a: StackValue): StackArray {
+  fork(this: StackEnv, a: StackValue): StackValue[] {
     return this.createChild().eval(a).stack;
   },
 
@@ -489,7 +488,7 @@ export const core = {
    * [ 1 ]
    * ```
    */
-  indexof: (a: StackArray, b: number | string) => a.indexOf(b), // doesn't work with Decimal!!!
+  indexof: (a: StackValue[], b: number | string) => a.indexOf(b), // doesn't work with Decimal!!!
 
   /* 'repeat': (a, b) => {
     return new Action(arrayRepeat(a, b));

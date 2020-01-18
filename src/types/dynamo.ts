@@ -4,7 +4,7 @@ import { Future } from './future';
 import { DecimalDef } from './decimal';
 import { Complex } from './complex';
 import { Word, Sentence } from './words';
-import { ComplexInfinity, Indeterminate } from './complexInfinity';
+import { ComplexInfinity, Indeterminate } from './complex-infinity';
 
 export const dynamo = new Dynamo();
 

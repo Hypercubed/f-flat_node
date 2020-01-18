@@ -39,8 +39,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Safer?
 - [ ] remove `sto` and `rcl`?
-- [ ] disable deep definitions (`x.y.z: [ ] ;`)
-- [ ] words must be defined before refence (breaks lambdas)
+- [ ] restrict type on stack, queue and dictionary
+- [ ] disable deep definitions (`x.y.z: [ ] ;`)?
+- [ ] words must be defined before reference (breaks lambdas)?
 
 # Bugs
 

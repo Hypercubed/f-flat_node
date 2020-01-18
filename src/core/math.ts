@@ -9,8 +9,8 @@ import {
   indeterminate,
   pi,
   complexInfinity,
-  StackArray,
-  ComplexInfinity
+  ComplexInfinity,
+  StackValue
 } from '../types';
 
 /**
@@ -255,7 +255,7 @@ class Sqrt {
   }
 
   @signature([Array, String])
-  array(x: StackArray | string) {
+  array(x: StackValue[] | string) {
     const n = Math.sqrt(x.length) | 0;
     return x.slice(1, n + 1);
   }

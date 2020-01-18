@@ -1,6 +1,6 @@
 import memoize from 'memoizee';
 import { writeFileSync } from 'fs';
-import { signature, Any } from '@hypercubed/dynamo';
+import { signature } from '@hypercubed/dynamo';
 
 import { stringifyStrict } from '../utils/json';
 import { FFlatError } from '../utils/fflat-error';
@@ -12,7 +12,6 @@ import {
   Future,
   Seq,
   StackValue,
-  StackArray,
   Decimal
 } from '../types';
 import { StackEnv } from '../env';
@@ -40,7 +39,7 @@ export const experimental = {
     try {
       const child = this.createChild().eval(a);
       return false;
-    } catch(err) {
+    } catch (err) {
       return true;
     }
   },
@@ -109,7 +108,7 @@ export const experimental = {
    *
    * ( [ A B C ]-> [ [a] [b] [c] ])
    */
-  all(this: StackEnv, arr: StackArray): Promise<StackArray> {
+  all(this: StackEnv, arr: StackValue[]): Promise<StackValue[]> {
     return Promise.all(arr.map(a => this.createChildPromise(a)));
   },
 
@@ -119,7 +118,7 @@ export const experimental = {
    *
    * ( [ A B C ]-> [x])
    */
-  race(this: StackEnv, arr: StackArray): Promise<StackArray> {
+  race(this: StackEnv, arr: StackValue[]): Promise<StackValue[]> {
     return Promise.race(arr.map(a => this.createChildPromise(a)));
   },
 

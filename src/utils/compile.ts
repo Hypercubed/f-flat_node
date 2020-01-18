@@ -25,12 +25,11 @@ function create(dictObject: D) {
     Word(action: Word) {
       const path = Dictionary.makePath(action.value).shift();
       const value: string = dictObject[path];
-  
+
       if (is.undefined(value) && (action.value as string)[0] !== IIF)
         return action;
-      if (is.function_(value))
-        return action;
-  
+      if (is.function_(value)) return action;
+
       return new Word(value, action.displayString);
     }
     @signature()

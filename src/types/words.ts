@@ -1,6 +1,6 @@
 import { guard } from '@hypercubed/dynamo';
 import { encode } from '../utils/json';
-import { StackValue } from './stackValue';
+import { StackValue } from './stack-value';
 
 function toString(x: any) {
   if (Array.isArray(x)) {

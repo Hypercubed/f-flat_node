@@ -16,25 +16,25 @@ export class FFlatError extends Error {
       value: 'FFlatError'
     });
 
-    let stackArray: string[];
+    let stackValue: string[];
     if (state) {
-      stackArray = [
+      stackValue = [
         `${this.name}: ${this.message}`,
         `stack/queue: ${state.stack.length} / ${state.queue.length}`
       ];
 
-      stackArray.push(`stack trace:`);
+      stackValue.push(`stack trace:`);
 
       state.trace.forEach(s => {
-        stackArray.push(`     ${ffPrettyPrint.formatTrace(s as any, -5)}`);
+        stackValue.push(`     ${ffPrettyPrint.formatTrace(s as any, -5)}`);
       });
     } else {
-      stackArray = [''];
+      stackValue = [''];
     }
 
     Reflect.defineProperty(this, 'stack', {
       enumerable: false,
-      value: stackArray.join('\n')
+      value: stackValue.join('\n')
     });
   }
 }

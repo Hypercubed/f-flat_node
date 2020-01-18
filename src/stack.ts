@@ -30,6 +30,7 @@ export function createRootEnv(): StackEnv {
   const bootPath = join(sysPath, 'boot.ff');
 
   const prelude = {
+    __sys_path__: sysPath, // TODO: this should not be constant
     ...core,
     ...base,
     ...dict,
@@ -38,8 +39,7 @@ export function createRootEnv(): StackEnv {
     ...types,
     ...experimental,
     ...node,
-    ...flags,
-    '__sys_path__': sysPath,  // TODO: this should not be constant
+    ...flags
   };
 
   env.defineAction('prelude', prelude);
