@@ -23,15 +23,17 @@ __module_name: [ btoa ] ;
  * ## `import-module`
  * Loads and creates a module from a file
  */
-__load-module: [ [ dup '__filename__' sto __include create-module send ] >> fork drop dup 'scoped' @ use 'locals' @ ] ;
-__load-and-sto-module: [ dup __load-module swap __module_name sto ] ;;
+__get_vocab: [ [ create-module send ] + >> fork drop dup 'scoped' @ use 'locals' @ ] ;
+__load-module: [ [ dup [ ] >> '__filename' swap def __include ] __get_vocab ] ;
+__load-and-sto-module: [ dup __load-module swap __module_name swap def ] ;;
 
 import: [
-  __import-resolve dup
-  __module_name rcl dup boolean
-    [ swap drop ]
-    [ drop dup __load-and-sto-module btoa rcl ]
-    choose eval
+  __load-module
+  // __import-resolve dup
+  // __module_name eval dup boolean
+  //   [ swap drop ]
+  //   [ drop dup __load-and-sto-module btoa rcl ]
+  //   choose eval
 ] ;;
 
 /**

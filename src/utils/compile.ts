@@ -1,7 +1,7 @@
 import { signature, Any } from '@hypercubed/dynamo';
 import is from '@sindresorhus/is';
 
-import { dynamo, Sentence, Word, Seq, Dictionary } from '../types';
+import { dynamo, Sentence, Word, Seq, Vocabulary } from '../types';
 import { IIF } from '../constants';
 
 type D = { [key: string]: string };
@@ -23,7 +23,7 @@ function create(dictObject: D) {
     }
     @signature()
     Word(action: Word) {
-      const path = Dictionary.makePath(action.value).shift();
+      const path = Vocabulary.makePath(action.value).shift();
       const value: string = dictObject[path];
 
       if (is.undefined(value) && (action.value as string)[0] !== IIF)

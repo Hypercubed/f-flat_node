@@ -3,6 +3,7 @@
 _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # New TODOs
+- [ ] Fix module loading
 - [ ] Number subtypes: integer (BigInt), real (decimaljs), rational (tbd), complex (internal)
 - [ ] Decimal shift/unshift
 - [ ] More complexInfinity/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
@@ -10,22 +11,14 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] finish and use https://github.com/Hypercubed/real
 
 # Improved scoping and namespaces
-- [x] global immutable store (ex. `slip%8df57134`)
+- [x] immutable words (ex. `slip%8df57134`)
   - [ ] add tests for rcl/execute using hash
-  - [ ] use hash
-- [x] names are scoped (ex. `slip` -> `slip%8df57134`)
-- [x] mutually recursive definitions? (https://www.unisonweb.org/docs/faq/#how-does-hashing-work-for-mutually-recursive-definitions)
-- [ ] ensure pretty display for glogally unique words.
-- [ ] Test compile, compile-locals
+  - [ ] use hash instead of uuid
+  - [ ] mutually recursive definitions? (https://www.unisonweb.org/docs/faq/#how-does-hashing-work-for-mutually-recursive-definitions)
+- [ ] ensure pretty display for unique words.
+- [ ] Tests for create-module
 - [ ] disallow shadowing guid!!
 - [ ] allow finding words by name (`abc`), hash (`%xyz`), or both (`abc%xyz`)?
-- [x] filter private words on `use` not in `__create-module`
-
-# Improved module system
-- [x] `include` loads file (url) inline (`[ read eval ]`)
-- [x] `import` loads file in a sub env and "sends" the resolved dictionary?
-- [ ] `use` (ex. `'xyz' import use`, `xyz: use`)?
-- [ ] `use-from` `[ pluck use ]`?
 
 # Testing words
 - [ ] `try` `[ T ] [ C ] [ F ]`
@@ -34,22 +27,23 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] option to run test on load?
 
 # Improved user space
-- [ ] `add` - adds a word to the user's persistant dictionary?
-- [ ] `pull` - loads a into the users startup scripts?
+- [ ] Start in user directory
+- [ ] `add` - adds a word/vacabulary to the user's persistant dictionary? `math: add`
 
 # Safer?
-- [ ] remove `sto` and `rcl`?
+- [x] remove `sto` and `rcl`?
+- [ ] redefine to action `:`
 - [ ] restrict type on stack, queue and dictionary
-- [ ] disable deep definitions (`x.y.z: [ ] ;`)?
-- [ ] words must be defined before reference (breaks lambdas)?
+- [x] disable deep definitions (`x.y.z: [ ] ;`)?
+- [ ] Safer module loading
+  - [ ] `module`?  Run array in child env, define dictionary as a variable in current dict. (ex. `x: [ 'math.ff' include ] module`)
+  - [ ] `import`?  `math: 'math.ff' import`
+  - [ ] `use`? `math: use`
 
-# Bugs
-
-- [?] .clear should reset everything, including flags
-- [ ] Recursive private functions (disallow recursion or co-recursive functions?)
-- [ ] can't compile/expand recursive definitions
-- [ ] Recursive name spaces words
-- [ ] `inline` after `compile`?
+# Type cleaning
+- [ ] `Action` vs `Word`
+- [ ] `Alias` type?
+- [ ] `Dictionary` -> `Vocabulary`
 
 # Decide
 - [x] Decide on macros, `dupn!3`, `dup<5>`, `range<1, 100>`, `range:(1, 10).` ? Using `range:(1, 10).`

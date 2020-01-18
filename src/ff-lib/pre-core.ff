@@ -2,7 +2,7 @@
  * ## `;` ( define action )
  * Converts the quote into an action and stores
  */
-[ : swap sto ] : ';' sto
+';' [ def ] def
 
 /**
  * ## `;;` ( define inline action )

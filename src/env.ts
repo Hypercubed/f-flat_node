@@ -12,7 +12,7 @@ import {
   dynamo,
   Seq,
   Just,
-  Dictionary,
+  Vocabulary,
   StackValue,
   QueueValue,
   Future,
@@ -30,7 +30,7 @@ import {
 } from './constants';
 
 export class StackEnv {
-  dict: Dictionary;
+  dict: Vocabulary;
   queue: QueueValue[] = [];
   stack: StackValue[] = freeze([]);
   parent: StackEnv;
@@ -56,7 +56,7 @@ export class StackEnv {
 
   constructor(initalState: any = { parent: null }) {
     Object.assign(this, initalState);
-    this.dict = new Dictionary(
+    this.dict = new Vocabulary(
       initalState.parent ? initalState.parent.dict : undefined
     );
 

@@ -27,7 +27,7 @@ function convertBase(str: string, baseIn: number, baseOut: number) {
   return arr.reverse();
 }
 
-// todo; make part of teh action object?
+// todo: make part of the action object?
 class CreateAction {
   @signature([Word, Sentence])
   words(x: Word | Sentence): Word | Sentence {

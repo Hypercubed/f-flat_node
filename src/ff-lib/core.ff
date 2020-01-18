@@ -135,7 +135,7 @@ sum: [ [ + ] fold ] ;
  *
  * ( -> {array} )
  */
-dict: [ locals [ dup rcl ] map object ] ;
+// dict: [ locals [ dup rcl ] map object ] ;
 
 /**
   * ## `nop`

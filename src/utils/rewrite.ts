@@ -2,7 +2,7 @@ import { signature, Any } from '@hypercubed/dynamo';
 import is from '@sindresorhus/is';
 import { getIn } from 'icepick';
 
-import { dynamo, StackValue, Sentence, Word, Seq, Dictionary } from '../types';
+import { dynamo, StackValue, Sentence, Word, Seq, Vocabulary } from '../types';
 import { IIF } from '../constants';
 
 function create(dictObject: Object | undefined) {
@@ -28,7 +28,7 @@ function create(dictObject: Object | undefined) {
       if (wordPaths.includes(action.value)) {
         return action;
       }
-      const path = Dictionary.makePath(action.value);
+      const path = Vocabulary.makePath(action.value);
       const value: StackValue = getIn(dictObject, path);
 
       if (is.undefined(value) && (action.value as string)[0] !== IIF)

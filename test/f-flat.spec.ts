@@ -113,17 +113,17 @@ test('should branch on truthy and falsy', async t => {
 test('in/fork', async t => {
   t.deepEqual(await fValues('[ 2 1 + ] in'), [[3]], 'should evaluate list');
   t.deepEqual(
-    await fJSON('"before" "a" sto [ a ] in'),
+    await fJSON('a: ["before"] def [ a ] in'),
     [['before']],
     'fork should have access to parent scope'
   );
   t.deepEqual(
-    await fJSON('"outer" "a" sto [ "inner" "a" sto a ] fork a'),
+    await fJSON('a: ["outer"] def [ a: ["inner"] def a ] fork a'),
     [['inner'], 'outer'],
     'fork should isolate child scope'
   );
   t.deepEqual(
-    await fJSON('"outer" "a" sto [ "inner" "b" sto a ] in b'),
+    await fJSON('a: ["outer"] def [ b: ["inner"] def a ] in b'),
     [['outer'], 'inner'],
     'in does not isolate child scope'
   );
@@ -366,7 +366,7 @@ test('pick', async t => {
   t.deepEqual(await fValues('{a: 7} "A" lcase @'), [7]);
   t.deepEqual(await fValues('{a: 11} b: @ 13 orelse'), [13]);
   t.deepEqual(
-    await fValues('[ a: @ ] : pickfunc: sto { a: 17 } pickfunc'),
+    await fValues('pickfunc: [ a: @ ] def { a: 17 } pickfunc'),
     [17]
   );
 });
@@ -461,7 +461,7 @@ test('immutable sto', async t => {
   const last = 'Von Thun';
   t.deepEqual(
     await fJSON(`
-    { } name: sto
+    name: { } def
     name
     name { first: "Manfred" } <<
     name { last: "Von Thun" } <<

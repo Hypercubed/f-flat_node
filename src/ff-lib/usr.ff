@@ -6,7 +6,7 @@
 'datetime.ff' import use
 'testing.ff' import use
 
-.: [ [ unstack ] >> dip eval ] ;
+'.' [ [ unstack ] >> dip eval ] ;
 
 !!: [ null? ~ ] ;;
 ?@: [ [ dup !! ] dip [ @ ] >> [ drop null ] branch ] ;

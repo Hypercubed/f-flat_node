@@ -11,8 +11,8 @@
   prelude.__sys_path__
   swap [ ] >> >> path-join resolve            // resolve
   [ 
-    '__filename' sto
-    __filename read eval
+    dup [ ] >> '__filename' swap def
+    read eval
     create-module send
   ] >> fork  // eval and export
   drop dup 'scoped' @ use 'locals' @ use      // use module loader

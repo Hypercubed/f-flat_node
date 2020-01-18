@@ -1,10 +1,39 @@
 import is from '@sindresorhus/is';
+import { signature, Any } from '@hypercubed/dynamo';
 
 import { ffPrettyPrint, FFlatError } from '../utils';
-import { Sentence, Word, Just, StackValue } from '../types';
+import { dynamo, Sentence, Word, Just, StackValue } from '../types';
 import { USE_STRICT } from '../constants';
 import { StackEnv } from '../env';
-import { rewrite } from '../utils/rewrite';
+
+// todo: convert dictionary of stack values to dictinary of actions
+class CreateAction {
+  @signature([Word, Sentence])
+  words(x: Word | Sentence): Word | Sentence {
+    return x;
+  }
+
+  @signature()
+  array(x: any[]): Sentence {
+    if (x.length === 1 && (x[0] instanceof Word || x[0] instanceof Sentence)) {
+      return x[0];
+    }
+    return new Sentence(x);
+  }
+
+  @signature()
+  string(x: string): Word {
+    return new Word(x);
+  }
+
+  // TODO: map
+  @signature(Any)
+  any(x: any): any {
+    return x;
+  }
+}
+
+const createAction = dynamo.function(CreateAction);
 
 // For all deictionay actions, note:
 // * The dictionary is mutable
@@ -15,7 +44,7 @@ import { rewrite } from '../utils/rewrite';
  */
 export const dict = {
   /**
-   * ## `sto`
+   * ## `def`
    * stores a value in the dictionary
    *
    * ( [A] {string|atom} -> )
@@ -25,51 +54,14 @@ export const dict = {
    * [ ]
    * ```
    */
-  sto(this: StackEnv, lhs: StackValue, rhs: string) {
-    if (['true', 'false', 'null', 'nan'].includes(rhs)) {
+  def(this: StackEnv, lhs: string, rhs: StackValue) {
+    if (['true', 'false', 'null', 'nan'].includes(lhs)) {
       throw new FFlatError('Cannot overwrite reserved words', this);
     }
     try {
-      this.dict.set(rhs, lhs);
+      this.dict.set(lhs, createAction(rhs));
     } catch (e) {
       throw new FFlatError(e.message, this);
-    }
-  },
-
-  /**
-   * ## `rcl`
-   * recalls a value in the dictionary
-   *
-   * ( {string|atom} -> [A] )
-   *
-   * ```
-   * f♭> "sqr" rcl
-   * [ [ dup * ] ]
-   * ```
-   */
-  rcl(this: StackEnv, a: string) {
-    const r = this.dict.get(a);
-    if (typeof r === 'undefined') {
-      return null;
-    }
-    if (!USE_STRICT && is.function_(r)) {
-      // carefull pushing functions to stack, watch immutability
-      return new Just(new Word(<any>r)); // hack
-    }
-    return r instanceof Word || r instanceof Sentence ? new Just(r) : r;
-  },
-
-  /**
-   * ## `delete`
-   * deletes a defined word
-   *
-   * ( {string|atom} -> )
-   */
-  delete(this: StackEnv, path: string) {
-    try {
-      this.dict.delete(path);
-    } catch (e) {
-      throw new FFlatError(e, this);
     }
   },
 
@@ -81,18 +73,16 @@ export const dict = {
    * ( {string|atom} -> )
    *
    * ```
-   * f♭> core: use
+   * f♭> { ... } use
    * [ ]
    * ```
    */
-  use(this: StackEnv, dict: any) {
-    /* if (dict instanceof Word) {
-      dict = this.dict.get(dict.value);
-    }
-    if (typeof dict === 'string') {
-      dict = this.dict.get(dict);
-    } */
-    this.dict.use(dict);
+  use(this: StackEnv, dict: { [key: string]: StackValue }) {
+    const d = {};
+    Object.keys(dict).forEach(k => {
+      d[k] = createAction(dict[k]);
+    });
+    this.dict.use(d);
   },
 
   /**
