@@ -110,23 +110,23 @@ export const dict = {
     this.defineAction(x);
   },
 
-  /**
-   * ## `compile`
-   * compile a quote,
-   * replaces words with globally unique terms
-   *
-   * ( [A B C] -> [a b c])
-   *
-   * ```
-   * f♭> [ 2 sq ] compile
-   * [ [ 2 sq%asdfgf ] ]
-   * ```
-   */
-  compile(this: StackEnv, x: Word | Sentence) {
-    return this.dict.compile(x);
-  },
+  // /**
+  //  * ## `compile`
+  //  * compile a quote,
+  //  * replaces words with globally unique terms
+  //  *
+  //  * ( [A B C] -> [a b c])
+  //  *
+  //  * ```
+  //  * f♭> [ 2 sq ] compile
+  //  * [ [ 2 sq%asdfgf ] ]
+  //  * ```
+  //  */
+  // compile(this: StackEnv, x: Word | Sentence) {
+  //   return this.dict.compile(x);
+  // },
 
-  'compiled-locals'() {
+  'create-module'() {
     return this.dict.compiledLocals();
   },
 
@@ -195,6 +195,6 @@ export const dict = {
    * ( -> {array} )
    */
   scoped(this: StackEnv): string[] {
-    return Object.keys(this.dict.scope);
+    return this.dict.scopedWords();
   }
 };

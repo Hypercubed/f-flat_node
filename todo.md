@@ -12,18 +12,18 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 # Improved scoping and namespaces
 - [x] global immutable store (ex. `slip%8df57134`)
   - [ ] add tests for rcl/execute using hash
-  - [ ] use hash?
+  - [ ] use hash
 - [x] names are scoped (ex. `slip` -> `slip%8df57134`)
 - [x] mutually recursive definitions? (https://www.unisonweb.org/docs/faq/#how-does-hashing-work-for-mutually-recursive-definitions)
 - [ ] ensure pretty display for glogally unique words.
 - [ ] Test compile, compile-locals
 - [ ] disallow shadowing guid!!
 - [ ] allow finding words by name (`abc`), hash (`%xyz`), or both (`abc%xyz`)?
-- [ ] filter private words on `use` not in `__create-module`
+- [x] filter private words on `use` not in `__create-module`
 
 # Improved module system
 - [x] `include` loads file (url) inline (`[ read eval ]`)
-- [ ] `import` loads file in a sub env and "sends" the resolved dictionary?
+- [x] `import` loads file in a sub env and "sends" the resolved dictionary?
 - [ ] `use` (ex. `'xyz' import use`, `xyz: use`)?
 - [ ] `use-from` `[ pluck use ]`?
 

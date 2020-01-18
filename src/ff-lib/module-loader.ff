@@ -8,7 +8,7 @@
  */
 __import-resolve: [ ( prelude.__sys_path__ ) >> resolve ] ;
 
-__include: [ read eval ] ;;
+__include: [ read eval ] ;
 
  /**
  * ## `load`
@@ -16,16 +16,19 @@ __include: [ read eval ] ;;
  */
 include: [ __import-resolve __include ] ;;
 
+// Make private?
+__module_name: [ btoa ] ;
+
 /**
  * ## `import-module`
  * Loads and creates a module from a file
  */
-__load-module: [ [ dup '__filename__' sto __include compiled-locals send ] >> fork drop ] ;
-__load-and-sto-module: [ dup __load-module swap btoa sto ] ;
+__load-module: [ [ dup '__filename__' sto __include create-module send ] >> fork drop dup 'scoped' @ use 'locals' @ ] ;
+__load-and-sto-module: [ dup __load-module swap __module_name sto ] ;;
 
 import: [
   __import-resolve dup
-  btoa rcl dup boolean
+  __module_name rcl dup boolean
     [ swap drop ]
     [ drop dup __load-and-sto-module btoa rcl ]
     choose eval

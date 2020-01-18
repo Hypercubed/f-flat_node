@@ -13,9 +13,9 @@
   [ 
     __filename: sto
     __filename read eval
-    compiled-locals send
+    create-module send
   ] >> fork  // eval and export
-  drop use                                    // use module loader
+  drop dup 'scoped' @ use 'locals' @ use      // use module loader
 
 // Imports but doesn't use
 core: 'core.ff' import ;

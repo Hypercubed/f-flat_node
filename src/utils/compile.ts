@@ -29,7 +29,7 @@ function create(dictObject: D) {
       if (is.undefined(value) && (action.value as string)[0] !== IIF)
         return action;
       if (is.function_(value))
-        return new Seq([action]);
+        return action;
   
       return new Word(value, action.displayString);
     }

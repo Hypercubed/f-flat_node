@@ -14,13 +14,13 @@ export type StackValue =
   | Sentence
   | Future
   | Function
-  | StackArray
+  | StackValue[]
   | undefined
   | null
   | Complex
   | Decimal
   | map;
 
-export class StackArray extends Array<StackValue> {}
+export type StackArray = StackValue[];
 
 export type Token = Word | Sentence | Just | Seq | Future | Promise<any>;
