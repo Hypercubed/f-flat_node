@@ -1,10 +1,14 @@
-'core.ff' import use
-'shuffle.ff' import use
-'math.ff' import use
-'strings.ff' import use
-'types.ff' import use
-'datetime.ff' import use
-'testing.ff' import use
+core: 'core.ff' import ;
+math: 'math.ff' import ;
+
+core use
+math use
+
+'shuffle.ff' require
+'strings.ff' require
+'types.ff' require
+'datetime.ff' require
+'testing.ff' require
 
 '.' [ [ unstack ] >> dip eval ] ;
 

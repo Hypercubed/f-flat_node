@@ -2,8 +2,8 @@
  * # Classic combinators
  */
  
-'core.ff' import use
-'shuffle.ff' import use
+'core.ff' require
+'shuffle.ff' require
 
 x: [ dup eval ] ;
 i: [ eval ] ;

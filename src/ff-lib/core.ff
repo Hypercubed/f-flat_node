@@ -1,7 +1,7 @@
 /**
  * # Core defined words
  */
-'types.ff' import use
+'types.ff' require
 
 // core shuffle words
 slip: [ q< eval q> ] ;      // [b] A -> b A

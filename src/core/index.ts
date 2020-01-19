@@ -1,4 +1,4 @@
-export * from './dict';
+export * from './vocab';
 export * from './base';
 export * from './core';
 export * from './experimental';

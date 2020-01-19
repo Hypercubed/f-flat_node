@@ -126,6 +126,14 @@ class Base {
   }
 }
 
+const hashCode = function(s: string) {
+  let h = 0, l = s.length, i = 0;
+  if ( l > 0 )
+    while (i < l)
+      h = (h << 5) - h + s.charCodeAt(i++) | 0;
+  return h;
+};
+
 /**
  * # Internal Type Words
  */
@@ -199,6 +207,14 @@ export const types = {
    */
   btoa(x: string) {
     return Buffer.from(x, 'binary').toString('base64');
+  },
+
+  hash(x: string): number {
+    return hashCode(x);
+  },
+
+  'hex-hash'(x: string): string {
+    return hashCode(x).toString(16);
   },
 
   /**

@@ -10,21 +10,9 @@
 'module-loader.ff'
   prelude.__sys_path__
   swap [ ] >> >> path-join resolve            // resolve
-  [ 
+  [
     dup [ ] >> '__filename' swap def
     read eval
-    create-module send
-  ] >> fork  // eval and export
-  drop dup 'scoped' @ use 'locals' @ use      // use module loader
+  ] >> module use    // eval and export
 
-// Imports but doesn't use
-core: 'core.ff' import ;
-shuffle: 'shuffle.ff' import ;
-math: 'math.ff' import ;
-sym: 'math-sym.ff' import ;
-comb: 'combinators.ff' import ;
-strings: 'strings.ff' import ;
-types: 'types.ff' import ;
-node: 'node.ff' import ;
-
-'usr.ff' if-exists-load 
+'usr.ff' if-exists-load

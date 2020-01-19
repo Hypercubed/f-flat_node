@@ -13,12 +13,13 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 # Improved scoping and namespaces
 - [x] immutable words (ex. `slip%8df57134`)
   - [ ] add tests for execute using hash
-  - [ ] use hash instead of uuid
+  - [ ] use hash instead of uuid!!
   - [ ] mutually recursive definitions? (https://www.unisonweb.org/docs/faq/#how-does-hashing-work-for-mutually-recursive-definitions)
 - [ ] ensure pretty display for unique words
 - [ ] Tests for create-module
 - [ ] disallow shadowing guid!!
 - [ ] allow finding words by name (`abc`), hash (`%xyz`), or both (`abc%xyz`)?
+- [ ] pick for module?
 
 # Testing words
 - [ ] `try` `[ T ] [ C ] [ F ]`
@@ -35,11 +36,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] redefine action `:`
 - [ ] restrict type on stack, queue and dictionary
 - [x] disable deep definitions (`x.y.z: [ ] ;`)?
-- [ ] Safer module loading
-  - [ ] `module`?  Run array in child env, define dictionary as a variable in current dict. (ex. `x: [ 'math.ff' include ] module`)
-  - [ ] pick for module?
-  - [ ] `import`?  `math: 'math.ff' import`
-  - [ ] `use`? `math: use`
+- [ ] Safer module loading (`Sentence` -> `Array` on `module`)
 
 # Type cleaning
 - [ ] `Action` vs `Word`

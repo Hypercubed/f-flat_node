@@ -1,5 +1,5 @@
-'core.ff' import use
-'shuffle.ff' import use
+'core.ff' require
+'shuffle.ff' require
 
 /**
  * # Dates and times lib

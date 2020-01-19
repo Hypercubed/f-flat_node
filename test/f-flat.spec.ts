@@ -483,8 +483,8 @@ test('atoms are not executed by stack actions', async t => {
 });
 
 test('can perform actions from module', async t => {
-  t.deepEqual(await fValues('5 core.pred'), [5, 4]);
-  t.deepEqual(await fValues('12 math.!'), [479001600]);
+  t.deepEqual(await fValues('core use 5 core.pred'), [5, 4]);
+  t.deepEqual(await fValues('math use 12 math.!'), [479001600]);
 });
 
 test('postfix "macros"', async t => {

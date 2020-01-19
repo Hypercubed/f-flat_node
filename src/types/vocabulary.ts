@@ -95,34 +95,36 @@ export class Vocabulary {
   }
 
   compiledLocals() {
-    const scoped = {};
     const locals = {};
+    const ukeys = {};
 
-    // For each local and scoped value, create a global
-    // TODO: find a way to not do this for scoped values... which may already be global
+    // For each local and scoped defintion, create a new uuid definition
+    // TODO: Optomize this!! Find a way to do this only for used definitions
     // cache these?  Not needed if has is really a hash
-    const ukeys = [
-      ...Object.keys(this.scope),
-      ...Object.keys(this.locals)
-    ].reduce((ukeys, key) => {
+    Object.keys(this.scope)
+    .forEach(key => {
+      const action = this.scope[key];
+      const ukey = this._hash(key);
+      locals[ukey] = action;
+      ukeys[key] = ukey;
+    });
+
+    Object.keys(this.locals)
+    .forEach(key => {
       const action = this.locals[key];
       const ukey = this._hash(key);
-      scoped[ukey] = action;
+      locals[ukey] = action;
       ukeys[key] = ukey;
-      return ukeys;
-    }, {});
+    });
 
     // Compile new globals against this scope
     Object.keys(ukeys).forEach(key => {
       const ukey = ukeys[key];
-      scoped[ukey] = compile(ukeys, scoped[ukey]);
-      locals[key] = scoped[ukey];
+      locals[ukey] = compile(ukeys, locals[ukey]);
+      locals[key] = locals[ukey];
     });
 
-    return {
-      scoped,
-      locals
-    };
+    return locals;
   }
 
   rewrite(x: Word | Sentence) {
@@ -130,7 +132,7 @@ export class Vocabulary {
   }
 
   /**
-   * Not yet a hash
+   * Not yet a hash, use symbols?
    */
   private _hash(key: string) {
     let ukey: string;

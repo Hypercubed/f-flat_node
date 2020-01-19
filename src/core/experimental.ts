@@ -169,10 +169,6 @@ export const experimental = {
     return Object.assign(newObj, { [key]: value });
   },
 
-  /* assert(this: StackEnv, value: boolean, message: string) {
-    throw new FFlatError(`Asserion error: ${message}`, this);
-  } */
-
   digits(n: Decimal) {
     return (n as any).digits();
   }

@@ -10,31 +10,32 @@ __import-resolve: [ ( prelude.__sys_path__ ) >> resolve ] ;
 
 __include: [ read eval ] ;
 
- /**
+/**
  * ## `load`
  * Reads a file onto the stack as a string and evaluates the content
  */
 include: [ __import-resolve __include ] ;;
 
-// Make private?
-__module_name: [ btoa ] ;
-
 /**
  * ## `import-module`
  * Loads and creates a module from a file
  */
-__get_vocab: [ [ create-module send ] + >> fork drop dup 'scoped' @ use 'locals' @ ] ;
-__load-module: [ [ dup [ ] >> '__filename' swap def __include ] __get_vocab ] ;
-__load-and-sto-module: [ dup __load-module swap __module_name swap def ] ;;
+__module_hash: [ hex-hash '_' swap + ] ;
+__load-module: [ [ dup [ ] >> '__filename' swap def __include ] >> module ] ;
+__load-and-sto-module: [ dup __load-module swap __module_hash swap def ] ;;
 
 import: [
-  __load-module
-  // __import-resolve dup
-  // __module_name eval dup boolean
-  //   [ swap drop ]
-  //   [ drop dup __load-and-sto-module btoa rcl ]
-  //   choose eval
+  __import-resolve   
+  dup __module_hash defined?
+    [ __module_hash eval ]
+    [ dup __load-and-sto-module __module_hash eval ]
+    choose eval
 ] ;;
+
+require: [
+  import
+  use
+] ;
 
 /**
  * ## `if-exists-load`

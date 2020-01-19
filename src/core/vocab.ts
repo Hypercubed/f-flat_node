@@ -86,8 +86,14 @@ export const dict = {
    * [ ]
    * ```
    */
+
   use(this: StackEnv, dict: { [key: string]: StackValue }) {
     this.dict.use(createAction(dict));
+  },
+
+  module(this: StackEnv, a: StackValue) {
+    const child = this.createChild().eval(a);
+    return child.dict.compiledLocals();
   },
 
   /**
@@ -121,9 +127,9 @@ export const dict = {
   //   return this.dict.compile(x);
   // },
 
-  'create-module'() {
-    return this.dict.compiledLocals();
-  },
+  // 'create-module'() {
+  //   return this.dict.compiledLocals();
+  // },
 
   /**
    * ## `inline`
@@ -139,6 +145,11 @@ export const dict = {
    */
   inline(this: StackEnv, x: Word | Sentence) {
     return this.dict.rewrite(x);
+  },
+
+  'defined?'(this: StackEnv, a: string) {
+    const r = this.dict.get(a);
+    return typeof r !== 'undefined';
   },
 
   /**

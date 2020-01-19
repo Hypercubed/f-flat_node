@@ -2,9 +2,9 @@
  * # Mathematics lib
  */
  
-'core.ff' import use
-'shuffle.ff' import use
-'testing.ff' import use
+'core.ff' require
+'shuffle.ff' require
+'testing.ff' require
 
 integer?: [ dup [ floor = ] [ im 0 = ] bi * ] ;
 !: [ dup integer? [_recur-fact] [_approx-fact] branch ] ;

@@ -1,10 +1,10 @@
-import { randomBytes } from 'crypto';
+import { randomBytes, createHash } from 'crypto';
 import { readFileSync, existsSync } from 'fs';
 import { dirname, join } from 'path';
 import * as fetch from 'isomorphic-fetch';
 import * as normalizeUrl from 'normalize-url';
 import { URL } from 'url';
-import { signature, Any } from '@hypercubed/dynamo';
+import { signature } from '@hypercubed/dynamo';
 
 import { FFlatError } from '../utils';
 import { dynamo } from '../types';
@@ -191,5 +191,17 @@ export const node = {
    */
   cwd(): string {
     return getURLStringForCwd();
+  },
+
+  md5(x: string) {
+    return createHash('md5')
+      .update(x)
+      .digest('hex');
+  },
+
+  sha1(x: string) {
+    return createHash('sha1')
+      .update(x)
+      .digest('base64');
   }
 };
