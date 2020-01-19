@@ -1,7 +1,7 @@
 import test from 'ava';
 import * as nock from 'nock';
 
-import { F, fJSON, fValues, D, Word } from './setup';
+import { F, fJSON, fValues, D, Word } from './helpers/setup';
 
 const future = { '@@Future': { '$undefined': true } };
 

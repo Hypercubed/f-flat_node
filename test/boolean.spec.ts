@@ -1,5 +1,5 @@
 import test from 'ava';
-import { fJSON, fValue, fStack } from './setup';
+import { fJSON, fValue, fStack } from './helpers/setup';
 
 /* test('should parse', async t => {
   var f = F();

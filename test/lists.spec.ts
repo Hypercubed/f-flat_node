@@ -1,5 +1,5 @@
 import test from 'ava';
-import { F, fJSON, fValues, D } from './setup';
+import { F, fJSON, fValues, D } from './helpers/setup';
 
 test('should push lists', async t => {
   t.deepEqual(await fValues('( 1 ) ( 2 )'), [[1], [2]], 'should push');

@@ -1,5 +1,5 @@
 import test from 'ava';
-import { fJSON } from './setup';
+import { fJSON } from './helpers/setup';
 
 test('should create objects object', async t => {
   t.deepEqual(

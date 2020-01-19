@@ -1,7 +1,7 @@
 import test from 'ava';
 import {
   fJSON
-} from './setup';
+} from './helpers/setup';
 
 test('symbols type', async t => {
   t.deepEqual(await fJSON('#test type'), ['symbol']);

@@ -1,5 +1,5 @@
 import test from 'ava';
-import { fJSON, fString, fValues, fValue, fStack, nearly, Complex } from './setup';
+import { fJSON, fString, fValues, fValue, fStack, nearly, Complex } from './helpers/setup';
 import { Decimal } from '../src/types/decimal';
 
 const C = (x: Decimal | string | number | Complex, y: Decimal | string | number) => new Complex(x, y).toJSON();

@@ -1,7 +1,7 @@
 import test from 'ava';
 
 import { Word, Sentence } from '../src/types';
-import { fJSON, D } from './setup';
+import { fJSON, D } from './helpers/setup';
 
 test('should convert an array to an action', async t => {
   const plus = new Word('+').toJSON();

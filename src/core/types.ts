@@ -218,7 +218,7 @@ export const types = {
    * ## `:` (action)
    */
   ':'(x: any) {
-    return new Just(action(x));
+    return new Just(x instanceof Word ? x : new Word(x));
   },
 
   /**

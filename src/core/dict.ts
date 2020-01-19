@@ -22,6 +22,15 @@ class CreateAction {
   }
 
   @signature()
+  plainObject(obj: Object) {
+    return Object.keys(obj).reduce((p, key) => {
+      const n = createAction(obj[key]);
+      p[key] = n;
+      return p;
+    }, {});
+  }
+
+  @signature()
   string(x: string): Word {
     return new Word(x);
   }
@@ -78,11 +87,7 @@ export const dict = {
    * ```
    */
   use(this: StackEnv, dict: { [key: string]: StackValue }) {
-    const d = {};
-    Object.keys(dict).forEach(k => {
-      d[k] = createAction(dict[k]);
-    });
-    this.dict.use(d);
+    this.dict.use(createAction(dict));
   },
 
   /**

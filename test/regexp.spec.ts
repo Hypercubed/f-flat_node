@@ -2,7 +2,7 @@ import test from 'ava';
 import {
   fJSON,
   fValues,
-} from './setup';
+} from './helpers/setup';
 
 test('should convert a string to a regexp', async t => {
   t.deepEqual(await fValues('"[;:]" regexp type'), ['regexp']);

@@ -1,11 +1,11 @@
 // import { check, gen } from 'ava-check';
 
-import { createStack } from '../src/stack';
-import { StackEnv } from '../src/env';
-import { log } from '../src/utils/logger';
-import { Decimal, Complex } from '../src/types';
+import { createStack } from '../../src/stack';
+import { StackEnv } from '../../src/env';
+import { log } from '../../src/utils/logger';
+import { Decimal, Complex } from '../../src/types';
 
-export * from '../src/types';
+export * from '../../src/types';
 
 // TODO: create test user directory fixtures
 process.chdir('./src/ff-lib/');
@@ -105,52 +105,3 @@ export const options = {
   numTests: process.env.TESTS === 'full' ? 100 : 50,
   maxSize: process.env.TESTS === 'full' ? 40 : 20,
 };
-
-/* class FFValue {
-  value: any;
-  string: string;
-
-  constructor(value: any, str?: string) {
-    this.value = value;
-    this.string = typeof str === 'undefined' ?
-      JSON.stringify(value, undefined, 1) :
-      str;
-  }
-
-  valueOf() {
-    return this.value;
-  }
-
-  toJSON() {
-    return JSON.parse(JSON.stringify(this.value, undefined, 1));
-  }
-
-  toString() {
-    return this.string;
-  }
-}
-
-export const ffString = gen.alphaNumString.then(a => new FFValue(a));
-
-export const ffNumber = gen.number.then(a => {
-  if (Object.is(a, -0)) return new FFValue(a, '-0');
-
-  if (a === -Infinity) return new FFValue(a, 'Infinity -1 *');
-
-  if (a === Infinity) return new FFValue(a, 'Infinity');
-
-  if (isNaN(a)) return new FFValue(a, 'nan');
-  return new FFValue(a, String(a));
-});
-
-export const ffBoolean = gen.boolean.then(a => new FFValue(a));
-export const ffNull = gen.null.then(a => new FFValue(a, 'null'));
-
-export const fflatPrim = gen.oneOf([ffBoolean, ffString, ffNull]);  // todo: complex values
-
-export const ffArray = gen.nested(gen.array, fflatPrim).then(a => new FFValue(a));
-export const ffObject = gen.nested(gen.object, fflatPrim).then(a => new FFValue(a));
-
-// todo: dates and complex
-export const fflatValue = gen.oneOf([ffArray, ffObject, ffBoolean, ffString]); */
-

@@ -1,5 +1,5 @@
 import test from 'ava';
-import { fJSON } from './setup';
+import { fJSON } from './helpers/setup';
 
 test('should test equality for strings', async t => {
   t.deepEqual(await fJSON('"abc" "def" =~'), [false]);

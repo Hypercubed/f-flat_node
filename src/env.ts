@@ -14,7 +14,6 @@ import {
   Just,
   Vocabulary,
   StackValue,
-  QueueValue,
   Future,
   Word,
   Sentence
@@ -29,18 +28,51 @@ import {
   IIF
 } from './constants';
 
+function createDefineAction(self: StackEnv) {
+  class DefinedAction {
+    @signature()
+    Function(fn: Function) {
+      const name = functionName(fn);
+      return self.defineAction(name, fn);
+    }
+
+    @signature()
+    Object(obj: Object) {
+      for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          self.defineAction(key, obj[key]);
+        }
+      }
+      return this;
+    }
+
+    @signature([Word, String], String)
+    'Word | string, string'(name: Word | string, fn: string) {
+      const act = new Sentence(lexer(fn));
+      return self.defineAction(name, act);
+    }
+
+    @signature([Word, String], Any)
+    'Word | string, any'(name: Word | string, a: any) {
+      return self.dict.set(String(name), a);
+    }
+  }
+
+  return dynamo.function(DefinedAction);
+}
+
 export class StackEnv {
   dict: Vocabulary;
-  queue: QueueValue[] = [];
+  queue: StackValue[] = [];
   stack: StackValue[] = freeze([]);
   parent: StackEnv;
   depth = 0;
 
   autoundo = true;
 
-  // Make readonly protected
   lastFnDispatch: any;
-  currentAction: QueueValue;
+  currentAction: StackValue;
+
   prevState: Partial<StackEnv> = null;
   trace: Array<Partial<StackEnv>> = [];
 
@@ -52,46 +84,11 @@ export class StackEnv {
   private status = IDLE;
   private previousPromise: Promise<any> = Promise.resolve();
 
-  defineAction: Function;
+  defineAction = createDefineAction(this);
 
   constructor(initalState: any = { parent: null }) {
     Object.assign(this, initalState);
-    this.dict = new Vocabulary(
-      initalState.parent ? initalState.parent.dict : undefined
-    );
-
-    const self = this;
-
-    class DefinedAction {
-      @signature()
-      Function(fn: Function) {
-        const name = functionName(fn);
-        return self.defineAction(name, fn);
-      }
-
-      @signature()
-      Object(obj: Object) {
-        for (const key in obj) {
-          if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            self.defineAction(key, obj[key]);
-          }
-        }
-        return this;
-      }
-
-      @signature([Word, String], String)
-      'Word | string, string'(name: Word | string, fn: string) {
-        const act = new Sentence(lexer(fn));
-        return self.defineAction(name, act);
-      }
-
-      @signature([Word, String], Any)
-      'Word | string, any'(name: Word | string, a: any) {
-        return self.dict.set(String(name), a);
-      }
-    }
-
-    this.defineAction = dynamo.function(DefinedAction);
+    this.dict = new Vocabulary(initalState?.parent?.dict || undefined);
   }
 
   promise(s?: StackValue): Promise<StackEnv> {
@@ -195,7 +192,7 @@ export class StackEnv {
         this.trace.push(this.stateSnapshot());
         this.trace = this.trace.slice(-10);
         this.beforeEach.dispatch(this);
-        this.dispatchToken(this.currentAction as any);
+        this.dispatchValue(this.currentAction);
         this.afterEach.dispatch(this);
         this.currentAction = undefined;
       }
@@ -268,23 +265,10 @@ export class StackEnv {
     );
   }
 
-  private dispatchToken(token: QueueValue): any {
+  private dispatchValue(token: StackValue): void {
     if (typeof token === 'undefined') {
       return;
     }
-
-    if (is.promise(token)) {
-      // promise middleware
-      this.status = YIELDING;
-      return token.then(f => {
-        this.status = IDLE;
-        this.run([f]);
-      });
-    }
-
-    if (token instanceof Just) return this.push(token.value);
-
-    if (token instanceof Seq) return this.push(...token.value);
 
     if (token instanceof Future) {
       return token.isResolved()
@@ -292,56 +276,52 @@ export class StackEnv {
         : this.push(token);
     }
 
-    if (token instanceof Sentence && this.isImmediate(<Word>token))
-      return this.enqueueFront(token.value);
-
-    if (token instanceof Word && this.isImmediate(<Word>token)) {
-      let tokenValue = token.value;
-
-      if (!is.string(tokenValue)) {
-        // this is a hack to push word literals, get rid of this
-        return this.push(tokenValue);
-      }
-
-      if (tokenValue.length > 1) {
-        if (tokenValue[tokenValue.length - 1] === IIF) {
-          tokenValue = tokenValue.slice(0, -1);
-          return this.push(new Word(tokenValue));
-        }
-
-        if (tokenValue[0] === IIF) {
-          tokenValue = tokenValue.slice(1);
-        }
-      }
-
-      const lookup = this.dict.get(tokenValue);
-      if (is.undefined(lookup)) {
-        throw new FFlatError(`${tokenValue} is not defined`, this);
-      }
-
-      if (lookup instanceof Word || lookup instanceof Sentence) {
-        return this.enqueueFront(lookup.value);
-      }
-
-      if (is.function_(lookup)) {
-        return this.dispatchFn(lookup, functionLength(lookup), tokenValue);
-      }
-
-      return this.push(lookup);
+    if (token instanceof Sentence && this.isImmediate(token)) {  // Is this needed here?
+      this.enqueueFront(token.value);
+      return;
     }
 
-    /**
-     * Testing requiring tokenst to be defined at first use
-     */
-    // if (token instanceof Word) {
-    //   let tokenValue = token.value;
-    //   const lookup = this.dict.get(tokenValue);
-    //   if (is.undefined(lookup)) {
-    //     console.log(`Warning: ${tokenValue} was referenced before it was defined`);
-    //   }
-    // }
+    if (token instanceof Word && this.isImmediate(token)) {
+      return this.dispatchWord(token);
+    }
 
-    return this.push(token as StackValue);
+    return this.push(token);
+  }
+
+  private dispatchWord(token: Word) {
+    let tokenValue = token.value;
+
+    if (!is.string(tokenValue)) {
+      // this is a hack to push word literals, get rid of this
+      return this.push(tokenValue as StackValue);
+    }
+
+    if (tokenValue.length > 1) {
+      if (tokenValue[tokenValue.length - 1] === IIF) {
+        tokenValue = tokenValue.slice(0, -1);
+        return this.push(new Word(tokenValue));
+      }
+
+      if (tokenValue[0] === IIF) {
+        tokenValue = tokenValue.slice(1);
+      }
+    }
+
+    const lookup = this.dict.get(tokenValue);
+    if (is.undefined(lookup)) {
+      throw new FFlatError(`${tokenValue} is not defined`, this);
+    }
+
+    if (lookup instanceof Word || lookup instanceof Sentence) {
+      this.enqueueFront(lookup.value);
+      return;
+    }
+
+    if (is.function_(lookup)) {
+     return this.dispatchFn(lookup, functionLength(lookup), tokenValue);
+    }
+
+    return this.push(lookup as StackValue);
   }
 
   private dispatchFn(fn: Function, args?: number, name?: string): void {
@@ -360,18 +340,39 @@ export class StackEnv {
         argArray
       };
 
-      const r = fn.apply(this, argArray);
-      if (r instanceof Word || r instanceof Sentence) {
-        this.enqueueFront(r.value);
-      } else if (typeof r !== 'undefined') {
-        this.dispatchToken(r);
-      }
+      const retValue = fn.apply(this, argArray) as StackValue | Just | Seq;
+      return this.dispatchReturnValue(retValue);
+    }
+
+    throw new FFlatError('Stack underflow');
+  }
+
+  private dispatchReturnValue(value: StackValue | Just | Seq): void {
+    if (value instanceof Word || value instanceof Sentence) {
+      this.enqueueFront(value.value);
       return;
     }
-    const argArray = this.stack.slice(0);
-    this.stack = splice(this.stack, 0, this.stack.length);
-    argArray.push(new Word(<any>name));
-    this.push(argArray);
+    if (value instanceof Just) {
+      this.push(value.value);
+      return;
+    }
+    if (value instanceof Seq) {
+      this.push(...value.value);
+      return;
+    }
+    if (is.promise(value)) {
+      // promise middleware
+      this.status = YIELDING;
+      value.then((f: StackValue) => {
+        this.status = IDLE;
+        this.run([f] as any);
+      });
+      return;
+    }
+    if (typeof value !== 'undefined') {
+      this.dispatchValue(value);
+      return;
+    }
   }
 
   private stateSnapshot(): Partial<StackEnv> {

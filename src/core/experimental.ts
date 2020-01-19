@@ -99,7 +99,7 @@ export const experimental = {
    * ```
    */
   suspend(this: StackEnv): Seq {
-    return new Seq(this.queue.splice(0)); // rename stop?
+    return new Seq(this.queue.splice(0) as StackValue[]); // rename stop?
   },
 
   /**
@@ -149,26 +149,6 @@ export const experimental = {
    */
   'js-raw'(this: StackEnv, s: string): any {
     return new Function(`return ${s}`).call(this);
-  },
-
-  /**
-   * ### `memoize`
-   *
-   * memoize a defined word
-   *
-   * ( {string|atom} -> )
-   */
-  memoize(this: StackEnv, name: string, n: number): void {
-    const cmd = this.dict.get(name);
-    if (cmd) {
-      const fn = (...a) => {
-        const s = this.createChild()
-          .eval([...a])
-          .eval(cmd).stack;
-        return new Seq(s);
-      };
-      this.defineAction(name, memoize(fn, { length: n, primitive: true }));
-    }
   },
 
   'create-object'(obj: any): any {

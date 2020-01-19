@@ -8,4 +8,3 @@ export * from './stack-value';
 export * from './return-values';
 export * from './future';
 export * from './complex-infinity';
-export * from './queue-value';

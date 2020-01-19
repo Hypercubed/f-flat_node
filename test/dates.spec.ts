@@ -1,5 +1,5 @@
 import test from 'ava';
-import { fJSON, fValue } from './setup';
+import { fJSON, fValue } from './helpers/setup';
 
 test('should create dates', async t => {
   t.deepEqual(await fJSON('"1/1/1990" date'), [{$date: '1990-01-01T07:00:00.000Z'}], 'should create a date from a short date');

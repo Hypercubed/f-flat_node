@@ -1,5 +1,5 @@
 import test from 'ava';
-import { F, fJSON, fValue, fValues, D, Word } from './setup';
+import { F, fJSON, fValue, fValues, D, Word } from './helpers/setup';
 
 test('should push quotes', async t => {
   t.deepEqual(await fValues('[ 1 ] [ 2 ]'), [[1], [2]], 'should push');

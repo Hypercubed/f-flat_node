@@ -2,7 +2,7 @@ import test from 'ava';
 import {
   fJSON,
   D
-} from './setup';
+} from './helpers/setup';
 
 test('should split string templates into parts', async t => {
   t.deepEqual(await fJSON('"ar$(\'one\')ou$(\'two\')nd" template-parts'), [{

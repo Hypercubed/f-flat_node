@@ -5,7 +5,7 @@ import {
   Decimal,
   Complex,
   Word
-} from './setup';
+} from './helpers/setup';
 import { stringifyStrict } from '../src/utils/json';
 
 test('prims', t => {

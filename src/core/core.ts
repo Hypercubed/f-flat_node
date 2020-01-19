@@ -293,22 +293,7 @@ export const core = {
    * ```
    */
   'q>': function(this: StackEnv): any {
-    return new Just(this.queue.pop());
-  },
-
-  /**
-   * ## `q@`
-   * moves a copy of the tail of the queue onto the stack
-   *
-   * ( -> {any} )
-   *
-   * ```
-   * f♭> 1 2 q> 4 3
-   * [ 1 2 3 4 ]
-   * ```
-   */
-  'q@': function(this: StackEnv): any {
-    return new Just(this.queue[this.queue.length - 1]);
+    return new Just(this.queue.pop() as StackValue); // danger
   },
 
   /**
@@ -329,16 +314,6 @@ export const core = {
   },
 
   unstack: dynamo.function(Unstack),
-
-  /**
-   * ## `<->` (s-q swap)
-   * swaps the last item on the stack and the first item on the queue
-   */
-  '<->': function(this: StackEnv, s: any): Just {
-    const q = this.queue.shift();
-    this.queue.unshift(s);
-    return new Just(q);
-  },
 
   /**
    * ## `<-` (stack)
@@ -630,7 +605,7 @@ export const core = {
    * ( -> {any} )
    */
   '<q': function(this: StackEnv): any {
-    return new Just(this.queue.shift()); // danger?
+    return new Just(this.queue.shift() as StackValue); // danger?
   },
 
   /**
