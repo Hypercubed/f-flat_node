@@ -1,6 +1,10 @@
 /**
  * # Core defined words
  */
+
+';' [ def ] def
+';;' [ inline def ] ;
+
 'types.ff' require
 
 // core shuffle words
@@ -48,6 +52,7 @@ max: [ dup2 q< q< > q> q> choose ] ;; // aka greater-of
 min: [ dup2 q< q< < q> q> choose ] ;; // lesser-of
 
 // 
+in: [ ( swap eval ) ] ;
 get: [ q< @ dup null? swap q> swap choose ] ;
 zipwith: [ zipinto in ] ;
 return: [ stack send ] ;
@@ -107,6 +112,7 @@ appl: [ >> in ] ;
 y: [ [ dup >> ] swap + dup >> ] ;
 
 // functional
+map: [ * in ] ;;
 chain: [ over nothing? ~ swap when ] ;
 fmap: [ eval ] ;
 map-reduce: [ [ map ] dip fold ] ;
@@ -118,24 +124,9 @@ maximum: [ [ max ] fold ] ;;
 minimum: [ [ min ] fold ] ;;
 reverse: [ dup ln 1 > [ uncons 'reverse' eval swap + ] when ] ;
 
-// flatten*: [
-//   dup array?
-//   [ [ 'flatten*' eval ] foreach ]
-//   when
-// ] ;
-// flatten: [ [ flatten* ] appl ] ;
-
 // math
 neg: [ 0 swap - ] ;
 sum: [ [ + ] fold ] ;
-
-/**
- * ## `dict`
- * returns the local dictionary
- *
- * ( -> {array} )
- */
-// dict: [ locals [ dup rcl ] map object ] ;
 
 /**
   * ## `nop`
@@ -180,5 +171,3 @@ p-choose: [
     branch
   ] unless
 ] ;
-
-x: [ __filename ] ;

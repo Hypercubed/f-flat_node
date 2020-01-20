@@ -11,14 +11,14 @@ test('should def and use actions', async t => {
 
 test('should def and use nested actions', async t => {
   t.deepEqual(
-    await fValues('test_def: { x: [ 1 2 + ] : } def test_def.x'),
+    await fValues('test_def: { x: [ 1 2 + ] } def test_def.x'),
     [3]
   );
 });
 
 test('should def and use nested actions in a fork', async t => {
   t.deepEqual(
-    await fValues('test_def: { x: [ 1 2 + ] : } def [ test_def.x ] fork'),
+    await fValues('test_def: { x: [ 1 2 + ] } def [ test_def.x ] fork'),
     [[3]]
   );
 });
@@ -52,7 +52,7 @@ test('should execute stored actions', async t => {
     [3, 3]
   );
   t.deepEqual(
-    await fValues('test: { x: [ 1 2 + ] : } def test.x'),
+    await fValues('test: { x: [ 1 2 + ] } def test.x'),
     [3],
     'should define and use nested acion'
   );

@@ -1,12 +1,6 @@
-core: 'core.ff' import ;
-math: 'math.ff' import ;
-
-core use
-math use
-
+'math.ff' require
 'shuffle.ff' require
 'strings.ff' require
-'types.ff' require
 'datetime.ff' require
 'testing.ff' require
 
@@ -37,7 +31,7 @@ check-for-all: [ for-all dup empty? [ '+++ OK, passed 100 tests.' println drop ]
 // generators
 next-fib*: [ tuck + ] ;
 fib*: [ ( 0 1 ) dip [ 0 1 [ tuck + ] yield ] [ in ] rolldown 2 - times drop ] ;
-count*: [ [ 0 [ ++ dup yield: dip ] forever ] ] ;
+count*: [ [ 0 [ ++ dup [ yield ] dip ] forever ] ] ;
 // cycle*: [ [ [ 1 splitat swap [ + ] keep eval send suspend ] forever ] >> ] ;
 
 // async
@@ -66,6 +60,7 @@ case: [ [ stack-check ] dip when ] ;;
 // switch: [ [ unstack case ] foreach ] ;;
 
 // lambdas
+sto: [ unit swap def ] ;
 call: [ fork unstack ] ;
 =>: [ [ sto ] reverse-each ] ;
 lambda-eval: [
@@ -78,13 +73,11 @@ lambda: [
 ] ;
 
 // f x y z = y2 + x2 − |y|
-f: [ [x: y: z:] => y 2 ^ x 2 ^ + y abs - ] lambda ;
+f: [ ['x' 'y' 'z'] => y 2 ^ x 2 ^ + y abs - ] lambda ;
 
 // short circuit logicals
 &&: [ slip when ] ;;
 ||: [ slip [] swap branch ] ;;
-
-// length: [ ln ] ;  // just an alias
 
 quicksort: [
   dup ln 1 >             // when length > 1
@@ -124,12 +117,6 @@ s-test: [
   Hello
   World
   `
-] ;
-
-ok?: [
-  'Assertion error'
-  [ throw ] >>
-  unless
 ] ;
 
 tests_run: [

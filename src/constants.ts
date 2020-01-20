@@ -10,3 +10,4 @@ export const ERR = 3;
 // export const BLOCKED = 4;
 
 export const IIF = ':';
+export const SEP = '.';

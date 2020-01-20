@@ -3,7 +3,8 @@
 _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # New TODOs
-- [ ] Fix module loading
+- [x] Fix module loading
+- [ ] test lambdas
 - [ ] Number subtypes: integer (BigInt), real (decimaljs), rational (tbd), complex (internal)
 - [ ] Decimal shift/unshift
 - [ ] More complexInfinity/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
@@ -14,9 +15,10 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [x] immutable words (ex. `slip%8df57134`)
   - [ ] add tests for execute using hash
   - [ ] use hash instead of uuid!!
-  - [ ] mutually recursive definitions? (https://www.unisonweb.org/docs/faq/#how-does-hashing-work-for-mutually-recursive-definitions)
+  - [ ] mutually recursive definitions?
 - [ ] ensure pretty display for unique words
-- [ ] Tests for create-module
+- [ ] Tests for `vocab`, `use`, etc.
+- [ ] Tests for scoping
 - [ ] disallow shadowing guid!!
 - [ ] allow finding words by name (`abc`), hash (`%xyz`), or both (`abc%xyz`)?
 - [ ] pick for module?
@@ -32,13 +34,16 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `add` - adds a word/vacabulary to the user's persistant dictionary? `math: add`
 
 # Safer?
+- [ ] always `USE_STRICT`
 - [x] remove `sto` and `rcl`?
-- [ ] redefine action `:`
+- [ ] redefine action `:` ( string -> Key )?
 - [ ] restrict type on stack, queue and dictionary
 - [x] disable deep definitions (`x.y.z: [ ] ;`)?
 - [ ] Safer module loading (`Sentence` -> `Array` on `module`)
 
 # Type cleaning
+- [ ] `xyz:` -> `Key`
+- [ ] `:xyz` -> ???
 - [ ] `Action` vs `Word`
 - [ ] `Alias` type?
 - [ ] `Dictionary` -> `Vocabulary`

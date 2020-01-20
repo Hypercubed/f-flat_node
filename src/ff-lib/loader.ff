@@ -3,25 +3,24 @@
  */
 
 // Resolve path relative to file
-__import-resolve: [ ( prelude.__sys_path__ ) >> resolve ] ;
+__import-resolve: [ ( prelude.__sys_path__ ) >> resolve ] def
 
 /**
  * ## `include`
  * Reads a file onto the stack as a string and evaluates the content
  */
- __include: [ read eval ] ;
-include: [ __import-resolve __include ] ;;
+ __include: [ read eval ] def
+include: [ __import-resolve __include ] def
 
 /**
  * ## `export`
  * Exports the current vocab and sens to parent
  */
-export: [ vocab send ] ;;
+export: [ vocab send ] def
 
-
-__module_hash: [ hex-hash '_' swap + ] ;
-__load-module: [ [ dup [ ] >> '__filename' swap def __include export ] >> fork drop ] ;
-__load-and-sto-module: [ dup __load-module swap __module_hash swap def ] ;;
+__module_hash: [ hex-hash '_' swap + ] def
+__load-module: [ [ dup [ ] >> '__filename' swap def __include export ] >> fork drop ] def
+__load-and-sto-module: [ dup __load-module swap __module_hash swap def ] def
 
 /**
  * ## `import`
@@ -33,7 +32,7 @@ import: [
     [ __module_hash eval ]
     [ dup __load-and-sto-module __module_hash eval ]
     choose eval
-] ;;
+] def
 
 /**
  * ## `require`
@@ -42,10 +41,10 @@ import: [
 require: [
   import
   use
-] ;
+] def
 
 /**
  * ## `if-exists-load`
  * Loads a file if it exists
  */
-if-exists-load: [ dup exists swap [ __include ] >> [ ] choose eval ] ;;
+if-exists-load: [ dup exists swap [ __include ] >> [ ] choose eval ] def

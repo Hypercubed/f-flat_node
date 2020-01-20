@@ -2,7 +2,6 @@
  * # Mathematics symbols
  */
  
-'core.ff' require
 'shuffle.ff' require
 'math.ff' require
 

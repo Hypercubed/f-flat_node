@@ -1,4 +1,3 @@
-'core.ff' require
 'shuffle.ff' require
 
 // strings

@@ -110,27 +110,15 @@ test('should branch on truthy and falsy', async t => {
   t.deepEqual(await fValues('5 "this is truthy" [ 2 + ] [ 2 * ] branch'), [7]);
 });
 
-test('in/fork', async t => {
+test('in', async t => {
   t.deepEqual(await fValues('[ 2 1 + ] in'), [[3]], 'should evaluate list');
-  t.deepEqual(
-    await fJSON('a: ["before"] def [ a ] in'),
-    [['before']],
-    'fork should have access to parent scope'
-  );
-  t.deepEqual(
-    await fJSON('a: ["outer"] def [ a: ["inner"] def a ] fork a'),
-    [['inner'], 'outer'],
-    'fork should isolate child scope'
-  );
-  t.deepEqual(
-    await fJSON('a: ["outer"] def [ b: ["inner"] def a ] in b'),
-    [['outer'], 'inner'],
-    'in does not isolate child scope'
-  );
+});
+
+test('fork', async t => {
+  t.deepEqual(await fValues('[1 2 +] fork'), [[3]], 'fork');
 });
 
 test('clr in in and fork', async t => {
-  // t.deepEqual(await fJSON('1 2 [ 2 1 clr 3 ] in'), [[3]], 'should evaluate list');
   t.deepEqual(
     await fValues('1 2 [ 2 1 clr 3 ] fork'),
     [1, 2, [3]],
@@ -185,10 +173,6 @@ test('should undo', async t => {
   t.deepEqual(await fJSON('10 [ 9 4 3 ] \\max rcl ||>', [10, 9]);
   t.deepEqual(await fJSON('10 [ 9 4 3 ] \\min rcl ||>', [10, 3]);
 }); */
-
-test('fork', async t => {
-  t.deepEqual(await fValues('[1 2 +] fork'), [[3]], 'fork');
-});
 
 test('others', async t => {
   t.deepEqual(await fJSON('get-log-level set-log-level'), [], 'set-log-level');
@@ -358,17 +342,17 @@ test('should spawn, returning a future', async t => {
 });
 
 test('pick', async t => {
-  t.deepEqual(await fValues('{a: 1} a: @'), [1]);
+  // t.deepEqual(await fValues('{a: 1} a: @'), [1]);
   t.deepEqual(await fValues('{a: 2} "a" @'), [2]);
-  t.deepEqual(await fValues('{a: 3} b: @'), [null]);
+  // t.deepEqual(await fValues('{a: 3} b: @'), [null]);
   t.deepEqual(await fValues('{a: {b: 5}} "a.b" @'), [5]);
-  t.deepEqual(await fValues('{a: {b: 5}} a.b: @'), [5]);
+  // t.deepEqual(await fValues('{a: {b: 5}} a.b: @'), [5]);
   t.deepEqual(await fValues('{a: 7} "A" lcase @'), [7]);
-  t.deepEqual(await fValues('{a: 11} b: @ 13 orelse'), [13]);
-  t.deepEqual(
-    await fValues('pickfunc: [ a: @ ] def { a: 17 } pickfunc'),
-    [17]
-  );
+  // t.deepEqual(await fValues('{a: 11} b: @ 13 orelse'), [13]);
+  // t.deepEqual(
+  //   await fValues('pickfunc: [ a: @ ] def { a: 17 } pickfunc'),
+  //   [17]
+  // );
 });
 
 test('pick into object', async t => {
@@ -483,8 +467,8 @@ test('atoms are not executed by stack actions', async t => {
 });
 
 test('can perform actions from module', async t => {
-  t.deepEqual(await fValues('core use 5 core.pred'), [5, 4]);
-  t.deepEqual(await fValues('math use 12 math.!'), [479001600]);
+  t.deepEqual(await fValues(`core: 'core.ff' import ; 5 core.pred`), [5, 4]);
+  t.deepEqual(await fValues(`math: 'math.ff' import ; 12 math.!`), [479001600]);
 });
 
 test('postfix "macros"', async t => {
@@ -629,17 +613,6 @@ test('underscore seperators hexadecimal integer formats', async t => {
   t.deepEqual(await fValues('0xDE_AD'), [0xDEAD]);
   t.deepEqual(await fValues('-0xBE_EF'), [-0xBEEF]);
   t.deepEqual(await fValues('0xDE_AD_BE_EF'), [0xDEADBEEF]);
-});
-
-test(`locals don't collide with definitions`, async t => {
-  t.deepEqual(await fValues(`
-    x: 128 ;
-    y: [ x x + ] ;;
-    [
-      x: 256 ;
-      y
-    ] fork
-  `), [ [ 256 ] ]);
 });
 
 test('should resolve', async t => {

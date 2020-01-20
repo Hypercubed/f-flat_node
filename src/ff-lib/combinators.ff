@@ -1,8 +1,7 @@
 /**
  * # Classic combinators
  */
- 
-'core.ff' require
+
 'shuffle.ff' require
 
 x: [ dup eval ] ;

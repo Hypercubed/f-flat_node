@@ -2,12 +2,11 @@
  * # Bootstrap F-Flat
  */
 
-'pre-core.ff'
-  ( prelude.__sys_path__ ) >> resolve         // resolve
-  read eval                                   // eval and export
-
 'loader.ff'
   ( prelude.__sys_path__ ) >> resolve         // resolve
   read eval                                   // eval and export
+
+'core.ff' require
+'types.ff' require
 
 'usr.ff' if-exists-load

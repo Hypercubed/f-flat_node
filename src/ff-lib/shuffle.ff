@@ -3,8 +3,6 @@
  * Many words derived from (Joy)[http://tunes.org/~iepos/joy.html] and Factor(http://factorcode.org/).
  */
 
-'core.ff' require
-
 drop2: [ drop drop ] ;        // B A -> (2drop in forth)
 
 m: [ dup eval ] ;             // [a] -> [a] a

@@ -15,9 +15,9 @@ class CreateAction {
 
   @signature()
   array(x: any[]): Sentence {
-    if (x.length === 1 && (x[0] instanceof Word || x[0] instanceof Sentence)) {
-      return x[0];
-    }
+    // if (x.length === 1 && (x[0] instanceof Word || x[0] instanceof Sentence)) {
+    //   return x[0];
+    // }
     return new Sentence(x);
   }
 
@@ -79,25 +79,25 @@ export const dict = {
    *
    * Move the contents of a map into scope
    *
-   * ( {string|atom} -> )
+   * ( { } -> )
    *
    * ```
    * f♭> { ... } use
    * [ ]
    * ```
    */
-  vocab(this: StackEnv) {
-    return this.dict.compiledLocals();
-  },
-
   use(this: StackEnv, dict: { [key: string]: StackValue }) {
     this.dict.use(createAction(dict));
   },
 
-  module(this: StackEnv, a: StackValue) {
-    const child = this.createChild().eval(a);
-    return child.dict.compiledLocals();
+  vocab(this: StackEnv) {
+    return this.dict.compiledLocals();
   },
+
+  // module(this: StackEnv, a: StackValue) {
+  //   const child = this.createChild().eval(a);
+  //   return child.dict.compiledLocals();
+  // },
 
   /**
    * ## `define`
@@ -110,28 +110,8 @@ export const dict = {
    * [ ]
    * ```
    */
-  define(this: StackEnv, x: StackValue) {
-    this.defineAction(x);
-  },
-
-  // /**
-  //  * ## `compile`
-  //  * compile a quote,
-  //  * replaces words with globally unique terms
-  //  *
-  //  * ( [A B C] -> [a b c])
-  //  *
-  //  * ```
-  //  * f♭> [ 2 sq ] compile
-  //  * [ [ 2 sq%asdfgf ] ]
-  //  * ```
-  //  */
-  // compile(this: StackEnv, x: Word | Sentence) {
-  //   return this.dict.compile(x);
-  // },
-
-  // 'create-module'() {
-  //   return this.dict.compiledLocals();
+  // define(this: StackEnv, x: StackValue) {
+  //   this.defineAction(x);
   // },
 
   /**
@@ -205,5 +185,9 @@ export const dict = {
    */
   scoped(this: StackEnv): string[] {
     return this.dict.scopedWords();
+  },
+
+  globals(this: StackEnv): any {
+    return this.dict.globals();
   }
 };

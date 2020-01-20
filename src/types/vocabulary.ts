@@ -1,18 +1,21 @@
-import { assocIn, getIn } from 'icepick';
+import { getIn } from 'icepick';
+import is from '@sindresorhus/is';
 
-import { StackValue } from './stack-value';
 import { VocabValue } from './vocabulary-value';
 
 import { Word, Sentence } from './words';
 import { USE_STRICT } from '../constants';
-import { compile } from '../utils/compile';
 import { rewrite } from '../utils/rewrite';
-
-const SEP = '.';
+import { IIF, SEP } from '../constants';
+import { FFlatError } from '../utils';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 type D = { [key: string]: VocabValue };
+
+class Alias {
+  constructor(public value: string) {}
+}
 
 export class Vocabulary {
   static makePath(key: string) {
@@ -22,25 +25,29 @@ export class Vocabulary {
       .split(SEP);
   }
 
-  protected readonly parentScope: D;
-
+  protected readonly root: D;
   protected readonly scope: D;
   protected readonly locals: D;
 
   constructor(parent?: Vocabulary) {
-    this.parentScope = parent?.scope || Object.create(null);
-
+    this.root = parent?.root || Object.create(null);
     this.scope = Object.create(
-      parent?.locals || Object.create(this.parentScope)
+      parent?.locals || this.root
     );
     this.locals = Object.create(this.scope);
   }
 
   get(key: string): VocabValue {
     const path = Vocabulary.makePath(key);
-    const rootKey = path.shift();
-    const rootValue = this.locals[rootKey];
-    return path.length > 0 ? getIn(rootValue, path) : rootValue;
+    return path.reduce((curr, key) => {
+      if (!curr) { return; }
+      let value = curr[key];
+      while (value instanceof Word) {  // TODO: Alias?
+        key = value.value;
+        value = this.locals[key];
+      }
+      return value;
+    }, this.locals);
   }
 
   set(key: string, value: VocabValue): void {
@@ -51,24 +58,72 @@ export class Vocabulary {
       );
     }
 
-    const rootKey = path.shift();
-    if (USE_STRICT && hasOwnProperty.call(this.locals, rootKey)) {
+    key = path.shift();
+    if (USE_STRICT && hasOwnProperty.call(this.locals, key)) {
       throw new Error(
-        `Cannot overwrite definitions in strict mode: ${rootKey}`
+        `Cannot overwrite local definitions in strict mode: ${key}`
       );
     }
 
-    this.locals[rootKey] = value;
+    const ukey = this._hash(key);
+
+    this.root[ukey] = value;
+    this.locals[key] = new Word(ukey);  // TODO: Alias?
+
+    // Compile
+    this.root[ukey] = this.compile(value);
   }
 
-  // delete(key: string): void {
-  //   const path = Vocabulary.makePath(key);
-  //   const rootKey = path.shift();
-  //   if (USE_STRICT && hasOwnProperty.call(this.locals, rootKey)) {
-  //     throw new Error(`Cannot delete definitions in strict mode: ${rootKey}`);
-  //   }
-  //   this.set(key, undefined);
-  // }
+  compile(action: any): any {
+    if (action instanceof Word) {
+      // console.log({ action });
+
+      let value = this.locals[action.value];
+      while (value instanceof Word) {
+        action = value;
+        value = this.locals[action.value];
+        // console.log({ action, value });
+      }
+      // if (is.string(action.value) && action.value.endsWith(IIF)) return action;
+
+      // let value = this.get(action.value);
+      // if (value instanceof Alias) {
+      //   console.log(value.value);
+      //   return new Word(value.value);
+      // }
+      // if (is.undefined(value)) {
+      //   throw new FFlatError(`${action.value} is not defined`);
+      // }
+      return action;
+    }
+
+    if (action instanceof Sentence) {
+      const value = this.compile(action.value);
+      return new Sentence(value, action.displayString);
+    }
+
+    if (Array.isArray(action)) {
+      return action.reduce((p, i) => {
+        const n = this.compile(i);
+        p.push(n);
+        return p;
+      }, []);
+    }
+
+    if (is.plainObject(action)) {
+      return Object.keys(action).reduce((p, key) => {
+        const n = this.compile(action[key]);
+        p[key] = n;
+        return p;
+      }, {});
+    }
+
+    return action;
+  }
+
+  globals(): any {
+    return { ...this.root };
+  }
 
   words(): string[] {
     const keys: string[] = [];
@@ -95,36 +150,9 @@ export class Vocabulary {
   }
 
   compiledLocals() {
-    const locals = {};
-    const ukeys = {};
-
-    // For each local and scoped defintion, create a new uuid definition
-    // TODO: Optomize this!! Find a way to do this only for used definitions
-    // cache these?  Not needed if has is really a hash
-    Object.keys(this.scope)
-    .forEach(key => {
-      const action = this.scope[key];
-      const ukey = this._hash(key);
-      locals[ukey] = action;
-      ukeys[key] = ukey;
-    });
-
-    Object.keys(this.locals)
-    .forEach(key => {
-      const action = this.locals[key];
-      const ukey = this._hash(key);
-      locals[ukey] = action;
-      ukeys[key] = ukey;
-    });
-
-    // Compile new globals against this scope
-    Object.keys(ukeys).forEach(key => {
-      const ukey = ukeys[key];
-      locals[ukey] = compile(ukeys, locals[ukey]);
-      locals[key] = locals[ukey];
-    });
-
-    return locals;
+    return {
+      ...this.locals
+    };
   }
 
   rewrite(x: Word | Sentence) {
@@ -140,7 +168,7 @@ export class Vocabulary {
       ukey = Math.random()
         .toString(36)
         .slice(2);
-    } while (this.parentScope[ukey]);
+    } while (this.root[ukey]);
     return `_${key}#${ukey}`;
   }
 }
