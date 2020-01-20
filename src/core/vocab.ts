@@ -152,6 +152,7 @@ export const dict = {
       return null;
     }
     if (r instanceof Word || r instanceof Sentence) {
+      console.log(r.value);
       return r.displayString;
     }
     return ffPrettyPrint.formatValue(r, 0);

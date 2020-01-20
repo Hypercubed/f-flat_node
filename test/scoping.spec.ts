@@ -99,7 +99,7 @@ test('calling within child', async t => {
   `), [[5, 7, 3, 9]]);
 });
 
-test.skip('deep calling within child', async t => {
+test('deep calling within child', async t => {
   t.deepEqual(await fValues(`
     x: [ 5 ] ;
     y: [ 7 ] ;
@@ -126,5 +126,25 @@ test(`locals don't collide with scoped definitions`, async t => {
       y
     ] fork
   `), [ [ 256 ] ]);
+});
+
+test('hides private', async t => {
+  t.deepEqual(await fValues(`
+    [
+      _x: [ 1 2 + ] ;
+      y: [ _x 3 * ] ;
+      export
+    ] fork drop use
+    y 'x' defined?
+  `), [9, false]);
+
+  t.deepEqual(await fValues(`
+    s: [
+      _x: [ 1 2 + ] ;
+      y: [ _x 3 * ] ;
+      export
+    ] fork drop ;
+    s.y 's._x' defined?
+  `), [9, false]);
 });
 

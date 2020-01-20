@@ -5,9 +5,6 @@
 'shuffle.ff' require
 'testing.ff' require
 
-integer?: [ dup [ floor = ] [ im 0 = ] bi * ] ;
-!: [ dup integer? [_recur-fact] [_approx-fact] branch ] ;
-
 // lazy constants to match precision
 pi: [ 1 atan 4 * ] ;
 e: [ 1 exp ] ;              // Euler's number
@@ -54,7 +51,7 @@ acosh: [ complex dup -- sqrt over 1 + sqrt * + ln ] ;
 atanh: [ i * atan i / ] ;
 
 // inquisitive
-// integer?: [ dup [ floor = ] [ im 0 = ] bi * ] ;
+integer?: [ dup [ floor = ] [ im 0 = ] bi * ] ;
 positive?: [ 0 > ] ;
 negitive?: [ 0 < ] ;
 zero?: [ 0 = ] ;
@@ -96,8 +93,7 @@ _fact-go: [
 
 _approx-fact: [ ++ gamma ] ;
 _recur-fact: [ 1 swap _fact-go ] ;
-
-// !: [ dup integer? [_recur-fact] [_approx-fact] branch ] ;
+!: [ dup integer? [_recur-fact] [_approx-fact] branch ] ;
 
 // Prob
 npr: [ [ [ ! ] keep ] dip - ! / ] ;
