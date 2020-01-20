@@ -76,24 +76,11 @@ export class Vocabulary {
 
   compile(action: any): any {
     if (action instanceof Word) {
-      // console.log({ action });
-
       let value = this.locals[action.value];
-      while (value instanceof Word) {
+      while (value instanceof Word) {  // TODO: Alias?
         action = value;
         value = this.locals[action.value];
-        // console.log({ action, value });
       }
-      // if (is.string(action.value) && action.value.endsWith(IIF)) return action;
-
-      // let value = this.get(action.value);
-      // if (value instanceof Alias) {
-      //   console.log(value.value);
-      //   return new Word(value.value);
-      // }
-      // if (is.undefined(value)) {
-      //   throw new FFlatError(`${action.value} is not defined`);
-      // }
       return action;
     }
 
