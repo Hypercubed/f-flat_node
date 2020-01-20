@@ -3,16 +3,11 @@
  */
 
 'pre-core.ff'
-  prelude.__sys_path__ 
-  swap [ ] >> >> path-join resolve            // resolve
+  ( prelude.__sys_path__ ) >> resolve         // resolve
   read eval                                   // eval and export
 
-'module-loader.ff'
-  prelude.__sys_path__
-  swap [ ] >> >> path-join resolve            // resolve
-  [
-    dup [ ] >> '__filename' swap def
-    read eval
-  ] >> module use    // eval and export
+'loader.ff'
+  ( prelude.__sys_path__ ) >> resolve         // resolve
+  read eval                                   // eval and export
 
 'usr.ff' if-exists-load

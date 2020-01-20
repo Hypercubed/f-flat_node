@@ -86,6 +86,9 @@ export const dict = {
    * [ ]
    * ```
    */
+  vocab(this: StackEnv) {
+    return this.dict.compiledLocals();
+  },
 
   use(this: StackEnv, dict: { [key: string]: StackValue }) {
     this.dict.use(createAction(dict));

@@ -2,28 +2,31 @@
  * # Module loader
  */
 
-/**
- * ## `import-resolve`
- * Resolve path relative to file
- */
+// Resolve path relative to file
 __import-resolve: [ ( prelude.__sys_path__ ) >> resolve ] ;
 
-__include: [ read eval ] ;
-
 /**
- * ## `load`
+ * ## `include`
  * Reads a file onto the stack as a string and evaluates the content
  */
+ __include: [ read eval ] ;
 include: [ __import-resolve __include ] ;;
 
 /**
- * ## `import-module`
- * Loads and creates a module from a file
+ * ## `export`
+ * Exports the current vocab and sens to parent
  */
+export: [ vocab send ] ;;
+
+
 __module_hash: [ hex-hash '_' swap + ] ;
-__load-module: [ [ dup [ ] >> '__filename' swap def __include ] >> module ] ;
+__load-module: [ [ dup [ ] >> '__filename' swap def __include export ] >> fork drop ] ;
 __load-and-sto-module: [ dup __load-module swap __module_hash swap def ] ;;
 
+/**
+ * ## `import`
+ * Loads and creates a module from a file
+ */
 import: [
   __import-resolve   
   dup __module_hash defined?
@@ -32,6 +35,10 @@ import: [
     choose eval
 ] ;;
 
+/**
+ * ## `require`
+ * Imports and uses a module from a file
+ */
 require: [
   import
   use
