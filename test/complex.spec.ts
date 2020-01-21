@@ -54,7 +54,7 @@ test('should calculate complex conj', async () => {
   expect(await fJSON('2 -3 i * + conj')).toEqual([C(2, 3)]);
 });
 
-test("should evaluate Euler's Formula", async () => {
+test(`should evaluate Euler's Formula`, async () => {
   expect(await fValues('i pi * exp 1 + re')).toEqual([0]);
   expect(nearly(await fValue('i pi * exp 1 + im'), 0)).toBeTruthy();
 });

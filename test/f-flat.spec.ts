@@ -123,7 +123,7 @@ test('should undo on error', async () => {
   const f = F('1 2').eval();
   expect(V(f)).toEqual([1, 2]);
 
-  expect(() => f.eval('+ whatwhat')).toThrow();
+  expect(() => f.eval('+ whatwhat')).toThrow('whatwhat is not defined');
   expect(V(f)).toEqual([1, 2]);
 });
 
@@ -262,25 +262,25 @@ test('operations with null, cont2', async t => {
 test('errors on unknown command, sync', async () => {
   expect(() => {
     F().eval('abc');
-  }).toThrow();
+  }).toThrow('abc is not defined');
 });
 
 test('errors on unknown command in child', async () => {
   expect(() => {
     F().eval('[ abc ] in');
-  }).toThrow();
+  }).toThrow('abc is not defined');
 });
 
 test('errors on async command in eval', async () => {
   expect(() => {
     F().eval('[ 1 2 + ] await');
-  }).toThrow();
+  }).toThrow('Do Not Release Zalgo');
 });
 
 test('errors on async child in eval', async () => {
   expect(() => {
     F().eval('[ 100 sleep ] in');
-  }).toThrow();
+  }).toThrow('Do Not Release Zalgo');
 });
 
 test('can spawn a future in sync', async () => {

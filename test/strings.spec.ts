@@ -2,7 +2,7 @@ import { F, fJSON, fValues, fValue } from './helpers/setup';
 
 test('should push strings', async () => {
   expect(await fJSON('"a" "b"')).toEqual(['a', 'b']);
-  expect(await fJSON("'a' 'b'")).toEqual(['a', 'b']);
+  expect(await fJSON(`'a' 'b'`)).toEqual(['a', 'b']);
   expect(await fJSON('"ab de"')).toEqual(['ab de']);
   expect(await fJSON('""')).toEqual(['']);
   expect(await fJSON('"Dog!🐶"')).toEqual(['Dog!🐶']);
@@ -11,7 +11,7 @@ test('should push strings', async () => {
 test('should decode double quote', async () => {
   expect(
     await fJSON(
-      "'\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}'"
+      `'\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}'`
     )
   ).toEqual([
     '\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}'
@@ -31,7 +31,7 @@ test('should quickcheck strings', async () => {
 });
 
 test('should push strings with nested quotes', async () => {
-  expect(await fJSON('"ab \'de\' fg"')).toEqual(["ab 'de' fg"]);
+  expect(await fJSON('"ab \'de\' fg"')).toEqual([`ab 'de' fg`]);
   expect(await fJSON('\'ab "de" fg\'')).toEqual(['ab "de" fg']);
 });
 

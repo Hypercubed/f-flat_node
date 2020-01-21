@@ -191,15 +191,15 @@ test('multiple promises correct order', async () => {
 });
 
 test('errors on unknown command, async', async () => {
-  await expect(F().promise('abc')).rejects.toThrow();
+  await expect(F().promise('abc')).rejects.toThrow('abc is not defined');
 });
 
 test('errors on unknown command in child, async', async () => {
-  await expect(F().promise('[ abc ] in')).rejects.toThrow();
+  await expect(F().promise('[ abc ] in')).rejects.toThrow('abc is not defined');
 });
 
 test('errors on unknown command in child, async 2', async () => {
-  await expect(F().promise('[ abc ] await')).rejects.toThrow();
+  await expect(F().promise('[ abc ] await')).rejects.toThrow('abc is not defined');
 });
 
 test('should await on a future', async () => {
