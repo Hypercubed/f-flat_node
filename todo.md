@@ -10,6 +10,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] More complexInfinity/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
 - [ ] stack underflow is an error!!
 - [ ] finish and use https://github.com/Hypercubed/real
+- [ ] Use `#:` as symbole prefix
 
 # Improved scoping and namespaces
 - [x] immutable words (ex. `slip%8df57134`)
@@ -34,7 +35,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `add` - adds a word/vacabulary to the user's persistant dictionary? `math: add`
 
 # Safer?
-- [ ] always `USE_STRICT`
+- [x] always `USE_STRICT`
 - [x] remove `sto` and `rcl`?
 - [ ] redefine action `:` ( string -> Key )?
 - [ ] restrict type on stack, queue and dictionary

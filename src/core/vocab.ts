@@ -1,9 +1,7 @@
-import is from '@sindresorhus/is';
 import { signature, Any } from '@hypercubed/dynamo';
 
 import { ffPrettyPrint, FFlatError } from '../utils';
 import { dynamo, Sentence, Word, Just, StackValue } from '../types';
-import { USE_STRICT } from '../constants';
 import { StackEnv } from '../env';
 
 // todo: convert dictionary of stack values to dictinary of actions

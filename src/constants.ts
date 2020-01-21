@@ -1,5 +1,3 @@
-export const USE_STRICT = true;
-
 export const MAXSTACK = 1e10;
 export const MAXRUN = 1e10;
 

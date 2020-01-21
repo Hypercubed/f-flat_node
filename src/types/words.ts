@@ -9,7 +9,7 @@ function toString(x: any) {
   return String(x);
 }
 
-class Action {
+abstract class Action {
   constructor(public value: any, public displayString?: string) {
     if (!displayString) {
       this.displayString = toString(value);

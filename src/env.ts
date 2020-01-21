@@ -255,14 +255,15 @@ export class StackEnv {
     this.stack = freeze([...this.stack, ...a]);
   }
 
-  private isImmediate(c: Word | Sentence): boolean {
-    return (
-      this.depth < 1 || // in immediate state
-      '[]{}'.indexOf(c.value) > -1 || // these quotes are always immediate
-      (c.value[0] === IIF && // tokens prefixed with : are imediate
-        c.value[c.value.length - 1] !== IIF &&
-        c.value.length > 1)
-    );
+  private isImmediate(c: Word): boolean {
+    if (this.depth < 1) return true;
+    if ('[]{}'.indexOf(c.value) > -1) return true;
+    if (typeof c.value === 'string') {
+      return (c.value.startsWith(IIF) && // tokens prefixed with : are imediate
+        !c.value.endsWith(IIF) &&
+        c.value.length > 1);
+    }
+    return false;
   }
 
   private dispatchValue(token: StackValue): void {
@@ -276,7 +277,7 @@ export class StackEnv {
         : this.push(token);
     }
 
-    if (token instanceof Sentence && this.isImmediate(token)) {  // Is this needed here?
+    if (token instanceof Sentence && this.depth < 1) {
       this.enqueueFront(token.value);
       return;
     }

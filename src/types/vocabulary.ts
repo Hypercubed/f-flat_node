@@ -1,10 +1,8 @@
-import { getIn } from 'icepick';
 import is from '@sindresorhus/is';
 
 import { VocabValue } from './vocabulary-value';
 
 import { Word, Sentence } from './words';
-import { USE_STRICT } from '../constants';
 import { rewrite } from '../utils/rewrite';
 import { SEP } from '../constants';
 
@@ -58,9 +56,9 @@ export class Vocabulary {
     }
 
     key = path.shift();
-    if (USE_STRICT && hasOwnProperty.call(this.locals, key)) {
+    if (hasOwnProperty.call(this.locals, key)) {
       throw new Error(
-        `Cannot overwrite local definitions in strict mode: ${key}`
+        `Cannot overwrite local definition: ${key}`
       );
     }
 

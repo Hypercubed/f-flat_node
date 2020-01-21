@@ -31,7 +31,7 @@ function create(dictObject: Object | undefined) {
       const path = Vocabulary.makePath(action.value);
       const value: StackValue = getIn(dictObject, path);
 
-      if (is.undefined(value) && (action.value as string)[0] !== IIF)
+      if (is.undefined(value) && !(action.value as string).endsWith(IIF))
         return action;
       if (is.function_(value)) return new Seq([action]);
 
