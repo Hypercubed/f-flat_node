@@ -259,9 +259,11 @@ export class StackEnv {
     if (this.depth < 1) return true;
     if ('[]{}'.indexOf(c.value) > -1) return true;
     if (typeof c.value === 'string') {
-      return (c.value.startsWith(IIF) && // tokens prefixed with : are imediate
+      return (
+        c.value.startsWith(IIF) && // tokens prefixed with : are imediate
         !c.value.endsWith(IIF) &&
-        c.value.length > 1);
+        c.value.length > 1
+      );
     }
     return false;
   }
@@ -319,7 +321,7 @@ export class StackEnv {
     }
 
     if (is.function_(lookup)) {
-     return this.dispatchFn(lookup, functionLength(lookup), tokenValue);
+      return this.dispatchFn(lookup, functionLength(lookup), tokenValue);
     }
 
     return this.push(lookup as StackValue);

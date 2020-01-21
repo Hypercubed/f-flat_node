@@ -28,18 +28,19 @@ export class Vocabulary {
 
   constructor(parent?: Vocabulary) {
     this.root = parent?.root || Object.create(null);
-    this.scope = Object.create(
-      parent?.locals || this.root
-    );
+    this.scope = Object.create(parent?.locals || this.root);
     this.locals = Object.create(this.scope);
   }
 
   get(key: string): VocabValue {
     const path = Vocabulary.makePath(key);
     return path.reduce((curr, key) => {
-      if (!curr) { return; }
+      if (!curr) {
+        return;
+      }
       let value = curr[key];
-      while (value instanceof Word) {  // TODO: Alias?
+      while (value instanceof Word) {
+        // TODO: Alias?
         key = value.value;
         value = this.locals[key];
       }
@@ -50,22 +51,18 @@ export class Vocabulary {
   set(key: string, value: VocabValue): void {
     const path = Vocabulary.makePath(key);
     if (path.length > 1) {
-      throw new Error(
-        `Invalid definition key: ${key}`
-      );
+      throw new Error(`Invalid definition key: ${key}`);
     }
 
     key = path.shift();
     if (hasOwnProperty.call(this.locals, key)) {
-      throw new Error(
-        `Cannot overwrite local definition: ${key}`
-      );
+      throw new Error(`Cannot overwrite local definition: ${key}`);
     }
 
     const ukey = this._hash(key);
 
     this.root[ukey] = value;
-    this.locals[key] = new Word(ukey);  // TODO: Alias?
+    this.locals[key] = new Word(ukey); // TODO: Alias?
 
     // Compile
     this.root[ukey] = this.compile(value);
@@ -74,7 +71,8 @@ export class Vocabulary {
   compile(action: any): any {
     if (action instanceof Word) {
       let value = this.locals[action.value];
-      while (value instanceof Word) {  // TODO: Alias?
+      while (value instanceof Word) {
+        // TODO: Alias?
         action = value;
         value = this.locals[action.value];
       }
@@ -134,13 +132,12 @@ export class Vocabulary {
   }
 
   compiledLocals() {
-    return Object.keys(this.locals)
-      .reduce((acc, key) => {
-        if (!key.startsWith('_')) {
-          acc[key] = this.locals[key];
-        }
-        return acc;
-      }, {});
+    return Object.keys(this.locals).reduce((acc, key) => {
+      if (!key.startsWith('_')) {
+        acc[key] = this.locals[key];
+      }
+      return acc;
+    }, {});
   }
 
   rewrite(x: Word | Sentence) {

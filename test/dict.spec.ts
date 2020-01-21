@@ -1,92 +1,78 @@
-import test from 'ava';
 import { fJSON, fValues, Word, Sentence, D } from './helpers/setup';
 
-test('should def and use actions', async t => {
-  t.deepEqual(
-    await fValues('x: [ 1 2 + ] def 3 x x'),
-    [3, 3, 3],
-    'should execute actions'
-  );
+test('should def and use actions', async () => {
+  expect(await fValues('x: [ 1 2 + ] def 3 x x')).toEqual([3, 3, 3]);
 });
 
-test('should def and use nested actions', async t => {
-  t.deepEqual(
-    await fValues('test_def: { x: [ 1 2 + ] } def test_def.x'),
-    [3]
-  );
+test('should def and use nested actions', async () => {
+  expect(await fValues('test_def: { x: [ 1 2 + ] } def test_def.x')).toEqual([
+    3
+  ]);
 });
 
-test('should def and use nested actions in a fork', async t => {
-  t.deepEqual(
-    await fValues('test_def: { x: [ 1 2 + ] } def [ test_def.x ] fork'),
-    [[3]]
-  );
+test('should def and use nested actions in a fork', async () => {
+  expect(
+    await fValues('test_def: { x: [ 1 2 + ] } def [ test_def.x ] fork')
+  ).toEqual([[3]]);
 });
 
-test('cannot overwrite defined words', async t => {
-  await t.throwsAsync(() => fValues('x: 123 def x: 456 def'));
-  await t.throwsAsync(() => fValues('x: 123 def x.y: 456 def'));
+test('cannot overwrite defined words', async () => {
+  await expect(fValues('x: 123 def x: 456 def')).rejects.toThrow();
+  await expect(fValues('x: 123 def x.y: 456 def')).rejects.toThrow();
 });
 
-test('should shadow definitions in a fork', async t => {
-  t.deepEqual(
-    await fValues('"a" [ "outsite-a" ] def a [ "a" [ "in-fork-a" ] def a ] fork a'),
-    ['outsite-a', ['in-fork-a'], 'outsite-a'],
-    'fork should isolate child scope'
-  );
-  t.deepEqual(
-    await fValues('"a" [ "outsite-a" ] def a [ "b" [ "in-in-b" ] def a b ] in a b'),
-    ['outsite-a', ['outsite-a', 'in-in-b'], 'outsite-a', 'in-in-b'],
-    'in does not isolate child scope'
-  );
+test('should shadow definitions in a fork', async () => {
+  expect(
+    await fValues(
+      '"a" [ "outsite-a" ] def a [ "a" [ "in-fork-a" ] def a ] fork a'
+    )
+  ).toEqual(['outsite-a', ['in-fork-a'], 'outsite-a']);
+  expect(
+    await fValues(
+      '"a" [ "outsite-a" ] def a [ "b" [ "in-in-b" ] def a b ] in a b'
+    )
+  ).toEqual(['outsite-a', ['outsite-a', 'in-in-b'], 'outsite-a', 'in-in-b']);
 });
 
-test('should isloate definitions in a fork', async t => {
-  await t.notThrowsAsync(() => fValues('[ "a" ["in-fork-a"] def a ] fork'));
-  await t.throwsAsync(() => fValues('[ "a" ["in-fork-a"] def a ] fork a'));
+test('should isloate definitions in a fork', async () => {
+  await expect(fValues('[ "a" ["in-fork-a"] def a ] fork')).resolves.toStrictEqual([['in-fork-a']]);
+  await expect(fValues('[ "a" ["in-fork-a"] def a ] fork a')).rejects.toThrow();
 });
 
-test('should execute stored actions', async t => {
-  t.deepEqual(
-    await fValues('x: [ 1 2 + ] def x x'),
-    [3, 3]
-  );
-  t.deepEqual(
-    await fValues('test: { x: [ 1 2 + ] } def test.x'),
-    [3],
-    'should define and use nested acion'
-  );
+test('should execute stored actions', async () => {
+  expect(await fValues('x: [ 1 2 + ] def x x')).toEqual([3, 3]);
+  expect(await fValues('test: { x: [ 1 2 + ] } def test.x')).toEqual([3]);
 });
 
-test('create actions', async t => {
+test('create actions', async () => {
   const evalAction = new Word('eval').toJSON();
 
-  t.deepEqual(await fJSON('"eval" :'), [evalAction]);
-  t.deepEqual(await fJSON('eval:'), [evalAction]);
+  expect(await fJSON('"eval" :')).toEqual([evalAction]);
+  expect(await fJSON('eval:')).toEqual([evalAction]);
   // t.deepEqual(await fJSON('[ eval ] :'), [evalAction]);
 });
 
-test('should inline internal actions', async t => {
+test('should inline internal actions', async () => {
   const evalAction = new Word('eval').toJSON();
 
-  t.deepEqual(await fJSON('eval: inline'), [evalAction]);
+  expect(await fJSON('eval: inline')).toEqual([evalAction]);
   // t.deepEqual(await fJSON('[ eval ] : inline'), [evalAction]);
-  t.deepEqual(await fJSON('[ eval ] inline'), [[evalAction]]);
-  t.deepEqual(await fJSON('{ x: eval: } inline'), [{ x: evalAction }]);
+  expect(await fJSON('[ eval ] inline')).toEqual([[evalAction]]);
+  expect(await fJSON('{ x: eval: } inline')).toEqual([{ x: evalAction }]);
   // t.deepEqual(await fJSON('{ x: [ eval ] : } inline'), [{ x: evalAction }]);
-  t.deepEqual(await fJSON('{ x: [ eval ] } inline'), [{ x: [evalAction] }]);
+  expect(await fJSON('{ x: [ eval ] } inline')).toEqual([{ x: [evalAction] }]);
 });
 
-test('should inline defined actions', async t => {
+test('should inline defined actions', async () => {
   const qi = new Word('q<').toJSON();
   const evalAction = new Word('eval').toJSON();
   const qo = new Word('q>').toJSON();
   const slipAction = new Sentence([qi, evalAction, qo]).toJSON();
 
-  t.deepEqual(await fJSON('slip: inline'), [slipAction]);
+  expect(await fJSON('slip: inline')).toEqual([slipAction]);
   // t.deepEqual(await fJSON('[ slip ] : inline'), [slipAction]);
-  t.deepEqual(await fJSON('[ slip ] inline'), [[slipAction]]);
-  t.deepEqual(await fJSON('{ x: slip: } inline'), [{ x: slipAction }]);
+  expect(await fJSON('[ slip ] inline')).toEqual([[slipAction]]);
+  expect(await fJSON('{ x: slip: } inline')).toEqual([{ x: slipAction }]);
   // t.deepEqual(await fJSON('{ x: [ slip ] : } inline'), [{ x: slipAction }]);
-  t.deepEqual(await fJSON('{ x: [ slip ] } inline'), [{ x: [slipAction] }]);
+  expect(await fJSON('{ x: [ slip ] } inline')).toEqual([{ x: [slipAction] }]);
 });

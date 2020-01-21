@@ -29,12 +29,12 @@ const inputBox = blessed.textbox({
     fg: 'white',
     border: {
       fg: '#f0f0f0'
-    },
+    }
   },
   inputOnFocus: false,
   input: true,
   keys: true,
-  clickable: true,
+  clickable: true
 });
 
 const outputBox = blessed.log({
@@ -116,7 +116,7 @@ const p = blessed.textbox({
   input: true,
   keys: true,
   clickable: true,
-  border: false,
+  border: false
 });
 
 screen.key(['escape', 'q', 'C-c'], () => process.exit(0));
@@ -185,9 +185,10 @@ function run(buffer) {
   beforeBinding = addBefore();
 
   setTimeout(() => {
-    f
-      .next(buffer)
-      .then(() => fin(), err => fin(err));
+    f.next(buffer).then(
+      () => fin(),
+      err => fin(err)
+    );
   });
 
   function fin(err) {

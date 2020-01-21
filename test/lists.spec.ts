@@ -1,181 +1,174 @@
-import test from 'ava';
 import { F, fJSON, fValues, D } from './helpers/setup';
 
-test('should push lists', async t => {
-  t.deepEqual(await fValues('( 1 ) ( 2 )'), [[1], [2]], 'should push');
-  t.deepEqual(await fValues('(1) (2)'), [[1], [2]], 'should handle missing whitespace');
-  t.deepEqual(await fValues('(1) (2 3 +)'), [[1], [5]], 'should eval within list');
+test('should push lists', async () => {
+  expect(await fValues('( 1 ) ( 2 )')).toEqual([[1], [2]]);
+  expect(await fValues('(1) (2)')).toEqual([[1], [2]]);
+  expect(await fValues('(1) (2 3 +)')).toEqual([[1], [5]]);
 });
 
-test('should evaluate quoted lists', async t => {
-  t.deepEqual(await fValues('[ ( 1 2 + ) ] in'), [[[3]]]);
+test('should evaluate quoted lists', async () => {
+  expect(await fValues('[ ( 1 2 + ) ] in')).toEqual([[[3]]]);
 });
 
-test('should get length', async t => {
-  t.deepEqual(await fValues('( 1 2 ) ln'), [2], 'should get length');
+test('should get length', async () => {
+  expect(await fValues('( 1 2 ) ln')).toEqual([2]);
 });
 
-test('should add', async t => {
-  t.deepEqual(await fValues('(1) (2) +'), [[1, 2]], 'should add');
-  t.deepEqual(
-    await fValues('(1 2 3) dup (4 5 6) +'),
-    [[1, 2, 3], [1, 2, 3, 4, 5, 6]],
-    'should add without mutation'
-  );
+test('should add', async () => {
+  expect(await fValues('(1) (2) +')).toEqual([[1, 2]]);
+  expect(await fValues('(1 2 3) dup (4 5 6) +')).toEqual([
+    [1, 2, 3],
+    [1, 2, 3, 4, 5, 6]
+  ]);
 });
 
-test('should multiply', async t => {
-  t.deepEqual(await fValues('(1) 2 *'), [[1, 1]]);
-  t.deepEqual(await fValues('(1) 3 *'), [[1, 1, 1]]);
-  t.deepEqual(await fValues('(1 2) 2 *'), [[1, 2, 1, 2]]);
-  t.deepEqual(await fValues('(1 2 +) 2 *'), [[3, 3]]);
-  t.deepEqual(await fValues('(1 2 +) 0 *'), [[]]);
+test('should multiply', async () => {
+  expect(await fValues('(1) 2 *')).toEqual([[1, 1]]);
+  expect(await fValues('(1) 3 *')).toEqual([[1, 1, 1]]);
+  expect(await fValues('(1 2) 2 *')).toEqual([[1, 2, 1, 2]]);
+  expect(await fValues('(1 2 +) 2 *')).toEqual([[3, 3]]);
+  expect(await fValues('(1 2 +) 0 *')).toEqual([[]]);
 });
 
-test('mul identities', async t => {
-  t.deepEqual(await fValues('(1) 3 * sum'), [3]);
-  t.deepEqual(await fValues('(2) 3 * sum'), [6]);
-  t.deepEqual(await fValues('(1) 3 * 3 / + sum'), [3]);
-  t.deepEqual(await fValues('(2) 3 * 3 / + sum'), [6]);
+test('mul identities', async () => {
+  expect(await fValues('(1) 3 * sum')).toEqual([3]);
+  expect(await fValues('(2) 3 * sum')).toEqual([6]);
+  expect(await fValues('(1) 3 * 3 / + sum')).toEqual([3]);
+  expect(await fValues('(2) 3 * 3 / + sum')).toEqual([6]);
 });
 
-test('div identities', async t => {
-  t.deepEqual(await fValues('(1) 1 /'), [[1], []]);
-  t.deepEqual(await fValues('(1 2) 1 /'), [[1], [2]]);
-  t.deepEqual(await fValues('(1 2 3 4) 2 /'), [[1, 2], [3, 4]]);
+test('div identities', async () => {
+  expect(await fValues('(1) 1 /')).toEqual([[1], []]);
+  expect(await fValues('(1 2) 1 /')).toEqual([[1], [2]]);
+  expect(await fValues('(1 2 3 4) 2 /')).toEqual([
+    [1, 2],
+    [3, 4]
+  ]);
 });
 
-test('add/sub identities', async t => {
-  t.deepEqual(await fValues('(1) 2 + sum'), [3]);
+test('add/sub identities', async () => {
+  expect(await fValues('(1) 2 + sum')).toEqual([3]);
   // t.deepEqual(await fJSON('(1) 2 + 2 - sum', [1]); // ???
 });
 
-test('pow identities', async t => {
+test('pow identities', async () => {
   // right associative
-  t.deepEqual(await fValues('(1) 2 pow'), [[1, 1]]);
-  t.deepEqual(await fValues('(2) 3 pow'), [[2, 2, 2]]);
-  t.deepEqual(await fValues('(1 1) 3 pow'), [
+  expect(await fValues('(1) 2 pow')).toEqual([[1, 1]]);
+  expect(await fValues('(2) 3 pow')).toEqual([[2, 2, 2]]);
+  expect(await fValues('(1 1) 3 pow')).toEqual([
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
   ]);
-  t.deepEqual(await fValues('(1 2) 3 pow'), [
+  expect(await fValues('(1 2) 3 pow')).toEqual([
     [1, 1, 1, 2, 2, 1, 2, 2, 1, 1, 2, 2, 1, 2]
   ]);
   // t.deepEqual(await fJSON('(1) 2 + 2 - sum', [1]); // ???
 });
 
-test('should test equality', async t => {
-  t.deepEqual(await fJSON('(1 2) (1 2) ='), [true]);
-  t.deepEqual(await fJSON('(1) (2) ='), [false]);
-  t.deepEqual(await fJSON('(1 2)  (1) ='), [false]);
-  t.deepEqual(await fJSON('(1 2) (1 1) ='), [false]);
+test('should test equality', async () => {
+  expect(await fJSON('(1 2) (1 2) =')).toEqual([true]);
+  expect(await fJSON('(1) (2) =')).toEqual([false]);
+  expect(await fJSON('(1 2)  (1) =')).toEqual([false]);
+  expect(await fJSON('(1 2) (1 1) =')).toEqual([false]);
 });
 
-test('should eval lists', async t => {
+test('should eval lists', async () => {
   const f = F();
-  t.deepEqual(f.eval('( 1 2 )').toJSON(), D([[1, 2]]));
-  t.deepEqual(f.eval('eval').toJSON(), D([1, 2]));
+  expect(f.eval('( 1 2 )').toJSON()).toEqual(D([[1, 2]]));
+  expect(f.eval('eval').toJSON()).toEqual(D([1, 2]));
 });
 
-test('should zip lists', async t => {
+test('should zip lists', async () => {
   const f = F();
-  t.deepEqual(f.eval('( 1 2 3 ) ( 4 )').toJSON(), D([[1, 2, 3], [4]]));
-  t.deepEqual(f.eval('*').toJSON(), D([[1, 4, 2, 4, 3, 4]]));
+  expect(f.eval('( 1 2 3 ) ( 4 )').toJSON()).toEqual(D([[1, 2, 3], [4]]));
+  expect(f.eval('*').toJSON()).toEqual(D([[1, 4, 2, 4, 3, 4]]));
 });
 
-test('should join', async t => {
-  t.deepEqual(await fJSON('( 1 2 3 ) "-" *'), ['1-2-3'], 'should join');
+test('should join', async () => {
+  expect(await fJSON('( 1 2 3 ) "-" *')).toEqual(['1-2-3']);
 });
 
-test('should <<', async t => {
-  t.deepEqual(await fValues('( 1 2 3 ) 4 <<'), [[1, 2, 3, 4]], 'should <<');
-  t.deepEqual(
-    await fValues('( 1 2 3 ) dup 4 <<'),
-    [[1, 2, 3], [1, 2, 3, 4]],
-    'should <<, immutable'
-  );
+test('should <<', async () => {
+  expect(await fValues('( 1 2 3 ) 4 <<')).toEqual([[1, 2, 3, 4]]);
+  expect(await fValues('( 1 2 3 ) dup 4 <<')).toEqual([
+    [1, 2, 3],
+    [1, 2, 3, 4]
+  ]);
 });
 
-test('should >>', async t => {
-  t.deepEqual(await fValues('4 ( 1 2 3 ) >>'), [[4, 1, 2, 3]], 'should >>');
-  t.deepEqual(
-    await fValues('4 ( 1 2 3 ) tuck >>'),
-    [[1, 2, 3], [4, 1, 2, 3]],
-    'should >>, immutable'
-  );
+test('should >>', async () => {
+  expect(await fValues('4 ( 1 2 3 ) >>')).toEqual([[4, 1, 2, 3]]);
+  expect(await fValues('4 ( 1 2 3 ) tuck >>')).toEqual([
+    [1, 2, 3],
+    [4, 1, 2, 3]
+  ]);
 });
 
-test('should @', async t => {
-  t.deepEqual(await fValues('( 4 5 6 ) 0 @'), [4]);
-  t.deepEqual(await fValues('( 4 5 6 ) 1 @'), [5]);
-  t.deepEqual(await fValues('( 4 5 6 ) 2 @'), [6]);
-
+test('should @', async () => {
+  expect(await fValues('( 4 5 6 ) 0 @')).toEqual([4]);
+  expect(await fValues('( 4 5 6 ) 1 @')).toEqual([5]);
+  expect(await fValues('( 4 5 6 ) 2 @')).toEqual([6]);
 });
 
-test('should @ from end', async t => {
-  t.deepEqual(await fValues('( 4 5 6 ) -1 @'), [6]);
-  t.deepEqual(await fValues('( 4 5 6 ) -2 @'), [5]);
-  t.deepEqual(await fValues('( 4 5 6 ) -3 @'), [4]);
+test('should @ from end', async () => {
+  expect(await fValues('( 4 5 6 ) -1 @')).toEqual([6]);
+  expect(await fValues('( 4 5 6 ) -2 @')).toEqual([5]);
+  expect(await fValues('( 4 5 6 ) -3 @')).toEqual([4]);
 });
 
-test('should @ out of range', async t => {
-  t.deepEqual(await fJSON('( 4 5 6 ) 10 @'), [null]);
-  t.deepEqual(await fJSON('( 4 5 6 ) -10 @'), [null]);
+test('should @ out of range', async () => {
+  expect(await fJSON('( 4 5 6 ) 10 @')).toEqual([null]);
+  expect(await fJSON('( 4 5 6 ) -10 @')).toEqual([null]);
 });
 
-test('should pop and shift without mutation', async t => {
-  t.deepEqual(
-    await fValues('( 1 2 3 ) dup pop'),
-    [[1, 2, 3], [1, 2]],
-    'should pop, without mutation'
-  );
-  t.deepEqual(
-    await fValues('( 1 2 3 ) dup shift'),
-    [[1, 2, 3], [2, 3]],
-    'should shift, without mutation'
-  );
+test('should pop and shift without mutation', async () => {
+  expect(await fValues('( 1 2 3 ) dup pop')).toEqual([
+    [1, 2, 3],
+    [1, 2]
+  ]);
+  expect(await fValues('( 1 2 3 ) dup shift')).toEqual([
+    [1, 2, 3],
+    [2, 3]
+  ]);
 });
 
-test('should fine maximum and minimum', async t => {
-  t.deepEqual(
-    await fValues('( 2 3 1 6 3 ) maximum'),
-    [ 6 ]
-  );
-  t.deepEqual(
-    await fValues('( 2 3 1 6 3 ) minimum'),
-    [1]
-  );
+test('should fine maximum and minimum', async () => {
+  expect(await fValues('( 2 3 1 6 3 ) maximum')).toEqual([6]);
+  expect(await fValues('( 2 3 1 6 3 ) minimum')).toEqual([1]);
 });
 
-test('should uncons', async t => {
-  t.deepEqual(await fValues('(5 4 3) uncons'), [5, [4, 3]]);
+test('should uncons', async () => {
+  expect(await fValues('(5 4 3) uncons')).toEqual([5, [4, 3]]);
 });
 
-test('should quicksort', async t => {
-  t.deepEqual(
-    await fValues('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] quicksort'),
-    [[ 1, 2, 2, 3, 3, 4, 4, 5, 6, 7, 8, 9, 10 ]]
-  );
+test('should quicksort', async () => {
+  expect(await fValues('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] quicksort')).toEqual([
+    [1, 2, 2, 3, 3, 4, 4, 5, 6, 7, 8, 9, 10]
+  ]);
 });
 
-test('should filter', async t => {
-  t.deepEqual(
-    await fValues('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] [ even? ] filter'),
-    [[ 10, 2, 6, 4, 2, 4, 8 ]]
-  );
+test('should filter', async () => {
+  expect(
+    await fValues('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] [ even? ] filter')
+  ).toEqual([[10, 2, 6, 4, 2, 4, 8]]);
 });
 
-test('should filter arrays of arrays', async t => {
-  t.deepEqual(
-    await fValues('[ [10 2] [5] [3 1 6 7] [4 2 3] [4] [8 9] ] [ ln even? ] filter'),
-    [[ [10, 2], [3, 1, 6, 7], [8, 9] ]]
-  );
+test('should filter arrays of arrays', async () => {
+  expect(
+    await fValues(
+      '[ [10 2] [5] [3 1 6 7] [4 2 3] [4] [8 9] ] [ ln even? ] filter'
+    )
+  ).toEqual([
+    [
+      [10, 2],
+      [3, 1, 6, 7],
+      [8, 9]
+    ]
+  ]);
 });
 
-test('should foldl and foldr', async t => {
-  t.deepEqual(await fValues('10 integers 0 [+] foldl'), [ 55 ]);
-  t.deepEqual(await fValues('10 integers 0 [+] foldr'), [ 55 ]);
-  t.deepEqual(await fValues('10 integers 0 [-] foldl'), [ -55 ]);
-  t.deepEqual(await fValues('10 integers 0 [-] foldr'), [ -5 ]);
+test('should foldl and foldr', async () => {
+  expect(await fValues('10 integers 0 [+] foldl')).toEqual([55]);
+  expect(await fValues('10 integers 0 [+] foldr')).toEqual([55]);
+  expect(await fValues('10 integers 0 [-] foldl')).toEqual([-55]);
+  expect(await fValues('10 integers 0 [-] foldr')).toEqual([-5]);
 });
-
-

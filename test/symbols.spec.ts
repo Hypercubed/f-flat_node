@@ -1,16 +1,13 @@
-import test from 'ava';
-import {
-  fJSON
-} from './helpers/setup';
+import { fJSON } from './helpers/setup';
 
-test('symbols type', async t => {
-  t.deepEqual(await fJSON('#test type'), ['symbol']);
-  t.deepEqual(await fJSON('"test" # type'), ['symbol']);
+test('symbols type', async () => {
+  expect(await fJSON('#test type')).toEqual(['symbol']);
+  expect(await fJSON('"test" # type')).toEqual(['symbol']);
 });
 
-test('symbols equality', async t => {
-  t.deepEqual(await fJSON('#test dup ='), [true]);
-  t.deepEqual(await fJSON('#test #test ='), [false]);
-  t.deepEqual(await fJSON('"test" # dup ='), [true]);
-  t.deepEqual(await fJSON('"test" # "test" # ='), [false]);
+test('symbols equality', async () => {
+  expect(await fJSON('#test dup =')).toEqual([true]);
+  expect(await fJSON('#test #test =')).toEqual([false]);
+  expect(await fJSON('"test" # dup =')).toEqual([true]);
+  expect(await fJSON('"test" # "test" # =')).toEqual([false]);
 });

@@ -1,113 +1,96 @@
-import test from 'ava';
 import { fJSON } from './helpers/setup';
 
-test('should create objects object', async t => {
-  t.deepEqual(
-    await fJSON('[ "first" "Manfred" "last" "von Thun" ] object'),
-    [{ first: 'Manfred', last: 'von Thun' }],
-    'should create objects from arrays'
-  );
-  t.deepEqual(
-   await fJSON('{ first: "Manfred" last: "von Thun" }'),
-    [{ first: 'Manfred', last: 'von Thun' }],
-    'should create objects'
-  );
-  t.deepEqual(
-   await fJSON('{ name: { first: "Manfred" last: "von Thun" } }'),
-    [{ name: { first: 'Manfred', last: 'von Thun' } }],
-    'should create nested objects'
-  );
-  t.deepEqual(
-   await fJSON('{ name: [ { first: "Manfred" } { last: "von Thun" } ] }'),
-    [{ name: [{ first: 'Manfred' }, { last: 'von Thun' }] }]
-  );
+test('should create objects object', async () => {
+  expect(
+    await fJSON('[ "first" "Manfred" "last" "von Thun" ] object')
+  ).toEqual([{ first: 'Manfred', last: 'von Thun' }]);
+  expect(await fJSON('{ first: "Manfred" last: "von Thun" }')).toEqual([
+    { first: 'Manfred', last: 'von Thun' }
+  ]);
+  expect(
+    await fJSON('{ name: { first: "Manfred" last: "von Thun" } }')
+  ).toEqual([{ name: { first: 'Manfred', last: 'von Thun' } }]);
+  expect(
+    await fJSON('{ name: [ { first: "Manfred" } { last: "von Thun" } ] }')
+  ).toEqual([{ name: [{ first: 'Manfred' }, { last: 'von Thun' }] }]);
 });
 
-test('should create objects object, cont', async t => {
+test('should create objects object, cont', async () => {
   // t.deepEqual(await fJSON('{ name: [ { first: "Manfred" } { last: "von" " Thun" + } ] }'), [{ name: [{first: 'Manfred'}, {last: 'von Thun'}] }]);
-  t.deepEqual(
-   await fJSON('{ first: "Manfred", last: "von Thun" }'),
-    [{ first: 'Manfred', last: 'von Thun' }],
-    'commas are optional'
-  );
-  t.deepEqual(
-   await fJSON('{ first: "Manfred", last: [ "von" "Thun" ] " " * }'),
-    [{ first: 'Manfred', last: 'von Thun' }],
-    'should evaluate in objects'
-  );
+  expect(await fJSON('{ first: "Manfred", last: "von Thun" }')).toEqual([
+    { first: 'Manfred', last: 'von Thun' }
+  ]);
+  expect(
+    await fJSON('{ first: "Manfred", last: [ "von" "Thun" ] " " * }')
+  ).toEqual([{ first: 'Manfred', last: 'von Thun' }]);
 });
 
-test('should test is object', async t => {
-  t.deepEqual(await fJSON('{ first: "Manfred" last: "von Thun" } object?'), [true]);
-  t.deepEqual(await fJSON('[ first: "Manfred" last: "von Thun" ] object?'), [false]);
+test('should test is object', async () => {
+  expect(await fJSON('{ first: "Manfred" last: "von Thun" } object?')).toEqual([
+    true
+  ]);
+  expect(await fJSON('[ first: "Manfred" last: "von Thun" ] object?')).toEqual([
+    false
+  ]);
 });
 
-test('should get keys and values', async t => {
-  t.deepEqual(await fJSON('{ first: "Manfred" last: "von Thun" } keys'), [
+test('should get keys and values', async () => {
+  expect(await fJSON('{ first: "Manfred" last: "von Thun" } keys')).toEqual([
     ['first', 'last']
   ]);
-  t.deepEqual(await fJSON('{ "first" "Manfred" "last" "von Thun" } vals'), [
+  expect(await fJSON('{ "first" "Manfred" "last" "von Thun" } vals')).toEqual([
     ['Manfred', 'von Thun']
   ]);
 });
 
-test('should get single values usint @', async t => {
-  t.deepEqual(await fJSON('{ first: "Manfred" last: "von Thun" } first: @'), [
-    'Manfred'
-  ]);
-  t.deepEqual(await fJSON('{ first: "Manfred" last: "von Thun" } last: @'), [
+test('should get single values usint @', async () => {
+  expect(
+    await fJSON('{ first: "Manfred" last: "von Thun" } first: @')
+  ).toEqual(['Manfred']);
+  expect(await fJSON('{ first: "Manfred" last: "von Thun" } last: @')).toEqual([
     'von Thun'
   ]);
 });
 
-test('should join objects', async t => {
-  t.deepEqual(await fJSON('{ first: "Manfred" } { last: "von Thun" } +'), [
+test('should join objects', async () => {
+  expect(await fJSON('{ first: "Manfred" } { last: "von Thun" } +')).toEqual([
     { first: 'Manfred', last: 'von Thun' }
   ]);
-  t.deepEqual(
-   await fJSON('{ first: "Manfred" } { first: "John" last: "von Thun" } <<'),
-    [{ first: 'John', last: 'von Thun' }]
-  );
-  t.deepEqual(
-   await fJSON('{ first: "Manfred" } { first: "John" last: "von Thun" } >>'),
-    [{ first: 'Manfred', last: 'von Thun' }]
-  );
+  expect(
+    await fJSON('{ first: "Manfred" } { first: "John" last: "von Thun" } <<')
+  ).toEqual([{ first: 'John', last: 'von Thun' }]);
+  expect(
+    await fJSON('{ first: "Manfred" } { first: "John" last: "von Thun" } >>')
+  ).toEqual([{ first: 'Manfred', last: 'von Thun' }]);
 });
 
-test('should join objects without mutations', async t => {
-  t.deepEqual(await fJSON('{ first: "Manfred" } dup { last: "von Thun" } +'), [
-    { first: 'Manfred' },
-    { first: 'Manfred', last: 'von Thun' }
-  ]);
-  t.deepEqual(await fJSON('{ first: "Manfred" } dup { last: "von Thun" } >>'), [
-    { first: 'Manfred' },
-    { first: 'Manfred', last: 'von Thun' }
-  ]);
-  t.deepEqual(await fJSON('{ first: "Manfred" } dup { last: "von Thun" } <<'), [
-    { first: 'Manfred' },
-    { first: 'Manfred', last: 'von Thun' }
-  ]);
+test('should join objects without mutations', async () => {
+  expect(
+    await fJSON('{ first: "Manfred" } dup { last: "von Thun" } +')
+  ).toEqual([{ first: 'Manfred' }, { first: 'Manfred', last: 'von Thun' }]);
+  expect(
+    await fJSON('{ first: "Manfred" } dup { last: "von Thun" } >>')
+  ).toEqual([{ first: 'Manfred' }, { first: 'Manfred', last: 'von Thun' }]);
+  expect(
+    await fJSON('{ first: "Manfred" } dup { last: "von Thun" } <<')
+  ).toEqual([{ first: 'Manfred' }, { first: 'Manfred', last: 'von Thun' }]);
 });
 
-test('objects', async t => {
-  t.deepEqual(await fJSON('{ name: [ "Manfred" "von Thun" ] }'), [
+test('objects', async () => {
+  expect(await fJSON('{ name: [ "Manfred" "von Thun" ] }')).toEqual([
     { name: ['Manfred', 'von Thun'] }
   ]);
-  t.deepEqual(await fJSON('{ name: "Manfred" " von Thun" + }'), [
+  expect(await fJSON('{ name: "Manfred" " von Thun" + }')).toEqual([
     { name: 'Manfred von Thun' }
   ]);
-  t.deepEqual(await fJSON('{ name: ( "Manfred" " von Thun" + ) }'), [
+  expect(await fJSON('{ name: ( "Manfred" " von Thun" + ) }')).toEqual([
     { name: ['Manfred von Thun'] }
   ]);
-  t.deepEqual(
-   await fJSON('{ first: "Manfred" last: "von Thun" } ln'),
-    [2],
-    'should get keys length'
-  );
+  expect(await fJSON('{ first: "Manfred" last: "von Thun" } ln')).toEqual([2]);
 });
 
-test('should <=> objects by key length', async t => {
-  t.deepEqual(await fJSON('{ x: 123 } { y: 456 } <=>'), [0]);
-  t.deepEqual(await fJSON('{ x: 123, z: 789 } { y: 456 } <=>'), [1]);
-  t.deepEqual(await fJSON('{ x: 123 } { y: 456, z: 789 } <=>'), [-1]);
+test('should <=> objects by key length', async () => {
+  expect(await fJSON('{ x: 123 } { y: 456 } <=>')).toEqual([0]);
+  expect(await fJSON('{ x: 123, z: 789 } { y: 456 } <=>')).toEqual([1]);
+  expect(await fJSON('{ x: 123 } { y: 456, z: 789 } <=>')).toEqual([-1]);
 });

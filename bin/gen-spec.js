@@ -15,10 +15,11 @@ const grammkit = require('grammkit');
 const map = new WeakMap();
 
 function processRule(expr) {
-  if (expr.name && map.has(expr)) return {
-    type: 'rule_ref',
-    name: expr.name || expr.toString()
-  };
+  if (expr.name && map.has(expr))
+    return {
+      type: 'rule_ref',
+      name: expr.name || expr.toString()
+    };
   map.set(expr, true);
 
   switch (expr.type) {
@@ -43,10 +44,7 @@ function processRule(expr) {
     case 'repeatWhileNot':
       return {
         type: 'sequence',
-        elements: [
-          ...expr.rules.map(processRule),
-          { type: 'any' },
-        ]
+        elements: [...expr.rules.map(processRule), { type: 'any' }]
       };
     case 'choice':
       return {
@@ -108,7 +106,9 @@ Object.keys(g).forEach(k => {
 
 const QUOTE = '```';
 
-fs.writeFileSync('./spec.md', `
+fs.writeFileSync(
+  './spec.md',
+  `
 
 # FFlat Specification ${version}
 
@@ -149,6 +149,7 @@ svg.railroad-diagram rect {
 }
 </style>
 
-`);
+`
+);
 
 process.exit();

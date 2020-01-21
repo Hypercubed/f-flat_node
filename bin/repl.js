@@ -52,7 +52,7 @@ program
   .option('-L, --log-level [level]', 'Set the log level', 'warn')
   .option('-f, --file [file]', 'Evaluate contents of file')
   .option('-i, --interactive', 'force interactive mode', false)
-  .option('-q, --quiet', 'don\'t print initial banner', false)
+  .option('-q, --quiet', "don't print initial banner", false)
   .action((...cmds) => {
     cmds.pop();
     arg += cmds.join(' ');
@@ -124,12 +124,17 @@ function startREPL() {
 
   const objectId = getUniqueObjectCounter();
 
-  r.defineCommand('s', {  // todo: move to core?
+  r.defineCommand('s', {
+    // todo: move to core?
     help: 'Print the stack',
     action() {
       f.stack.forEach((d, i) => {
         const id = objectId(d).toString(16);
-        console.log(`${f.stack.length - i}: ${pprint.formatValue(d, null)} [${type(d)}] (${id})`);
+        console.log(
+          `${f.stack.length - i}: ${pprint.formatValue(d, null)} [${type(
+            d
+          )}] (${id})`
+        );
       });
       this.displayPrompt();
     }
@@ -153,9 +158,11 @@ function newStack() {
 
   const newParent = createStack('true set-auto-undo', createRootEnv());
 
-  const rl = stackRepl || readline.createInterface({
-    input: process.stdin
-  });
+  const rl =
+    stackRepl ||
+    readline.createInterface({
+      input: process.stdin
+    });
 
   newParent.defineAction('prompt', () => {
     return new Promise(resolve => {
@@ -198,8 +205,7 @@ function fEval(code, _, __, cb) {
     addBefore();
 
     log.profile('dispatch');
-    f
-      .next(buffer)
+    f.next(buffer)
       .then(result => {
         fin();
         cb(null, result);
@@ -230,7 +236,7 @@ function getUniqueObjectCounter() {
 
 function completer(line) {
   const completions = getKeys();
-  const hits = completions.filter((c) => c.startsWith(line));
+  const hits = completions.filter(c => c.startsWith(line));
   return [hits.length ? hits : completions, line];
 }
 
@@ -255,7 +261,7 @@ function addBefore() {
     bindings.push(f.before.add(printTrace));
     bindings.push(f.beforeEach.add(printTrace));
     bindings.push(f.idle.add(printTrace));
-  } else if (!nonInteractive || !f.silent && (level === 'warn')) {
+  } else if (!nonInteractive || (!f.silent && level === 'warn')) {
     let qMax = f.stack.length + f.queue.length;
     let c = 0;
 

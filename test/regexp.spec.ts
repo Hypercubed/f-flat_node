@@ -1,99 +1,114 @@
-import test from 'ava';
-import {
-  fJSON,
-  fValues,
-} from './helpers/setup';
+import { fJSON, fValues } from './helpers/setup';
 
-test('should convert a string to a regexp', async t => {
-  t.deepEqual(await fValues('"[;:]" regexp type'), ['regexp']);
+test('should convert a string to a regexp', async () => {
+  expect(await fValues('"[;:]" regexp type')).toEqual(['regexp']);
 });
 
-test('should split string using regexp', async t => {  // todo: better comparisons with NaN
-  t.deepEqual(await fValues('"a;b:c" "[;:]" regexp /'), [['a', 'b', 'c']]);
+test('should split string using regexp', async () => {
+  // todo: better comparisons with NaN
+  expect(await fValues('"a;b:c" "[;:]" regexp /')).toEqual([['a', 'b', 'c']]);
 });
 
-test('should replace string using regexp', async t => {  // todo: better comparisons with NaN
-  t.deepEqual(await fValues('"a;b:c" "[;:]" regexp "-->" replace'), ['a-->b-->c']);
+test('should replace string using regexp', async () => {
+  // todo: better comparisons with NaN
+  expect(await fValues('"a;b:c" "[;:]" regexp "-->" replace')).toEqual([
+    'a-->b-->c'
+  ]);
 });
 
-test('regular expressions, replace', async t => {
-  t.deepEqual(await fJSON('"abc" "/a./" regexp "X" replace'), ['Xc']);
-  t.deepEqual(await fJSON('"abc" "/a.$/" regexp "X" replace'), ['abc']);
-  t.deepEqual(await fJSON('"abc" "/a.*$/" regexp "X" replace'), ['X']);
-  t.deepEqual(await fJSON('"bcd" "/a./" regexp "X" replace'), ['bcd']);
+test('regular expressions, replace', async () => {
+  expect(await fJSON('"abc" "/a./" regexp "X" replace')).toEqual(['Xc']);
+  expect(await fJSON('"abc" "/a.$/" regexp "X" replace')).toEqual(['abc']);
+  expect(await fJSON('"abc" "/a.*$/" regexp "X" replace')).toEqual(['X']);
+  expect(await fJSON('"bcd" "/a./" regexp "X" replace')).toEqual(['bcd']);
 });
 
-test('regular expressions, match', async t => {
-  t.deepEqual(await fJSON('"abc" "/a./" regexp match'), [['ab']]);
-  t.deepEqual(await fJSON('"abc" "/a.$/" regexp match'), [[]]);
-  t.deepEqual(await fJSON('"abc" "/a.*$/" regexp match'), [['abc']]);
-  t.deepEqual(await fJSON('"bcd" "/a./" regexp match'), [[]]);
-  t.deepEqual(await fJSON('"bcd" "/a./" regexp match'), [[]]);
+test('regular expressions, match', async () => {
+  expect(await fJSON('"abc" "/a./" regexp match')).toEqual([['ab']]);
+  expect(await fJSON('"abc" "/a.$/" regexp match')).toEqual([[]]);
+  expect(await fJSON('"abc" "/a.*$/" regexp match')).toEqual([['abc']]);
+  expect(await fJSON('"bcd" "/a./" regexp match')).toEqual([[]]);
+  expect(await fJSON('"bcd" "/a./" regexp match')).toEqual([[]]);
 });
 
-test('regular expressions, match?', async t => {
-  t.deepEqual(await fJSON('"abc" "/a./" regexp =~'), [true]);
-  t.deepEqual(await fJSON('"abc" "/A./" regexp =~'), [false]);
-  t.deepEqual(await fJSON('"abc" "/A./i" regexp =~'), [true]);
-  t.deepEqual(await fJSON('"abc" "/a.$/" regexp =~'), [false]);
-  t.deepEqual(await fJSON('"abc" "/a.*$/" regexp =~'), [true]);
-  t.deepEqual(await fJSON('"bcd" "/a./" regexp =~'), [false]);
+test('regular expressions, match?', async () => {
+  expect(await fJSON('"abc" "/a./" regexp =~')).toEqual([true]);
+  expect(await fJSON('"abc" "/A./" regexp =~')).toEqual([false]);
+  expect(await fJSON('"abc" "/A./i" regexp =~')).toEqual([true]);
+  expect(await fJSON('"abc" "/a.$/" regexp =~')).toEqual([false]);
+  expect(await fJSON('"abc" "/a.*$/" regexp =~')).toEqual([true]);
+  expect(await fJSON('"bcd" "/a./" regexp =~')).toEqual([false]);
 });
 
-test('regular expressions, match @', async t => {
-  t.deepEqual(await fJSON('"aaaa1aaaa2aaaa3" "/[0-9]/g" regexp match 0 @'), ['1']);
-  t.deepEqual(await fJSON('"aaaa1aaaa2aaaa3" "/[0-9]/g" regexp match 1 @'), ['2']);
-  t.deepEqual(await fJSON('"aaaa1aaaa2aaaa3" "/[0-9]/g" regexp match 2 @'), ['3']);
+test('regular expressions, match @', async () => {
+  expect(await fJSON('"aaaa1aaaa2aaaa3" "/[0-9]/g" regexp match 0 @')).toEqual([
+    '1'
+  ]);
+  expect(await fJSON('"aaaa1aaaa2aaaa3" "/[0-9]/g" regexp match 1 @')).toEqual([
+    '2'
+  ]);
+  expect(await fJSON('"aaaa1aaaa2aaaa3" "/[0-9]/g" regexp match 2 @')).toEqual([
+    '3'
+  ]);
 });
 
-test('can add (or) regexp', async t => {
-  t.deepEqual(await fValues('"abc" regexp "def" regexp + type'), ['regexp']);
-  t.deepEqual(await fValues('"\:" regexp "\;" regexp +'), [/:|;/], 'no enclosure needed');
-  t.deepEqual(await fValues('"abc" regexp "def" regexp +'), [/abc|def/], 'enclosure needed');
-  t.deepEqual(await fValues('"/abc/i" regexp "/def/" regexp +'), [/abc|def/i], 'keep lhs flags');
-  t.deepEqual(await fJSON('"a;b:c" ";" regexp ":" regexp + /'), [['a', 'b', 'c']]);
+test('can add (or) regexp', async () => {
+  expect(await fValues('"abc" regexp "def" regexp + type')).toEqual(['regexp']);
+  expect(await fValues('":" regexp ";" regexp +')).toEqual([/:|;/]);
+  expect(await fValues('"abc" regexp "def" regexp +')).toEqual([/abc|def/]);
+  expect(await fValues('"/abc/i" regexp "/def/" regexp +')).toEqual([
+    /abc|def/i
+  ]);
+  expect(await fJSON('"a;b:c" ";" regexp ":" regexp + /')).toEqual([
+    ['a', 'b', 'c']
+  ]);
 });
 
-test('can mul (and) regexp', async t => {
-  t.deepEqual(await fValues('"abc" regexp "def" regexp * type'), ['regexp']);
-  t.deepEqual(await fValues('"\:" regexp "\;" regexp *'), [/(?=:)(?=;)/], 'no enclosure needed');
-  t.deepEqual(await fValues('"abc" regexp "def" regexp *'), [/(?=abc)(?=def)/], 'enclosure needed');
+test('can mul (and) regexp', async () => {
+  expect(await fValues('"abc" regexp "def" regexp * type')).toEqual(['regexp']);
+  expect(await fValues('":" regexp ";" regexp *')).toEqual([/(?=:)(?=;)/]);
+  expect(await fValues('"abc" regexp "def" regexp *')).toEqual([
+    /(?=abc)(?=def)/
+  ]);
 });
 
 // todo: nor, xor, etc.
 
-test('can mul (repeat) regexp', async t => {
-  t.deepEqual(await fValues('"abc" regexp 2 * type'), ['regexp']);
-  t.deepEqual(await fValues('":" regexp 2 *'), [/:{2}/], 'no enclosure needed');
-  t.deepEqual(await fValues('"abc" regexp 2 *'), [/(?:abc){2}/], 'enclosure needed');
-  t.deepEqual(await fValues('"/abc/i" regexp 2 *'), [/(?:abc){2}/i], 'keep flags');
-  t.deepEqual(await fValues('"abc" regexp infinity *'), [/(?:abc){1,}/]);
-  t.deepEqual(await fJSON('"a;;b;c" ";" regexp 2 * /'), [['a', 'b;c']]);
+test('can mul (repeat) regexp', async () => {
+  expect(await fValues('"abc" regexp 2 * type')).toEqual(['regexp']);
+  expect(await fValues('":" regexp 2 *')).toEqual([/:{2}/]);
+  expect(await fValues('"abc" regexp 2 *')).toEqual([/(?:abc){2}/]);
+  expect(await fValues('"/abc/i" regexp 2 *')).toEqual([/(?:abc){2}/i]);
+  expect(await fValues('"abc" regexp infinity *')).toEqual([/(?:abc){1,}/]);
+  expect(await fJSON('"a;;b;c" ";" regexp 2 * /')).toEqual([['a', 'b;c']]);
 });
 
-test('can ~ (not) regexp', async t => {
-  t.deepEqual(await fValues('"abc" regexp ~ type'), ['regexp']);
-  t.deepEqual(await fValues('":" regexp ~'), [/(?!:)/], 'no enclosure needed');
-  t.deepEqual(await fValues('"abc" regexp ~'), [/(?!abc)/], 'enclosure needed');
-  t.deepEqual(await fValues('"/abc/i" regexp ~'), [/(?!abc)/i], 'keeps flags');
+test('can ~ (not) regexp', async () => {
+  expect(await fValues('"abc" regexp ~ type')).toEqual(['regexp']);
+  expect(await fValues('":" regexp ~')).toEqual([/(?!:)/]);
+  expect(await fValues('"abc" regexp ~')).toEqual([/(?!abc)/]);
+  expect(await fValues('"/abc/i" regexp ~')).toEqual([/(?!abc)/i]);
 });
 
-test('can test equality of regexp', async t => {
-  t.deepEqual(await fValues('";" regexp dup ='), [true]);
-  t.deepEqual(await fValues('";" regexp ";" regexp ='), [true]);
-  t.deepEqual(await fValues('";" regexp ":" regexp ='), [false]);
-  t.deepEqual(await fValues('";|:" regexp ";" regexp ":" regexp + ='), [true]);
+test('can test equality of regexp', async () => {
+  expect(await fValues('";" regexp dup =')).toEqual([true]);
+  expect(await fValues('";" regexp ";" regexp =')).toEqual([true]);
+  expect(await fValues('";" regexp ":" regexp =')).toEqual([false]);
+  expect(await fValues('";|:" regexp ";" regexp ":" regexp + =')).toEqual([
+    true
+  ]);
 });
 
-test('can left and right "shift"', async t => {
-  t.deepEqual(await fValues('"/abc/i" regexp "/def/" regexp <<'), [/abcdef/i], 'keep lhs flags');
-  t.deepEqual(await fValues('"/abc/i" regexp "/def/" regexp >>'), [/abcdef/], 'keep rhs flags');
+test('can left and right "shift"', async () => {
+  expect(await fValues('"/abc/i" regexp "/def/" regexp <<')).toEqual([
+    /abcdef/i
+  ]);
+  expect(await fValues('"/abc/i" regexp "/def/" regexp >>')).toEqual([
+    /abcdef/
+  ]);
 });
 
-test('regexp works as a macro "macro"', async t => {
-  t.deepEqual(await fValues('"/abc/i":regexp'), [/abc/i]);
-  t.deepEqual(await fValues('[ "/abc/i":regexp ]'), [[ /abc/i ]]);
+test('regexp works as a macro "macro"', async () => {
+  expect(await fValues('"/abc/i":regexp')).toEqual([/abc/i]);
+  expect(await fValues('[ "/abc/i":regexp ]')).toEqual([[/abc/i]]);
 });
-
-
-

@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`deep 1`] = `"{\\"string\\":\\"a_string\\",\\"number\\":42,\\"decimal\\":{\\"$numberDecimal\\":\\"42\\"},\\"array\\":[\\"a_string\\",42,{\\"$numberDecimal\\":\\"42\\"}],\\"object\\":{\\"also a string\\":\\"string\\",\\"a number\\":42}}"`;

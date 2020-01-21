@@ -1,4 +1,3 @@
-import test from 'ava';
 import { fJSON, fValue, fStack } from './helpers/setup';
 
 /* test('should parse', async t => {
@@ -7,197 +6,196 @@ import { fJSON, fValue, fStack } from './helpers/setup';
   t.deepEqual(f.lexer('false', [false]);
 }); */
 
-test('should push booleans', async t => {
-  t.deepEqual(await fJSON('true false'), [true, false], 'should push booleans');
+test('should push booleans', async () => {
+  expect(await fJSON('true false')).toEqual([true, false]);
 });
 
-test('should not', async t => {
-  t.deepEqual(await fJSON('true ~'), [false]);
-  t.deepEqual(await fJSON('false ~'), [true]);
-  t.deepEqual(await fStack('null ~'), [null]);
+test('should not', async () => {
+  expect(await fJSON('true ~')).toEqual([false]);
+  expect(await fJSON('false ~')).toEqual([true]);
+  expect(await fStack('null ~')).toEqual([null]);
 });
 
-test('should and', async t => {
-  t.deepEqual(await fJSON('true true *'), [true]);
-  t.deepEqual(await fJSON('true false *'), [false]);
-  t.deepEqual(await fJSON('false true *'), [false]);
-  t.deepEqual(await fJSON('false false *'), [false]);
+test('should and', async () => {
+  expect(await fJSON('true true *')).toEqual([true]);
+  expect(await fJSON('true false *')).toEqual([false]);
+  expect(await fJSON('false true *')).toEqual([false]);
+  expect(await fJSON('false false *')).toEqual([false]);
 
-  t.deepEqual(await fStack('true null *'), [null]);
-  t.deepEqual(await fStack('null true *'), [null]);
-  t.deepEqual(await fStack('null false *'), [false]);
-  t.deepEqual(await fStack('false null *'), [false]);
+  expect(await fStack('true null *')).toEqual([null]);
+  expect(await fStack('null true *')).toEqual([null]);
+  expect(await fStack('null false *')).toEqual([false]);
+  expect(await fStack('false null *')).toEqual([false]);
 
-  t.deepEqual(await fStack('null null *'), [null]);
+  expect(await fStack('null null *')).toEqual([null]);
 });
 
-test('should or', async t => {
-  t.deepEqual(await fJSON('true true +'), [true]);
-  t.deepEqual(await fJSON('true false +'), [true]);
-  t.deepEqual(await fJSON('false true +'), [true]);
-  t.deepEqual(await fJSON('false false +'), [false]);
+test('should or', async () => {
+  expect(await fJSON('true true +')).toEqual([true]);
+  expect(await fJSON('true false +')).toEqual([true]);
+  expect(await fJSON('false true +')).toEqual([true]);
+  expect(await fJSON('false false +')).toEqual([false]);
 
-  t.deepEqual(await fStack('true null +'), [true]);
-  t.deepEqual(await fStack('null true +'), [true]);
-  t.deepEqual(await fStack('null false +'), [null]);
-  t.deepEqual(await fStack('false null +'), [null]);
+  expect(await fStack('true null +')).toEqual([true]);
+  expect(await fStack('null true +')).toEqual([true]);
+  expect(await fStack('null false +')).toEqual([null]);
+  expect(await fStack('false null +')).toEqual([null]);
 
-  t.deepEqual(await fStack('null null +'), [null]);
+  expect(await fStack('null null +')).toEqual([null]);
 });
 
-test('should test equality', async t => {
-  t.deepEqual(await fJSON('true true ='), [true]);
-  t.deepEqual(await fJSON('true false ='), [false]);
-  t.deepEqual(await fJSON('false true ='), [false]);
-  t.deepEqual(await fJSON('false false ='), [true]);
+test('should test equality', async () => {
+  expect(await fJSON('true true =')).toEqual([true]);
+  expect(await fJSON('true false =')).toEqual([false]);
+  expect(await fJSON('false true =')).toEqual([false]);
+  expect(await fJSON('false false =')).toEqual([true]);
 
-  t.deepEqual(await fStack('true null ='), [false]);
-  t.deepEqual(await fStack('null true ='), [false]);
-  t.deepEqual(await fStack('null false ='), [false]);
-  t.deepEqual(await fStack('false null ='), [false]);
+  expect(await fStack('true null =')).toEqual([false]);
+  expect(await fStack('null true =')).toEqual([false]);
+  expect(await fStack('null false =')).toEqual([false]);
+  expect(await fStack('false null =')).toEqual([false]);
 
-  t.deepEqual(await fStack('null null ='), [true]);
+  expect(await fStack('null null =')).toEqual([true]);
 });
 
-test('should <=>', async t => {
-  t.deepEqual(await fValue('true true <=>'), 0);
-  t.deepEqual(await fValue('true false <=>'), 1);
-  t.deepEqual(await fValue('false true <=>'), -1);
-  t.deepEqual(await fValue('false false <=>'), 0);
+test('should <=>', async () => {
+  expect(await fValue('true true <=>')).toEqual(0);
+  expect(await fValue('true false <=>')).toEqual(1);
+  expect(await fValue('false true <=>')).toEqual(-1);
+  expect(await fValue('false false <=>')).toEqual(0);
 
-  t.deepEqual(await fValue('true null <=>'), 1);
-  t.deepEqual(await fValue('null true <=>'), -1);
-  t.deepEqual(await fValue('null false <=>'), 1);
-  t.deepEqual(await fValue('false null <=>'), -1);
+  expect(await fValue('true null <=>')).toEqual(1);
+  expect(await fValue('null true <=>')).toEqual(-1);
+  expect(await fValue('null false <=>')).toEqual(1);
+  expect(await fValue('false null <=>')).toEqual(-1);
 
-  t.deepEqual(await fValue('null null <=>'), 0);
+  expect(await fValue('null null <=>')).toEqual(0);
 });
 
-test('should nand', async t => {
-  t.deepEqual(await fJSON('true true %'), [false]);
-  t.deepEqual(await fJSON('true false %'), [true]);
-  t.deepEqual(await fJSON('false true %'), [true]);
-  t.deepEqual(await fJSON('false false %'), [true]);
+test('should nand', async () => {
+  expect(await fJSON('true true %')).toEqual([false]);
+  expect(await fJSON('true false %')).toEqual([true]);
+  expect(await fJSON('false true %')).toEqual([true]);
+  expect(await fJSON('false false %')).toEqual([true]);
 
-  t.deepEqual(await fStack('true null %'), [null]);
-  t.deepEqual(await fStack('null true %'), [null]);
-  t.deepEqual(await fStack('null false %'), [true]);
-  t.deepEqual(await fStack('false null %'), [true]);
+  expect(await fStack('true null %')).toEqual([null]);
+  expect(await fStack('null true %')).toEqual([null]);
+  expect(await fStack('null false %')).toEqual([true]);
+  expect(await fStack('false null %')).toEqual([true]);
 
-  t.deepEqual(await fStack('null null %'), [null]);
+  expect(await fStack('null null %')).toEqual([null]);
 });
 
-test('should xor', async t => {
-  t.deepEqual(await fJSON('true true ^'), [false]);
-  t.deepEqual(await fJSON('true false ^'), [true]);
-  t.deepEqual(await fJSON('false true ^'), [true]);
-  t.deepEqual(await fJSON('false false ^'), [false]);
+test('should xor', async () => {
+  expect(await fJSON('true true ^')).toEqual([false]);
+  expect(await fJSON('true false ^')).toEqual([true]);
+  expect(await fJSON('false true ^')).toEqual([true]);
+  expect(await fJSON('false false ^')).toEqual([false]);
 
-  t.deepEqual(await fStack('true null ^'), [null]);
-  t.deepEqual(await fStack('null true ^'), [null]);
-  t.deepEqual(await fStack('null false ^'), [null]);
-  t.deepEqual(await fStack('false null ^'), [null]);
+  expect(await fStack('true null ^')).toEqual([null]);
+  expect(await fStack('null true ^')).toEqual([null]);
+  expect(await fStack('null false ^')).toEqual([null]);
+  expect(await fStack('false null ^')).toEqual([null]);
 
-  t.deepEqual(await fStack('null null ^'), [null]);
+  expect(await fStack('null null ^')).toEqual([null]);
 });
 
-test('should nor', async t => {
-  t.deepEqual(await fJSON('true true -'), [false]);
-  t.deepEqual(await fJSON('true false -'), [false]);
-  t.deepEqual(await fJSON('false true -'), [false]);
-  t.deepEqual(await fJSON('false false -'), [true]);
+test('should nor', async () => {
+  expect(await fJSON('true true -')).toEqual([false]);
+  expect(await fJSON('true false -')).toEqual([false]);
+  expect(await fJSON('false true -')).toEqual([false]);
+  expect(await fJSON('false false -')).toEqual([true]);
 
-  t.deepEqual(await fStack('true null -'), [false]);
-  t.deepEqual(await fStack('null true -'), [false]);
-  t.deepEqual(await fStack('null false -'), [null]);
-  t.deepEqual(await fStack('false null -'), [null]);
+  expect(await fStack('true null -')).toEqual([false]);
+  expect(await fStack('null true -')).toEqual([false]);
+  expect(await fStack('null false -')).toEqual([null]);
+  expect(await fStack('false null -')).toEqual([null]);
 
-  t.deepEqual(await fStack('null null -'), [null]);
+  expect(await fStack('null null -')).toEqual([null]);
 });
 
-test('should >> (material implication)', async t => {
-  t.deepEqual(await fJSON('true true >>'), [true]);
-  t.deepEqual(await fJSON('true false >>'), [false]);
-  t.deepEqual(await fJSON('false true >>'), [true]);
-  t.deepEqual(await fJSON('false false >>'), [true]);
+test('should >> (material implication)', async () => {
+  expect(await fJSON('true true >>')).toEqual([true]);
+  expect(await fJSON('true false >>')).toEqual([false]);
+  expect(await fJSON('false true >>')).toEqual([true]);
+  expect(await fJSON('false false >>')).toEqual([true]);
 
-  t.deepEqual(await fStack('true null >>'), [null]);
-  t.deepEqual(await fStack('null true >>'), [true]);
-  t.deepEqual(await fStack('null false >>'), [null]);
-  t.deepEqual(await fStack('false null >>'), [true]);
+  expect(await fStack('true null >>')).toEqual([null]);
+  expect(await fStack('null true >>')).toEqual([true]);
+  expect(await fStack('null false >>')).toEqual([null]);
+  expect(await fStack('false null >>')).toEqual([true]);
 
-  t.deepEqual(await fStack('null null >>'), [null]);
+  expect(await fStack('null null >>')).toEqual([null]);
 });
 
-test('should << (converse implication)', async t => {
-  t.deepEqual(await fJSON('true true <<'), [true]);
-  t.deepEqual(await fJSON('true false <<'), [true]);
-  t.deepEqual(await fJSON('false true <<'), [false]);
-  t.deepEqual(await fJSON('false false <<'), [true]);
+test('should << (converse implication)', async () => {
+  expect(await fJSON('true true <<')).toEqual([true]);
+  expect(await fJSON('true false <<')).toEqual([true]);
+  expect(await fJSON('false true <<')).toEqual([false]);
+  expect(await fJSON('false false <<')).toEqual([true]);
 
-  t.deepEqual(await fStack('true null <<'), [true]);
-  t.deepEqual(await fStack('null true <<'), [null]);
-  t.deepEqual(await fStack('null false <<'), [true]);
-  t.deepEqual(await fStack('false null <<'), [null]);
+  expect(await fStack('true null <<')).toEqual([true]);
+  expect(await fStack('null true <<')).toEqual([null]);
+  expect(await fStack('null false <<')).toEqual([true]);
+  expect(await fStack('false null <<')).toEqual([null]);
 
-  t.deepEqual(await fStack('null null <<'), [null]);
+  expect(await fStack('null null <<')).toEqual([null]);
 });
 
-test('should / (material non-implication)', async t => {
-  t.deepEqual(await fJSON('true true /'), [false]);
-  t.deepEqual(await fJSON('true false /'), [true]);
-  t.deepEqual(await fJSON('false true /'), [false]);
-  t.deepEqual(await fJSON('false false /'), [false]);
+test('should / (material non-implication)', async () => {
+  expect(await fJSON('true true /')).toEqual([false]);
+  expect(await fJSON('true false /')).toEqual([true]);
+  expect(await fJSON('false true /')).toEqual([false]);
+  expect(await fJSON('false false /')).toEqual([false]);
 
-  t.deepEqual(await fStack('true null /'), [null]);
-  t.deepEqual(await fStack('null true /'), [false]);
-  t.deepEqual(await fStack('null false /'), [null]);
-  t.deepEqual(await fStack('false null /'), [false]);
+  expect(await fStack('true null /')).toEqual([null]);
+  expect(await fStack('null true /')).toEqual([false]);
+  expect(await fStack('null false /')).toEqual([null]);
+  expect(await fStack('false null /')).toEqual([false]);
 
-  t.deepEqual(await fStack('null null /'), [null]);
+  expect(await fStack('null null /')).toEqual([null]);
 });
 
-test('should \ (converse non-implication)', async t => {
-  t.deepEqual(await fJSON('true true \\'), [false]);
-  t.deepEqual(await fJSON('true false \\'), [false]);
-  t.deepEqual(await fJSON('false true \\'), [true]);
-  t.deepEqual(await fJSON('false false \\'), [false]);
+test('should  (converse non-implication)', async () => {
+  expect(await fJSON('true true \\')).toEqual([false]);
+  expect(await fJSON('true false \\')).toEqual([false]);
+  expect(await fJSON('false true \\')).toEqual([true]);
+  expect(await fJSON('false false \\')).toEqual([false]);
 
-  t.deepEqual(await fStack('true null \\'), [false]);
-  t.deepEqual(await fStack('null true \\'), [null]);
-  t.deepEqual(await fStack('null false \\'), [false]);
-  t.deepEqual(await fStack('false null \\'), [null]);
+  expect(await fStack('true null \\')).toEqual([false]);
+  expect(await fStack('null true \\')).toEqual([null]);
+  expect(await fStack('null false \\')).toEqual([false]);
+  expect(await fStack('false null \\')).toEqual([null]);
 
-  t.deepEqual(await fStack('null null \\'), [null]);
+  expect(await fStack('null null \\')).toEqual([null]);
 });
 
 ///
 
-test('length of booleans are zero', async t => {
-  t.deepEqual(await fJSON('true ln'), [0]);
-  t.deepEqual(await fJSON('false ln'), [0]);
+test('length of booleans are zero', async () => {
+  expect(await fJSON('true ln')).toEqual([0]);
+  expect(await fJSON('false ln')).toEqual([0]);
 });
 
-test('convert falsy values', async t => {
-  t.deepEqual(await fJSON('false boolean'), [false]);
-  t.deepEqual(await fJSON('0 boolean'), [false]);
-  t.deepEqual(await fJSON('-0 boolean'), [false]);
-  t.deepEqual(await fJSON('"" boolean'), [false]);
-  t.deepEqual(await fJSON('null boolean'), [false]);
-  t.deepEqual(await fJSON('nan boolean'), [false]);
+test('convert falsy values', async () => {
+  expect(await fJSON('false boolean')).toEqual([false]);
+  expect(await fJSON('0 boolean')).toEqual([false]);
+  expect(await fJSON('-0 boolean')).toEqual([false]);
+  expect(await fJSON('"" boolean')).toEqual([false]);
+  expect(await fJSON('null boolean')).toEqual([false]);
+  expect(await fJSON('nan boolean')).toEqual([false]);
 });
 
-test('convert truthiness values', async t => {
-  t.deepEqual(await fJSON('true boolean'), [true]);
-  t.deepEqual(await fJSON('1 boolean'), [true]);
-  t.deepEqual(await fJSON('-1 boolean'), [true]);
-  t.deepEqual(await fJSON('"false" boolean'), [true]);
-  t.deepEqual(await fJSON('"any string" boolean'), [true]);
-  t.deepEqual(await fJSON('[] boolean'), [true]);
-  t.deepEqual(await fJSON('{} boolean'), [true]);
-  t.deepEqual(await fJSON('infinity boolean'), [true]);
-  t.deepEqual(await fJSON('"1/1/1990" date boolean'), [true]);
-  t.deepEqual(await fJSON('1 0 / boolean'), [true]);
-  t.deepEqual(await fJSON('i boolean'), [true]);
+test('convert truthiness values', async () => {
+  expect(await fJSON('true boolean')).toEqual([true]);
+  expect(await fJSON('1 boolean')).toEqual([true]);
+  expect(await fJSON('-1 boolean')).toEqual([true]);
+  expect(await fJSON('"false" boolean')).toEqual([true]);
+  expect(await fJSON('"any string" boolean')).toEqual([true]);
+  expect(await fJSON('[] boolean')).toEqual([true]);
+  expect(await fJSON('{} boolean')).toEqual([true]);
+  expect(await fJSON('infinity boolean')).toEqual([true]);
+  expect(await fJSON('"1/1/1990" date boolean')).toEqual([true]);
+  expect(await fJSON('1 0 / boolean')).toEqual([true]);
+  expect(await fJSON('i boolean')).toEqual([true]);
 });
-

@@ -1,60 +1,79 @@
-import test from 'ava';
-import {
-  fJSON,
-  fValue,
-  Decimal,
-  Complex,
-  Word
-} from './helpers/setup';
+import { fJSON, fValue, Decimal, Complex, Word } from './helpers/setup';
 import { stringifyStrict } from '../src/utils/json';
 
-test('prims', t => {
-  t.deepEqual(stringifyStrict(42), '42', 'number');
-  t.deepEqual(stringifyStrict(-42), '-42', 'negative number');
-  t.deepEqual(stringifyStrict('woo!!!'), '"woo!!!"', 'string');
-  t.deepEqual(stringifyStrict(true), 'true', 'boolean');
-  t.deepEqual(stringifyStrict(null), 'null', 'null');
+test('prims', () => {
+  expect(stringifyStrict(42)).toEqual('42');
+  expect(stringifyStrict(-42)).toEqual('-42');
+  expect(stringifyStrict('woo!!!')).toEqual('"woo!!!"');
+  expect(stringifyStrict(true)).toEqual('true');
+  expect(stringifyStrict(null)).toEqual('null');
 });
 
-test('special', t => {
-  t.deepEqual(stringifyStrict(-0), '{"$numberDecimal":"-0"}', 'negative zero');
-  t.deepEqual(stringifyStrict(undefined), '{"$undefined":true}', 'undefined');
-  t.deepEqual(stringifyStrict(NaN), '{"$numberDecimal":"NaN"}', 'NaN');
-  t.deepEqual(stringifyStrict(Infinity), '{"$numberDecimal":"Infinity"}', 'Infinity');
-  t.deepEqual(stringifyStrict(-Infinity), '{"$numberDecimal":"-Infinity"}', 'Infinity');
-  t.deepEqual(stringifyStrict(/regexp/img), '{"$regex":"regexp","$options":"gim"}', 'RegExp');
-  t.deepEqual(stringifyStrict(new Date(1e12)), '{"$date":"2001-09-09T01:46:40.000Z"}', 'Date');
-  t.deepEqual(stringifyStrict(Symbol('a')), '{"$symbol":"a"}', 'Symbol');
+test('special', () => {
+  expect(stringifyStrict(-0)).toEqual('{"$numberDecimal":"-0"}');
+  expect(stringifyStrict(undefined)).toEqual('{"$undefined":true}');
+  expect(stringifyStrict(NaN)).toEqual('{"$numberDecimal":"NaN"}');
+  expect(stringifyStrict(Infinity)).toEqual('{"$numberDecimal":"Infinity"}');
+  expect(stringifyStrict(-Infinity)).toEqual('{"$numberDecimal":"-Infinity"}');
+  expect(stringifyStrict(/regexp/gim)).toEqual(
+    '{"$regex":"regexp","$options":"gim"}'
+  );
+  expect(stringifyStrict(new Date(1e12))).toEqual(
+    '{"$date":"2001-09-09T01:46:40.000Z"}'
+  );
+  expect(stringifyStrict(Symbol('a'))).toEqual('{"$symbol":"a"}');
 });
 
-test('nested', t => {
+test('nested', () => {
   testStringify('Array', ['a', 'b', 'c'], '["a","b","c"]');
   testStringify('Array (empty)', [], '[]');
   testStringify('Array (sparse)', [, 'b', , ], '[null,"b",null]');
-  testStringify('Object', {foo: 'bar', 'x-y': 'z'}, '{"foo":"bar","x-y":"z"}');
+  testStringify(
+    'Object',
+    { foo: 'bar', 'x-y': 'z' },
+    '{"foo":"bar","x-y":"z"}'
+  );
   testStringify('Set', new Set([1, 2, 3]), '{"$set":[1,2,3]}');
   testStringify('Map', new Map([['a', 'b']]), '{"$map":[["a","b"]]}');
 
   function testStringify(name: string, input: any, expected: string) {
-    t.deepEqual(stringifyStrict(input), expected, name);
+    expect(stringifyStrict(input)).toEqual(expected);
   }
 });
 
-test('nested - special', t => {
-  testStringify('Array', ['a', new Date(1e12), 'c'], '["a",{"$date":"2001-09-09T01:46:40.000Z"},"c"]');
-  testStringify('Object', {foo: 'bar', 'x-y': new Date(1e12)}, '{"foo":"bar","x-y":{"$date":"2001-09-09T01:46:40.000Z"}}');
-  testStringify('Set', new Set([1, new Date(1e12), 3]), '{"$set":[1,{"$date":"2001-09-09T01:46:40.000Z"},3]}');
-  testStringify('Map', new Map([['a', new Date(1e12)]]), '{"$map":[["a",{"$date":"2001-09-09T01:46:40.000Z"}]]}');
+test('nested - special', () => {
+  testStringify(
+    'Array',
+    ['a', new Date(1e12), 'c'],
+    '["a",{"$date":"2001-09-09T01:46:40.000Z"},"c"]'
+  );
+  testStringify(
+    'Object',
+    { foo: 'bar', 'x-y': new Date(1e12) },
+    '{"foo":"bar","x-y":{"$date":"2001-09-09T01:46:40.000Z"}}'
+  );
+  testStringify(
+    'Set',
+    new Set([1, new Date(1e12), 3]),
+    '{"$set":[1,{"$date":"2001-09-09T01:46:40.000Z"},3]}'
+  );
+  testStringify(
+    'Map',
+    new Map([['a', new Date(1e12)]]),
+    '{"$map":[["a",{"$date":"2001-09-09T01:46:40.000Z"}]]}'
+  );
 
   function testStringify(name: string, input: any, expected: string) {
-    t.deepEqual(stringifyStrict(input), expected, name);
+    expect(stringifyStrict(input)).toEqual(expected);
   }
 });
 
-test('fflat', t => {
-  t.deepEqual(stringifyStrict(new Decimal(42)), '{"$numberDecimal":"42"}', 'decimal');
-  t.deepEqual(stringifyStrict(new Complex(42, 3)), '{"@@Complex":{"re":"42","im":"3"}}', 'complex');
-  t.deepEqual(stringifyStrict(new Word('word')), '{"@@Action":"word"}', 'word');
+test('fflat', () => {
+  expect(stringifyStrict(new Decimal(42))).toEqual('{"$numberDecimal":"42"}');
+  expect(stringifyStrict(new Complex(42, 3))).toEqual(
+    '{"@@Complex":{"re":"42","im":"3"}}'
+  );
+  expect(stringifyStrict(new Word('word'))).toEqual('{"@@Action":"word"}');
 });
 
 /* test('cycles', async t => {
@@ -80,7 +99,7 @@ test('fflat', t => {
   }
 }); */
 
-test('deep', async t => {
+test('deep', async () => {
   const obj = {
     string: 'a_string',
     number: 42,
@@ -92,7 +111,7 @@ test('deep', async t => {
     }
   };
 
-  t.snapshot(stringifyStrict(obj));
+  expect(stringifyStrict(obj)).toMatchSnapshot();
 
   /* obj.object.arr = obj.array;
   t.snapshot(stringifyStrict(obj));
@@ -117,46 +136,58 @@ test('deep', async t => {
 
 // FF JSON
 
-test('generate json for strings', async t => {
-  t.deepEqual((await fJSON('"hello"'))[0], 'hello');
-  t.deepEqual((await fJSON('["hello" "world"]'))[0], ['hello', 'world']);
-  t.deepEqual((await fJSON('{ x: ["hello" "world"] }'))[0], {
+test('generate json for strings', async () => {
+  expect((await fJSON('"hello"'))[0]).toEqual('hello');
+  expect((await fJSON('["hello" "world"]'))[0]).toEqual(['hello', 'world']);
+  expect((await fJSON('{ x: ["hello" "world"] }'))[0]).toEqual({
     x: ['hello', 'world']
   });
 });
 
-test('generate json for decimals', async t => {
-  t.deepEqual((await fJSON('1'))[0], { $numberDecimal: '1' });
-  t.deepEqual((await fJSON('[1 2]'))[0], [
+test('generate json for decimals', async () => {
+  expect((await fJSON('1'))[0]).toEqual({ $numberDecimal: '1' });
+  expect((await fJSON('[1 2]'))[0]).toEqual([
     { $numberDecimal: '1' },
     { $numberDecimal: '2' }
   ]);
-  t.deepEqual((await fJSON('{ x: [1 2] }'))[0], {
+  expect((await fJSON('{ x: [1 2] }'))[0]).toEqual({
     x: [{ $numberDecimal: '1' }, { $numberDecimal: '2' }]
   });
 });
 
-test('generate json for complex values', async t => {
-  t.deepEqual((await fJSON('{ x: [1 2], y: i }'))[0], {
+test('generate json for complex values', async () => {
+  expect((await fJSON('{ x: [1 2], y: i }'))[0]).toEqual({
     x: [{ $numberDecimal: '1' }, { $numberDecimal: '2' }],
     y: { '@@Complex': { re: '0', im: '1' } }
   });
 });
 
-test('generate json for actions', async t => {
-  t.deepEqual((await fJSON('"word" :'))[0], { '@@Action': 'word' });
-  t.deepEqual((await fJSON('[ "a" "b" ] :'))[0], { '@@Action': ['a', 'b'] });
-  t.deepEqual((await fJSON('[ 1 2 ] :'))[0], { '@@Action': [{ $numberDecimal: '1' }, { $numberDecimal: '2' }] });
-  t.deepEqual((await fJSON('[ a b ] :'))[0], { '@@Action': [{ '@@Action': 'a' }, { '@@Action': 'b' }] });
+test('generate json for actions', async () => {
+  expect((await fJSON('"word" :'))[0]).toEqual({ '@@Action': 'word' });
+  expect((await fJSON('[ "a" "b" ] :'))[0]).toEqual({ '@@Action': ['a', 'b'] });
+  expect((await fJSON('[ 1 2 ] :'))[0]).toEqual({
+    '@@Action': [{ $numberDecimal: '1' }, { $numberDecimal: '2' }]
+  });
+  expect((await fJSON('[ a b ] :'))[0]).toEqual({
+    '@@Action': [{ '@@Action': 'a' }, { '@@Action': 'b' }]
+  });
 });
 
-test('generate json for other values', async t => {  // todo create better json rep
-  t.deepEqual((await fJSON('null'))[0], null);
-  t.deepEqual((await fJSON('nan'))[0], { $numberDecimal: 'NaN' });
-  t.deepEqual((await fJSON('-0'))[0], { $numberDecimal: '-0' });
-  t.deepEqual((await fJSON('infinity'))[0], { $numberDecimal: 'Infinity' });
-  t.deepEqual((await fJSON('-infinity'))[0], { $numberDecimal: '-Infinity' });
-  t.deepEqual((await fJSON('"1/1/1990" date'))[0], { $date: '1990-01-01T07:00:00.000Z' });
-  t.deepEqual((await fJSON('"/a./i" regexp'))[0], { $regex: 'a.', $options: 'i' });
-  t.deepEqual((await fJSON('#word'))[0], { $symbol: 'word' });
+test('generate json for other values', async () => {
+  // todo create better json rep
+  expect((await fJSON('null'))[0]).toEqual(null);
+  expect((await fJSON('nan'))[0]).toEqual({ $numberDecimal: 'NaN' });
+  expect((await fJSON('-0'))[0]).toEqual({ $numberDecimal: '-0' });
+  expect((await fJSON('infinity'))[0]).toEqual({ $numberDecimal: 'Infinity' });
+  expect((await fJSON('-infinity'))[0]).toEqual({
+    $numberDecimal: '-Infinity'
+  });
+  expect((await fJSON('"1/1/1990" date'))[0]).toEqual({
+    $date: '1990-01-01T07:00:00.000Z'
+  });
+  expect((await fJSON('"/a./i" regexp'))[0]).toEqual({
+    $regex: 'a.',
+    $options: 'i'
+  });
+  expect((await fJSON('#word'))[0]).toEqual({ $symbol: 'word' });
 });

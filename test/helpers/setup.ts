@@ -1,4 +1,4 @@
-// import { check, gen } from 'ava-check';
+import { join } from 'path';
 
 import { createStack } from '../../src/stack';
 import { StackEnv } from '../../src/env';
@@ -8,7 +8,7 @@ import { Decimal, Complex } from '../../src/types';
 export * from '../../src/types';
 
 // TODO: create test user directory fixtures
-process.chdir('./src/ff-lib/');
+process.chdir(join(__filename, '../../../src/ff-lib/'));
 
 log.level = process.env.NODE_ENV || 'error';
 
@@ -103,5 +103,5 @@ export function nearly(a: any, b: any) {
 
 export const options = {
   numTests: process.env.TESTS === 'full' ? 100 : 50,
-  maxSize: process.env.TESTS === 'full' ? 40 : 20,
+  maxSize: process.env.TESTS === 'full' ? 40 : 20
 };

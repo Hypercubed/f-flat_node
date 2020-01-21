@@ -1,26 +1,18 @@
-import test from 'ava';
 import { fValues } from './helpers/setup';
 
-test('in/fork', async t => {
-  t.deepEqual(
-    await fValues('a: ["before"] def [ a ] in'),
-    [['before']],
-    'fork should have access to parent scope'
-  );
-  t.deepEqual(
-    await fValues('a: ["outer"] def [ a: ["inner"] def a ] fork a'),
-    [['inner'], 'outer'],
-    'fork should isolate child scope'
-  );
-  t.deepEqual(
-    await fValues('a: ["outer"] def [ b: ["inner"] def a ] in b'),
-    [['outer'], 'inner'],
-    'in does not isolate child scope'
-  );
+test('in/fork', async () => {
+  expect(await fValues('a: ["before"] def [ a ] in')).toEqual([['before']]);
+  expect(
+    await fValues('a: ["outer"] def [ a: ["inner"] def a ] fork a')
+  ).toEqual([['inner'], 'outer']);
+  expect(
+    await fValues('a: ["outer"] def [ b: ["inner"] def a ] in b')
+  ).toEqual([['outer'], 'inner']);
 });
 
-test('module `use` scoping', async t => {
-  t.deepEqual(await fValues(`
+test('module `use` scoping', async () => {
+  expect(
+    await fValues(`
     [
       x: [ 1 2 + ] ;
       y: [ x 2 * ] ;
@@ -28,9 +20,11 @@ test('module `use` scoping', async t => {
     ] fork drop use
     x: [ 8 ] ;
     x y
-  `), [8, 6]);
+  `)
+  ).toEqual([8, 6]);
 
-  t.deepEqual(await fValues(`
+  expect(
+    await fValues(`
     x: [ 8 ] ;
     [
       x: [ 1 2 + ] ;
@@ -38,20 +32,24 @@ test('module `use` scoping', async t => {
       export
     ] fork drop use
     x y
-  `), [8, 6]);
+  `)
+  ).toEqual([8, 6]);
 
-  t.deepEqual(await fValues(`
+  expect(
+    await fValues(`
     [
       x: [ 1 2 + ] ;
       y: [ x 2 * ] ;
       export
     ] fork drop use
     x y
-  `), [3, 6]);
+  `)
+  ).toEqual([3, 6]);
 });
 
-test('module def scoping', async t => {
-  t.deepEqual(await fValues(`
+test('module def scoping', async () => {
+  expect(
+    await fValues(`
     s: [
       x: [ 1 2 + ] ;
       y: [ x 3 * ] ;
@@ -60,9 +58,11 @@ test('module def scoping', async t => {
     x: [ 5 ] ;
     y: [ 7 ] ;
     x y s.x s.y
-  `), [5, 7, 3, 9]);
+  `)
+  ).toEqual([5, 7, 3, 9]);
 
-  t.deepEqual(await fValues(`
+  expect(
+    await fValues(`
     x: [ 5 ] ;
     y: [ 7 ] ;
     s: [
@@ -71,9 +71,11 @@ test('module def scoping', async t => {
       export
     ] fork drop ;
     x y s.x s.y
-  `), [5, 7, 3, 9]);
+  `)
+  ).toEqual([5, 7, 3, 9]);
 
-  t.deepEqual(await fValues(`
+  expect(
+    await fValues(`
     x: [ 5 ] ;
     y: [ 7 ] ;
     s: [
@@ -81,11 +83,13 @@ test('module def scoping', async t => {
       export
     ] fork drop ;
     x y s.y
-  `), [5, 7, 15]);
+  `)
+  ).toEqual([5, 7, 15]);
 });
 
-test('calling within child', async t => {
-  t.deepEqual(await fValues(`
+test('calling within child', async () => {
+  expect(
+    await fValues(`
     x: [ 5 ] ;
     y: [ 7 ] ;
     s: [
@@ -96,11 +100,13 @@ test('calling within child', async t => {
     [
       x y s.x s.y
     ] fork
-  `), [[5, 7, 3, 9]]);
+  `)
+  ).toEqual([[5, 7, 3, 9]]);
 });
 
-test('deep calling within child', async t => {
-  t.deepEqual(await fValues(`
+test('deep calling within child', async () => {
+  expect(
+    await fValues(`
     x: [ 5 ] ;
     y: [ 7 ] ;
     s: [
@@ -114,37 +120,43 @@ test('deep calling within child', async t => {
     [
       x y s.s.x s.s.y
     ] fork
-  `), [[5, 7, 3, 9]]);
+  `)
+  ).toEqual([[5, 7, 3, 9]]);
 });
 
-test(`locals don't collide with scoped definitions`, async t => {
-  t.deepEqual(await fValues(`
+test(`locals don't collide with scoped definitions`, async () => {
+  expect(
+    await fValues(`
     x: 128 ;
     y: [ x x + ] ;
     [
       x: 256 ;
       y
     ] fork
-  `), [ [ 256 ] ]);
+  `)
+  ).toEqual([[256]]);
 });
 
-test('hides private', async t => {
-  t.deepEqual(await fValues(`
+test('hides private', async () => {
+  expect(
+    await fValues(`
     [
       _x: [ 1 2 + ] ;
       y: [ _x 3 * ] ;
       export
     ] fork drop use
     y 'x' defined?
-  `), [9, false]);
+  `)
+  ).toEqual([9, false]);
 
-  t.deepEqual(await fValues(`
+  expect(
+    await fValues(`
     s: [
       _x: [ 1 2 + ] ;
       y: [ _x 3 * ] ;
       export
     ] fork drop ;
     s.y 's._x' defined?
-  `), [9, false]);
+  `)
+  ).toEqual([9, false]);
 });
-
