@@ -1,6 +1,6 @@
 import { tokenize } from './tokenizer';
 
-import { Word, Decimal, StackValue, I } from '../types';
+import { Word, Key, Decimal, StackValue, I } from '../types';
 import { unescapeString } from '../utils/stringConversion';
 
 const templateAction = new Word(':template');
@@ -28,18 +28,21 @@ function processParserTokens(node: any): StackValue | undefined {
       return doubleQuotedString(node.allText);
     case 'symbol':
       return Symbol(node.allText.slice(1));
-    case 'number':
+    case 'key': {
+      const id = node.allText.trim().slice(0, -1).toLowerCase();
+      return new Key(id);  // replace with Key
+    }
+    case 'number': {
       const n = processNumeric(node.allText);
       if (!isNaN(<any>n)) {
         return <any>n;
       } // else fall through
-    case 'word':
+    }
+    case 'word': {
       const id = node.allText.toLowerCase().trim();
-      if (id.length <= 0) {
-        return undefined;
-      } else if (id.length > 1) {
-        return convertLiteral(node.allText);
-      } // else fall through (all length)
+      if (id.length <= 0) return undefined;
+      return new Word(id);
+    }
     case 'bracket':
       return new Word(node.allText);
     case 'null':
@@ -92,10 +95,5 @@ function convertWord(value: string) {
 
 function convertLiteral(value: string): StackValue | undefined {
   // move these to parser
-  if (value.slice(-1) === ':') {
-    // this is a hack to push word literals, get rid of this
-    value = value.slice(0, -1);
-    value = <any>new Word(value);
-  }
   return new Word(value);
 }

@@ -160,3 +160,29 @@ test('hides private', async () => {
   `)
   ).toEqual([9, false]);
 });
+
+test('module `include` scoping', async () => {
+  expect(
+    await fValues(`
+    [
+      'shuffle.ff' include
+      x: [ 1 2 3 drop2 ] ;
+      export
+    ] fork drop use
+    x
+  `)
+  ).toEqual([1]);
+});
+
+test('module `use` scoping', async () => {
+  expect(
+    await fValues(`
+    [
+      'shuffle.ff' import use
+      x: [ 1 2 3 drop2 ] ;
+      export
+    ] fork drop use
+    x
+  `)
+  ).toEqual([1]);
+});

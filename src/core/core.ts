@@ -8,6 +8,7 @@ import {
   Future,
   Sentence,
   Word,
+  Key,
   Just,
   Decimal
 } from '../types';
@@ -196,7 +197,12 @@ class Eval {
     return new Word(a);
   }
 
-  @signature([Word, Sentence])
+  @signature([Key])
+  key(a: Key) {
+    return new Word(a.value);
+  }
+
+  @signature([Word, Key, Sentence])
   word(a: Word) {
     return a;
   }
@@ -561,15 +567,15 @@ export const core = {
    * [ [ '' 'hello ' + '(world)' eval string + '' + ] ]
    * ```
    */
-  template: function(this: StackEnv, str: string): string {
+  template(this: StackEnv, str: string): string {
     return template(this, str);
   },
 
-  'template-with': function(this: StackEnv, str: string, action: any): string {
+  'template-with'(this: StackEnv, str: string, action: any): string {
     return template(this, str, action);
   },
 
-  'template-parts': function(this: StackEnv, str: string): string {
+  'template-parts'(this: StackEnv, str: string): string {
     return templateParts(this, str);
   },
 

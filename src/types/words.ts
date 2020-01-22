@@ -68,6 +68,31 @@ export class Word extends Action {
   }
 }
 
+export class Key extends Action {
+  @guard()
+  static isKey(x: unknown): x is Key {
+    return x instanceof Key;
+  }
+
+  constructor(value: string, displayString?: string) {
+    super(value, displayString);
+    if (!displayString) {
+      this.displayString = toString(value) + ':';
+    }
+  }
+}
+
+export class Alias extends Action {
+  @guard()
+  static isAlias(x: unknown): x is Alias {
+    return x instanceof Alias;
+  }
+
+  constructor(value: string, displayString?: string) {
+    super(value, displayString);
+  }
+}
+
 export class Sentence extends Action {
   @guard()
   static isSentence(x: unknown): x is Sentence {

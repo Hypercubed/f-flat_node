@@ -1,21 +1,18 @@
 import { signature, Any } from '@hypercubed/dynamo';
 
 import { ffPrettyPrint, FFlatError } from '../utils';
-import { dynamo, Sentence, Word, Just, StackValue } from '../types';
+import { dynamo, Sentence, Word, Key, StackValue } from '../types';
 import { StackEnv } from '../env';
 
 // todo: convert dictionary of stack values to dictinary of actions
 class CreateAction {
-  @signature([Word, Sentence])
+  @signature([Word, Key, Sentence])
   words(x: Word | Sentence): Word | Sentence {
     return x;
   }
 
   @signature()
   array(x: any[]): Sentence {
-    // if (x.length === 1 && (x[0] instanceof Word || x[0] instanceof Sentence)) {
-    //   return x[0];
-    // }
     return new Sentence(x);
   }
 
@@ -124,7 +121,7 @@ export const dict = {
    * [ [ 2 dup * ] ]
    * ```
    */
-  inline(this: StackEnv, x: Word | Sentence) {
+  inline(this: StackEnv, x: Word | Sentence | Key) {
     return this.dict.rewrite(x);
   },
 
@@ -149,8 +146,7 @@ export const dict = {
     if (typeof r === 'undefined') {
       return null;
     }
-    if (r instanceof Word || r instanceof Sentence) {
-      console.log(r.value);
+    if (r instanceof Word || r instanceof Sentence || r instanceof Key) {
       return r.displayString;
     }
     return ffPrettyPrint.formatValue(r, 0);

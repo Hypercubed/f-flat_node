@@ -15,16 +15,24 @@ g.identifierFirst = Myna.notChar(DELIMITER + QUOTES + BRACKETS);
 g.identifierNext = Myna.notChar(DELIMITER + QUOTES + BRACKETS + COLON);
 g.identifier = Myna.seq(
   g.identifierFirst,
-  g.identifierNext.zeroOrMore,
-  Myna.char(COLON).opt
+  g.identifierNext.zeroOrMore
 );
-g.word = g.identifier.copy.ast;
 
+g.word = Myna.seq(
+  g.identifier,
+  Myna.char(COLON).opt
+).ast;
+
+g.key = Myna.seq(
+  g.identifier,
+  Myna.char(COLON)
+).ast;
+
+// Numbers
 g.digit = Myna.choice(Myna.digit, Myna.char('_'));
-
 g.digits = g.digit.oneOrMore;
 
-// decimal
+// Decimal
 g.integer = Myna.seq(Myna.digit.oneOrMore, g.digit.zeroOrMore);
 g.fraction = Myna.seq('.', g.integer);
 g.plusOrMinus = Myna.char('+-');
@@ -111,6 +119,7 @@ g.value = Myna.choice(
   g.number,
   g.symbol,
   g.literal,
+  g.key,
   g.word,
   g.string,
   g.bracket

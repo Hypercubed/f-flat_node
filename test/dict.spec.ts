@@ -17,11 +17,11 @@ test('should def and use nested actions in a fork', async () => {
 });
 
 test('cannot overwrite defined words', async () => {
-  await expect(fValues('x: 123 def x: 456 def')).rejects.toThrow('Cannot overwrite local definition: x');
+  await expect(fValues('x: [123] def x: [456] def')).rejects.toThrow('Cannot overwrite local definition: x');
 });
 
 test('invalid keys', async () => {
-  await expect(fValues('x: 123 def x.y: 456 def')).rejects.toThrow('Invalid definition key: x.y');
+  await expect(fValues('x: [123] def x.y: [456] def')).rejects.toThrow('Invalid definition key: x.y');
 });
 
 test('should shadow definitions in a fork', async () => {

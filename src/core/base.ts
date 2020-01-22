@@ -30,6 +30,7 @@ import {
 import {
   dynamo,
   Word,
+  Key,
   Sentence,
   Seq,
   StackValue,
@@ -80,7 +81,7 @@ class Add {
     return lhs.concat(rhs);
   }
 
-  @signature([Word, Sentence], Array)
+  @signature([Word, Key, Sentence], Array)
   word(lhs: Word, rhs: StackValue[]): StackValue[] {
     return [lhs, ...rhs];
   }
@@ -311,10 +312,10 @@ class Mul {
    * [ [ 'a' 'b' ] ]
    *```
    */
-  @signature(Array, [Array, Word, Sentence, Function])
+  @signature(Array, [Array, Word, Key, Sentence, Function])
   arrayIntersparse = arrayMul;
 
-  @signature(String, [Array, Word, Sentence, Function])
+  @signature(String, [Array, Word, Key, Sentence, Function])
   stringIntersparse(lhs: string, rhs: unknown) {
     return arrayMul(lhs.split(''), rhs);
   }
@@ -473,10 +474,10 @@ class Div {
    * [ [ 'a' 'b' ] ]
    *```
    */
-  @signature(Array, [Array, Word, Sentence, Function])
+  @signature(Array, [Array, Word, Key, Sentence, Function])
   arrayIntersparse = arrayInvMul;
 
-  @signature(Array, [Array, Word, Sentence, Function])
+  @signature(Array, [Array, Word, Key, Sentence, Function])
   stringIntersparse(lhs: string, rhs: any) {
     return arrayInvMul(lhs.split(''), rhs);
   }
@@ -570,12 +571,12 @@ const div = dynamo.function(Div);
  *
  */
 class IDiv {
-  @signature(Array, [Array, Word, Sentence, Function])
+  @signature(Array, [Array, Word, Key, Sentence, Function])
   arrayIntersparse(lhs: any[], rhs: any) {
     return new Sentence(arrayMul(lhs, rhs));
   }
 
-  @signature(String, [Array, Word, Sentence, Function])
+  @signature(String, [Array, Word, Key, Sentence, Function])
   stringIntersparse(lhs: string, rhs: any) {
     return new Sentence(arrayMul(lhs.split(''), rhs));
   }
@@ -749,7 +750,7 @@ class Unshift {
   consString(lhs: any[], rhs: string) {
     return [lhs, new Word(rhs)];
   }
-  @signature([Array, Word, Sentence], [Array, Word, Sentence])
+  @signature([Array, Word, Key, Sentence], [Array, Word, Sentence])
   consWord(lhs: any, rhs: any) {
     return [lhs, rhs];
   }

@@ -2,7 +2,7 @@ import { signature, Any } from '@hypercubed/dynamo';
 import is from '@sindresorhus/is';
 import { getIn } from 'icepick';
 
-import { dynamo, StackValue, Sentence, Word, Seq, Vocabulary } from '../types';
+import { dynamo, StackValue, Sentence, Word, Key, Seq, Vocabulary } from '../types';
 import { IIF } from '../constants';
 
 function create(dictObject: Object | undefined) {
@@ -23,8 +23,8 @@ function create(dictObject: Object | undefined) {
       const newAction = new Sentence(expandedValue, action.displayString);
       return new Seq([newAction]);
     }
-    @signature()
-    Word(action: Word) {
+    @signature([Word, Key])
+    Word(action: Word | Key) {
       if (wordPaths.includes(action.value)) {
         return action;
       }

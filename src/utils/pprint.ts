@@ -8,6 +8,7 @@ import { signature, Any } from '@hypercubed/dynamo';
 
 import {
   dynamo,
+  Key,
   Word,
   Sentence,
   Decimal,
@@ -65,8 +66,8 @@ const DEFAULT_OPTS: InspectOptions = {
 };
 
 class GetType {
-  @signature([Word, Sentence])
-  words(x: Word | Sentence) {
+  @signature([Word, Sentence, Key])
+  words(x: Word | Sentence | Key) {
     return 'action';
   }
   @signature(Array)
@@ -161,7 +162,7 @@ export class FFlatPrettyPrinter {
       @signature(Boolean, Any)
       boolean = self.getStyledFormater('boolean');
 
-      @signature([Word, Sentence], Any)
+      @signature([Word, Sentence, Key], Any)
       word = self.getStyledFormater('name');
 
       @signature(String, Any)

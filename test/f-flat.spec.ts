@@ -116,7 +116,7 @@ test('clr in in and fork', async () => {
 
 test('map', async () => {
   expect(await fValues('[ 3 2 1 ] [ 2 * ] map')).toEqual([[6, 4, 2]]);
-  expect(await fValues('[ -3 -2 -1 ] abs: map')).toEqual([[3, 2, 1]]);
+  expect(await fValues('[ -3 -2 -1 ] [ abs ] map')).toEqual([[3, 2, 1]]);
 });
 
 test('should undo on error', async () => {
@@ -428,10 +428,10 @@ test('atoms are not executed by stack actions', async () => {
   expect(await fJSON('true a: b: choose')).toEqual([a]);
   expect(await fJSON('false a: b: choose')).toEqual([b]);
   expect(await fJSON('a: b: q< drop q>')).toEqual([b]);
-  expect(await fJSON('[a: b:] 1 @')).toEqual([{ '@@Action': b }]); // fix this
+  expect(await fJSON('[a: b:] 1 @')).toEqual([b]); // fix this
   expect(await fJSON('[a: b:] unstack')).toEqual([
-    { '@@Action': a },
-    { '@@Action': b }
+    a,
+    b
   ]); // fix this
 });
 

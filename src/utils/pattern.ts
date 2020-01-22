@@ -1,6 +1,6 @@
 import { signature, Any } from '@hypercubed/dynamo';
 
-import { dynamo, StackValue, Word } from '../types';
+import { dynamo, StackValue, Word, Key } from '../types';
 import { deepEquals } from './utils';
 
 class PatternMatch {
@@ -14,6 +14,12 @@ class PatternMatch {
   'any, Word'(a: any, b: Word): boolean {
     if (b.value === '_') return true;
     return a instanceof Word && a.value === b.value;
+  }
+
+  @signature(Any, Key)
+  'any, Key'(a: any, b: Word): boolean {
+    if (b.value === '_') return true;
+    return a instanceof Key && a.value === b.value;
   }
 
   @signature(Array, Array)

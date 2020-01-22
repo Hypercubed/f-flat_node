@@ -10,7 +10,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] More complexInfinity/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
 - [ ] stack underflow is an error!!
 - [ ] finish and use https://github.com/Hypercubed/real
-- [ ] Use `#:` as symbole prefix
+- [ ] Use `#:` as symbol prefix.  Symbols with whitespace (`#'foo'`)?
 
 # Improved scoping and namespaces
 - [x] immutable words (ex. `slip%8df57134`)
@@ -51,7 +51,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Decide
 - [x] Decide on macros, `dupn!3`, `dup<5>`, `range<1, 100>`, `range:(1, 10).` ? Using `range:(1, 10).`
-- [ ] `~` vs `!`, `!` vs `factorial`, `/=` or `!=`.
+- [ ] `~` vs `!`, `!` vs `factorial`, `/=` or `!=`, `?` vs `println`
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [ ] Choose `regex` vs `regexp`
 - [ ] Ranges?  Infinite ranges? generators?

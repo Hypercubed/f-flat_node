@@ -189,7 +189,7 @@ test('should define min', async () => {
 });
 
 test('should test primes', async () => {
-  expect(await fJSON('10 integers prime?: map')).toEqual([
+  expect(await fJSON('10 integers [ prime? ] map')).toEqual([
     [false, true, true, false, true, false, true, false, false, false]
   ]);
   // 1     2     3     4      5     6      7     8      9      10

@@ -14,7 +14,7 @@ include: [ __import-resolve __include ] def
 
 /**
  * ## `export`
- * Exports the current vocab and sens to parent
+ * Exports the current vocab and sends to parent
  */
 export: [ vocab send ] def
 

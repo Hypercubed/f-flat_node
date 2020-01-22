@@ -1,4 +1,4 @@
-import { Word, Sentence } from './words';
+import { Word, Key } from './words';
 import { Future } from './future';
 import { Complex } from './complex';
 import { Decimal } from './decimal';
@@ -8,7 +8,8 @@ export type StackValue =
   | string
   | boolean
   | Symbol
-  | Word
+  | Key
+  | Word  // remove this?
   | Future
   | undefined
   | null

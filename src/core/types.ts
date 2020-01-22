@@ -1,6 +1,6 @@
 import { signature, Any } from '@hypercubed/dynamo';
 
-import { dynamo, Word, Sentence, Just, Seq, Decimal, Complex } from '../types';
+import { dynamo, Word, Key, Just, Seq, Decimal, Complex } from '../types';
 import { type } from '../utils';
 
 const NUMERALS = '0123456789ABCDEF';
@@ -28,32 +28,32 @@ function convertBase(str: string, baseIn: number, baseOut: number) {
 }
 
 // todo: make part of the action object?
-class CreateAction {
-  @signature([Word, Sentence])
-  words(x: Word | Sentence): Word | Sentence {
-    return x;
-  }
+// class CreateAction {
+//   @signature([Word, Sentence])
+//   words(x: Word | Sentence): Word | Sentence {
+//     return x;
+//   }
 
-  @signature()
-  array(x: any[]): Sentence {
-    if (x.length === 1 && (x[0] instanceof Word || x[0] instanceof Sentence)) {
-      return x[0];
-    }
-    return new Sentence(x);
-  }
+//   @signature()
+//   array(x: any[]): Sentence {
+//     if (x.length === 1 && (x[0] instanceof Word || x[0] instanceof Sentence)) {
+//       return x[0];
+//     }
+//     return new Sentence(x);
+//   }
 
-  @signature()
-  string(x: string): Word {
-    return new Word(x);
-  }
+//   @signature()
+//   string(x: string): Word {
+//     return new Word(x);
+//   }
 
-  @signature(Any)
-  any(x: any): any {
-    return x;
-  }
-}
+//   @signature(Any)
+//   any(x: any): any {
+//     return x;
+//   }
+// }
 
-const action = dynamo.function(CreateAction);
+// const action = dynamo.function(CreateAction);
 
 class CreateNumber {
   @signature(Date)
@@ -234,7 +234,13 @@ export const types = {
    * ## `:` (action)
    */
   ':'(x: any) {
-    return new Just(x instanceof Word ? x : new Word(x));
+    if (x instanceof Word) {  // Converts to key?
+      return new Just(x);
+    }
+    if (x instanceof Key) {
+      return new Just(x);
+    }
+    return new Just(new Word(x));
   },
 
   /**

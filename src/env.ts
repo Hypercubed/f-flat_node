@@ -16,6 +16,7 @@ import {
   StackValue,
   Future,
   Word,
+  Key,
   Sentence
 } from './types';
 import {
@@ -284,6 +285,10 @@ export class StackEnv {
       return;
     }
 
+    if (token instanceof Key) {
+      return this.push(token);
+    }
+
     if (token instanceof Word && this.isImmediate(token)) {
       return this.dispatchWord(token);
     }
@@ -294,10 +299,15 @@ export class StackEnv {
   private dispatchWord(token: Word) {
     let tokenValue = token.value;
 
-    if (!is.string(tokenValue)) {
+    if (tokenValue instanceof Word) {
       // this is a hack to push word literals, get rid of this
       return this.push(tokenValue as StackValue);
     }
+
+    // if (!is.string(tokenValue)) {
+    //   // this is a hack to push word literals, get rid of this
+    //   return this.push(tokenValue as StackValue);
+    // }
 
     if (tokenValue.length > 1) {
       if (tokenValue[tokenValue.length - 1] === IIF) {
@@ -343,8 +353,15 @@ export class StackEnv {
         argArray
       };
 
-      const retValue = fn.apply(this, argArray) as StackValue | Just | Seq;
-      return this.dispatchReturnValue(retValue);
+      try {
+        const retValue = fn.apply(this, argArray) as StackValue | Just | Seq;
+        return this.dispatchReturnValue(retValue);
+      } catch (e) {
+        if (e instanceof FFlatError) {
+          throw e;
+        }
+        throw new FFlatError(`Failed to dispatch ${name}`);
+      }
     }
 
     throw new FFlatError('Stack underflow');
