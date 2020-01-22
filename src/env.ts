@@ -299,16 +299,6 @@ export class StackEnv {
   private dispatchWord(token: Word) {
     let tokenValue = token.value;
 
-    if (tokenValue instanceof Word) {
-      // this is a hack to push word literals, get rid of this
-      return this.push(tokenValue as StackValue);
-    }
-
-    // if (!is.string(tokenValue)) {
-    //   // this is a hack to push word literals, get rid of this
-    //   return this.push(tokenValue as StackValue);
-    // }
-
     if (tokenValue.length > 1) {
       if (tokenValue[tokenValue.length - 1] === IIF) {
         tokenValue = tokenValue.slice(0, -1);

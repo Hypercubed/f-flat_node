@@ -9,7 +9,7 @@ export type StackValue =
   | boolean
   | Symbol
   | Key
-  | Word  // remove this?
+  | Word
   | Future
   | undefined
   | null
