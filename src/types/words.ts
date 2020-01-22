@@ -63,7 +63,7 @@ export class Word extends Action {
     return x instanceof Word;
   }
 
-  constructor(value: string, displayString?: string) {
+  constructor(public value: string, public displayString?: string) {
     super(value, displayString);
   }
 }
@@ -74,7 +74,7 @@ export class Key extends Action {
     return x instanceof Key;
   }
 
-  constructor(value: string, displayString?: string) {
+  constructor(public value: string, public displayString?: string) {
     super(value, displayString);
     if (!displayString) {
       this.displayString = toString(value) + ':';

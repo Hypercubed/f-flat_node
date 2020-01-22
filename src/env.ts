@@ -285,10 +285,6 @@ export class StackEnv {
       return;
     }
 
-    if (token instanceof Key) {
-      return this.push(token);
-    }
-
     if (token instanceof Word && this.isImmediate(token)) {
       return this.dispatchWord(token);
     }

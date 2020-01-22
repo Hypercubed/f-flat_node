@@ -19,20 +19,23 @@ import {
 } from '../types/index';
 
 const STYLES = {
-  number: chalk.magenta,
+  number: chalk.blue,
   boolean: chalk.magenta,
 
   null: chalk.greenBright,
   undefined: chalk.grey,
 
-  string: chalk.green,
+  string: chalk.yellow,
 
+  name: chalk.green,
   special: chalk.cyan,
-  name: chalk.cyan,
-  symbol: chalk.cyan,
+  key: chalk.bold.hex('#A0A000'),
+  symbol: chalk.red,
   date: chalk.cyan,
 
-  regexp: chalk.red
+  regexp: chalk.hex('#9C27B0'),
+
+  comment: chalk.gray
 };
 
 interface InspectOptions {
@@ -128,6 +131,7 @@ export class FFlatPrettyPrinter {
   private _stylizeString: Function;
   private _stylizeName: Function;
   private _stylizeDate: Function;
+  private _stylizeKey: Function;
 
   formatValue: (item: any, depth?: number) => string;
 
@@ -141,6 +145,7 @@ export class FFlatPrettyPrinter {
     this._stylizeString = this.getStyledFormater('string');
     this._stylizeName = this.getStyledFormater('name');
     this._stylizeDate = this.getStyledFormater('date');
+    this._stylizeKey = this.getStyledFormater('key');
 
     const self = this;
 
@@ -162,8 +167,15 @@ export class FFlatPrettyPrinter {
       @signature(Boolean, Any)
       boolean = self.getStyledFormater('boolean');
 
-      @signature([Word, Sentence, Key], Any)
-      word = self.getStyledFormater('name');
+      @signature([Word, Sentence], Any)
+      word(value: any, depth: number) {
+        return self._stylizeName(value);
+      }
+
+      @signature(Key, Any)
+      key(value: any, depth: number) {
+        return self._stylizeKey(value.displayString || value.value);
+      }
 
       @signature(String, Any)
       string = self.formatString;
