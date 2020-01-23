@@ -8,7 +8,7 @@ import {
   Sentence,
   Word,
   Key,
-  Seq,
+  ReturnValues,
   Vocabulary
 } from '../types';
 import { IIF } from '../constants';
@@ -21,7 +21,7 @@ function create(dictObject: Object | undefined) {
     array(arr: any[]) {
       return arr.reduce((p, i) => {
         const n = _rewrite(i);
-        n instanceof Seq ? p.push(...n.value) : p.push(n);
+        n instanceof ReturnValues ? p.push(...n.value) : p.push(n);
         return p;
       }, []);
     }
@@ -29,7 +29,7 @@ function create(dictObject: Object | undefined) {
     Sentence(action: Sentence) {
       const expandedValue = _rewrite(action.value);
       const newAction = new Sentence(expandedValue, action.displayString);
-      return new Seq([newAction]);
+      return new ReturnValues([newAction]);
     }
     @signature([Word, Key])
     Word(action: Word | Key) {
@@ -41,7 +41,7 @@ function create(dictObject: Object | undefined) {
 
       if (is.undefined(value) && !(action.value as string).endsWith(IIF))
         return action;
-      if (is.function_(value)) return new Seq([action]);
+      if (is.function_(value)) return new ReturnValues([action]);
 
       wordPaths.push(action.value);
       const ret = _rewrite(value);
@@ -52,7 +52,7 @@ function create(dictObject: Object | undefined) {
     plainObject(obj: Object) {
       return Object.keys(obj).reduce((p, key) => {
         const n = _rewrite(obj[key]); // todo: think about this, do we ever want to work on anything other than {string: Array}?
-        n instanceof Seq
+        n instanceof ReturnValues
           ? (p[key] = n.value.length === 1 ? n.value[0] : n.value)
           : (p[key] = n);
         return p;

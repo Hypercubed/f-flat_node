@@ -32,7 +32,7 @@ import {
   Word,
   Key,
   Sentence,
-  Seq,
+  ReturnValues,
   StackValue,
   Future,
   Complex,
@@ -521,7 +521,7 @@ class Div {
   @signature([Array, String], [Number, Decimal])
   splitAt(a: any[] | string, b: number) {
     b = +b | 0;
-    return new Seq([a.slice(0, b), a.slice(b)]);
+    return new ReturnValues([a.slice(0, b), a.slice(b)]);
   }
 
   @signature(Future, Any)

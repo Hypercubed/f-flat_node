@@ -1,7 +1,7 @@
 import { signature, Any } from '@hypercubed/dynamo';
 import is from '@sindresorhus/is';
 
-import { dynamo, Sentence, Word, Seq, Vocabulary } from '../types';
+import { dynamo, Sentence, Word, ReturnValues, Vocabulary } from '../types';
 import { IIF } from '../constants';
 
 type D = { [key: string]: string };
@@ -12,7 +12,7 @@ function create(dictObject: D) {
     array(arr: any[]) {
       return arr.reduce((p, i) => {
         const n = _rewrite(i);
-        n instanceof Seq ? p.push(...n.value) : p.push(n);
+        n instanceof ReturnValues ? p.push(...n.value) : p.push(n);
         return p;
       }, []);
     }
@@ -36,7 +36,7 @@ function create(dictObject: D) {
     plainObject(obj: Object) {
       return Object.keys(obj).reduce((p, key) => {
         const n = _rewrite(obj[key]); // todo: think about this, do we ever want to work on anything other than {string: Array}?
-        n instanceof Seq
+        n instanceof ReturnValues
           ? (p[key] = n.value.length === 1 ? n.value[0] : n.value)
           : (p[key] = n);
         return p;

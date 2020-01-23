@@ -10,8 +10,7 @@ import { FFlatError, encode } from './utils';
 
 import {
   dynamo,
-  Seq,
-  Just,
+  ReturnValues,
   Vocabulary,
   StackValue,
   Future,
@@ -332,23 +331,19 @@ export class StackEnv {
         argArray
       };
 
-      const retValue = fn.apply(this, argArray) as StackValue | Just | Seq;
+      const retValue = fn.apply(this, argArray) as StackValue | ReturnValues;
       return this.dispatchReturnValue(retValue);
     }
 
     throw new FFlatError('Stack underflow', this);
   }
 
-  private dispatchReturnValue(value: StackValue | Just | Seq): void {
+  private dispatchReturnValue(value: StackValue | ReturnValues): void {
     if (value instanceof Word || value instanceof Sentence) {
       this.enqueueFront(value.value);
       return;
     }
-    if (value instanceof Just) {
-      this.push(value.value);
-      return;
-    }
-    if (value instanceof Seq) {
+    if (value instanceof ReturnValues) {
       this.push(...value.value);
       return;
     }

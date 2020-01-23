@@ -10,7 +10,7 @@ import {
   Word,
   Sentence,
   Future,
-  Seq,
+  ReturnValues,
   StackValue,
   Decimal
 } from '../types';
@@ -98,8 +98,8 @@ export const experimental = {
    * [ [ 2 3 4 * ] ]
    * ```
    */
-  suspend(this: StackEnv): Seq {
-    return new Seq(this.queue.splice(0) as StackValue[]); // rename stop?
+  suspend(this: StackEnv): ReturnValues {
+    return new ReturnValues(this.queue.splice(0) as StackValue[]); // rename stop?
   },
 
   /**

@@ -1,7 +1,7 @@
 import { performance } from 'perf_hooks';
 import { signature, Any } from '@hypercubed/dynamo';
 
-import { dynamo, Word, Key, Just, Seq, Decimal, Complex } from '../types';
+import { dynamo, Word, Key, ReturnValues, Decimal, Complex } from '../types';
 import { type } from '../utils';
 
 const NUMERALS = '0123456789ABCDEF';
@@ -227,12 +227,12 @@ export const types = {
   ':'(x: any) {
     if (x instanceof Word) {
       // Converts to key?
-      return new Just(x);
+      return new ReturnValues([x]);
     }
     if (x instanceof Key) {
-      return new Just(x);
+      return new ReturnValues([x]);
     }
-    return new Just(new Word(x));
+    return new ReturnValues([new Word(x)]);
   },
 
   /**
@@ -291,7 +291,7 @@ export const types = {
    * ## `date-expand`
    */
   'date-expand': (a: Date) =>
-    new Seq([a.getFullYear(), a.getMonth() + 1, a.getDate()]),
+    new ReturnValues([a.getFullYear(), a.getMonth() + 1, a.getDate()]),
 
   /**
    * ## `clock`

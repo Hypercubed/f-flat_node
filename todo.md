@@ -46,13 +46,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Safer module loading (`Sentence` -> `Array` on `module`)
 
 # Type cleaning
-- [x] `xyz:` -> `Key`
 - [ ] `:xyz` -> ???
-- [ ] `Action` vs `Word`
+- [ ] `Action` vs `Word`?
 - [ ] `Alias` type?
-- [x] `Dictionary` -> `Vocabulary`
-- [ ] Just -> ReturnValue
-- [ ] Seq -> ReturnSequence
 
 # Decide
 - [x] Decide on macros, `dupn!3`, `dup<5>`, `range<1, 100>`, `range:(1, 10).` ? Using `range:(1, 10).`

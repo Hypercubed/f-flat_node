@@ -1,9 +1,5 @@
 import { StackValue } from './stack-value';
 
-export class Just {
-  constructor(public value: StackValue) {}
-}
-
-export class Seq {
+export class ReturnValues {
   constructor(public value: StackValue[]) {}
 }

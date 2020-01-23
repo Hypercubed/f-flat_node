@@ -3,13 +3,12 @@ import { signature, Any } from '@hypercubed/dynamo';
 
 import {
   dynamo,
-  Seq,
+  ReturnValues,
   StackValue,
   Future,
   Sentence,
   Word,
   Key,
-  Just,
   Decimal
 } from '../types';
 import { template, templateParts, toObject } from '../utils';
@@ -46,7 +45,7 @@ class Choose {
 
   @signature([Boolean, null], Any, Any)
   booelan(b: boolean | null, t: any, f: any) {
-    return new Just(b ? t : f);
+    return new ReturnValues([b ? t : f]);
   }
 
   @signature(Future, Any, Any)
@@ -101,7 +100,7 @@ class At {
       rhs = lhs.length + rhs;
     }
     const r = lhs[rhs];
-    return r === undefined ? null : new Just(r);
+    return r === undefined ? null : new ReturnValues([r]);
   }
 
   /**
@@ -154,13 +153,13 @@ class At {
 class Unstack {
   @signature(Array)
   array(a: StackValue[]) {
-    return new Seq(a);
+    return new ReturnValues(a);
   }
 
   @signature()
   async future(f: Future) {
     const a = await f.promise;
-    return new Seq(a);
+    return new ReturnValues(a);
   }
 
   @signature(Any)
@@ -209,7 +208,7 @@ class Eval {
 
   @signature(Any)
   any(a: any) {
-    return new Just(a);
+    return new ReturnValues([a]);
   }
 }
 
@@ -299,7 +298,7 @@ export const core = {
    * ```
    */
   'q>': function(this: StackEnv): any {
-    return new Just(this.queue.pop() as StackValue); // danger
+    return new ReturnValues([this.queue.pop()]); // danger
   },
 
   /**
@@ -332,9 +331,9 @@ export const core = {
    * [ 3 4 ]
    * ```
    */
-  '<-': function(this: StackEnv, s: any): Seq {
+  '<-': function(this: StackEnv, s: any): ReturnValues {
     this.clear();
-    return new Seq(s);
+    return new ReturnValues(s);
   },
 
   /**
@@ -443,7 +442,7 @@ export const core = {
    * [ 1 3 2 ]
    * ```
    */
-  swap: (a: StackValue, b: StackValue) => new Seq([b, a]),
+  swap: (a: StackValue, b: StackValue) => new ReturnValues([b, a]),
 
   /**
    * ## `dup`
@@ -456,7 +455,7 @@ export const core = {
    * [ 1 2 3 3 ]
    * ```
    */
-  dup: (a: StackValue) => new Seq([a, a]),
+  dup: (a: StackValue) => new ReturnValues([a, a]),
 
   /**
    * ## `indexof`
@@ -588,7 +587,7 @@ export const core = {
    * ( -> {any} )
    */
   '<q': function(this: StackEnv): any {
-    return new Just(this.queue.shift() as StackValue); // danger?
+    return new ReturnValues([this.queue.shift()]); // danger?
   },
 
   match: dynamo.function(Match),
