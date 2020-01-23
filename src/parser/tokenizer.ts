@@ -13,20 +13,11 @@ const COLON = ':';
 g.bracket = Myna.char(BRACKETS).ast;
 g.identifierFirst = Myna.notChar(DELIMITER + QUOTES + BRACKETS);
 g.identifierNext = Myna.notChar(DELIMITER + QUOTES + BRACKETS + COLON);
-g.identifier = Myna.seq(
-  g.identifierFirst,
-  g.identifierNext.zeroOrMore
-);
+g.identifier = Myna.seq(g.identifierFirst, g.identifierNext.zeroOrMore);
 
-g.word = Myna.seq(
-  g.identifier,
-  Myna.char(COLON).opt
-).ast;
+g.word = Myna.seq(g.identifier, Myna.char(COLON).opt).ast;
 
-g.key = Myna.seq(
-  g.identifier,
-  Myna.char(COLON)
-).ast;
+g.key = Myna.seq(g.identifier, Myna.char(COLON)).ast;
 
 // Numbers
 g.digit = Myna.choice(Myna.digit, Myna.char('_'));

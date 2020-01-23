@@ -17,11 +17,15 @@ test('should def and use nested actions in a fork', async () => {
 });
 
 test('cannot overwrite defined words', async () => {
-  await expect(fValues('x: [123] def x: [456] def')).rejects.toThrow('Cannot overwrite local definition: x');
+  await expect(fValues('x: [123] def x: [456] def')).rejects.toThrow(
+    'Cannot overwrite local definition: x'
+  );
 });
 
 test('invalid keys', async () => {
-  await expect(fValues('x: [123] def x.y: [456] def')).rejects.toThrow('Invalid definition key: x.y');
+  await expect(fValues('x: [123] def x.y: [456] def')).rejects.toThrow(
+    'Invalid definition key: x.y'
+  );
 });
 
 test('should shadow definitions in a fork', async () => {
@@ -38,8 +42,12 @@ test('should shadow definitions in a fork', async () => {
 });
 
 test('should isloate definitions in a fork', async () => {
-  expect(await fValues('[ "a" ["in-fork-a"] def a ] fork')).toStrictEqual([['in-fork-a']]);
-  await expect(fValues('[ "a" ["in-fork-a"] def a ] fork a')).rejects.toThrow('a is not define');
+  expect(await fValues('[ "a" ["in-fork-a"] def a ] fork')).toStrictEqual([
+    ['in-fork-a']
+  ]);
+  await expect(fValues('[ "a" ["in-fork-a"] def a ] fork a')).rejects.toThrow(
+    'a is not define'
+  );
 });
 
 test('should execute stored actions', async () => {

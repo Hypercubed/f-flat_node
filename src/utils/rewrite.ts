@@ -2,7 +2,15 @@ import { signature, Any } from '@hypercubed/dynamo';
 import is from '@sindresorhus/is';
 import { getIn } from 'icepick';
 
-import { dynamo, StackValue, Sentence, Word, Key, Seq, Vocabulary } from '../types';
+import {
+  dynamo,
+  StackValue,
+  Sentence,
+  Word,
+  Key,
+  Seq,
+  Vocabulary
+} from '../types';
 import { IIF } from '../constants';
 
 function create(dictObject: Object | undefined) {

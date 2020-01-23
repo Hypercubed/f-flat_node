@@ -324,7 +324,7 @@ export const math = {
    *
    */
   atan2(a: Decimal | number, b: Decimal | number) {
-    return (Decimal as any).atan2(a, b);
+    return Decimal.atan2(a, b);
   },
 
   round: dynamo.function(Round),
@@ -338,21 +338,21 @@ export const math = {
 
   gamma: dynamo.function(Gamma),
 
-  /**
-   * ## `nemes`
-   *
-   * Nemes Gamma Function
-   *
-   */
-  /* nemes: 'Decimal': (a: Decimal) => a.nemesClosed() */
+  // /**
+  //  * ## `nemes`
+  //  *
+  //  * Nemes Gamma Function
+  //  *
+  //  */
+  // nemes: 'Decimal': (a: Decimal) => a.nemesClosed(),
 
-  /**
-   * ## `spouge`
-   *
-   * Sponge function
-   *
-   */
-  /* spouge: 'Decimal': (a: Decimal) => a.spouge() */
+  // /**
+  //  * ## `spouge`
+  //  *
+  //  * Sponge function
+  //  *
+  //  */
+  // spouge: 'Decimal': (a: Decimal) => a.spouge(),
 
   /**
    * ## `erf`
@@ -368,9 +368,7 @@ export const math = {
    * bitwise and
    *
    */
-  '&'(a: any, b: any) {
-    return +a & +b;
-  },
+  '&': (a: any, b: any) => +a & +b,
 
   /**
    * ## `|`
@@ -378,9 +376,7 @@ export const math = {
    * bitwise or
    *
    */
-  '|'(a: any, b: any) {
-    return +a | +b;
-  },
+  '|': (a: any, b: any) => +a | +b,
 
   /**
    * ## `$`
@@ -388,17 +384,13 @@ export const math = {
    * bitwise xor
    *
    */
-  $(a: any, b: any) {
-    return +a ^ +b;
-  },
+  $: (a: any, b: any) => +a ^ +b,
 
   /**
    * ## `bitnot`
    *
    */
-  bitnot(a: any) {
-    return ~a;
-  },
+  bitnot: (a: any) => ~a,
 
   /**
    * ## `rand`
@@ -409,26 +401,13 @@ export const math = {
   rand: Math.random,
 
   /**
-   * ## `set-precision`
+   * ## `infinity`
+   * pushes the value Infinity
    *
-   * Sets the internal decimal precision
-   *
+   * ( -> Infinity )
    */
-  'set-precision'(x: any) {
-    Decimal.config({ precision: Number(x) });
-  },
+  infinity: () => new Decimal(Infinity),
+  '-infinity': () => new Decimal(-Infinity),
 
-  /**
-   * ## `get-precision`
-   *
-   * Gets the internal decimal precision
-   *
-   */
-  'get-precision'() {
-    return Decimal.precision;
-  },
-
-  complexinfinity() {
-    return complexInfinity;
-  }
+  complexinfinity: () => complexInfinity
 };

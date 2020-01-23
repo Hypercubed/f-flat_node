@@ -199,7 +199,9 @@ test('errors on unknown command in child, async', async () => {
 });
 
 test('errors on unknown command in child, async 2', async () => {
-  await expect(F().promise('[ abc ] await')).rejects.toThrow('abc is not defined');
+  await expect(F().promise('[ abc ] await')).rejects.toThrow(
+    'abc is not defined'
+  );
 });
 
 test('should await on a future', async () => {

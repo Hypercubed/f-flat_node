@@ -275,7 +275,7 @@ export class FFlatPrettyPrinter {
     const maxLength = opts.maxObjectKeys || 100;
     const keys = Object.keys(value);
     const output = keys.slice(0, maxLength).map(key => {
-      const skey = this._stylizeName(String(key));
+      const skey = this._stylizeKey(String(key));
       const svalue = this.formatValue(value[key], depth + 1).replace(
         /\n/g,
         '\n  '

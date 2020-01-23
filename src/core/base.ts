@@ -1206,7 +1206,7 @@ class Empty {
  * ( x y -> z )
  *
  * ```
- * f♭> 1 2 cmp
+ * f♭> 1 2 <=>
  * [ -1 ]
  * ```
  */
@@ -1217,7 +1217,7 @@ class Cmp {
    * give results of either 1, 0 or -1
    *
    * ```
-   * f♭> 1 0 cmp
+   * f♭> 1 0 <=>
    * [ 1 ]
    * ```
    */
@@ -1246,7 +1246,7 @@ class Cmp {
    * the longer vector is always "greater" regardless of contents
    *
    * ```
-   * f♭> [1 2 3 4] [4 5 6] cmp
+   * f♭> [1 2 3 4] [4 5 6] <=>
    * [ 1 ]
    * ```
    */
@@ -1263,7 +1263,7 @@ class Cmp {
    *
    *
    * ```
-   * f♭> "abc" "def" cmp
+   * f♭> "abc" "def" <=>
    * [ -1 ]
    * ```
    */
@@ -1276,7 +1276,7 @@ class Cmp {
    * - boolean comparisons
    *
    * ```
-   * f♭> false true cmp
+   * f♭> false true <=>
    * [ -1 ]
    * ```
    */
@@ -1289,7 +1289,7 @@ class Cmp {
    * - date comparisons
    *
    * ```
-   * f♭> now now cmp
+   * f♭> now now <=>
    * [ -1 ]
    * ```
    */
@@ -1306,7 +1306,7 @@ class Cmp {
    * compares number of keys, regardless of contents
    *
    * ```
-   * f♭> { x: 123, z: 789 } { y: 456 } cmp
+   * f♭> { x: 123, z: 789 } { y: 456 } <=>
    * [ 1 ]
    * ```
    */

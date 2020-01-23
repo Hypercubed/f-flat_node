@@ -10,10 +10,6 @@ const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 type D = { [key: string]: VocabValue };
 
-class Alias {
-  constructor(public value: string) {}
-}
-
 export class Vocabulary {
   static makePath(key: string) {
     if (key.length < 3) return [key];
@@ -101,10 +97,6 @@ export class Vocabulary {
     }
 
     return action;
-  }
-
-  globals(): any {
-    return { ...this.root };
   }
 
   words(): string[] {

@@ -29,7 +29,7 @@ const welcome = gradient.rainbow(`
 `);
 
 const initialPrompt = 'F♭> ';
-const altPrompt = 'F♭) ';
+const altPrompt = 'F♭| ';
 
 const pprint = new FFlatPrettyPrinter({
   showHidden: false,
@@ -52,7 +52,7 @@ program
   .option('-L, --log-level [level]', 'Set the log level', 'warn')
   .option('-f, --file [file]', 'Evaluate contents of file')
   .option('-i, --interactive', 'force interactive mode', false)
-  .option('-q, --quiet', "don't print initial banner", false)
+  .option('-q, --quiet', `don't print initial banner`, false)
   .action((...cmds) => {
     cmds.pop();
     arg += cmds.join(' ');

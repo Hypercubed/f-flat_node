@@ -85,29 +85,21 @@ export const dict = {
     this.dict.use(createAction(dict));
   },
 
+  /**
+   * ## `vocab`
+   *
+   * Write teh current local vocabulary to the stack
+   *
+   * ( -> { ... })
+   *
+   * ```
+   * f♭> vocab
+   * [ { ... } ]
+   * ```
+   */
   vocab(this: StackEnv) {
     return this.dict.compiledLocals();
   },
-
-  // module(this: StackEnv, a: StackValue) {
-  //   const child = this.createChild().eval(a);
-  //   return child.dict.compiledLocals();
-  // },
-
-  /**
-   * ## `define`
-   * defines a set of words from an object
-   *
-   * ( {object} -> )
-   *
-   * ```
-   * f♭> { sqr: "dup *" } define
-   * [ ]
-   * ```
-   */
-  // define(this: StackEnv, x: StackValue) {
-  //   this.defineAction(x);
-  // },
 
   /**
    * ## `inline`
@@ -125,6 +117,17 @@ export const dict = {
     return this.dict.rewrite(x);
   },
 
+  /**
+   * ## `defined?`
+   * returns true if the word is defined in the current vocabulary
+   *
+   * ( 'a' -> bool )
+   *
+   * ```
+   * f♭> 'sqr' defined?
+   * [ true ]
+   * ```
+   */
   'defined?'(this: StackEnv, a: string) {
     const r = this.dict.get(a);
     return typeof r !== 'undefined';
@@ -180,9 +183,5 @@ export const dict = {
    */
   scoped(this: StackEnv): string[] {
     return this.dict.scopedWords();
-  },
-
-  globals(this: StackEnv): any {
-    return this.dict.globals();
   }
 };

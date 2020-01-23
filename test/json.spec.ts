@@ -27,7 +27,8 @@ test('special', () => {
 test('nested', () => {
   testStringify('Array', ['a', 'b', 'c'], '["a","b","c"]');
   testStringify('Array (empty)', [], '[]');
-  testStringify('Array (sparse)', [, 'b', , ], '[null,"b",null]');
+  // tslint:disable-next-line: whitespace
+  testStringify('Array (sparse)', [, 'b', ,], '[null,"b",null]');
   testStringify(
     'Object',
     { foo: 'bar', 'x-y': 'z' },

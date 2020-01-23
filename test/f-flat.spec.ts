@@ -429,10 +429,7 @@ test('atoms are not executed by stack actions', async () => {
   expect(await fJSON('false a: b: choose')).toEqual([b]);
   expect(await fJSON('a: b: q< drop q>')).toEqual([b]);
   expect(await fJSON('[a: b:] 1 @')).toEqual([b]); // fix this
-  expect(await fJSON('[a: b:] unstack')).toEqual([
-    a,
-    b
-  ]); // fix this
+  expect(await fJSON('[a: b:] unstack')).toEqual([a, b]); // fix this
 });
 
 test('can perform actions from module', async () => {

@@ -456,7 +456,7 @@ export const core = {
    * [ 1 2 3 3 ]
    * ```
    */
-  dup: (a: StackValue) => new Seq([a, a]), //  q< q@ q>
+  dup: (a: StackValue) => new Seq([a, a]),
 
   /**
    * ## `indexof`
@@ -471,28 +471,7 @@ export const core = {
    */
   indexof: (a: StackValue[], b: number | string) => a.indexOf(b), // doesn't work with Decimal!!!
 
-  /* 'repeat': (a, b) => {
-    return new Action(arrayRepeat(a, b));
-  }, */
-
-  /**
-   * ## `zip`
-   *
-   * ```
-   * f♭> [ 1 2 3 ] [ 4 5 6 ] zip
-   * [ 1 4 2 5 3 6 ]
-   * ```
-   */
   zip: dynamo.function(Zip),
-
-  /**
-   * ## `zipinto`
-   *
-   * ```
-   * f♭> [ 1 2 3 ] [ 4 5 6 ] [ 7 8 9 ] zipinto
-   * [ [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] ]
-   * ```
-   */
   zipinto: dynamo.function(ZipInto),
 
   /**
@@ -554,8 +533,6 @@ export const core = {
     return toObject(r);
   },
 
-  // 'self': () => Symbol.for('self'),
-
   /**
    * ## `template`
    * converts a string to a string template
@@ -614,14 +591,6 @@ export const core = {
     return new Just(this.queue.shift() as StackValue); // danger?
   },
 
-  /**
-   * ## `match`
-   *
-   * Matches a string a regex and returns an array containing the results of that search.
-   *
-   * {string} [regexp} -> {boolean}
-   *
-   */
   match: dynamo.function(Match),
 
   /**
@@ -640,14 +609,5 @@ export const core = {
    * Match symbol
    *
    */
-  _: () => Symbol.for('_'), // Match symbol
-
-  /**
-   * ## `infinity`
-   * pushes the value Infinity
-   *
-   * ( -> Infinity )
-   */
-  infinity: () => new Decimal(Infinity),
-  '-infinity': () => new Decimal(-Infinity)
+  _: () => Symbol.for('_') // Match symbol
 };

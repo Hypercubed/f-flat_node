@@ -1,3 +1,4 @@
+import { performance } from 'perf_hooks';
 import { signature, Any } from '@hypercubed/dynamo';
 
 import { dynamo, Word, Key, Just, Seq, Decimal, Complex } from '../types';
@@ -168,54 +169,46 @@ export const types = {
   /**
    * ## `string`
    */
-  string(x: any) {
-    return String(x);
-  },
+  string: (x: any) => String(x),
 
   /**
    * ## `valueof`
    */
-  valueof(x: any) {
-    return x.valueOf();
-  },
+  valueof: (x: any) => x.valueOf(),
 
   /**
    * ## `itoa`
    */
-  itoa(x: number) {
-    return String.fromCharCode(x);
-  },
+  itoa: (x: number) => String.fromCharCode(x),
 
   /**
    * ## `atoi`
    */
-  atoi(x: string) {
-    return x.charCodeAt(0);
-  },
+  atoi: (x: string) => x.charCodeAt(0),
 
   /**
    * ## `atob`
    * ecodes a string of data which has been encoded using base-64 encoding
    */
-  atob(x: string) {
-    return Buffer.from(x, 'base64').toString('binary');
-  },
+  atob: (x: string) => Buffer.from(x, 'base64').toString('binary'),
 
   /**
    * ## `btoa`
    * creates a base-64 encoded ASCII string from a String
    */
-  btoa(x: string) {
-    return Buffer.from(x, 'binary').toString('base64');
-  },
+  btoa: (x: string) => Buffer.from(x, 'binary').toString('base64'),
 
-  hash(x: string): number {
-    return hashCode(x);
-  },
+  /**
+   * ## `hash`
+   * creates a numeric hash from a String
+   */
+  hash: (x: string) => hashCode(x),
 
-  'hex-hash'(x: string): string {
-    return hashCode(x).toString(16);
-  },
+  /**
+   * ## `hash`
+   * creates a hexidecimal hash from a String
+   */
+  'hex-hash': (x: string): string => hashCode(x).toString(16),
 
   /**
    * ## `base`
@@ -226,15 +219,14 @@ export const types = {
   /**
    * ## `boolean`
    */
-  boolean(x: number) {
-    return x ? Boolean(x.valueOf()) : false;
-  },
+  boolean: (x: number) => (x ? Boolean(x.valueOf()) : false),
 
   /**
    * ## `:` (action)
    */
   ':'(x: any) {
-    if (x instanceof Word) {  // Converts to key?
+    if (x instanceof Word) {
+      // Converts to key?
       return new Just(x);
     }
     if (x instanceof Key) {
@@ -244,32 +236,19 @@ export const types = {
   },
 
   /**
-   * ## `#` (sdymbol)
+   * ## `#` (symbol)
    */
-  '#'(x: any) {
-    return Symbol(x);
-  },
+  '#': (x: any) => Symbol(x),
 
   /**
    * ## `array`
    */
-  array(x: any) {
-    return new Array(x);
-  },
+  array: (x: any) => new Array(x),
 
   /**
    * ## `integer`
    */
-  integer(x: number) {
-    return x | 0;
-  },
-
-  // 'null?': 'null =',
-
-  /**
-   * ## `nan`
-   */
-  // nan: NaN,
+  integer: (x: number) => x | 0,
 
   /**
    * ## `of`
@@ -291,44 +270,33 @@ export const types = {
   /**
    * ## `is?`
    */
-  'is?'(a: any, b: any) {
-    return a === b;
-  },
+  'is?': (a: any, b: any) => a === b,
 
   /**
    * ## `nothing?`
    */
-  'nothing?'(a: any) {
-    return a === null || typeof a === 'undefined';
-  },
+  'nothing?': (a: any) => a === null || typeof a === 'undefined',
 
   /**
    * ## `date`
    */
-  date(a: any) {
-    return new Date(a);
-  },
+  date: (a: any) => new Date(a),
 
   /**
    * ## `now`
    */
-  now() {
-    return new Date();
-  }, // now: `new Date()` js-raw ;
+  now: () => new Date(),
 
   /**
    * ## `date-expand`
    */
-  'date-expand'(a: any) {
-    return new Seq([a.getFullYear(), a.getMonth() + 1, a.getDate()]);
-  },
+  'date-expand': (a: Date) =>
+    new Seq([a.getFullYear(), a.getMonth() + 1, a.getDate()]),
 
   /**
    * ## `clock`
    */
-  clock(): number {
-    return new Date().getTime();
-  },
+  clock: (): number => performance.now(),
 
   /**
    * ## `regexp`

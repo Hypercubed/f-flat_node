@@ -22,9 +22,7 @@ export const flags = {
    * Gets the internal decimal precision
    *
    */
-  'get-precision'() {
-    return Decimal.precision;
-  },
+  'get-precision': () => Decimal.precision,
 
   /**
    * ## `set-log-level`
@@ -42,9 +40,7 @@ export const flags = {
    *
    * ( -> {string} )
    */
-  'get-log-level'() {
-    return log.level;
-  },
+  'get-log-level': () => log.level,
 
   /**
    * ## `auto-undo`

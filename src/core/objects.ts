@@ -19,17 +19,6 @@ class IsObject {
  * # Internal Object Words
  */
 export const objects = {
-  /* 'group': ('group', {  // move
-    Array: a => {
-      const r = [];
-      const l = a.length;
-      for (let i = 0; l - i > 1; i++) {
-        r.push([a[i++], a[i]]);
-      }
-      return r;
-    }
-  }), */
-
   /**
    * ## `object`
    */
@@ -43,21 +32,15 @@ export const objects = {
   /**
    * ## `contains?`
    */
-  'contains?'(a: {}, b: any) {
-    return b in a;
-  }, // object by keys, array by values
+  'contains?': (a: {}, b: any) => b in a, // object by keys, array by values
 
   /**
    * ## `keys`
    */
-  keys(o: {}) {
-    return Object.keys(o);
-  }, // v: `o => Object.values(o)` js-raw ;
+  keys: (o: {}) => Object.keys(o),
 
   /**
    * ## `vals`
    */
-  vals(o: {}) {
-    return Object.values(o);
-  } // v: `o => Object.values(o)` js-raw ;
+  vals: (o: {}) => Object.values(o)
 };

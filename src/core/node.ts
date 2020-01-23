@@ -59,9 +59,7 @@ export const node = {
   /**
    * ## `args`
    */
-  args() {
-    return process.argv;
-  },
+  args: () => process.argv,
 
   /**
    * ## `println`
@@ -121,9 +119,7 @@ export const node = {
    * Generates cryptographically strong pseudo-random with a givennumber of bytes to generate
    *
    */
-  'rand-u32'() {
-    return randomBytes(4).readUInt32BE(0);
-  },
+  'rand-u32': () => randomBytes(4).readUInt32BE(0),
 
   /**
    * ## `dirname`
@@ -132,9 +128,7 @@ export const node = {
    * See https://nodejs.org/api/path.html#path_path_dirname_path
    *
    */
-  dirname(name: string) {
-    return dirname(name);
-  },
+  dirname: (name: string) => dirname(name),
 
   /**
    * ## `path-join`
@@ -143,9 +137,7 @@ export const node = {
    * See https://nodejs.org/api/path.html#path_path_join_paths
    *
    */
-  'path-join'(args: string[]) {
-    return join(...args);
-  },
+  'path-join': (args: string[]) => join(...args),
 
   /**
    * ## `resolve`
@@ -161,9 +153,7 @@ export const node = {
    * Returns true if the file exists, false otherwise.
    *
    */
-  exists(name: string) {
-    return existsSync(name);
-  },
+  exists: (name: string) => existsSync(name),
 
   /**
    * ## `read`
@@ -189,9 +179,7 @@ export const node = {
    * Pushes the current working directory
    *
    */
-  cwd(): string {
-    return getURLStringForCwd();
-  },
+  cwd: (): string => getURLStringForCwd(),
 
   md5(x: string) {
     return createHash('md5')

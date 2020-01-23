@@ -56,7 +56,7 @@ export const experimental = {
    */
   'parse-json'(a: string) {
     return JSON.parse(a);
-  }, // global.JSON.parse
+  },
 
   /**
    * ## `||>` (apply)
@@ -122,24 +122,24 @@ export const experimental = {
     return Promise.race(arr.map(a => this.createChildPromise(a)));
   },
 
-  /**
-   * ## `sesssave`
-   */
-  sesssave(this: StackEnv) {
-    log.debug('saving session');
-    writeFileSync(
-      'session',
-      JSON.stringify(
-        {
-          dict: this.dict,
-          stack: this.stack
-        },
-        null,
-        2
-      ),
-      'utf8'
-    );
-  },
+  // /**
+  //  * ## `sesssave`
+  //  */
+  // sesssave(this: StackEnv) {
+  //   log.debug('saving session');
+  //   writeFileSync(
+  //     'session',
+  //     JSON.stringify(
+  //       {
+  //         dict: this.dict,
+  //         stack: this.stack
+  //       },
+  //       null,
+  //       2
+  //     ),
+  //     'utf8'
+  //   );
+  // },
 
   /**
    * ## `js-raw`

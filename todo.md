@@ -3,6 +3,7 @@
 _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # New TODOs
+- [ ] Clean all jsdoc comments
 - [x] Fix module loading
 - [ ] test lambdas
 - [ ] Number subtypes: integer (BigInt), real (decimaljs), rational (tbd), complex (internal)
@@ -10,7 +11,11 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] More complexInfinity/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
 - [ ] stack underflow is an error!!
 - [ ] finish and use https://github.com/Hypercubed/real
-- [ ] Use `#:` as symbol prefix.  Symbols with whitespace (`#'foo'`)?
+
+# Parser
+- [ ] Regex literal
+- [ ] Use `#:` as symbol prefix.  Symbols with whitespace (`#:'foo'`)?
+- [ ] `undefined`?
 
 # Improved scoping and namespaces
 - [x] immutable words (ex. `slip%8df57134`)
@@ -43,11 +48,13 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Safer module loading (`Sentence` -> `Array` on `module`)
 
 # Type cleaning
-- [ ] `xyz:` -> `Key`
+- [x] `xyz:` -> `Key`
 - [ ] `:xyz` -> ???
 - [ ] `Action` vs `Word`
 - [ ] `Alias` type?
-- [ ] `Dictionary` -> `Vocabulary`
+- [x] `Dictionary` -> `Vocabulary`
+- [ ] Just -> ReturnValue
+- [ ] Seq -> ReturnSequence
 
 # Decide
 - [x] Decide on macros, `dupn!3`, `dup<5>`, `range<1, 100>`, `range:(1, 10).` ? Using `range:(1, 10).`
@@ -87,11 +94,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [x] true, false
   - [x] null
 - [ ] More tests for stack object immutablity
-- [ ] Better internal types
-  - [ ] Just -> ReturnValue
-  - [ ] Seq -> ReturnSequence
-  - [x] Action -> Words / Sentence
-  - [ ] Token type? `a:`
 - [ ] Test all internal words
   - [ ] Basis
   - [ ] Core
@@ -105,7 +107,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Ensure predictable cmp with `null` and `nan`
 
 # Words
-
 - [ ] `cld`: (Smallest integer larger than or equal to x/y)
 - [ ] `isfinite?`, `isinf?`, `isnan?`
 - [ ] `sign`, `ispos?`, `isneg?`
@@ -132,11 +133,10 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] fix `hex`, `bin`, ect with neg values
 - [ ] Elvis operastor `?:` (replaces choose?)
 - [x] Safe at `?@` performs @ if lhs is not null
-- [ ] `..` creastes a range, possibly infinite
+- [ ] `..` creates a range, possibly infinite
 - [ ] Use standard words, `foldl`, etc
 - [ ] `each*`, recursive each, no stack overflow?
 - [ ] Use `y` vs. recursion?
-- [x] `falsy?` null, 0, undefined, ""?
 - [ ] `=>` vs `sto`
 
 # Docs
@@ -145,7 +145,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Detail boolean / Three valued logic
 - [ ] Basis
 - [ ] Regexp
-- [ ] "compile" (expand)
+- [-] `compile` (expand)
 - [ ] Module loader, expanding functions, circular references.
 - [ ] Defined words
 - [ ] Child stacks, forks, etc.
@@ -156,7 +156,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 - [ ] Matrices?
 - [ ] composite truth values?
-- [ ] Pattern matching substitution? `[_ _]` => `[a,b]`
 - [ ] Improve errors (FF errors should not have a JS stack, FF stack)
 - [ ] Trig functions on complex
   - [x] sin, cos, tan
@@ -186,10 +185,10 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] Add Duration type... example: https://github.com/moment/moment/blob/develop/src/lib/duration/constructor.js
 - [ ] Improved `@`
   - [ ] `[ ... ] [ x y z ] @` => `[ ... ][x][y][z]`
-  - [ ] `{ ... } 'x.y.z' @` => `[ ... ][x][y][z]`
-- [ ] Private/Protected words?  Globals/parent scoped?
+  - [?] `{ ... } 'x.y.z' @` => `[ ... ][x][y][z]`
+- [ ] Private/Protected words?
+- [ ] Globals/parent scoped?
 - [ ] Preserved precision base on user input (2.50 vs 2.5)?
-- [ ] Pattern matching ???
 - [ ] Better JSON iterop
   - [ ] StackEnv.prototype.toJSON should serialize entire state?
   - [ ] FFlat Extended JSON, `{ value: i 2 * }`
@@ -211,13 +210,14 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [x] NOT {regexp} ~ = NOT {regexp}
   - [x] JSON output
 - [ ] Get strict on punctuation ??
-- [ ] Integer -> Float -> Decimal -> Complex, predictable type promotion
+- [ ] Integer -> Float -> Decimal -> Complex, predictable type promotion (hypercubed/real)
 - [ ] Parser / compiler output
 - [ ] Infinite Ranges? 1..Infinity?
 - [ ] Pattern matching?
+  - [ ] Pattern matching substitution? `[_ _]` => `[a,b]`
   - [x] place holder `_`
   - [x] rest pattern in arrays `[ 1 ... ]`
   - [-] OR patterns `1 | 2` (now using regex)
   - [-] ranges `1...4` (now using regex)
   - [ ] guards `3 >`
-- [ ] Classes/inheritance?
+- [-] Classes/inheritance?
