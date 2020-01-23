@@ -3,7 +3,9 @@
 _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # New TODOs
-- [ ] test lambdas
+- [ ] broken lambdas
+  - [ ] need a way to avoid scope binding in lambda (`&x`, `$x`?)
+  - [?] tests
 - [ ] Number subtypes: integer (BigInt), real (decimaljs), rational (tbd), complex (internal)
 - [ ] Decimal shift/unshift
 - [ ] More complexInfinity/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)

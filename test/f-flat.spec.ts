@@ -647,3 +647,8 @@ test('stack underflow', async () => {
     F().eval('4 *');
   }).toThrow('Stack underflow');
 });
+
+test('lambdas', async () => {
+  expect(await fValues('l: [ [a: b: c:] => b c c a] lambda ; 1 2 3 l')).toEqual([2, 3, 3, 1]);
+  expect(await fValues('d: [ [a: b:] => a b - abs a /] lambda ; 10 5 d')).toEqual([0.5]);
+});
