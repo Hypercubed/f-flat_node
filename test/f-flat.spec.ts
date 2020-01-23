@@ -283,6 +283,7 @@ test('errors on async child in eval', async () => {
   }).toThrow('Do Not Release Zalgo');
 });
 
+
 test('can spawn a future in sync', async () => {
   expect(await fJSON('[ 1 2 + 100 sleep ] spawn 3 4 +')).toEqual([
     future,
@@ -633,4 +634,16 @@ test('keywords are case insenstivive', async () => {
   expect(await fString('i I')).toEqual('0+1i,0+1i');
   expect(await fValues('true TRUE tRue')).toEqual([true, true, true]);
   expect(await fValues('false FALSE fAlsE')).toEqual([false, false, false]);
+});
+
+test('type errors', async () => {
+  expect(() => {
+    F().eval('4 "d" *');
+  }).toThrow('Unexpected type of arguments');
+});
+
+test('stack underflow', async () => {
+  expect(() => {
+    F().eval('4 *');
+  }).toThrow('Stack underflow');
 });

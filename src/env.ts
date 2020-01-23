@@ -236,15 +236,8 @@ export class StackEnv {
     if (this.autoundo) {
       this.undo();
     }
-    if (err instanceof TypeError && (err as any).data) {
-      const { data } = err as any;
-      const index = this.lastFnDispatch.args - data.index;
-      const message = `Unexpected type of argument in ${
-        data.fn
-      } (expected: ${data.expected.join(' or ')}, actual: ${
-        data.actual
-      }, index: ${index})`;
-      err = new FFlatError(message, this);
+    if (err instanceof TypeError) {
+      err = new FFlatError(err.message, this);
     }
     this.status = ERR;
     this.idle.dispatch(err, this);
@@ -339,18 +332,11 @@ export class StackEnv {
         argArray
       };
 
-      try {
-        const retValue = fn.apply(this, argArray) as StackValue | Just | Seq;
-        return this.dispatchReturnValue(retValue);
-      } catch (e) {
-        if (e instanceof FFlatError) {
-          throw e;
-        }
-        throw new FFlatError(`Failed to dispatch ${name}`);
-      }
+      const retValue = fn.apply(this, argArray) as StackValue | Just | Seq;
+      return this.dispatchReturnValue(retValue);
     }
 
-    throw new FFlatError('Stack underflow');
+    throw new FFlatError('Stack underflow', this);
   }
 
   private dispatchReturnValue(value: StackValue | Just | Seq): void {

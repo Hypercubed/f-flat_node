@@ -3,8 +3,6 @@
 _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # New TODOs
-- [ ] Clean all jsdoc comments
-- [x] Fix module loading
 - [ ] test lambdas
 - [ ] Number subtypes: integer (BigInt), real (decimaljs), rational (tbd), complex (internal)
 - [ ] Decimal shift/unshift
