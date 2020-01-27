@@ -9,13 +9,13 @@ fridge-game:
     ]
     [println] each
     {
-      1 ['You try to get out. You fail. You die.']
-      2 [
+      1: ['You try to get out. You fail. You die.']
+      2: [
         'You eat. You eat some more.'
         'Damn, this food is tasty!'
         'You eat so much you die.'
       ]
-      3 ['You die.']
+      3: ['You die.']
     }
     prompt
     @
@@ -30,6 +30,6 @@ fridge-game:
       [ fridge-game ]
       [ 'Thanks for playing.' println clr ]
     branch
-  ] def
+  ] ;
 
 fridge-game

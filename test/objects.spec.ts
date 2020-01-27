@@ -4,12 +4,15 @@ test('should create objects object', async () => {
   expect(
     await fJSON('[ "first" "Manfred" "last" "von Thun" ] object')
   ).toEqual([{ first: 'Manfred', last: 'von Thun' }]);
+
   expect(await fJSON('{ first: "Manfred" last: "von Thun" }')).toEqual([
     { first: 'Manfred', last: 'von Thun' }
   ]);
+
   expect(
     await fJSON('{ name: { first: "Manfred" last: "von Thun" } }')
   ).toEqual([{ name: { first: 'Manfred', last: 'von Thun' } }]);
+
   expect(
     await fJSON('{ name: [ { first: "Manfred" } { last: "von Thun" } ] }')
   ).toEqual([{ name: [{ first: 'Manfred' }, { last: 'von Thun' }] }]);
@@ -23,6 +26,29 @@ test('should create objects object, cont', async () => {
   expect(
     await fJSON('{ first: "Manfred", last: [ "von" "Thun" ] " " * }')
   ).toEqual([{ first: 'Manfred', last: 'von Thun' }]);
+});
+
+test('should test is object', async () => {
+  expect(await fJSON('{ first: "Manfred" last: "von Thun" } object?')).toEqual([
+    true
+  ]);
+  expect(await fJSON('[ first: "Manfred" last: "von Thun" ] object?')).toEqual([
+    false
+  ]);
+});
+
+test('should create objects object, cont2', async () => {
+  expect(await fJSON('{ "first": "Manfred", "last": "von Thun" }')).toEqual([
+    { first: 'Manfred', last: 'von Thun' }
+  ]);
+
+  expect(await fJSON('[ { first: "Manfred", last: "von Thun" } ]')).toEqual([
+    [{ first: 'Manfred', last: 'von Thun' }]
+  ]);
+
+  expect(await fJSON('[ { "first": "Manfred", "last": "von Thun" } ]')).toEqual([
+    [{ first: 'Manfred', last: 'von Thun' }]
+  ]);
 });
 
 test('should test is object', async () => {
@@ -93,4 +119,10 @@ test('should <=> objects by key length', async () => {
   expect(await fJSON('{ x: 123 } { y: 456 } <=>')).toEqual([0]);
   expect(await fJSON('{ x: 123, z: 789 } { y: 456 } <=>')).toEqual([1]);
   expect(await fJSON('{ x: 123 } { y: 456, z: 789 } <=>')).toEqual([-1]);
+});
+
+test('objects in defintions', async () => {
+  expect(await fJSON('x: [ { x: "123" } ] ; x')).toEqual([{ x: '123' }]);
+  expect(await fJSON('x: [ { "x" : "123" } ] ; x')).toEqual([{ x: '123' }]);
+  expect(await fJSON('x: [ { 1: "123" } ] ; x')).toEqual([{ '1': '123' }]);
 });
