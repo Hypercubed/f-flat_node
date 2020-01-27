@@ -65,7 +65,7 @@ Definition of flatten:
 ```
 flatten*: [
   dup array?
-  [ [ flatten* ] foreach ]
+  [ [ flatten* ] each ]
   when
 ] ;
 flatten: [ [ flatten* ] appl ] ;

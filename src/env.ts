@@ -249,8 +249,8 @@ export class StackEnv {
   }
 
   private isImmediate(c: Word): boolean {
-    if (this.depth < 1) return true;
-    if ('[]{}'.indexOf(c.value) > -1) return true;
+    if (this.depth < 1) return true;  // in immediate state
+    if ('[]{}:'.indexOf(c.value) > -1) return true; // these words are always immediate
     if (typeof c.value === 'string') {
       return (
         c.value.startsWith(IIF) && // tokens prefixed with : are imediate
