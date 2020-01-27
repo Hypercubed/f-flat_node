@@ -47,6 +47,28 @@ const createAction = dynamo.function(CreateAction);
  * # Internal Dictionary Words
  */
 export const dict = {
+
+  /**
+   * ## `defer`
+   *
+   * Stores a value in the dictionary that simply raises an error when executed.
+   * Used to allocate a word before it is used, for example in mutually-recursive
+   *
+   * ( a: -> )
+   *
+   * ```
+   * f♭> a: defer
+   * [ ]
+   * ```
+   */
+  defer(this: StackEnv, lhs: string) {
+    try {
+      this.dict.set(lhs, undefined);
+    } catch (e) {
+      throw new FFlatError(e.message, this);
+    }
+  },
+
   /**
    * ## `def`
    * stores a value in the dictionary
@@ -115,6 +137,22 @@ export const dict = {
    */
   inline(this: StackEnv, x: Word | Sentence | Key) {
     return this.dict.rewrite(x);
+  },
+
+  /**
+   * ## `bind`
+   * binds a quote,
+   * recursively expands defined words to globals
+   *
+   * ( [A B C] -> [a b c])
+   *
+   * ```
+   * f♭> [ 2 sqr ] bind
+   * [ [ 2 sqr ] ]
+   * ```
+   */
+  bind(this: StackEnv, x: Word | Sentence | Key) {
+    return this.dict.compile(x);
   },
 
   /**

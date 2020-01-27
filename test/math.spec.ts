@@ -121,13 +121,13 @@ test('ln', async () => {
   expect(nearly(r[1], 2.3025850929940458834)).toBeTruthy();
 });
 
-test('should define log', async () => {
-  expect(await fValues('1 log 10 log 100 log')).toEqual([0, 1, 2]);
-});
+// test('should define log', async () => {
+//   expect(await fValues('1 log 10 log 100 log')).toEqual([0, 1, 2]);
+// });
 
-test('should define logn', async () => {
-  expect(await fValues('1 10 logn 10 10 logn 100 10 logn')).toEqual([0, 1, 2]);
-});
+// test('should define logn', async () => {
+//   expect(await fValues('1 10 logn 10 10 logn 100 10 logn')).toEqual([0, 1, 2]);
+// });
 
 test('should define gamma', async () => {
   expect(nearly(await fValue('4 gamma'), 6)).toBeTruthy();
@@ -159,10 +159,10 @@ test('should define gamma, cont', async () => {
   ).toBeTruthy();
 });
 
-test('should define factorial', async () => {
-  expect(await fValues('20 !')).toEqual([2432902008176640000]);
-  expect(nearly(await fValue('100 !'), 9.3326215443944152704e157)).toBeTruthy();
-});
+// test('should define factorial', async () => {
+//   expect(await fValues('20 !')).toEqual([2432902008176640000]);
+//   expect(nearly(await fValue('100 !'), 9.3326215443944152704e157)).toBeTruthy();
+// });
 
 test('should calculate exact powers', async () => {
   expect(await fValues('2 0 ^')).toEqual([1]);
@@ -172,33 +172,33 @@ test('should calculate exact powers', async () => {
   expect(await fValues('e 1 ^')).toEqual([Math.E]);
 });
 
-test(`should do Knuth's up-arrow notation`, async () => {
-  expect(await fValues('3 2 ^^^')).toEqual([7625597484987]);
-});
+// test(`should do Knuth's up-arrow notation`, async () => {
+//   expect(await fValues('3 2 ^^^')).toEqual([7625597484987]);
+// });
 
-test('should define max', async () => {
-  expect(await fValues('3 2 max')).toEqual([3]);
-  expect(await fValues('4 7 max')).toEqual([7]);
-  expect(await fValues('9 4 3 max')).toEqual([9, 4]);
-});
+// test('should define max', async () => {
+//   expect(await fValues('3 2 max')).toEqual([3]);
+//   expect(await fValues('4 7 max')).toEqual([7]);
+//   expect(await fValues('9 4 3 max')).toEqual([9, 4]);
+// });
 
-test('should define min', async () => {
-  expect(await fValues('3 2 min')).toEqual([2]);
-  expect(await fValues('4 7 min')).toEqual([4]);
-  expect(await fValues('9 4 3 min')).toEqual([9, 3]);
-});
+// test('should define min', async () => {
+//   expect(await fValues('3 2 min')).toEqual([2]);
+//   expect(await fValues('4 7 min')).toEqual([4]);
+//   expect(await fValues('9 4 3 min')).toEqual([9, 3]);
+// });
 
-test('should test primes', async () => {
-  expect(await fJSON('10 integers [ prime? ] map')).toEqual([
-    [false, true, true, false, true, false, true, false, false, false]
-  ]);
-  // 1     2     3     4      5     6      7     8      9      10
+// test('should test primes', async () => {
+//   expect(await fJSON('10 integers [ prime? ] map')).toEqual([
+//     [false, true, true, false, true, false, true, false, false, false]
+//   ]);
+//   // 1     2     3     4      5     6      7     8      9      10
 
-  expect(await fJSON('10 integers [ 2 swap ^ 1 - prime? ] map')).toEqual([
-    [false, true, true, false, true, false, true, false, false, false]
-  ]);
-  // 1     2     3     4      5     6      7     8      9      10
-});
+//   expect(await fJSON('10 integers [ 2 swap ^ 1 - prime? ] map')).toEqual([
+//     [false, true, true, false, true, false, true, false, false, false]
+//   ]);
+//   // 1     2     3     4      5     6      7     8      9      10
+// });
 
 test('should define number?', async () => {
   expect(await fJSON('3 number?')).toEqual([true]);
@@ -227,13 +227,13 @@ test('asin', async () => {
   expect(await fValues('-1 2 / asin')).toEqual([-0.5235987755982989]);
 });
 
-test('acos', async () => {
-  expect(await fValues('0 acos')).toEqual([1.5707963267948966]);
-  expect(await fValues('1 acos')).toEqual([5e-20]);
-  expect(await fValues('-1 acos')).toEqual([3.141592653589793]);
-  expect(await fValues('1 2 / acos')).toEqual([1.0471975511965979]);
-  expect(await fValues('-1 2 / acos')).toEqual([2.0943951023931957]);
-});
+// test('acos', async () => {
+//   expect(await fValues('0 acos')).toEqual([1.5707963267948966]);
+//   expect(await fValues('1 acos')).toEqual([5e-20]);
+//   expect(await fValues('-1 acos')).toEqual([3.141592653589793]);
+//   expect(await fValues('1 2 / acos')).toEqual([1.0471975511965979]);
+//   expect(await fValues('-1 2 / acos')).toEqual([2.0943951023931957]);
+// });
 
 test('atan', async () => {
   expect(await fValues('0 atan')).toEqual([0]);

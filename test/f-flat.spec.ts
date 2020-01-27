@@ -441,22 +441,22 @@ test('can perform actions from module', async () => {
 });
 
 test('postfix "macros"', async () => {
-  expect(await fValues('5:pred')).toEqual([5, 4]);
-  expect(await fValues('12:!')).toEqual([479001600]);
-  expect(await fValues('1000 10:logn')).toEqual([3]);
-  expect(await fValues('"a" 5:dupn')).toEqual(['a', 'a', 'a', 'a', 'a', 'a']);
+  expect(await fValues('5 :pred')).toEqual([5, 4]);
+  expect(await fValues('12 :!')).toEqual([479001600]);
+  expect(await fValues('1000 10 :logn')).toEqual([3]);
+  expect(await fValues('"a" 5 :dupn')).toEqual(['a', 'a', 'a', 'a', 'a', 'a']);
 });
 
-test('prefix macros', async () => {
-  expect(await fValues('pred:(5).')).toEqual([5, 4]);
-  expect(await fValues('!:(12).')).toEqual([479001600]);
-  expect(await fValues('+:(5,4).')).toEqual([9]);
-  expect(await fValues('+:(pred:(5).).')).toEqual([9]);
-  expect(await fValues('+:(*:(5,6)., *:(5,2).).')).toEqual([40]);
-  expect(await fValues('logn:(1000, 10).')).toEqual([3]);
-  expect(await fValues('!:(2 6 *).')).toEqual([479001600]);
-  expect(await fValues('regexp:"/a./".')).toEqual([/a./]);
-  expect(await fValues('[i *](10).')).toEqual([new Complex(0, 10)]);
+test('prefix "macros"', async () => {
+  expect(await fValues('pred: (5) |>')).toEqual([5, 4]);
+  expect(await fValues('!: (12) |>')).toEqual([479001600]);
+  expect(await fValues('+: (5,4) |>')).toEqual([9]);
+  expect(await fValues('+: (pred: (5) |>) |>')).toEqual([9]);
+  expect(await fValues('+: (*: (5, 6) |>, *: (5,2) |>) |>')).toEqual([40]);
+  expect(await fValues('logn: (1000, 10) |>')).toEqual([3]);
+  expect(await fValues('!: (2 6 *) |>')).toEqual([479001600]);
+  expect(await fValues('regexp: ("/a./") |>')).toEqual([/a./]);
+  expect(await fValues('[i *] (10) |>')).toEqual([new Complex(0, 10)]);
 });
 
 test('length', async () => {
@@ -649,6 +649,6 @@ test('stack underflow', async () => {
 });
 
 test('lambdas', async () => {
-  expect(await fValues('l: [ [a: b: c:] => b c c a] lambda ; 1 2 3 l')).toEqual([2, 3, 3, 1]);
-  expect(await fValues('d: [ [a: b:] => a b - abs a /] lambda ; 10 5 d')).toEqual([0.5]);
+  expect(await fValues('l: [ [a: b: c:] => .b .c .c .a] lambda ; 1 2 3 l')).toEqual([2, 3, 3, 1]);
+  expect(await fValues('d: [ [a: b:] => .a .b - abs .a /] lambda ; 10 5 d')).toEqual([0.5]);
 });

@@ -2,28 +2,50 @@
  * # Core defined words
  */
 
-';' [ def ] def
+';' [ 
+  [ dup defer ] swap q< eval q>  // forward definition to support recursive defintions
+  bind                         // bind to scope
+  def                          // define
+] def
+
 ';;' [ inline def ] ;
 
 'types.ff' require
+'testing.ff' require
 
 // core shuffle words
 slip: [ q< eval q> ] ;      // [b] A -> b A
 run: [ dup slip ] ;;        // [a] -> a [a]
 dip: [ swap slip ] ;;       // B [a] -> a B
 
+    [ [ 'b' ] 'A' slip stack [ 'b' 'A' ] assert_equal ] 'slip' test
+    [ ['a'] run stack [ 'a' ['a'] ] assert_equal ] 'run' test
+    [ 'B' ['a'] dip stack [ 'a' 'B' ] assert_equal ] 'dip' test
+
 // diped
 dupd: [ q< dup q> ] ;       // B A -> B B A
-over: [ dupd swap ] ;;      // B A -> B A B  (aka peek)
+over: [ dupd swap ] ;      // B A -> B A B  (aka peek)
 sip: [ over slip ] ;;       // B [a] -> B a B    (aka keep)
 dipd: [ q< dip q> ] ;;      // D C [b] A -> D b C A
 sipd: [ q< sip q> ] ;;      // C B [a] -> C a C B
 slipd: [ q< slip q> ] ;;    // [c] B A -> c B A
-swapd: [ q< swap q> ] ;     // C B A -> B C A
-dive: [ swap dipd ] ;       // [c] [b] [a] -> a [c] [b]   (aka dip2)
-dup2: [ over over ] ;         // B A -> B A B A
+swapd: [ q< swap q> ] ;;     // C B A -> B C A
+dive: [ swap dipd ] ;;       // [c] [b] [a] -> a [c] [b]   (aka dip2)
+dup2: [ over over ] ;;       // B A -> B A B A
+sap: [ dip eval ] ;;    // [B] [A] -> A B
+
+  [ [ 'b' ] [ 'a' ] sap stack [ 'a' 'b' ] assert_equal ] 'sap' test
+  [ [ dup 1 - ] (5) sap stack [ 5 4 ] assert_equal ] 'sap' test
+  [ +:(4, 5) sap 9 assert_equal ] 'sap' test
+  [ +:(*:(5,6) sap *:(5,2) sap) sap 40 assert_equal ] 'sap' test
 
 bi: [ sipd eval ] ;;        // C [b] [a] -> C b C a
+
+    [ 5 [ 2 * ] [ 2 + ] bi stack [ 10 7 ] assert_equal ] 'bi' test
+
+// swap apply `[ B ] [ A ] -> A B` (aka sap)
+'|>' [ sap ] ;;
+
 do: [ dup dipd ] ;;
 
 // keep/check
@@ -48,9 +70,6 @@ succ: [ dup ++ ] ;
 =<: [ > ~ ] ;;
 !=: [ = ~ ] ;
 
-max: [ dup2 q< q< > q> q> choose ] ;; // aka greater-of
-min: [ dup2 q< q< < q> q> choose ] ;; // lesser-of
-
 // 
 in: [ ( swap eval ) ] ;
 get: [ q< @ dup null? swap q> swap choose ] ;
@@ -60,7 +79,7 @@ yield: [ return suspend ] ;
 delay: [ [ sleep ] >> slip eval ] ;
 
 // control
-_check: [ [ truthy? ] dive ] ;
+_check: [ q< q< boolean q> q> ] ;
 branch: [ _check choose eval ] ;;
 when: [ [ ] branch ] ;
 unless: [ [ ] swap branch ] ;
@@ -113,20 +132,23 @@ y: [ [ dup >> ] swap + dup >> ] ;
 
 // functional
 map: [ * in ] ;;
+
+    [ [ 1 2 3 ] [ 2 * ] map [ 2 4 6 ] assert_equal ] 'map' test
+    [ [ 1 2 3 4 ] [ 2 % 0 = ] map [ false true false true ] assert_equal ] 'map' test
+
 chain: [ over nothing? ~ swap when ] ;
 fmap: [ eval ] ;
 map-reduce: [ [ map ] dip fold ] ;
 reduce: [ foldl ] ;;
 filter: [ [ dup empty swap ] dip [ keepif ] >> map swap * ] ;
 
-// aggregate reduction
-maximum: [ [ max ] fold ] ;;
-minimum: [ [ min ] fold ] ;;
-reverse: [ dup ln 1 > [ uncons 'reverse' eval swap + ] when ] ;
+    [ [ 1 2 3 4 ] [ 2 % 0 = ] filter [ 2 4 ] assert_equal ] 'filter' test
+    [ [ 1 2 3 4 ] [ 2 > ] filter [ 3 4 ] assert_equal ] 'filter' test
 
-// math
-neg: [ 0 swap - ] ;
-sum: [ [ + ] fold ] ;
+// aggregate reduction
+reverse: [ dup ln 1 > [ uncons [ reverse ] eval swap + ] when ] ;
+
+    [ 'abcd' reverse 'dcba' assert_equal ] 'reverse' test
 
 /**
   * ## `nop`

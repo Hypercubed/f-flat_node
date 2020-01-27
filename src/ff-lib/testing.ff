@@ -1,25 +1,77 @@
+
+dup2: [ q< dup q> swap q< dup q> swap ] ;
+slip: [ q< eval q> ] ;
+dip: [ swap slip ] ;;
+unless: [ q< boolean q> [ ] swap choose eval ] ;
+<=: [ > ~ ] ;;
+
 assert: [
-  [ 'Assertion error' throw ]
-  unless
+  dup boolean
+  [ drop ]
+  [ 
+    'Assertion error: ' swap string << dup ?
+    throw
+  ]
+  choose eval
+] ;;
+
+assert_false: [
+  dup false =
+  [ drop ]
+  [
+    'Assertion error: ' swap string << '!= false' << dup ?
+    throw
+  ]
+  choose eval
 ] ;;
 
 assert_equal: [
-  =
-  assert
+  dup2 =
+  [ drop drop ]
+  [
+    'Assertion error: ' swap string << ' != ' << swap string << dup ?
+    throw
+  ]
+  choose eval
 ] ;;
 
 assert_zero: [
-  5e-20 <=
-  assert
+  dup 5e-20 <=
+  [ drop ]
+  [
+    'Assertion error: ' swap string << ' !~ 0' << dup ?
+    throw
+  ]
+  choose eval
 ] ;;
 
 assert_length: [
-  [ ln ] dip =
-  assert
+  dup2 [ ln ] dip =
+  [ drop drop ]
+  [
+    swap
+    'Assertion error: length of ' swap string << ' != ' << swap string << dup ?
+    throw
+  ]
+  choose eval
 ] ;;
 
+red: [
+  "\u001b[31m"
+  swap
+  "\u001b[0m"
+  + +
+] ;
+
 test: [
-  [ throws? '✘ ' '✔ ' choose ] dip
-  + ?
+  ' ✘ ' red swap + ' failed' + [ ? ] >>
+  [ throws? ] dip
+  [ ]
+  choose eval
 ] ;;
+
+// [ false assert ] 'testing assert' test
+// [ 1 2 assert_equal ] 'assert_equal' test
+// [ 1 assert_zero ] 'assert_zero' test
+// ['abc' 4 assert_length ] 'assert_zero' test
 

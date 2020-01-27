@@ -1,9 +1,7 @@
 # Site War
 
 ```forth
-'https://github.com/' read length
-
-site-size: [ read length ] ;
+site-size: [ read ln ] ;
 
 site-war: [ dup [ [ site-size ] >> ] map all zip object ] ;
 

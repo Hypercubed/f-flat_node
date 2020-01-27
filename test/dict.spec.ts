@@ -87,3 +87,27 @@ test('should inline defined actions', async () => {
   // t.deepEqual(await fJSON('{ x: [ slip ] : } inline'), [{ x: slipAction }]);
   expect(await fJSON('{ x: [ slip ] } inline')).toEqual([{ x: [slipAction] }]);
 });
+
+test('defer', async () => {
+  expect(
+    await fValues(`
+    c: defer
+
+    e: [ dup 2 / c ] ;
+    o: [ dup 3 * 1 + c ] ;
+
+    c: [
+      dup 1 =
+      [
+        dup even?
+          [ e ]
+          [ o ]
+          branch
+      ]
+      unless
+    ] ;
+
+    12 c
+  `)
+  ).toEqual([12, 6, 3, 10, 5, 16, 8, 4, 2, 1]);
+});

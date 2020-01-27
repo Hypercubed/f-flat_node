@@ -3,8 +3,15 @@
 If you are running F♭ from the github repo, you can start the REPL using `npm start`.  You will then see the F♭ command prompt:
 
 ```
-Welcome to F♭ REPL Interpreter
-F♭ Version 0.0.0 (C) 2000-2017 J. Harshbarger
+          []]
+          []]
+[]]]]]]]] []] []]]      F♭ Version 0.0.7
+[]]       []]]   []]    Copyright (c) 2000-2020 by J. Harshbarger
+[]]       []]   []]
+[]]]]]]   []]  []]      Type '.help' for help
+[]]       []][]]        Type '.clear' to reset
+[]]
+[]]
 
 f♭>
 ```
@@ -17,7 +24,7 @@ f♭>
 f♭>
 ```
 
-Starting the REPL again you can enter values ether as a single line or one value at at time:
+Starting the REPL again you can enter values either as a single line or one value at at time:
 
 ```
 Welcome to F♭ REPL Interpreter
@@ -36,7 +43,7 @@ The current stack will be printed after each value is entered.  The current stac
 
 ## Interactive Calculator
 
-From the demo, F♭ can be \(and is\) used as a interactive arbitrary precision calculator:
+As shown in the [demo](demo.md), F♭ can be \(and is\) used as a interactive arbitrary precision calculator:
 
 ```
 f♭> 0.1 0.2 +

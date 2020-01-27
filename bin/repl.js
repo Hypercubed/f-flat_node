@@ -20,11 +20,11 @@ const welcome = gradient.rainbow(`
           []]
           []]
 []]]]]]]] []] []]]      F♭ Version ${pkg.version}
-[]]       []]]   []]    Copyright (c) 2000-2018 by ${pkg.author}
+[]]       []]]   []]    Copyright (c) 2000-2020 by ${pkg.author}
 []]       []]   []]
-[]]]]]]   []]  []]      Type '.help' for help
+[]]]]]]   []]  []]      Type .exit to exit the repl
 []]       []][]]        Type '.clear' to reset
-[]]
+[]]                     Type '.help' for more help
 []]
 `);
 

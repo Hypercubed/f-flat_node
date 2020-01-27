@@ -20,16 +20,16 @@ Now provide handlers for each n-sided die. Each of these takes a
 number representing the number of rolls and returns the sum of the
 rolls.
 
-      d4: [ [ [ 4 roll-die ] swap times ] >> in ] ;
-      d6: [ [ [ 6 roll-die ] swap times ] >> in ] ;
-      d8: [ [ [ 81 roll-die ] swap times ] >> in ] ;
-      d10: [ [ [ 10 roll-die ] swap times ] >> in ] ;
-      d12: [ [ [ 12 roll-die ] swap times ] >> in ] ;
-      d20: [ [ [ 20 roll-die ] swap times ] >> in ] ;
+    d4: [ [ [ 4 _roll-die ] swap times ] >> in ] ;
+    d6: [ [ [ 6 _roll-die ] swap times ] >> in ] ;
+    d8: [ [ [ 81 _roll-die ] swap times ] >> in ] ;
+    d10: [ [ [ 10 _roll-die ] swap times ] >> in ] ;
+    d12: [ [ [ 12 _roll-die ] swap times ] >> in ] ;
+    d20: [ [ [ 20 _roll-die ] swap times ] >> in ] ;
 
 The final routine is a combinator that sums the results of the rolls.
 
-      roll-dice: [ eval sum: dip + ] ;
+    roll-dice: [ eval [ sum ] dip + ] ;
 
 Example:
 

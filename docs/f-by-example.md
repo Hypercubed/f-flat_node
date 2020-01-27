@@ -419,7 +419,7 @@ f♭> sqr: see println
 Use `words` to see all words currently defined:
 
 ```
-f♭> words [ println ] foreach
+f♭> words [ println ] each
 ...etc
 sqr
 cubed
@@ -461,7 +461,7 @@ f♭> [ 4 4 5 ] =
 f♭> clr [ 1 2 3 4 5 ] [ even? ] filter
 [ [ 2 4 ] ]
 
-f♭> clr [ 1 2 3 4 5 ] [ println ] foreach
+f♭> clr [ 1 2 3 4 5 ] [ println ] each
 1
 2
 3
@@ -539,7 +539,7 @@ f♭> fizzbuzz: [
 ] ;
 [  ]
 
-f♭> 20 integers [ fizzbuzz ] foreach
+f♭> 20 integers [ fizzbuzz ] each
 1
 2
 fizz

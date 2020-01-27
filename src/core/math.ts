@@ -1,4 +1,4 @@
-import { signature, Any } from '@hypercubed/dynamo';
+import { signature } from '@hypercubed/dynamo';
 import * as erf from 'compute-erf';
 
 import {
@@ -360,7 +360,7 @@ export const math = {
    * Error function
    *
    */
-  erf, // todo: Decimal. Complex
+  erf: (a: number) => erf(+a), // todo: Decimal. Complex
 
   /**
    * ## `&`

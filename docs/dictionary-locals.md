@@ -2,23 +2,21 @@
 
 Unlike many other languages, f♭ does not have a concept of variables or lambdas.  Like most stack based languages the primary location for value storage is the stack.  f♭ has a write once dictionary for storage of word definitions.  Values within a dictionary cannot be overwritten or deleted. However, using child stacks \(discussed later\) dictionary words can be shadowed. \(similar to JS scoping rules\).
 
-Values can be stored and recalled from the stack using the `sto` and `rcl` verbs.
-
 ```
-f♭> 123 x: sto
+f♭> x: [ 123 ] ;
 [  ]
 
-f♭> x: rcl
+f♭> x
 [ 123 ]
 
-f♭> x: 456 sto
-Error: Cannot overrite definitions in strict mode: x
+f♭> x: [ 456 ] ;
+Error: Cannot overwrite local definition: x
 [  ]
 
-f♭> x: rcl
+f♭> x rcl
 [ 123 123 ]
 
-f♭> clr [ 456 x: sto x: rcl ] fork x: rcl
+f♭> clr [ x: [ 456 ] ; x ] fork x
 [ [ 456 ] 123 ]
 ```
 

@@ -92,10 +92,7 @@ String literals in F♭ use single \(`'`\), double \(`"`\), and backtick quotes 
 Dates are input as strings and convered to date values usingthe`date` word.
 
 ```
-f♭> '1/1/1990'
-[ '1/1/1990' ]
-
-f♭> date
+f♭> '1/1/1990' date
 [ Mon Jan 01 1990 00:00:00 GMT-0700 (MST) ]
 ```
 
@@ -108,7 +105,7 @@ f♭> [ '1/1/1990':date ]
 
 ## Words
 
-A word \(aka symbols or keys\) can be added to the stack without execution by either post-fixing the word with a colon \(`:`\) or converting a string to a word using a colon \(`:`\).
+A word \(aka keys\) can be added to the stack without execution by either post-fixing the word with a colon \(`:`\) or converting a string to a word using a colon \(`:`\).
 
 ```
 f♭> x:

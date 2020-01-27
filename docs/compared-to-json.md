@@ -1,13 +1,13 @@
 # F♭ is a superset of JSON
 
-By definition of the following words, F♭ is able to \(mostly\) parse a superset of JSON.
+By definition of the following words, F♭ is able to parse a superset of JSON.
 
 * `{`      - start a quote
-* `}`      - end a quote, convert to hash assuming a list of key value pairs `[ key value key value ]`
+* `}`      - end a quote, convert to hash assuming a list of key value pairs `[ key: value key: value ]`
 * `[`      - start a lazy quote
 * `]`      - end a lazy quote
-* `:`      - convert a string to an word
-* `{word}:` - word literal, same as `"{word}" :`
+* `:`      - convert a string to an key
+* `{word}:` - key literal, same as `"{word}" :`
 
 The following
 
@@ -28,10 +28,10 @@ in other words:
 
 1. Start a quote
 2. Push a string
-3. Convert string to a word
+3. Convert string to a key
 4. Push a number
 5. Push another string
-6. Convert string to a word
+6. Convert string to a key
 7. push a string
 8. end the quote and convert to an map assuming a list of key values pairs
 
@@ -60,7 +60,7 @@ However, because this is actually F♭ the syntax is relaxed.
 ```
 {
   "key": 10,
-  'key2': '20'
+  'key2': `20`
 }
 ```
 
@@ -69,7 +69,7 @@ However, because this is actually F♭ the syntax is relaxed.
 ```
 {
   "key": 10
-  'key2': '20'
+  'key2': `20`
 }
 ```
 
@@ -80,7 +80,7 @@ Quotes around keys are optional if the key is an word \(no whitespace between th
 ```
 {
   key: 10
-  key2: '20'
+  'key2' : `20`
 }
 ```
 
@@ -89,7 +89,7 @@ Colon is optional between key and value if the key is a string.
 ```
 {
   "key" 10
-  "key2" '20'
+  'key2' `20`
 }
 ```
 
@@ -104,18 +104,20 @@ Colon is optional between key and value if the key is a string.
 
 Including template strings
 
-    {
-      key: 5 2 *
-      `key$(1 1 +)` : `$(10 10 +)`
-    }
+```
+{
+  key: 5 2 *
+  `key$(1 1 +)` : `$(10 10 +)`
+}
+```
 
 Including infinity, null, complex and date values:
 
 ```
 {
   pi: 4 1 atan *
-  complex: '2+4i':complex
-  date: '1/1/1990':date
+  complex: '2+4i' :complex
+  date: '1/1/1990' :date
   nothing: null
   everything: 1 0 /
 }

@@ -18,7 +18,7 @@ include: [ __import-resolve __include ] def
  */
 export: [ vocab send ] def
 
-__module_hash: [ hex-hash '_' swap + ] def
+__module_hash: [ hex-hash '%top._' swap + ] def
 __load-module: [ [ dup [ ] >> '__filename' swap def __include export ] >> fork drop ] def
 __load-and-sto-module: [ dup __load-module swap __module_hash swap def ] def
 

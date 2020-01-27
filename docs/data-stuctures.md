@@ -2,7 +2,7 @@
 
 ## Lists
 
-Lists / Arrays are surrounded by square (`[]`) or round (`()`) brackets with optinally comma-separated elements.  The difference being that expressions within round brackets are executed immediately.
+Lists / Arrays are surrounded by square (`[]`) or round (`()`) brackets with optionally comma-separated elements.  The difference being that expressions within round brackets are executed immediately.
 
 ```
 f♭> ( 1 2 )
@@ -20,7 +20,7 @@ f♭> [ 1 2 * ]
 
 ## Maps
 
-Maps (aka objects or records) are surrounded by curly brackets (`{}`) with optinally comma-separated elements.  The key in a key value pair is actullay a word as described above.  Expressions within curly brackets are executed immediately.
+Maps (aka objects or records) are surrounded by curly brackets (`{}`) again with optionally comma-separated elements.  The key in a key value pair is actually a key as described above.  Expressions within curly brackets are executed immediately.
 
 ```
 f♭> { x: 1 y: 2 }

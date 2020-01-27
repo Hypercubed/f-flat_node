@@ -186,3 +186,101 @@ test('module `use` scoping', async () => {
   `)
   ).toEqual([1]);
 });
+
+test('def does not bind', async () => {
+  expect(
+    await fValues(`
+    s: [
+      x: [ 1 2 + ] def
+      y: [ x 3 * ] def
+      export
+    ] fork drop ;
+    x: [ 5 ] ;
+    y: [ 7 ] ;
+    x y s.x s.y
+  `)
+  ).toEqual([5, 7, 3, 15]);
+});
+
+test('explicit locals', async () => {
+  expect(
+    await fValues(`
+    s: [
+      x: [ 1 2 + ] ;
+      y: [ .x 3 * ] ;
+      export
+    ] fork drop ;
+    x: [ 5 ] ;
+    y: [ 7 ] ;
+    x y s.x s.y
+  `)
+  ).toEqual([5, 7, 3, 15]);
+});
+
+test.skip('prelude binding', async () => { // TODO
+  expect(
+    await fValues(`
+    x: [ 25 sqrt ] ;
+    sqrt: [ 4 ] ;
+    x
+  `)
+  ).toEqual([5]);
+});
+
+test('bind at defintion', async () => {
+  // Def does not bind
+  expect(
+    await fValues(`
+    x: [ 5 ! ] def
+    !: [ drop 4 ] ;
+    x
+  `)
+  ).toEqual([4]);
+
+  // ; does
+  expect(
+    await fValues(`
+    x: [ 5 ! ] ;
+    !: [ drop 4 ] ;
+    x
+  `)
+  ).toEqual([120]);
+
+  // with explicit non-bind
+  expect(
+    await fValues(`
+    x: [ 5 .! ] ;
+    !: [ drop 4 ] ;
+    x
+  `)
+  ).toEqual([4]);
+});
+
+test('bind', async () => {
+  // without bind, uses local scope
+  expect(
+    await fValues(`
+    [ 5 ! ]
+    !: [ drop 4 ] ;
+    eval
+  `)
+  ).toEqual([4]);
+
+  // with bind, binds to defintion at bind time
+  expect(
+    await fValues(`
+    [ 5 ! ] bind
+    !: [ drop 4 ] ;
+    eval
+  `)
+  ).toEqual([120]);
+
+  // with explicit non-bind at bind time
+  expect(
+    await fValues(`
+    [ 5 .! ] bind
+    !: [ drop 4 ] ;
+    eval
+  `)
+  ).toEqual([4]);
+});

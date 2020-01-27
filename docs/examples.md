@@ -33,10 +33,10 @@ f♭> "world" hi2
 Hello, world!
 [  ]
 
-f♭> hiall: [ hi2: * eval ] ;
+f♭> hi-all: [ hi2: * eval ] ;
 [  ]
 
-f♭> ["world" "everyone"] hiall
+f♭> ["world" "everyone"] hi-all
 Hello, world!
 Hello, everyone!
 ```
@@ -111,8 +111,8 @@ p-fizzbuzz: [
 ```
 quad: [
   [ a: b: c: ] =>
-    b -1 * b b * 4 a c * * - sqrt -+
-    [ 2 a * / ] bi@
+    .b -1 * .b .b * 4 .a .c * * - sqrt -+
+    [ 2 .a * / ] bi@
 ] lambda ;
 ```
 

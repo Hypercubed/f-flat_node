@@ -72,10 +72,10 @@ test('should pattern match arrays with wild cards', async () => {
 test('should pattern match complex arrays', async () => {
   expect(await fJSON('[ "abc" ] ( "/a./" regexp ) =~')).toEqual([true]);
   expect(await fJSON('[ "abc" ] ( "/b./" regexp ) =~')).toEqual([true]);
-  expect(await fJSON('[ 1 "abc" 2 3 ] ( 1 regexp:("/b./"). 2 3 ) =~')).toEqual([
+  expect(await fJSON('[ 1 "abc" 2 3 ] ( 1 regexp: ("/b./") |> 2 3 ) =~')).toEqual([
     true
   ]);
-  expect(await fJSON('[ 1 "abc" 2 3 ] ( 1 regexp:("/b./"). _ 3 ) =~')).toEqual([
+  expect(await fJSON('[ 1 "abc" 2 3 ] ( 1 regexp: ("/b./") |> _ 3 ) =~')).toEqual([
     true
   ]);
 
