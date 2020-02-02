@@ -104,7 +104,7 @@ export class Vocabulary {
     }
 
     this.root[ukey] = value;
-    scope[key] = new Word(ukey); // TODO: Alias?
+    scope[key] = new Word(ukey, key); // TODO: Alias?
   }
 
   compile(action: any): any {
@@ -178,7 +178,7 @@ export class Vocabulary {
     while (value instanceof Word) {
       action = value;
       const key = action.value;
-      value = this.locals[action.value];
+      value = this.locals[key];
     }
     return action;
   }

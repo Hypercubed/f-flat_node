@@ -24,6 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "@hypercubed/dynamo": "^1.0.2",
+    "@hypercubed/milton": "^1.0.3",
     "@sindresorhus/is": "^1.2.0",
     "@types/icepick": "^2.3.0",
     "autobind-decorator": "^2.4.0",

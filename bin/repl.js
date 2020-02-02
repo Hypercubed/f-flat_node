@@ -9,7 +9,7 @@ const gradient = require('gradient-string');
 const memoize = require('memoizee');
 
 const { createStack, createRootEnv } = require('../dist/stack');
-const { log, type, bar, FFlatPrettyPrinter } = require('../dist/utils');
+const { log, type, bar, ffPrettyPrint } = require('../dist/utils');
 
 const pkg = require('../package.json');
 
@@ -31,14 +31,7 @@ const welcome = gradient.rainbow(`
 const initialPrompt = 'F♭> ';
 const altPrompt = 'F♭| ';
 
-const pprint = new FFlatPrettyPrinter({
-  showHidden: false,
-  depth: 5,
-  colors: true,
-  indent: true,
-  maxArrayLength: 10,
-  maxObjectKeys: 10
-});
+const pprint = ffPrettyPrint;
 
 let arg = '';
 let buffer = '';
@@ -132,7 +125,7 @@ function startREPL() {
       f.stack.forEach((d, i) => {
         const id = objectId(d).toString(16);
         console.log(
-          `${f.stack.length - i}: ${pprint.formatValue(d, null)} [${type(
+          `${f.stack.length - i}: ${pprint.stringify(d)} [${type(
             d
           )}] (${id})`
         );
@@ -184,7 +177,7 @@ function writer(_) {
   if (_ instanceof Error) {
     return _.stack;
   }
-  return silent ? '' : `${pprint.formatValue(_.stack, -1)}\n`;
+  return silent ? '' : `${pprint.stringify(_.stack, -1)}\n`;
 }
 
 function fEval(code, _, __, cb) {

@@ -1,13 +1,10 @@
 import { signature, Any } from '@hypercubed/dynamo';
 
-import { FFlatPrettyPrinter, ffPrettyPrint, DEFAULT_OPTS, FFlatError } from '../utils';
+import { ffPrettyPrint, FFlatError } from '../utils';
 import { dynamo, Sentence, Word, Key, StackValue } from '../types';
 import { StackEnv } from '../env';
 
-const _ffPrettyPrint = new FFlatPrettyPrinter({
-  colors: false,
-  ...DEFAULT_OPTS
-});
+const _ffPrettyPrint = ffPrettyPrint;
 
 // todo: convert dictionary of stack values to dictinary of actions
 class CreateAction {
@@ -195,7 +192,7 @@ export const dict = {
     if (r instanceof Word || r instanceof Sentence || r instanceof Key) {
       return r.displayString;
     }
-    return _ffPrettyPrint.formatValue(r, 0);
+    return _ffPrettyPrint.stringify(r);
   },
 
   /**
@@ -211,7 +208,7 @@ export const dict = {
    */
   show(this: StackEnv, a: string) {
     const r = this.dict.get(a);
-    return console.log(ffPrettyPrint.formatValue(r, 0));
+    return console.log(ffPrettyPrint.stringify(r));
   },
 
   /**

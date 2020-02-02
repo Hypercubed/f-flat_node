@@ -26,7 +26,7 @@ export class FFlatError extends Error {
       stackValue.push(`stack trace:`);
 
       state.trace.forEach(s => {
-        stackValue.push(`     ${ffPrettyPrint.formatTrace(s as any, -5)}`);
+        stackValue.push(`     ${ffPrettyPrint.formatTrace(s as any)}`);
       });
     } else {
       stackValue = [''];
