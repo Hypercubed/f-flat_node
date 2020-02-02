@@ -1,8 +1,13 @@
 import { signature, Any } from '@hypercubed/dynamo';
 
-import { ffPrettyPrint, FFlatError } from '../utils';
+import { FFlatPrettyPrinter, ffPrettyPrint, DEFAULT_OPTS, FFlatError } from '../utils';
 import { dynamo, Sentence, Word, Key, StackValue } from '../types';
 import { StackEnv } from '../env';
+
+const _ffPrettyPrint = new FFlatPrettyPrinter({
+  colors: false,
+  ...DEFAULT_OPTS
+});
 
 // todo: convert dictionary of stack values to dictinary of actions
 class CreateAction {
@@ -190,7 +195,23 @@ export const dict = {
     if (r instanceof Word || r instanceof Sentence || r instanceof Key) {
       return r.displayString;
     }
-    return ffPrettyPrint.formatValue(r, 0);
+    return _ffPrettyPrint.formatValue(r, 0);
+  },
+
+  /**
+   * ## `show`
+   * recalls the definition of a word as a formatted string
+   *
+   * ( {string|atom} -> {string} )
+   *
+   * ```
+   * f♭> "sqr" show
+   * [ '[ dup * ]' ]
+   * ```
+   */
+  show(this: StackEnv, a: string) {
+    const r = this.dict.get(a);
+    return console.log(ffPrettyPrint.formatValue(r, 0));
   },
 
   /**

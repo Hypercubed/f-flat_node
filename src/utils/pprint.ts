@@ -54,7 +54,7 @@ interface InspectOptions {
   hideQueue: boolean;
 }
 
-const DEFAULT_OPTS: InspectOptions = {
+export const DEFAULT_OPTS: InspectOptions = {
   showHidden: false,
   depth: 10,
   colors: chalk.supportsColor.hasBasic,
@@ -167,14 +167,19 @@ export class FFlatPrettyPrinter {
       @signature(Boolean, Any)
       boolean = self.getStyledFormater('boolean');
 
-      @signature([Word, Sentence], Any)
+      @signature(Word, Any)
       word(value: any, depth: number) {
-        return self._stylizeName(value);
+        return self._stylizeName(value, depth);
       }
 
       @signature(Key, Any)
       key(value: any, depth: number) {
-        return self._stylizeKey(value.displayString || value.value);
+        return self._stylizeKey(value.displayString || value.value, depth);
+      }
+
+      @signature(Sentence, Any)
+      sentence(value: any, depth: number) {
+        return self.formatSentence(value.value, depth);
       }
 
       @signature(String, Any)
@@ -265,6 +270,26 @@ export class FFlatPrettyPrinter {
   }
 
   @boundMethod
+  formatSentence(arr: Array<any>, depth: number = 0): string {
+    const opts =
+      depth > 0 && this.opts.childOpts ? this.opts.childOpts : this.opts;
+    const braces = this.opts.arrayBraces;
+    if (!is.nullOrUndefined(opts.depth) && depth >= opts.depth) {
+      return `${braces[0]}Sentence${braces[1]}`;
+    }
+    const maxLength = opts.maxArrayLength || 100;
+
+    const output = arr.slice(0, maxLength).map(x => {
+      return this.formatValue(x, depth + 1).replace(/\n/g, '');
+    });
+
+    if (arr.length > output.length) {
+      output.push('…');
+    }
+    return this.reduceToSingleString(output);
+  }
+
+  @boundMethod
   formatMap(value: Object, depth: number): string {
     const opts =
       depth > 0 && this.opts.childOpts ? this.opts.childOpts : this.opts;
@@ -302,13 +327,13 @@ export class FFlatPrettyPrinter {
    * If the combine lengeth is > maxLength,
    * wrap lines
    */
-  private reduceToSingleString(output: string[], braces: string): string {
-    const joined = `${braces[0]} ${output.join('  ')} ${braces[1]}`;
+  private reduceToSingleString(output: string[], braces?: string): string {
+    const joined = braces ? `${braces[0]} ${output.join(' ')} ${braces[1]}` : output.join(' ');
     if (
       (this.opts.indent && strLen(joined) > this.opts.maxOutputLength) ||
       FFlatPrettyPrinter.consoleWidth
     ) {
-      return `${braces[0]} ${output.join('\n  ')} ${braces[1]}`;
+      return braces ? `${braces[0]} ${output.join('\n  ')} ${braces[1]}` : output.join('\n  ');
     }
     return joined;
   }

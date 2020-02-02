@@ -3,7 +3,6 @@
 _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # New TODOs
-- [ ] Objects in defintions are broken!!
 - [?] broken lambdas
   - [?] some words should be bound!
   - [?] need a way to avoid scope binding in lambda (`&x`, `$x`?)
@@ -15,12 +14,18 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] finish and use https://github.com/Hypercubed/real
   - [ ] Number subtypes: integer (BigInt), real (decimaljs), rational (tbd), complex (internal)
 - [ ] More scoping words? `%top`, `%parent`, `%self`?
-- [ ] more tests for `bind` and `let`
+  - [ ] Test for each
+  - [ ] Disable getter without path (`%top`)
+- [ ] more tests for `bind` and `defer`
+  - [ ] bug: bind doesn't bind core words
 
 # Parser
 - [ ] Regex literal
 - [ ] Use `#:` as symbol prefix?  Symbols with whitespace (`#:'foo'`)?
 - [ ] `undefined`?
+- [ ] complex, i
+- [ ] +/-Infinity
+- [ ] Symbols `(`, `_`
 
 # Improved scoping and namespaces
 - [x] immutable words (ex. `slip%8df57134`)
@@ -29,7 +34,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [?] mutually recursive definitions?
 - [ ] ensure pretty display for unique words?
 - [ ] Tests for `vocab`, `use`, etc.
-- [ ] Tests for scoping
+- [?] Tests for scoping
 - [ ] disallow shadowing guid!!
 - [ ] allow finding words by name (`abc`), hash (`%xyz`), or both (`abc%xyz`)?
 - [ ] pick for module?
@@ -77,20 +82,13 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Undo flags
   - [x] `undoable` -> `autoundo`,
   - [ ] add `undoable` flag.
-  - [ ] reset by `.clear`
+  - [ ] reset by `.clear`?
 - [ ] Fix API docs for base
     - [ ] Move docs from gitbook?
 - [ ] Consistant and predictable display precision:
   - [ ] `1 acos` => `0` (precision issue)
   - [ ] precision in complex calculations (on print)
   - [ ] Pretty printing complex values: '5e-20+2i' -> '2i'?
-- [ ] More literals in parser?
-  - [ ] regex?
-  - [ ] complex, i
-  - [ ] +/-Infinity
-  - [ ] Symbols `(`, `_`
-  - [x] true, false
-  - [x] null
 - [ ] More tests for stack object immutablity
   - [ ] vocab immutability
 - [ ] Test all internal words
@@ -143,7 +141,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Detail boolean / Three valued logic
 - [ ] Basis
 - [ ] Regexp
-- [ ] `bind`
+- [ ] `bind`, `defer`
 - [ ] Module loader, expanding functions, circular references.
 - [ ] Defined words
 - [ ] Child stacks, forks, etc.
@@ -162,7 +160,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [x] asin, acos with real values > 1 are complex
   - [x] asin and acos of complex infinities
   - [ ] atan2?
-  - [ ] other derived words: sec, cot, etc.
+  - [ ] other derived words: `sec`, `cot`, etc.
 - [ ] Infinity and complex numbers
   - [ ] Infinity in a complex number is a ComplexInfinity
   - [x] Multiplications: https://locklessinc.com/articles/complex_multiplication/
@@ -179,11 +177,10 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Dates
   - [ ] More date base operations
   - [ ] Add Duration type... example: https://github.com/moment/moment/blob/develop/src/lib/duration/constructor.js
-- [ ] Improved `@`
+- [ ] Path to `@`
   - [ ] `[ ... ] [ x y z ] @` => `[ ... ][x][y][z]`
   - [?] `{ ... } 'x.y.z' @` => `[ ... ][x][y][z]`
 - [?] Private/Protected words?
-- [ ] Globals/parent scoped?
 - [ ] Preserved precision base on user input (2.50 vs 2.5)?
   - [ ] `2.50M`
 - [ ] Better JSON iterop
@@ -198,7 +195,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [x] Dates
 - [ ] RegExp
   - [?] Rewrite strings lib to use regex
-  - [ ] Regex literal?
   - [ ] Fix union of rexexp with flags
   - [x] match operator `=~` ?
   - [ ] {Array} {RegExp} match?

@@ -46,14 +46,19 @@ export class Vocabulary {
   protected readonly locals: D;
 
   constructor(parent?: Vocabulary) {
-    if (!parent?.root) {
+    if (parent?.root) {
+      this.root = parent.root;
+    } else {
       this.root = Object.create(null);
       this.root[TOP] = this.root;
-    } else {
-      this.root = parent.root;
     }
-    this.scope = Object.create(parent?.locals || this.root);
+    const par = parent?.locals || this.root;
+
+    this.scope = Object.create(par);
+    this.scope['%parent'] = par;
+
     this.locals = Object.create(this.scope);
+    this.scope['%self'] = this.locals;
   }
 
   get(key: string): VocabValue {

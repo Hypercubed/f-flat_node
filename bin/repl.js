@@ -112,6 +112,7 @@ function startREPL() {
 
   r.on('reset', () => {
     f = newStack();
+    stackRepl.setPrompt(initialPrompt);
   });
 
   r.defineCommand('silent', {
