@@ -11,14 +11,14 @@ function create(dictObject: D) {
     @signature()
     array(arr: any[]) {
       return arr.reduce((p, i) => {
-        const n = _rewrite(i);
+        const n = _compile(i);
         n instanceof ReturnValues ? p.push(...n.value) : p.push(n);
         return p;
       }, []);
     }
     @signature()
     Sentence(action: Sentence) {
-      const expandedValue = _rewrite(action.value);
+      const expandedValue = _compile(action.value);
       return new Sentence(expandedValue, action.displayString);
     }
     @signature()
@@ -26,7 +26,7 @@ function create(dictObject: D) {
       const path = Vocabulary.makePath(action.value).shift();
       const value: string = dictObject[path];
 
-      if (is.undefined(value) && !(action.value as string).endsWith(IIF))
+      if (is.undefined(value) && (typeof action.value !== 'string' || !(action.value as string).endsWith(IIF)))
         return action;
       if (is.function_(value)) return action;
 
@@ -35,7 +35,7 @@ function create(dictObject: D) {
     @signature()
     plainObject(obj: Object) {
       return Object.keys(obj).reduce((p, key) => {
-        const n = _rewrite(obj[key]); // todo: think about this, do we ever want to work on anything other than {string: Array}?
+        const n = _compile(obj[key]); // todo: think about this, do we ever want to work on anything other than {string: Array}?
         n instanceof ReturnValues
           ? (p[key] = n.value.length === 1 ? n.value[0] : n.value)
           : (p[key] = n);
@@ -48,14 +48,14 @@ function create(dictObject: D) {
     }
   }
 
-  const _rewrite = dynamo.function(Rewrite);
-  return _rewrite;
+  const _compile = dynamo.function(Rewrite);
+  return _compile;
 }
 
 export function compile(x: D, y: any) {
-  const _rewrite = create(x);
+  const _compile = create(x);
   try {
-    return _rewrite(y);
+    return _compile(y);
   } catch (e) {
     throw e;
   }

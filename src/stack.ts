@@ -42,8 +42,7 @@ export function createRootEnv(): StackEnv {
     ...flags
   };
 
-  env.defineAction('prelude', prelude);
-  env.dict.use(prelude);
+  env.defineAction(prelude);
 
   // TODO: this should be optional
   return env.eval(`'${bootPath}' read eval`);

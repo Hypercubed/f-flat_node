@@ -10,29 +10,22 @@ const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 const TOP = '%top';
 const LOCAL = '.';
-const RESERVED = [
-  '(',
-  ')',
-  '[',
-  ']',
-  '{',
-  '}',
-  '"',
-  ',',
-  `'`,
-  '`',
-  '#',
-  '.',
-  // '@',
-  // '~',
-  ':',
-  // '%'
+const INVALID_WORDS = [
+  /[\[\]\{\}\(\)]/,  // quotes
+  /[\s,]/,           // whitespace
+  /[\"\'\`]/,        // string quote
+  /[#\.\:]/,         // symbol, paths, keys
+  /\_\%/,            // internal word
+  /^[\d_]+$/         // number like
 ];
 
-type D = { [key: string]: VocabValue };
+export type ScopeModule = { [k in string]: symbol; };
 
 export class Vocabulary {
   static makePath(key: string) {
+    if (typeof key === 'symbol') {
+      return [key];
+    }
     key = String(key).toLowerCase().trim();
     if (key.startsWith(LOCAL) && key.length > LOCAL.length) {  // words starting with '.' are alays local, not compiled
       key = key.slice(LOCAL.length);
@@ -41,45 +34,58 @@ export class Vocabulary {
     return key.split(SEP);
   }
 
-  protected readonly root: D;
-  protected readonly scope: D;
-  protected readonly locals: D;
+  protected readonly global: { [k in symbol]: VocabValue; };  // stores VocabValue by symbol
+
+  protected readonly root: ScopeModule;
+  protected readonly scope: ScopeModule;
+  protected readonly locals: ScopeModule;
 
   constructor(parent?: Vocabulary) {
+    this.global = parent?.global || Object.create(null);
+
     if (parent?.root) {
       this.root = parent.root;
     } else {
       this.root = Object.create(null);
-      this.root[TOP] = this.root;
+
+      const sym = Symbol(TOP);
+      this.global[sym] = this.root;
+      this.root[TOP] = sym as any;
     }
     const par = parent?.locals || this.root;
 
     this.scope = Object.create(par);
-    this.scope['%parent'] = par;
-
     this.locals = Object.create(this.scope);
-    this.scope['%self'] = this.locals;
   }
 
   get(key: string): VocabValue {
-    const path = Vocabulary.makePath(key);
-    return path.reduce((curr, key) => {
-      if (!curr) {
-        return;
-      }
-      let value = curr[key];
-      if (value instanceof Word) {
-        const action = this.findRootAction(value);
-        value = this.locals[action.value];
-      }
-      return value;
-    }, this.locals);
+    if (typeof key === 'symbol') {  // Symbols are always root level, no paths
+      return this.global[key as any];
+    }
+
+    if ([TOP].includes(key)) {
+      throw new Error(`Invalid key: ${key}`);
+    }
+
+    return Vocabulary
+      .makePath(key)
+      .reduce((curr, key) => {
+        if (!curr) {
+          return;
+        }
+        let value = curr[key];
+        if (typeof value === 'symbol') {
+          return this.global[value];
+        }
+        return value;
+      }, this.locals);
   }
 
   set(_key: string, value: VocabValue): void {
     let key = _key;
     const path = Vocabulary.makePath(key);
 
+    // Start using local scope
     let scope = this.locals;
     key = path.shift();
 
@@ -88,38 +94,46 @@ export class Vocabulary {
       scope = this.root;
     }
 
-    if (path.length > 0 || RESERVED.some(s => key.startsWith(s))) {
+    if (path.length > 0 ||  // cannot set to path
+      (key.length > 1 && INVALID_WORDS.some(r => key.match(r)))) {  // invalid keys
       throw new Error(`Invalid definition key: ${_key}`);
     }
 
-    let ukey = this._hash(key);
+    let sym = Symbol(key);
     if (hasOwnProperty.call(scope, key)) {
       const w = scope[key];
-      if (w instanceof Word && typeof scope[w.value] === 'undefined') {
+      if (typeof w === 'symbol' && typeof this.global[w] === 'undefined') {
         // allow defintion to words that have been declared but not defined
-        ukey = w.value;
+        sym = w;
       } else {
-        throw new Error(`Cannot overwrite local definition: ${key}`);
+        throw new Error(`Cannot overwrite definition: ${key}`);
       }
     }
 
-    this.root[ukey] = value;
-    scope[key] = new Word(ukey, key); // TODO: Alias?
+    this.global[sym] = value;
+    scope[key] = sym;
   }
 
-  compile(action: any): any {
+  /**
+   * Recursivly converts actions with string keys to actions with symbols
+   */
+  bind(action: Word | Sentence | Array<any> | Object): any {
     if (action instanceof Word) {
-      return this.findRootAction(action);
+      if (typeof action.value === 'string') {
+        const sym = this.locals[action.value];
+        if (sym) return new Word(sym as any, action.value);
+      }
+      return action;
     }
 
     if (action instanceof Sentence) {
-      const value = this.compile(action.value);
+      const value = this.bind(action.value);
       return new Sentence(value, action.displayString);
     }
 
     if (Array.isArray(action)) {
       return action.reduce((p, i) => {
-        const n = this.compile(i);
+        const n = this.bind(i);
         p.push(n);
         return p;
       }, []);
@@ -127,7 +141,7 @@ export class Vocabulary {
 
     if (is.plainObject(action)) {
       return Object.keys(action).reduce((p, key) => {
-        const n = this.compile(action[key]);
+        const n = this.bind(action[key]);
         p[key] = n;
         return p;
       }, {});
@@ -153,14 +167,23 @@ export class Vocabulary {
     return Object.keys(this.scope).filter(_ => !_.startsWith('_'));
   }
 
-  use(dict: { [key: string]: VocabValue }) {
+  /**
+   * Adds a vocab map (map of symbols) to the scope
+   */
+  useVocab(dict: ScopeModule) {
     Object.keys(dict).forEach(key => {
       const value = dict[key];
+      if (typeof value !== 'symbol') {
+        throw new Error(`Invalid vocabulary`);
+      }
       this.scope[key] = value;
     });
   }
 
-  compiledLocals() {
+  /**
+   * Gets vocabulary as a vocab map (map of symbols)
+   */
+  getVocab(): ScopeModule {
     return Object.keys(this.locals).reduce((acc, key) => {
       if (!key.startsWith('_')) {
         acc[key] = this.locals[key];
@@ -169,30 +192,19 @@ export class Vocabulary {
     }, {});
   }
 
-  rewrite(x: Word | Sentence) {
-    return rewrite(this.locals, x);
-  }
-
-  private findRootAction(value: any) {
-    let action = value;
-    while (value instanceof Word) {
-      action = value;
-      const key = action.value;
-      value = this.locals[key];
-    }
-    return action;
-  }
-
   /**
-   * Not yet a hash, use symbols?
+   * Inlines local and scoped defintions
    */
-  private _hash(key: string) {
-    let ukey: string;
-    do {
-      ukey = Math.random()
-        .toString(36)
-        .slice(2);
-    } while (this.root[ukey]);
-    return `_${key}#${ukey}`;
+  inline(x: Word | Sentence | Array<any>) {
+    const locals = {};
+    for (const key in this.locals) {
+      // eslint-disable-line guard-for-in
+      let value = this.locals[key];
+      if (typeof value === 'symbol') {
+        value = this.global[value];
+      }
+      locals[key] = value;
+    }
+    return rewrite(locals, x); // TODO: optomize this, pass this.global
   }
 }

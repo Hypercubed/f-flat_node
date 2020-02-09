@@ -1,54 +1,37 @@
 import { Decimal } from '../types';
-import { log } from '../utils';
+import { log, FFlatError } from '../utils';
 import { StackEnv } from '../env';
 
 /**
  * # Internal Flags
  */
 export const flags = {
-  /**
-   * ## `set-precision`
-   *
-   * Sets the internal decimal precision
-   *
-   */
-  'set-precision'(x: any) {
-    Decimal.config({ precision: +x });
+  'set-system-property'(this: StackEnv, p: string, v: any): void {
+    switch (p) {
+      case 'auto-undo':
+        this.autoundo = Boolean(v);
+        break;
+      case 'log-level':
+        log.level = String(v);
+        break;
+      case 'decimal-precision':
+        Decimal.config({ precision: +v });
+        break;
+      default:
+        throw new FFlatError(`Invalid flag: ${p}`, this);
+    }
   },
 
-  /**
-   * ## `get-precision`
-   *
-   * Gets the internal decimal precision
-   *
-   */
-  'get-precision': () => Decimal.precision,
-
-  /**
-   * ## `set-log-level`
-   * sets the current logging level
-   *
-   * ( {string} -> )
-   */
-  'set-log-level'(a: string): void {
-    log.level = a;
-  },
-
-  /**
-   * ## `get-log-level`
-   * gets the current logging level
-   *
-   * ( -> {string} )
-   */
-  'get-log-level': () => log.level,
-
-  /**
-   * ## `auto-undo`
-   * set flag to auto-undo on error
-   *
-   * ( {boolean} -> )
-   */
-  'set-auto-undo'(this: StackEnv, a: boolean): void {
-    this.autoundo = a;
+  'get-system-property'(this: StackEnv, p: string) {
+    switch (p) {
+      case 'auto-undo':
+        return this.autoundo;
+      case 'log-level':
+        return log.level = log.level;
+      case 'decimal-precision':
+        return Decimal.precision;
+      default:
+        throw new FFlatError(`Invalid flag: ${p}`, this);
+    }
   }
 };

@@ -46,10 +46,8 @@ bi: [ sipd eval ] ;;        // C [b] [a] -> C b C a
 // swap apply `[ B ] [ A ] -> A B` (aka sap)
 '|>' [ sap ] ;;
 
-do: [ dup dipd ] ;;
-
 // keep/check
-keep: [ over slip ] ;;      // B [a] -> B a B    (aka sip)
+keep: [ sip ] ;;      // B [a] -> B a B    (aka sip)
 check: [ dupd eval ] ;;     // B [a] -> B B a    (aka w)
 
 // truthy/falsy
@@ -67,7 +65,6 @@ succ: [ dup ++ ] ;
 <: [ <=> -1 = ] ;
 >=: [ < ~ ] ;;
 <=: [ > ~ ] ;;
-=<: [ > ~ ] ;;
 !=: [ = ~ ] ;
 
 // 
@@ -79,6 +76,7 @@ yield: [ return suspend ] ;
 delay: [ [ sleep ] >> slip eval ] ;
 
 // control
+_do: [ dup dipd ] ;;
 _check: [ q< q< boolean q> q> ] ;
 branch: [ _check choose eval ] ;;
 when: [ [ ] branch ] ;
@@ -86,7 +84,7 @@ unless: [ [ ] swap branch ] ;
 ifte: [ slipd branch ] ;;
 if: [ slip when ] ;
 loop: [ [ eval ] keep [ loop ] >> when ] ;
-while: [ swap do + [ loop ] >> when ] ;
+while: [ swap _do + [ loop ] >> when ] ;
 
 // aggregates
 slice: [ [ % ] dip \ ] ;
@@ -171,7 +169,7 @@ cond: [
 ] ;
 
 /**
- * Calls the second quotation in the first pair whose first quotation matchs the last item on the stack
+ * Calls the second quotation in the first pair whose first quotation matches the last item on the stack
  */
 p-cond: [
   dup empty?

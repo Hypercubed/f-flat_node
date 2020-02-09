@@ -1,4 +1,4 @@
-import { fJSON, fValue, Decimal, Complex, Word } from './helpers/setup';
+import { μ, Decimal, Complex, Word } from './helpers/setup';
 import { stringifyStrict } from '../src/utils/json';
 
 test('prims', () => {
@@ -138,57 +138,57 @@ test('deep', async () => {
 // FF JSON
 
 test('generate json for strings', async () => {
-  expect((await fJSON('"hello"'))[0]).toEqual('hello');
-  expect((await fJSON('["hello" "world"]'))[0]).toEqual(['hello', 'world']);
-  expect((await fJSON('{ x: ["hello" "world"] }'))[0]).toEqual({
+  expect((await μ('"hello"'))[0]).toEqual('hello');
+  expect((await μ('["hello" "world"]'))[0]).toEqual(['hello', 'world']);
+  expect((await μ('{ x: ["hello" "world"] }'))[0]).toEqual({
     x: ['hello', 'world']
   });
 });
 
 test('generate json for decimals', async () => {
-  expect((await fJSON('1'))[0]).toEqual({ $numberDecimal: '1' });
-  expect((await fJSON('[1 2]'))[0]).toEqual([
+  expect((await μ('1'))[0]).toEqual({ $numberDecimal: '1' });
+  expect((await μ('[1 2]'))[0]).toEqual([
     { $numberDecimal: '1' },
     { $numberDecimal: '2' }
   ]);
-  expect((await fJSON('{ x: [1 2] }'))[0]).toEqual({
+  expect((await μ('{ x: [1 2] }'))[0]).toEqual({
     x: [{ $numberDecimal: '1' }, { $numberDecimal: '2' }]
   });
 });
 
 test('generate json for complex values', async () => {
-  expect((await fJSON('{ x: [1 2], y: i }'))[0]).toEqual({
+  expect((await μ('{ x: [1 2], y: i }'))[0]).toEqual({
     x: [{ $numberDecimal: '1' }, { $numberDecimal: '2' }],
     y: { '@@Complex': { re: '0', im: '1' } }
   });
 });
 
 test('generate json for actions', async () => {
-  expect((await fJSON('"word" :'))[0]).toEqual({ '@@Action': 'word' });
-  expect((await fJSON('[ "a" "b" ] :'))[0]).toEqual({ '@@Action': ['a', 'b'] });
-  expect((await fJSON('[ 1 2 ] :'))[0]).toEqual({
+  expect((await μ('"word" :'))[0]).toEqual({ '@@Action': 'word' });
+  expect((await μ('[ "a" "b" ] :'))[0]).toEqual({ '@@Action': ['a', 'b'] });
+  expect((await μ('[ 1 2 ] :'))[0]).toEqual({
     '@@Action': [{ $numberDecimal: '1' }, { $numberDecimal: '2' }]
   });
-  expect((await fJSON('[ a b ] :'))[0]).toEqual({
+  expect((await μ('[ a b ] :'))[0]).toEqual({
     '@@Action': [{ '@@Action': 'a' }, { '@@Action': 'b' }]
   });
 });
 
 test('generate json for other values', async () => {
   // todo create better json rep
-  expect((await fJSON('null'))[0]).toEqual(null);
-  expect((await fJSON('nan'))[0]).toEqual({ $numberDecimal: 'NaN' });
-  expect((await fJSON('-0'))[0]).toEqual({ $numberDecimal: '-0' });
-  expect((await fJSON('infinity'))[0]).toEqual({ $numberDecimal: 'Infinity' });
-  expect((await fJSON('-infinity'))[0]).toEqual({
+  expect((await μ('null'))[0]).toEqual(null);
+  expect((await μ('nan'))[0]).toEqual({ $numberDecimal: 'NaN' });
+  expect((await μ('-0'))[0]).toEqual({ $numberDecimal: '-0' });
+  expect((await μ('infinity'))[0]).toEqual({ $numberDecimal: 'Infinity' });
+  expect((await μ('-infinity'))[0]).toEqual({
     $numberDecimal: '-Infinity'
   });
-  expect((await fJSON('"1/1/1990" date'))[0]).toEqual({
+  expect((await μ('"1/1/1990" date'))[0]).toEqual({
     $date: '1990-01-01T07:00:00.000Z'
   });
-  expect((await fJSON('"/a./i" regexp'))[0]).toEqual({
+  expect((await μ('"/a./i" regexp'))[0]).toEqual({
     $regex: 'a.',
     $options: 'i'
   });
-  expect((await fJSON('#word'))[0]).toEqual({ $symbol: 'word' });
+  expect((await μ('#word'))[0]).toEqual({ $symbol: 'word' });
 });

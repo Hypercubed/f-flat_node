@@ -60,6 +60,7 @@ class PatternMatch {
 
   @signature(Any, RegExp)
   'any, RegExp'(lhs: string, rhs: RegExp) {
+    rhs.lastIndex = 0;
     return rhs.test(lhs);
   }
 

@@ -10,7 +10,7 @@ f♭> x
 [ 123 ]
 
 f♭> x: [ 456 ] ;
-Error: Cannot overwrite local definition: x
+Error: Cannot overwrite definition: x
 [  ]
 
 f♭> x rcl

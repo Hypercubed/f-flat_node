@@ -368,7 +368,7 @@ export const math = {
    * bitwise and
    *
    */
-  '&': (a: any, b: any) => +a & +b,
+  'bit-and': (a: any, b: any) => +a & +b,
 
   /**
    * ## `|`
@@ -376,7 +376,7 @@ export const math = {
    * bitwise or
    *
    */
-  '|': (a: any, b: any) => +a | +b,
+  'bit-or': (a: any, b: any) => +a | +b,
 
   /**
    * ## `$`
@@ -384,13 +384,13 @@ export const math = {
    * bitwise xor
    *
    */
-  $: (a: any, b: any) => +a ^ +b,
+  'bit-xor': (a: any, b: any) => +a ^ +b,
 
   /**
    * ## `bitnot`
    *
    */
-  bitnot: (a: any) => ~a,
+  'bit-not': (a: any) => ~a,
 
   /**
    * ## `rand`

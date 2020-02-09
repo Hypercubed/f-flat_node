@@ -1,0 +1,12 @@
+_stackn: [ [ ] swap [ >> ] swap times ] ;
+
+=>: [ dup ln swap [ _stackn ] dip swap zip object ] ;
+lambda: [ [ swap rewrite eval ] + ] ;
+
+// f x y z = y2 + x2 − |y|  (The Dark Side, http://evincarofautumn.blogspot.com/2012/02/why-concatenative-programming-matters.html)
+f: [ ( x:, y:, z: ) => [ .y 2 ^ .x 2 ^ + .y abs - ] ] lambda ;
+
+    [ 
+      1 2 3 f 3 assert_equal
+      5 8 13 f 81 assert_equal
+    ] 'the dark side' test

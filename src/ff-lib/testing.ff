@@ -9,7 +9,7 @@ assert: [
   dup boolean
   [ drop ]
   [ 
-    'Assertion error: ' swap string << dup ?
+    'Assertion error: ' swap string << dup println
     throw
   ]
   choose eval
@@ -19,7 +19,7 @@ assert_false: [
   dup false =
   [ drop ]
   [
-    'Assertion error: ' swap string << '!= false' << dup ?
+    'Assertion error: ' swap string << '!= false' << dup println
     throw
   ]
   choose eval
@@ -29,7 +29,7 @@ assert_equal: [
   dup2 =
   [ drop drop ]
   [
-    'Assertion error: ' swap string << ' != ' << swap string << dup ?
+    'Assertion error: ' swap string << ' != ' << swap string << dup println
     throw
   ]
   choose eval
@@ -39,7 +39,7 @@ assert_zero: [
   dup 5e-20 <=
   [ drop ]
   [
-    'Assertion error: ' swap string << ' !~ 0' << dup ?
+    'Assertion error: ' swap string << ' !~ 0' << dup println
     throw
   ]
   choose eval
@@ -50,7 +50,7 @@ assert_length: [
   [ drop drop ]
   [
     swap
-    'Assertion error: length of ' swap string << ' != ' << swap string << dup ?
+    'Assertion error: length of ' swap string << ' != ' << swap string << dup println
     throw
   ]
   choose eval
@@ -64,7 +64,7 @@ red: [
 ] ;
 
 test: [
-  ' ✘ ' red swap + ' failed' + [ ? ] >>
+  ' ✘ ' red swap + ' failed' + [ println ] >>
   [ throws? ] dip
   [ ]
   choose eval

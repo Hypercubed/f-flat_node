@@ -809,7 +809,7 @@ class Unshift {
    * [ 16 ]
    * ```
    */
-  @signature([Number, Decimal], [Number, Decimal])
+  @signature([Number, Decimal], [Number, Decimal])  // check large decimals
   number(lhs: number, rhs: number) {
     return +lhs >> +rhs;
   }
@@ -935,7 +935,7 @@ class Shift {
 
   @signature()
   decimal(lhs: Decimal, rhs: Decimal) {
-    return new Decimal(lhs.toBinary() + '0'.repeat(+rhs | 0));
+    return lhs.mul(new Decimal(2).pow(rhs));
   }
 
   /**
@@ -969,7 +969,7 @@ class Pow {
    */
   @signature()
   decimal(lhs: Decimal, rhs: Decimal) {
-    if (+lhs === 0 && +rhs !== 0) return complexInfinity;
+    if (+lhs === 0 && +rhs === 0) return complexInfinity;
     return lhs.pow(rhs);
   }
 

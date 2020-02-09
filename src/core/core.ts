@@ -320,44 +320,44 @@ export const core = {
 
   unstack: dynamo.function(Unstack),
 
-  /**
-   * ## `<-` (stack)
-   * replaces the stack with the item found at the top of the stack
-   *
-   * ( [A] -> A )
-   *
-   * ```
-   * f♭> 1 2 [ 3 4 ] <-
-   * [ 3 4 ]
-   * ```
-   */
-  '<-': function(this: StackEnv, s: any): ReturnValues {
-    this.clear();
-    return new ReturnValues(s);
-  },
+  // /**
+  //  * ## `<-` (stack/goto)
+  //  * replaces the stack with the item found at the top of the stack
+  //  *
+  //  * ( [A] -> A )
+  //  *
+  //  * ```
+  //  * f♭> 1 2 [ 3 4 ] <-
+  //  * [ 3 4 ]
+  //  * ```
+  //  */
+  // '<-': function(this: StackEnv, s: any): ReturnValues {
+  //   this.clear();
+  //   return new ReturnValues(s);
+  // },
 
-  /**
-   * ## `->` (queue)
-   * replaces the queue with the item found at the top of the stack
-   *
-   * ( [A] -> )
-   *
-   * ```
-   * f♭> 1 2 [ 3 4 ] -> 5 6
-   * [ 1 2 3 4 ]
-   * ```
-   */
-  '->': function(this: StackEnv, s: any): void {
-    this.queue.splice(0);
-    this.queue.push(...s);
-  },
+  // /**
+  //  * ## `->` (queue)
+  //  * replaces the queue with the item found at the top of the stack
+  //  *
+  //  * ( [A] -> )
+  //  *
+  //  * ```
+  //  * f♭> 1 2 [ 3 4 ] -> 5 6
+  //  * [ 1 2 3 4 ]
+  //  * ```
+  //  */
+  // '->': function(this: StackEnv, s: any): void {
+  //   this.queue.splice(0);
+  //   this.queue.push(...s);
+  // },
 
   /**
    * ## `clr`
    *
    * clears the stack
    *
-   * ( ... -> )
+   * ( ... clr )
    *
    * ```
    * f♭> 1 2 3 clr
@@ -512,6 +512,11 @@ export const core = {
     this.depth--;
     return dequoteStack(this, s);
   },
+
+  // '¡': function(this: StackEnv, s: StackValue) {
+  //   const r = dequoteStack(this, s);
+  //   return new ReturnValues([r, Symbol.for('(')]);
+  // },
 
   /**
    * ## `{` (immediate object quote)

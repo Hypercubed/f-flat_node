@@ -565,15 +565,16 @@ buzz
 
 Here is fizzbuzz using pattern matching:
 
-```
+```f-flat
 p-fizzbuzz: [
   dup [ 5 divisor? ] [ 3 divisor? ] bi pair
   [
-    [ true true ] [ drop 'fizzbuzz' ]
-    [ false true ] [ drop 'fizz' ]
-    [ true false ] [ drop 'buzz' ]
+    [[ true true  ]   [ drop 'fizzbuzz' ] ]
+    [[ false true ]   [ drop 'fizz' ] ]
+    [[ true false ]   [ drop 'buzz' ] ]
+    [[ false false ]  [] ]
   ]
-  pattern-choose eval println
+  p-choose eval println
 ] ;
 ```
 

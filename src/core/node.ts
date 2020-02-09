@@ -90,20 +90,6 @@ export const node = {
   },
 
   /**
-   * ## `?`
-   *
-   * Prints the value followed by (newline)
-   *
-   */
-  '?'(a: any, ...b: any[]) {
-    try {
-      stdout.clearLine();
-      stdout.cursorTo(0);
-    } catch (e) {}
-    console.info(a, ...b);
-  },
-
-  /**
    * ## `exit`
    *
    * terminate the process synchronously with an a status code
@@ -191,5 +177,9 @@ export const node = {
     return createHash('sha1')
       .update(x)
       .digest('base64');
+  },
+
+  getenv(x: string) {
+    return process.env[x];
   }
 };

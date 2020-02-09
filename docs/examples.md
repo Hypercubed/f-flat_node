@@ -80,6 +80,8 @@ fizzbuzz: [
   println
 ] ;
 
+20 integers [ fizzbuzz ] each
+
 /**
  * FizzBuzz using conditionals
  */
@@ -92,28 +94,36 @@ c-fizzbuzz: [
   ] cond println
 ] ;
 
+20 integers [ c-fizzbuzz ] each
+
 /**
  * FizzBuzz using pattern matching
  */
 p-fizzbuzz: [
   dup [ 5 divisor? ] [ 3 divisor? ] bi pair
   [
-    [ true true  ] [ drop 'fizzbuzz' ]
-    [ false true ] [ drop 'fizz' ]
-    [ true false ] [ drop 'buzz' ]
+    [[ true true  ]   [ drop 'fizzbuzz' ] ]
+    [[ false true ]   [ drop 'fizz' ] ]
+    [[ true false ]   [ drop 'buzz' ] ]
+    [[ false false ]  [] ]
   ]
-  pattern-choose eval println
+  p-choose eval println
 ] ;
+
+20 integers [ p-fizzbuzz ] each
 ```
 
 ## The quadratic equation using lambdas
 
 ```
 quad: [
-  [ a: b: c: ] =>
+  [ a: b: c: ] => [
     .b -1 * .b .b * 4 .a .c * * - sqrt -+
-    [ 2 .a * / ] bi@
+    [ 2 .a * / ] bi@    
+  ]
 ] lambda ;
+
+1 2 3 quad
 ```
 
 ## Various Project Euler solutions

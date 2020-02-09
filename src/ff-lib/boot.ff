@@ -3,7 +3,7 @@
  */
 
 'loader.ff'
-  ( prelude.__sys_path__ ) >> resolve         // resolve
+  ( __sys_path__ ) >> resolve         // resolve
   read eval                                   // eval and export
 
 'core.ff' require

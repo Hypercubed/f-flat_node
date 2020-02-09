@@ -31,8 +31,6 @@ const welcome = gradient.rainbow(`
 const initialPrompt = 'F♭> ';
 const altPrompt = 'F♭| ';
 
-const pprint = ffPrettyPrint;
-
 let arg = '';
 let buffer = '';
 let timeout = null;
@@ -125,7 +123,7 @@ function startREPL() {
       f.stack.forEach((d, i) => {
         const id = objectId(d).toString(16);
         console.log(
-          `${f.stack.length - i}: ${pprint.stringify(d)} [${type(
+          `${f.stack.length - i}: ${ffPrettyPrint.color(d)} [${type(
             d
           )}] (${id})`
         );
@@ -177,7 +175,7 @@ function writer(_) {
   if (_ instanceof Error) {
     return _.stack;
   }
-  return silent ? '' : `${pprint.stringify(_.stack, -1)}\n`;
+  return silent ? '' : `${ffPrettyPrint.color(_.stack, -1)}\n`;
 }
 
 function fEval(code, _, __, cb) {
@@ -251,7 +249,7 @@ function addBefore() {
   const level = log.level.toString();
 
   if (level === 'trace') {
-    const printTrace = () => console.log(pprint.formatTrace(f));
+    const printTrace = () => console.log(ffPrettyPrint.formatTrace(f));
     bindings.push(f.before.add(printTrace));
     bindings.push(f.beforeEach.add(printTrace));
     bindings.push(f.idle.add(printTrace));

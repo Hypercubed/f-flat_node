@@ -1,96 +1,81 @@
-import { fJSON, fValues, Word, Sentence, D } from './helpers/setup';
+import { ƒ, τ, Word, Sentence } from './helpers/setup';
 
 test('should def and use actions', async () => {
-  expect(await fValues('x: [ 1 2 + ] def 3 x x')).toEqual([3, 3, 3]);
+  expect(await ƒ('x: [ 1 2 + ] def 3 x x')).toEqual(`[ 3 3 3 ]`);
 });
 
 test('should def and use nested actions', async () => {
-  expect(await fValues('test_def: { x: [ 1 2 + ] } def test_def.x')).toEqual([
-    3
-  ]);
+  expect(await ƒ('test_def: { x: [ 1 2 + ] } def test_def.x')).toEqual(`[ 3 ]`);
 });
 
 test('should def and use nested actions in a fork', async () => {
   expect(
-    await fValues('test_def: { x: [ 1 2 + ] } def [ test_def.x ] fork')
-  ).toEqual([[3]]);
+    await ƒ('test_def: { x: [ 1 2 + ] } def [ test_def.x ] fork')
+  ).toEqual(`[ [ 3 ] ]`);
 });
 
 test('cannot overwrite defined words', async () => {
-  await expect(fValues('x: [123] def x: [456] def')).rejects.toThrow(
-    'Cannot overwrite local definition: x'
-  );
-});
-
-test('invalid keys', async () => {
-  await expect(fValues('x: [123] def x.y: [456] def')).rejects.toThrow(
-    'Invalid definition key: x.y'
+  await expect(ƒ('x: [123] def x: [456] def')).rejects.toThrow(
+    'Cannot overwrite definition: x'
   );
 });
 
 test('should shadow definitions in a fork', async () => {
   expect(
-    await fValues(
+    await ƒ(
       '"a" [ "outsite-a" ] def a [ "a" [ "in-fork-a" ] def a ] fork a'
     )
-  ).toEqual(['outsite-a', ['in-fork-a'], 'outsite-a']);
+  ).toEqual(`[ 'outsite-a' [ 'in-fork-a' ] 'outsite-a' ]`);
   expect(
-    await fValues(
+    await ƒ(
       '"a" [ "outsite-a" ] def a [ "b" [ "in-in-b" ] def a b ] in a b'
     )
-  ).toEqual(['outsite-a', ['outsite-a', 'in-in-b'], 'outsite-a', 'in-in-b']);
+  ).toEqual(`[ 'outsite-a' [ 'outsite-a' 'in-in-b' ] 'outsite-a' 'in-in-b' ]`);
 });
 
 test('should isloate definitions in a fork', async () => {
-  expect(await fValues('[ "a" ["in-fork-a"] def a ] fork')).toStrictEqual([
-    ['in-fork-a']
-  ]);
-  await expect(fValues('[ "a" ["in-fork-a"] def a ] fork a')).rejects.toThrow(
+  expect(await ƒ('[ "a" ["in-fork-a"] def a ] fork')).toStrictEqual(`[ [ 'in-fork-a' ] ]`);
+  await expect(ƒ('[ "a" ["in-fork-a"] def a ] fork a')).rejects.toThrow(
     'a is not define'
   );
 });
 
 test('should execute stored actions', async () => {
-  expect(await fValues('x: [ 1 2 + ] def x x')).toEqual([3, 3]);
-  expect(await fValues('test: { x: [ 1 2 + ] } def test.x')).toEqual([3]);
+  expect(await ƒ('x: [ 1 2 + ] def x x')).toEqual(`[ 3 3 ]`);
+  expect(await ƒ('test: { x: [ 1 2 + ] } def test.x')).toEqual(`[ 3 ]`);
 });
 
 test('create actions', async () => {
-  const evalAction = new Word('eval').toJSON();
-
-  expect(await fJSON('"eval" :')).toEqual([evalAction]);
-  expect(await fJSON('eval:')).toEqual([evalAction]);
-  // t.deepEqual(await fJSON('[ eval ] :'), [evalAction]);
+  expect(await ƒ('"eval" :')).toEqual(`[ eval ]`); // ??
 });
 
-test('should inline internal actions', async () => {
-  const evalAction = new Word('eval').toJSON();
+describe('inline', () => {
+  test('should inline internal actions', async () => {
+    expect(await ƒ('[ eval ] inline')).toEqual(`[ [ eval ] ]`);
+    expect(await ƒ('{ x: [ eval ] } inline')).toEqual(`[ { x: [ eval ] } ]`);
+  });
 
-  expect(await fJSON('eval: inline')).toEqual([evalAction]);
-  // t.deepEqual(await fJSON('[ eval ] : inline'), [evalAction]);
-  expect(await fJSON('[ eval ] inline')).toEqual([[evalAction]]);
-  expect(await fJSON('{ x: eval: } inline')).toEqual([{ x: evalAction }]);
-  // t.deepEqual(await fJSON('{ x: [ eval ] : } inline'), [{ x: evalAction }]);
-  expect(await fJSON('{ x: [ eval ] } inline')).toEqual([{ x: [evalAction] }]);
-});
+  test('should inline defined actions', async () => {
+    expect(await ƒ('[ slip ] inline')).toEqual(`[ [ q< eval q> ] ]`);
+    expect(await ƒ('{ x: [ slip ] } inline')).toEqual(`[ { x: [ q< eval q> ] } ]`);
+  });
 
-test('should inline defined actions', async () => {
-  const qi = new Word('q<').toJSON();
-  const evalAction = new Word('eval').toJSON();
-  const qo = new Word('q>').toJSON();
-  const slipAction = new Sentence([qi, evalAction, qo]).toJSON();
+  test('should inline local qualified words', async () => { // Maybe this shouldn't work if the defintion is not local??
+    expect(await ƒ('[ .slip ] inline')).toEqual(`[ [ q< eval q> ] ]`);
+    expect(await ƒ('{ x: [ .slip ] } inline')).toEqual(`[ { x: [ q< eval q> ] } ]`);
+  });
 
-  expect(await fJSON('slip: inline')).toEqual([slipAction]);
-  // t.deepEqual(await fJSON('[ slip ] : inline'), [slipAction]);
-  expect(await fJSON('[ slip ] inline')).toEqual([[slipAction]]);
-  expect(await fJSON('{ x: slip: } inline')).toEqual([{ x: slipAction }]);
-  // t.deepEqual(await fJSON('{ x: [ slip ] : } inline'), [{ x: slipAction }]);
-  expect(await fJSON('{ x: [ slip ] } inline')).toEqual([{ x: [slipAction] }]);
+  test('should not inline keys', async () => {
+    expect(await ƒ('eval: inline')).toEqual(`[ eval: ]`);
+    expect(await ƒ('slip: inline')).toEqual(`[ slip: ]`);
+    expect(await ƒ('{ x: slip: } inline')).toEqual(`[ { x: slip: } ]`);
+    expect(await ƒ('[ slip: ] inline')).toEqual(`[ [ slip: ] ]`);
+  });
 });
 
 test('defer', async () => {
   expect(
-    await fValues(`
+    await ƒ(`
     c: defer
 
     e: [ dup 2 / c ] ;
@@ -109,5 +94,47 @@ test('defer', async () => {
 
     12 c
   `)
-  ).toEqual([12, 6, 3, 10, 5, 16, 8, 4, 2, 1]);
+  ).toEqual(`[ 12 6 3 10 5 16 8 4 2 1 ]`);
 });
+
+describe('rewrite', () => {
+  test('rewrite words', async () => {
+    expect(await ƒ(`[ x y y z ] { x: 1, y: 2 } rewrite`)).toEqual(`[ [ 1 2 2 z ] ]`);
+  });
+
+  test('rewrite qualified words', async () => {
+    expect(await ƒ(`[ .x .y .y .z ] { x: 1, y: 2 } rewrite`)).toEqual(`[ [ 1 2 2 .z ] ]`);
+  });
+
+  test('should not rewrite keys', async () => {
+    expect(await ƒ(`[ x y y: z ] { x: 1, y: 2 } rewrite`)).toEqual(`[ [ 1 2 y: z ] ]`);
+  });
+});
+
+describe('binding', () => {
+  test('defined words are bound', async () => {
+    expect(await ƒ(`slip: [ 'junk' ] ; [ dip ] inline`))
+      .toEqual(`[ [ swap q< eval q> ] ]`);
+  });
+
+  test('internal words are bound', async () => {
+    expect(await ƒ(`eval: [ 'junk' ] ; [ dip ] inline`))
+      .toEqual(`[ [ swap q< eval q> ] ]`);
+  });
+});
+
+describe('invalid words', () => {
+  test('invalid keys', async () => {
+    await expect(ƒ(`'x:y' [456] def`)).rejects.toThrow('Invalid definition key');
+    await expect(ƒ(`'x y' [456] def`)).rejects.toThrow('Invalid definition key');
+    await expect(ƒ(`'x[y' [456] def`)).rejects.toThrow('Invalid definition key');
+    await expect(ƒ(`'x_%y' [456] def`)).rejects.toThrow('Invalid definition key');
+    await expect(ƒ(`'x,y' [456] def`)).rejects.toThrow('Invalid definition key');
+    await expect(ƒ(`'x"y' [456] def`)).rejects.toThrow('Invalid definition key');
+    await expect(ƒ(`"x\ty" [456] def`)).rejects.toThrow('Invalid definition key');
+    await expect(ƒ(`"123" [456] def`)).rejects.toThrow('Invalid definition key');
+    await expect(ƒ(`"1.23" [456] def`)).rejects.toThrow('Invalid definition key');
+  });
+});
+
+

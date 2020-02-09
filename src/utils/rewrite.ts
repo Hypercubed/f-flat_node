@@ -28,18 +28,17 @@ function create(dictObject: Object | undefined) {
     @signature()
     Sentence(action: Sentence) {
       const expandedValue = _rewrite(action.value);
-      const newAction = new Sentence(expandedValue, action.displayString);
-      return new ReturnValues([newAction]);
+      return new ReturnValues(expandedValue);
     }
-    @signature([Word, Key])
-    Word(action: Word | Key) {
+    @signature()
+    Word(action: Word) {
       if (wordPaths.includes(action.value)) {
         return action;
       }
       const path = Vocabulary.makePath(action.value);
       const value: StackValue = getIn(dictObject, path);
 
-      if (is.undefined(value) && !(action.value as string).endsWith(IIF))
+      if (is.undefined(value) && (typeof action.value !== 'string' || !(action.value as string).endsWith(IIF)))
         return action;
       if (is.function_(value)) return new ReturnValues([action]);
 

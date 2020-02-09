@@ -3,7 +3,7 @@
  */
 
 // Resolve path relative to file
-__import-resolve: [ ( prelude.__sys_path__ ) >> resolve ] def
+__import-resolve: [ ( __sys_path__ ) >> resolve ] def
 
 /**
  * ## `include`

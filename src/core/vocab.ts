@@ -1,10 +1,8 @@
 import { signature, Any } from '@hypercubed/dynamo';
 
-import { ffPrettyPrint, FFlatError } from '../utils';
+import { ffPrettyPrint, FFlatError , rewrite } from '../utils';
 import { dynamo, Sentence, Word, Key, StackValue } from '../types';
 import { StackEnv } from '../env';
-
-const _ffPrettyPrint = ffPrettyPrint;
 
 // todo: convert dictionary of stack values to dictinary of actions
 class CreateAction {
@@ -106,7 +104,7 @@ export const dict = {
    * ```
    */
   use(this: StackEnv, dict: { [key: string]: StackValue }) {
-    this.dict.use(createAction(dict));
+    this.dict.useVocab(createAction(dict));
   },
 
   /**
@@ -122,7 +120,7 @@ export const dict = {
    * ```
    */
   vocab(this: StackEnv) {
-    return this.dict.compiledLocals();
+    return this.dict.getVocab();
   },
 
   /**
@@ -138,7 +136,7 @@ export const dict = {
    * ```
    */
   inline(this: StackEnv, x: Word | Sentence | Key) {
-    return this.dict.rewrite(x);
+    return this.dict.inline(x);
   },
 
   /**
@@ -154,7 +152,7 @@ export const dict = {
    * ```
    */
   bind(this: StackEnv, x: Word | Sentence | Key) {
-    return this.dict.compile(x);
+    return this.dict.bind(x);
   },
 
   /**
@@ -189,10 +187,7 @@ export const dict = {
     if (typeof r === 'undefined') {
       return null;
     }
-    if (r instanceof Word || r instanceof Sentence || r instanceof Key) {
-      return r.displayString;
-    }
-    return _ffPrettyPrint.stringify(r);
+    return ffPrettyPrint.stringify(r);
   },
 
   /**
@@ -208,7 +203,7 @@ export const dict = {
    */
   show(this: StackEnv, a: string) {
     const r = this.dict.get(a);
-    return console.log(ffPrettyPrint.stringify(r));
+    return console.log(ffPrettyPrint.color(r));
   },
 
   /**
@@ -239,5 +234,15 @@ export const dict = {
    */
   scoped(this: StackEnv): string[] {
     return this.dict.scopedWords();
+  },
+
+  /**
+   * ## `rewrite`
+   * rewrites an expression using a set of rewrite rules
+   *
+   * ( {expression} {object} -> {expression} )
+   */
+  rewrite(this: StackEnv, rules: Object, a: string) {
+    return rewrite(a, rules);
   }
 };

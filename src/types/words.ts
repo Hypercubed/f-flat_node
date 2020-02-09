@@ -43,7 +43,7 @@ abstract class Action {
   }
 
   toString(): string {
-    return toString(this.value);
+    return toString(this.displayString || this.value);
   }
 
   [Symbol.toPrimitive](hint?: string) {
@@ -63,7 +63,7 @@ export class Word extends Action {
     return x instanceof Word;
   }
 
-  constructor(public value: string, public displayString?: string) {
+  constructor(public value: string, public displayString?: string) { // value s/b PropertyKey?
     super(value, displayString);
   }
 }

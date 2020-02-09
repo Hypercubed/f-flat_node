@@ -105,7 +105,7 @@ class Base {
 
     switch (base) {
       case 2:
-        return new d(lhs).toBinary() as any;
+        return new d(lhs).toBinary() as any;  // Check, sd here!!!
       case 8:
         return new d(lhs).toOctal() as any;
       case 10:

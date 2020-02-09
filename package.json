@@ -24,7 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "@hypercubed/dynamo": "^1.0.2",
-    "@hypercubed/milton": "^1.0.3",
+    "@hypercubed/milton": "^1.1.0",
     "@sindresorhus/is": "^1.2.0",
     "@types/icepick": "^2.3.0",
     "autobind-decorator": "^2.4.0",
@@ -54,6 +54,7 @@
   "devDependencies": {
     "@types/jest": "^24.9.0",
     "@types/node": "^12.12.24",
+    "fast-check": "^1.22.1",
     "grammkit": "^0.6.1",
     "jest": "^24.9.0",
     "nock": "^10.0.6",
