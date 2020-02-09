@@ -9,15 +9,16 @@ const LINK_PATH = 'https://github.com/Hypercubed/f-flat_node/blob/master/src/cor
 const files = [
   'core.ts',
   'base.ts',
-  'dict.ts',
+  'vocab.ts',
   'math.ts',
   'node.ts',
   'objects.ts',
   'types.ts',
-  'experimental.ts'
+  'experimental.ts',
+  'flags.ts'
 ];
 
-const md = files.map(file => {
+files.map(file => {
   const str = read(file);
   const comments = extract(str);
   const md = process(file, comments);

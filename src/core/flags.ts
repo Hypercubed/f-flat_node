@@ -6,6 +6,21 @@ import { StackEnv } from '../env';
  * # Internal Flags
  */
 export const flags = {
+  /**
+   * ## `set-system-property`
+   *
+   * sets a system level flag
+   * - flags: `'auto-undo'`, `'log-level'`, `'decimal-precision'`
+   *
+   * ( x y -> )
+   *
+
+   *
+   * ```
+   * f♭> 'log-level' 'trace' set-system-property
+   * [ ]
+   * ```
+   */
   'set-system-property'(this: StackEnv, p: string, v: any): void {
     switch (p) {
       case 'auto-undo':
@@ -22,6 +37,19 @@ export const flags = {
     }
   },
 
+  /**
+   * ## `get-system-property`
+   *
+   * gets a system level flag
+   * - flags: `'auto-undo'`, `'log-level'`, `'decimal-precision'`
+   *
+   * ( x -> y )
+   *
+   * ```
+   * f♭> 'log-level' get-system-property
+   * [ 'warn' ]
+   * ```
+   */
   'get-system-property'(this: StackEnv, p: string) {
     switch (p) {
       case 'auto-undo':

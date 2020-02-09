@@ -21,26 +21,40 @@ class IsObject {
 export const objects = {
   /**
    * ## `object`
+   *
+   * convert a quotation to an object
+   *
    */
   object: toObject,
 
   /**
    * ## `object?`
+   *
+   * retruns true of the item is an object
    */
   'object?': dynamo.function(IsObject),
 
   /**
    * ## `contains?`
+   *
+   * returns true if an item contains a key
+   *
    */
-  'contains?': (a: {}, b: any) => b in a, // object by keys, array by values
+  'contains?': (a: {}, b: any) => b in a, // object by keys, array by values (move to indexof?)
 
   /**
    * ## `keys`
+   *
+   * returns an array of keys
+   *
    */
   keys: (o: {}) => Object.keys(o),
 
   /**
    * ## `vals`
+   *
+   * returns an array of values
+   *
    */
   vals: (o: {}) => Object.values(o)
 };

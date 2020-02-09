@@ -363,7 +363,7 @@ export const math = {
   erf: (a: number) => erf(+a), // todo: Decimal. Complex
 
   /**
-   * ## `&`
+   * ## `bit-and`
    *
    * bitwise and
    *
@@ -371,7 +371,7 @@ export const math = {
   'bit-and': (a: any, b: any) => +a & +b,
 
   /**
-   * ## `|`
+   * ## `bit-or`
    *
    * bitwise or
    *
@@ -379,7 +379,7 @@ export const math = {
   'bit-or': (a: any, b: any) => +a | +b,
 
   /**
-   * ## `$`
+   * ## `bit-xor`
    *
    * bitwise xor
    *
@@ -387,7 +387,9 @@ export const math = {
   'bit-xor': (a: any, b: any) => +a ^ +b,
 
   /**
-   * ## `bitnot`
+   * ## `bit-not`
+   *
+   * bitwise not
    *
    */
   'bit-not': (a: any) => ~a,
@@ -402,12 +404,28 @@ export const math = {
 
   /**
    * ## `infinity`
+   *
    * pushes the value Infinity
    *
    * ( -> Infinity )
    */
   infinity: () => new Decimal(Infinity),
+
+  /**
+   * ## `-infinity`
+   *
+   * pushes the value -Infinity
+   *
+   * ( -> -Infinity )
+   */
   '-infinity': () => new Decimal(-Infinity),
 
+  /**
+   * ## `complexinfinity`
+   *
+   * pushes the value complexinfinity
+   *
+   * ( -> ComplexInfinity )
+   */
   complexinfinity: () => complexInfinity
 };

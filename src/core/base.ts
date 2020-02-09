@@ -68,6 +68,7 @@ function invertObject(source: any) {
  *
  */
 class Add {
+
   /**
    * - list concatenation/function composition
    *
@@ -288,12 +289,6 @@ class Sub {
   @signature()
   decimalDate(lhs: Decimal, rhs: Date): Decimal {
     return lhs.minus(rhs.valueOf());
-  }
-
-  // TODO: Why is this needed!!
-  @signature(Any, Any)
-  any(lhs: any, rhs: any) {
-    return lhs - rhs;
   }
 }
 
@@ -644,7 +639,6 @@ class IDiv {
   @signature([Boolean, null], [Boolean, null])
   boolean = cnonimpl;
 }
-const idiv = dynamo.function(IDiv);
 
 /**
  * ## `%` (modulo)
@@ -727,7 +721,6 @@ class Rem {
   @signature([Boolean, null], [Boolean, null])
   nand = nand;
 }
-const rem = dynamo.function(Rem);
 
 /**
  * ## `>>`
@@ -793,7 +786,7 @@ class Unshift {
    *
    * ```
    * f♭> { first: 'Manfred' } { last: 'von Thun' } >>
-   * [ { first: 'Manfred' last: 'von Thun' } ]
+   * [ { last: 'von Thun', first: 'Manfred' } ]
    * ```
    */
   @signature()
@@ -907,7 +900,6 @@ class Shift {
   /**
    * - object merge
    *
-   *
    * Deeply merge a rhs into the lhs
    *
    * ```
@@ -981,7 +973,7 @@ class Pow {
   /**
    * - string pow
    */
-  @signature()
+  @signature(String, [Number, Decimal])
   string(lhs: string, rhs: number) {
     let r = lhs;
     const l = +rhs | 0;
@@ -1170,6 +1162,9 @@ class Not {
 
 /**
  * ## `empty`
+ *
+ * Returns an empty value of the same type
+ *
  */
 class Empty {
   @signature([Number, Decimal, Complex])
@@ -1200,6 +1195,7 @@ class Empty {
 
 /**
  * ## `cmp`
+ *
  * Pushes a -1, 0, or 1 when x is logically 'less than', 'equal to', or 'greater than' y.
  * Push null if sort order is unknown
  *
@@ -1340,6 +1336,7 @@ export const base = {
 
   /**
    * ## `=` equal
+   *
    * Pushes true if x is equal to y.
    *
    * ( x y -> z )

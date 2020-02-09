@@ -15,7 +15,6 @@ import {
   Decimal
 } from '../types';
 import { StackEnv } from '../env';
-import { log } from '../utils';
 
 class Apply {
   @signature()
@@ -30,14 +29,31 @@ class Apply {
 export const experimental = {
   /**
    * ## `throw`
+   *
+   * Throws an error
+   *
+   * ```
+   * f♭> 'PC LOAD LETTER' throw
+   * [ ]
+   * ```
    */
   throw(this: StackEnv, e: string) {
     throw new FFlatError(e, this);
   },
 
+  /**
+   * ## `throws?`
+   *
+   * Evaluates the quotation in a child, returns true if the evaluation errors
+   *
+   * ```
+   * f♭> [ 1 + ] throws?
+   * [ true ]
+   * ```
+   */
   'throws?'(this: StackEnv, a: StackValue) {
     try {
-      const child = this.createChild().eval(a);
+      this.createChild().eval(a);
       return false;
     } catch (err) {
       return true;
@@ -65,6 +81,7 @@ export const experimental = {
 
   /**
    * ## `spawn`
+   *
    * evalues the quote in a child environment, returns a future
    *
    * ( [A] -> {future} )
@@ -75,6 +92,7 @@ export const experimental = {
 
   /**
    * ## `await`
+   *
    * evalues the quote in a child environment, waits for result
    *
    * ( [A] -> [a] )
@@ -89,6 +107,7 @@ export const experimental = {
 
   /**
    * ## `suspend`
+   *
    * stops execution, push queue to stack, loses other state
    *
    * ( ... -> )
@@ -104,6 +123,7 @@ export const experimental = {
 
   /**
    * ## `all`
+   *
    * executes each element in a child environment
    *
    * ( [ A B C ]-> [ [a] [b] [c] ])
@@ -114,6 +134,7 @@ export const experimental = {
 
   /**
    * ## `race`
+   *
    * executes each element in a child environment, returns first to finish
    *
    * ( [ A B C ]-> [x])
@@ -122,27 +143,9 @@ export const experimental = {
     return Promise.race(arr.map(a => this.createChildPromise(a)));
   },
 
-  // /**
-  //  * ## `sesssave`
-  //  */
-  // sesssave(this: StackEnv) {
-  //   log.debug('saving session');
-  //   writeFileSync(
-  //     'session',
-  //     JSON.stringify(
-  //       {
-  //         dict: this.dict,
-  //         stack: this.stack
-  //       },
-  //       null,
-  //       2
-  //     ),
-  //     'utf8'
-  //   );
-  // },
-
   /**
    * ## `js-raw`
+   *
    * evalues a string as raw javascript
    *
    * ( {string} -> {any} )

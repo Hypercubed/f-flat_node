@@ -1,17 +1,31 @@
 # Internal Object Words
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L7">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L21">[src]</a></div>
 
 ## `object`
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L23">[src]</a></div>
+
+convert a quotation to an object
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L29">[src]</a></div>
 
 ## `object?`
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L28">[src]</a></div>
+
+retruns true of the item is an object
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L36">[src]</a></div>
 
 ## `contains?`
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L37">[src]</a></div>
+
+returns true if an item contains a key
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L44">[src]</a></div>
 
 ## `keys`
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L42">[src]</a></div>
+
+returns an array of keys
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L52">[src]</a></div>
 
 ## `vals`
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L47">[src]</a></div>
+
+returns an array of values
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L60">[src]</a></div>

@@ -29,22 +29,11 @@ function dequoteStack(env: StackEnv, s: StackValue) {
  * # Internal Core Words
  */
 
-/**
- * ## `choose`
- * conditional (ternary) operator
- *
- * ( {boolean} [A] [B] -> {A|B} )
- *
- * ```
- * f♭> true 1 2 choose
- * [ 1 ]
- * ```
- */
 class Choose {
   name = 'choose';
 
   @signature([Boolean, null], Any, Any)
-  booelan(b: boolean | null, t: any, f: any) {
+  boolean(b: boolean | null, t: any, f: any) {
     return new ReturnValues([b ? t : f]);
   }
 
@@ -139,17 +128,6 @@ class At {
   }
 }
 
-/**
- * ## `unstack`
- * push items in a quote to the stack without evaluation
- *
- * ( [A B C] -> A B C )
- *
- * ```
- * f♭> [ 1 2 * ] unstack
- * [ 1 2 * ]
- * ```
- */
 class Unstack {
   @signature(Array)
   array(a: StackValue[]) {
@@ -168,17 +146,6 @@ class Unstack {
   }
 }
 
-/**
- * ## `eval`
- * evaluate quote or string
- *
- * ( [A] -> a )
- *
- * ```
- * f♭> [ 1 2 * ] eval
- * [ 2 ]
- * ```
- */
 class Eval {
   @signature()
   async future(f: Future) {
@@ -212,14 +179,6 @@ class Eval {
   }
 }
 
-/**
- * ## `zip`
- *
- * ```
- * f♭> [ 1 2 3 ] [ 4 5 6 ] zip
- * [ 1 4 2 5 3 6 ]
- * ```
- */
 class Zip {
   @signature(Array, Array)
   array(a: StackValue[][], b: StackValue[][]): StackValue[][] {
@@ -232,14 +191,6 @@ class Zip {
   }
 }
 
-/**
- * ## `zipinto`
- *
- * ```
- * f♭> [ 1 2 3 ] [ 4 5 6 ] [ 7 8 9 ] zipinto
- * [ [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] ]
- * ```
- */
 class ZipInto {
   @signature(Array, Array, Array)
   array(a: StackValue[], b: StackValue[], c: StackValue[]): StackValue[] {
@@ -252,14 +203,6 @@ class ZipInto {
   }
 }
 
-/**
- * ## `match`
- *
- * Matches a string a regex and returns an array containing the results of that search.
- *
- * {string} {regexp | string} -> {boolean}
- *
- */
 class Match {
   @signature(String, [RegExp, String])
   stringRegex(lhs: string, rhs: RegExp) {
@@ -268,11 +211,25 @@ class Match {
 }
 
 export const core = {
+  /**
+   * ## `choose`
+   *
+   * conditional (ternary) operator
+   *
+   * ( {boolean} [A] [B] -> {A|B} )
+   *
+   * ```
+   * f♭> true 1 2 choose
+   * [ 1 ]
+   * ```
+   */
   choose: dynamo.function(Choose),
+
   '@': dynamo.function(At),
 
   /**
    * ## `q<`
+   *
    * moves the top of the stack to the tail of the queue
    *
    * ( {any} -> )
@@ -288,6 +245,7 @@ export const core = {
 
   /**
    * ## `q>`
+   *
    * moves the tail of the queue to the top of the stack
    *
    * ( -> {any} )
@@ -303,6 +261,7 @@ export const core = {
 
   /**
    * ## `stack`
+   *
    * replaces the stack with a quote containing the current stack
    *
    * ( ... -> [ ... ] )
@@ -318,39 +277,19 @@ export const core = {
     return s;
   },
 
+  /**
+   * ## `unstack`
+   *
+   * push items in a quote to the stack without evaluation
+   *
+   * ( [A B C] -> A B C )
+   *
+   * ```
+   * f♭> [ 1 2 * ] unstack
+   * [ 1 2 * ]
+   * ```
+   */
   unstack: dynamo.function(Unstack),
-
-  // /**
-  //  * ## `<-` (stack/goto)
-  //  * replaces the stack with the item found at the top of the stack
-  //  *
-  //  * ( [A] -> A )
-  //  *
-  //  * ```
-  //  * f♭> 1 2 [ 3 4 ] <-
-  //  * [ 3 4 ]
-  //  * ```
-  //  */
-  // '<-': function(this: StackEnv, s: any): ReturnValues {
-  //   this.clear();
-  //   return new ReturnValues(s);
-  // },
-
-  // /**
-  //  * ## `->` (queue)
-  //  * replaces the queue with the item found at the top of the stack
-  //  *
-  //  * ( [A] -> )
-  //  *
-  //  * ```
-  //  * f♭> 1 2 [ 3 4 ] -> 5 6
-  //  * [ 1 2 3 4 ]
-  //  * ```
-  //  */
-  // '->': function(this: StackEnv, s: any): void {
-  //   this.queue.splice(0);
-  //   this.queue.push(...s);
-  // },
 
   /**
    * ## `clr`
@@ -370,6 +309,7 @@ export const core = {
 
   /**
    * ## `depth`
+   *
    * pushes the size of the current stack (number of items on the stack)
    *
    * ( -> {number} )
@@ -380,9 +320,21 @@ export const core = {
    * ```
    */
   depth(this: StackEnv): number {
-    return this.stack.length; // ,  or "stack [ unstack ] [ length ] bi", `"this.stack.length" js-raw`
+    return this.stack.length;
   },
 
+  /**
+   * ## `eval`
+   *
+   * evaluate quote or string
+   *
+   * ( [A] -> a )
+   *
+   * ```
+   * f♭> [ 1 2 * ] eval
+   * [ 2 ]
+   * ```
+   */
   eval: dynamo.function(Eval),
 
   /**
@@ -403,6 +355,7 @@ export const core = {
 
   /**
    * ## `send`
+   *
    * pushes one element from stack to parent.
    *
    * ( A -> )
@@ -420,6 +373,7 @@ export const core = {
 
   /**
    * ## `drop`
+   *
    * drops the item on the bottom of the stack
    *
    * ( x -> )
@@ -429,10 +383,13 @@ export const core = {
    * [ 1 2 ]
    * ```
    */
-  drop: (a: StackValue) => {}, // eslint-disable-line
+  drop: (a: StackValue) => {
+    // nop
+  },
 
   /**
    * ## `swap`
+   *
    * swaps the items on the bottom of the stack
    *
    * ( x y -- y x )
@@ -446,6 +403,7 @@ export const core = {
 
   /**
    * ## `dup`
+   *
    * duplicates the item on the bottom of the stack
    *
    * ( x -- x x )
@@ -459,6 +417,7 @@ export const core = {
 
   /**
    * ## `indexof`
+   *
    * returns the position of the first occurrence of a specified value in a sequence
    *
    * ( seq item -> number )
@@ -470,11 +429,29 @@ export const core = {
    */
   indexof: (a: StackValue[], b: number | string) => a.indexOf(b), // doesn't work with Decimal!!!
 
+  /**
+   * ## `zip`
+   *
+   * ```
+   * f♭> [ 1 2 3 ] [ 4 5 6 ] zip
+   * [ 1 4 2 5 3 6 ]
+   * ```
+   */
   zip: dynamo.function(Zip),
+
+  /**
+   * ## `zipinto`
+   *
+   * ```
+   * f♭> [ 1 2 3 ] [ 4 5 6 ] [ 7 8 9 ] zipinto
+   * [ [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] ]
+   * ```
+   */
   zipinto: dynamo.function(ZipInto),
 
   /**
    * ## `(` (immediate quote)
+   *
    * pushes a quotation maker onto the stack
    *
    * ( -> ( )
@@ -483,6 +460,7 @@ export const core = {
 
   /**
    * ## `)` (immediate dequote)
+   *
    * collects stack items upto the last quote marker
    *
    * ( #( ... -> [ ... ] )
@@ -504,6 +482,7 @@ export const core = {
 
   /**
    * ## `]` (lazy dequote)
+   *
    * decrements depth, collects stack items upto the last quote marker
    *
    * ( #( ... -> [ ... ] )
@@ -513,13 +492,9 @@ export const core = {
     return dequoteStack(this, s);
   },
 
-  // '¡': function(this: StackEnv, s: StackValue) {
-  //   const r = dequoteStack(this, s);
-  //   return new ReturnValues([r, Symbol.for('(')]);
-  // },
-
   /**
    * ## `{` (immediate object quote)
+   *
    * pushes a quotation maker onto the stack
    *
    * ( -> #( )
@@ -528,6 +503,7 @@ export const core = {
 
   /**
    * ## `}` (immediate object dequote)
+   *
    * collects stack items upto the last quote marker, converts to an object
    *
    * ( #( ... -> [ ... ] )
@@ -539,6 +515,7 @@ export const core = {
 
   /**
    * ## `template`
+   *
    * converts a string to a string template
    *
    * ( {string} -> {quote} )
@@ -562,6 +539,7 @@ export const core = {
 
   /**
    * ## `sleep`
+   *
    * wait x milliseconds
    *
    * ( x -> )
@@ -579,22 +557,21 @@ export const core = {
 
   /**
    * ## `undo`
+   *
    * restores the stack to state before previous eval
    */
   undo(this: StackEnv): void {
     this.undo().undo();
   },
 
-  /*
-   * ## `<q`
-   * push the top of the queue to the stack
+  /**
+   * ## `match`
    *
-   * ( -> {any} )
+   * Matches a string a regex and returns an array containing the results of that search.
+   *
+   * {string} {regexp | string} -> {boolean}
+   *
    */
-  '<q': function(this: StackEnv): any {
-    return new ReturnValues([this.queue.shift()]); // danger?
-  },
-
   match: dynamo.function(Match),
 
   /**

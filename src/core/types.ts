@@ -28,34 +28,6 @@ function convertBase(str: string, baseIn: number, baseOut: number) {
   return arr.reverse();
 }
 
-// todo: make part of the action object?
-// class CreateAction {
-//   @signature([Word, Sentence])
-//   words(x: Word | Sentence): Word | Sentence {
-//     return x;
-//   }
-
-//   @signature()
-//   array(x: any[]): Sentence {
-//     if (x.length === 1 && (x[0] instanceof Word || x[0] instanceof Sentence)) {
-//       return x[0];
-//     }
-//     return new Sentence(x);
-//   }
-
-//   @signature()
-//   string(x: string): Word {
-//     return new Word(x);
-//   }
-
-//   @signature(Any)
-//   any(x: any): any {
-//     return x;
-//   }
-// }
-
-// const action = dynamo.function(CreateAction);
-
 class CreateNumber {
   @signature(Date)
   Date(x: Date) {
@@ -141,16 +113,25 @@ const hashCode = function(s: string) {
 export const types = {
   /**
    * ## `type`
+   *
+   * retruns the type of an item
+   *
    */
   type,
 
   /**
    * ## `number`
+   *
+   * converts to a number
+   *
    */
   number: dynamo.function(CreateNumber),
 
   /**
    * ## `complex`
+   *
+   * converts to a complex number
+   *
    */
   complex(x: any) {
     return Complex.parse(x);
@@ -158,71 +139,97 @@ export const types = {
 
   /**
    * ## `number?`
+   *
+   * returns true if the item is a number
+   *
    */
   'number?': dynamo.function(IsNumber),
 
   /**
    * ## `complex?`
+   *
+   * returns true if the item is a complex number
+   *
    */
   'complex?': dynamo.function(IsComplex),
 
   /**
    * ## `string`
+   *
+   * converts to a string
+   *
    */
   string: (x: any) => String(x),
 
   /**
-   * ## `valueof`
-   */
-  valueof: (x: any) => x.valueOf(),
-
-  /**
    * ## `itoa`
+   *
+   * returns a string created from UTF-16 character code
+   *
    */
   itoa: (x: number) => String.fromCharCode(x),
 
   /**
    * ## `atoi`
+   *
+   * returns an integer between 0 and 65535 representing the UTF-16 code of the first character of a string
+   *
    */
   atoi: (x: string) => x.charCodeAt(0),
 
   /**
    * ## `atob`
-   * ecodes a string of data which has been encoded using base-64 encoding
+   *
+   * encodes a string of data which has been encoded using base-64 encoding
+   *
    */
   atob: (x: string) => Buffer.from(x, 'base64').toString('binary'),
 
   /**
    * ## `btoa`
+   *
    * creates a base-64 encoded ASCII string from a String
+   *
    */
   btoa: (x: string) => Buffer.from(x, 'binary').toString('base64'),
 
   /**
    * ## `hash`
+   *
    * creates a numeric hash from a String
+   *
    */
   hash: (x: string) => hashCode(x),
 
   /**
-   * ## `hash`
+   * ## `hex-hash`
+   *
    * creates a hexidecimal hash from a String
+   *
    */
   'hex-hash': (x: string): string => hashCode(x).toString(16),
 
   /**
    * ## `base`
+   *
    * Convert an integer to a string in the given base
+   *
    */
   base: dynamo.function(Base),
 
   /**
    * ## `boolean`
+   *
+   * converts a value to a boolean
+   *
    */
   boolean: (x: number) => (x ? Boolean(x.valueOf()) : false),
 
   /**
-   * ## `:` (action)
+   * ## `:` (key)
+   *
+   * converts a string to a key
+   *
    */
   ':'(x: any) {
     if (x instanceof Word) {
@@ -237,31 +244,35 @@ export const types = {
 
   /**
    * ## `#` (symbol)
+   *
+   * converts a string to a unique symbol
+   *
    */
   '#': (x: any) => Symbol(x),
 
   /**
    * ## `array`
+   *
+   * converts a value to an array
+   *
    */
-  array: (x: any) => new Array(x),
-
-  /**
-   * ## `integer`
-   */
-  integer: (x: number) => x | 0,
+  array: (x: any) => new Array(x),  // used?
 
   /**
    * ## `of`
+   *
+   * converts the rhs value to the type of the lhs
+   *
    */
-  of(a: any, b: any) {
-    if (a !== null && a.constructor) {
-      switch (a.constructor) {
+  of(lhs: any, rhs: any) {
+    if (lhs !== null && lhs.constructor) {
+      switch (lhs.constructor) {
         case Number:
-          return +b;
+          return +rhs;
         case String:
-          return '' + b;
+          return '' + rhs;
         default:
-          return new a.constructor(b);
+          return new lhs.constructor(rhs);
       }
     }
     return null;
@@ -269,38 +280,49 @@ export const types = {
 
   /**
    * ## `is?`
+   *
+   * returns true if to values are the same value
+   *
    */
-  'is?': (a: any, b: any) => a === b,
+  'is?': (a: any, b: any) => Object.is(a, b),
 
   /**
    * ## `nothing?`
+   *
+   * returns true if the value is null or undefined
+   *
    */
   'nothing?': (a: any) => a === null || typeof a === 'undefined',
 
   /**
    * ## `date`
+   *
+   * convert a value to a date/time
+   *
    */
   date: (a: any) => new Date(a),
 
   /**
    * ## `now`
+   *
+   * returns the current date/time
+   *
    */
   now: () => new Date(),
 
   /**
-   * ## `date-expand`
-   */
-  'date-expand': (a: Date) =>
-    new ReturnValues([a.getFullYear(), a.getMonth() + 1, a.getDate()]),
-
-  /**
    * ## `clock`
+   *
+   * returns a high resoltion time elapsed
+   *
    */
   clock: (): number => performance.now(),
 
   /**
    * ## `regexp`
-   * convert string to RegExp
+   *
+   * convert string to regular expresion
+   *
    */
   regexp(x: any) {
     if (x instanceof RegExp) return x;

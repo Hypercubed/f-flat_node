@@ -53,11 +53,13 @@ class Resolve {
 }
 
 /**
- * # Internal Node Words
+ * # Internal Words for Node Environment
  */
 export const node = {
   /**
    * ## `args`
+   * 
+   * Returns an array containing of command line arguments passed when the process was launched
    */
   args: () => process.argv,
 
@@ -179,7 +181,13 @@ export const node = {
       .digest('base64');
   },
 
-  getenv(x: string) {
+  /**
+   * ## `get-env`
+   *
+   * Gets a envirnoment variable
+   *
+   */
+  'get-env'(x: string) {
     return process.env[x];
   }
 };
