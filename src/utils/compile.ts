@@ -26,7 +26,11 @@ function create(dictObject: D) {
       const path = Vocabulary.makePath(action.value).shift();
       const value: string = dictObject[path];
 
-      if (is.undefined(value) && (typeof action.value !== 'string' || !(action.value as string).endsWith(IIF)))
+      if (
+        is.undefined(value) &&
+        (typeof action.value !== 'string' ||
+          !(action.value as string).endsWith(IIF))
+      )
         return action;
       if (is.function_(value)) return action;
 

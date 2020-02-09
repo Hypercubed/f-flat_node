@@ -1,13 +1,6 @@
 import { signature, Any } from '@hypercubed/dynamo';
 
-import {
-  dynamo,
-  Key,
-  Word,
-  Sentence,
-  Decimal,
-  Complex,
-} from '../types/index';
+import { dynamo, Key, Word, Sentence, Decimal, Complex } from '../types/index';
 
 class GetType {
   @signature([Word, Sentence, Key])

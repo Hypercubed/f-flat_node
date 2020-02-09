@@ -83,8 +83,12 @@ test('precision', async () => {
 });
 
 test('trig', async () => {
-  expect(await ƒ('1 cos 1 sin 1 tan')).toEqual(`[ ${Decimal.cos(1)} ${Decimal.sin(1)} ${Decimal.tan(1)} ]`);
-  expect(await ƒ('1 acos 1 asin 1 atan')).toEqual(`[ 5e-20 ${Decimal.asin(1)} ${Decimal.atan(1)} ]`); // fix acos
+  expect(await ƒ('1 cos 1 sin 1 tan')).toEqual(
+    `[ ${Decimal.cos(1)} ${Decimal.sin(1)} ${Decimal.tan(1)} ]`
+  );
+  expect(await ƒ('1 acos 1 asin 1 atan')).toEqual(
+    `[ 5e-20 ${Decimal.asin(1)} ${Decimal.atan(1)} ]`
+  ); // fix acos
   expect(await ƒ('1 atan 4 *')).toEqual(`[ ${PI} ]`);
   expect(await ƒ('1 1 atan2 4 *')).toEqual(`[ ${PI} ]`);
 });
@@ -114,19 +118,19 @@ test('ln', async () => {
 
 test('should define gamma', async () => {
   expect(await ƒ('4 gamma')).toEqual(`[ 5.999999999999999133 ]`);
-                                     // 6
+  // 6
   expect(await ƒ('1 2 / gamma')).toEqual(`[ 1.7724538509055159719 ]`); // ${Decimal.sqrt(PI)}
-                                         // 1.772453850905516027298167483341145182797549456122387128213
+  // 1.772453850905516027298167483341145182797549456122387128213
   expect(await ƒ('-1 2 / gamma')).toEqual(`[ -3.5449077018110324568 ]`); // ${Decimal.sqrt(PI).mul(-2)}
-                                          // -3.54490770181103205459633496668229036559509891224477425642
+  // -3.54490770181103205459633496668229036559509891224477425642
   expect(await ƒ('-5 2 / gamma')).toEqual(`[ -0.94530872048294201518 ]`); // ${Decimal.sqrt(PI).mul(-8 / 15)}
-                                          // -0.94530872048294188122568932444861076415869304326527313504
+  // -0.94530872048294188122568932444861076415869304326527313504
   expect(await ƒ('102 gamma')).toEqual(`[ 9.4259477598383563846e+159 ]`);
-                                       // 9.4259477598383594208516231244829367495623127947025437 × 10^159
+  // 9.4259477598383594208516231244829367495623127947025437 × 10^159
   expect(await ƒ('1.5 gamma')).toEqual(`[ 0.88622692545275791311 ]`);
-                                       // 0.8862269254527580136490837416705725913987747280611935
+  // 0.8862269254527580136490837416705725913987747280611935
   expect(await ƒ('0.1 gamma')).toEqual(`[ 9.5135076986687327389 ]`);
-                                       // 9.5135076986687318362924871772654021925505786260883773
+  // 9.5135076986687318362924871772654021925505786260883773
 });
 
 // test('should define factorial', async () => {
@@ -227,7 +231,7 @@ test('asinh', async () => {
   expect(await ƒ('pi asinh')).toEqual(`[ ${Decimal.asinh(PI)} ]`);
   expect(await ƒ('pi -1 * asinh')).toEqual(`[ -${Decimal.asinh(PI)} ]`);
   expect(await ƒ('1 2 / asinh')).toEqual(`[ 0.48121182505960344749 ]`);
-                                         // 0.481211825059603447497758913424368423135184334385660519661
+  // 0.481211825059603447497758913424368423135184334385660519661
   expect(await ƒ('-1 2 / asinh')).toEqual(`[ -0.48121182505960344751 ]`);
 });
 
@@ -251,13 +255,9 @@ test('acosh', async () => {
   expect(await ƒ('1 acosh')).toEqual('[ 0 ]');
   expect(await ƒ('-1 acosh')).toEqual(`[ 0+${PI}i ]`);
   expect(await ƒ('pi acosh')).toEqual('[ 1.811526272460853107 ]');
-  expect(await ƒ('pi -1 * acosh')).toEqual(
-    `[ 1.811526272460853107+${PI}i ]`
-  );
+  expect(await ƒ('pi -1 * acosh')).toEqual(`[ 1.811526272460853107+${PI}i ]`);
   expect(await ƒ('1 2 / acosh')).toEqual('[ -2e-20+1.0471975511965977462i ]');
-  expect(await ƒ('-1 2 / acosh')).toEqual(
-    '[ -2e-20+2.0943951023931954923i ]'
-  );
+  expect(await ƒ('-1 2 / acosh')).toEqual('[ -2e-20+2.0943951023931954923i ]');
 });
 
 test('acosh of infinities', async () => {
@@ -316,12 +316,12 @@ test('bitwise ops', async () => {
   expect(await ƒ('0b0001 0b0001 bit-and')).toEqual(τ([0b0001]));
   expect(await ƒ('0b0001 0b0001 bit-or')).toEqual(τ([0b0001]));
   expect(await ƒ('0b0001 0b0001 bit-xor')).toEqual(τ([0b0000]));
-  expect(await ƒ('0b0001 bit-not')).toEqual(`[ -2 ]`);  // 32 bits Bitwise!!
+  expect(await ƒ('0b0001 bit-not')).toEqual(`[ -2 ]`); // 32 bits Bitwise!!
 
   expect(await ƒ('0b0001 0b0010 bit-and')).toEqual(τ([0b0000]));
   expect(await ƒ('0b0001 0b0010 bit-or')).toEqual(τ([0b0011]));
   expect(await ƒ('0b0001 0b0010 bit-xor')).toEqual(τ([0b0011]));
-  expect(await ƒ('0b0010 bit-not')).toEqual(`[ -3 ]`);  // 32 bits Bitwise!!
+  expect(await ƒ('0b0010 bit-not')).toEqual(`[ -3 ]`); // 32 bits Bitwise!!
 });
 
 test('number works as a "macro"', async () => {

@@ -58,7 +58,7 @@ class Resolve {
 export const node = {
   /**
    * ## `args`
-   * 
+   *
    * Returns an array containing of command line arguments passed when the process was launched
    */
   args: () => process.argv,

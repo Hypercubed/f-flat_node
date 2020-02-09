@@ -20,8 +20,12 @@ test('should generate current date', async () => {
 });
 
 test('should perform basic arithmetic', async () => {
-  expect(await ƒ('"1/1/1990" date 1000 60 * 60 * 24 * +')).toBe(τ`[ ${new Date('1990-01-02T07:00:00.000Z')} ]`);
-  expect(await ƒ('"1/1/1990" date 1000 60 * 60 * 24 * -')).toBe(τ`[ ${new Date('1989-12-31T07:00:00.000Z')} ]`);
+  expect(await ƒ('"1/1/1990" date 1000 60 * 60 * 24 * +')).toBe(
+    τ`[ ${new Date('1990-01-02T07:00:00.000Z')} ]`
+  );
+  expect(await ƒ('"1/1/1990" date 1000 60 * 60 * 24 * -')).toBe(
+    τ`[ ${new Date('1989-12-31T07:00:00.000Z')} ]`
+  );
 });
 
 test('should test equality', async () => {
@@ -46,7 +50,9 @@ test('should test inequality', async () => {
 
 test('should get day', async () => {
   expect(await ƒ('"1/1/1990" date day')).toBe(`[ 'Mon' ]`);
-  expect(await ƒ('"1/1/1990" date 1000 60 * 60 * 24 * - day')).toBe(`[ 'Sun' ]`);
+  expect(await ƒ('"1/1/1990" date 1000 60 * 60 * 24 * - day')).toBe(
+    `[ 'Sun' ]`
+  );
 });
 
 test('date works as a "macro"', async () => {

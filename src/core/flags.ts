@@ -55,7 +55,7 @@ export const flags = {
       case 'auto-undo':
         return this.autoundo;
       case 'log-level':
-        return log.level = log.level;
+        return (log.level = log.level);
       case 'decimal-precision':
         return Decimal.precision;
       default:

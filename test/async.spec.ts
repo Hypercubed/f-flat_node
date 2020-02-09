@@ -27,9 +27,7 @@ test('yield', async () => {
       [6, 7]
     ])
   );
-  expect(await ƒ('[1 2 + yield 4 5 + ] fork')).toEqual(
-    τ([[3], [4, 5, plus]])
-  );
+  expect(await ƒ('[1 2 + yield 4 5 + ] fork')).toEqual(τ([[3], [4, 5, plus]]));
   expect(await ƒ('[1 2 + yield 4 5 + ] fork drop')).toEqual(τ([[3]]));
 });
 
@@ -90,11 +88,15 @@ test('should delay', async () => {
 }); */
 
 test('should await', async () => {
-  expect(await ƒ('1 [ 100 sleep 10 ! ] await 4 5 +')).toEqual(`[ 1 [ 3628800 ] 9 ]`);
+  expect(await ƒ('1 [ 100 sleep 10 ! ] await 4 5 +')).toEqual(
+    `[ 1 [ 3628800 ] 9 ]`
+  );
 });
 
 test('all', async () => {
-  expect(await ƒ('[ 100 sleep 10 ! ] dup pair all')).toEqual(`[ [ [ 3628800 ] [ 3628800 ] ] ]`);
+  expect(await ƒ('[ 100 sleep 10 ! ] dup pair all')).toEqual(
+    `[ [ [ 3628800 ] [ 3628800 ] ] ]`
+  );
 });
 
 test('should generate promise', async () => {
@@ -129,13 +131,15 @@ test('sleep', async () => {
 
 test('multiple async', async () => {
   expect(await ƒ('10 100 sleep 20 + 100 sleep 15 +')).toEqual(`[ 45 ]`);
-  expect(
-    await ƒ('10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 +')
-  ).toEqual(`[ 45 ]`);
+  expect(await ƒ('10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 +')).toEqual(
+    `[ 45 ]`
+  );
 });
 
 test('multiple async in children', async () => {
-  expect(await ƒ('[ 10 100 sleep 20 + 100 sleep 15 + ] await')).toEqual(`[ [ 45 ] ]`);
+  expect(await ƒ('[ 10 100 sleep 20 + 100 sleep 15 + ] await')).toEqual(
+    `[ [ 45 ] ]`
+  );
   expect(
     await ƒ('[ 10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 + ] await')
   ).toEqual(`[ [ 45 ] ]`);
@@ -197,6 +201,12 @@ test('should await on a future', async () => {
 
   await f.promise('[ await ] dip');
 
-  expect(f.toJSON()).toEqual([[new Decimal(3628800).toJSON()], new Decimal(9).toJSON()]);
-  expect(f.eval('slip').toJSON()).toEqual([new Decimal(3628800).toJSON(), new Decimal(9).toJSON()]);
+  expect(f.toJSON()).toEqual([
+    [new Decimal(3628800).toJSON()],
+    new Decimal(9).toJSON()
+  ]);
+  expect(f.eval('slip').toJSON()).toEqual([
+    new Decimal(3628800).toJSON(),
+    new Decimal(9).toJSON()
+  ]);
 });

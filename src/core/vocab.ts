@@ -1,6 +1,6 @@
 import { signature, Any } from '@hypercubed/dynamo';
 
-import { ffPrettyPrint, FFlatError , rewrite } from '../utils';
+import { ffPrettyPrint, FFlatError, rewrite } from '../utils';
 import { dynamo, Sentence, Word, Key, StackValue } from '../types';
 import { StackEnv } from '../env';
 
@@ -47,7 +47,6 @@ const createAction = dynamo.function(CreateAction);
  * # Internal Vocabulary Words
  */
 export const dict = {
-
   /**
    * ## `defer`
    *

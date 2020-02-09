@@ -249,7 +249,7 @@ export class StackEnv {
   }
 
   private isImmediate(c: Word): boolean {
-    if (this.depth < 1) return true;  // in immediate state
+    if (this.depth < 1) return true; // in immediate state
     if (typeof c.value !== 'string') return false;
     if ('[]{}:'.indexOf(c.value) > -1) return true; // these words are always immediate
     if (typeof c.value === 'string') {

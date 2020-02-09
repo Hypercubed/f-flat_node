@@ -11,30 +11,33 @@ const hasOwnProperty = Object.prototype.hasOwnProperty;
 const TOP = '%top';
 const LOCAL = '.';
 const INVALID_WORDS = [
-  /[\[\]\{\}\(\)]/,  // quotes
-  /[\s,]/,           // whitespace
-  /[\"\'\`]/,        // string quote
-  /[#\.\:]/,         // symbol, paths, keys
-  /\_\%/,            // internal word
-  /^[\d_]+$/         // number like
+  /[\[\]\{\}\(\)]/, // quotes
+  /[\s,]/, // whitespace
+  /[\"\'\`]/, // string quote
+  /[#\.\:]/, // symbol, paths, keys
+  /\_\%/, // internal word
+  /^[\d_]+$/ // number like
 ];
 
-export type ScopeModule = { [k in string]: symbol; };
+export type ScopeModule = { [k in string]: symbol };
 
 export class Vocabulary {
   static makePath(key: string) {
     if (typeof key === 'symbol') {
       return [key];
     }
-    key = String(key).toLowerCase().trim();
-    if (key.startsWith(LOCAL) && key.length > LOCAL.length) {  // words starting with '.' are alays local, not compiled
+    key = String(key)
+      .toLowerCase()
+      .trim();
+    if (key.startsWith(LOCAL) && key.length > LOCAL.length) {
+      // words starting with '.' are alays local, not compiled
       key = key.slice(LOCAL.length);
     }
     if (key.length < 2) return [key];
     return key.split(SEP);
   }
 
-  protected readonly global: { [k in symbol]: VocabValue; };  // stores VocabValue by symbol
+  protected readonly global: { [k in symbol]: VocabValue }; // stores VocabValue by symbol
 
   protected readonly root: ScopeModule;
   protected readonly scope: ScopeModule;
@@ -59,7 +62,8 @@ export class Vocabulary {
   }
 
   get(key: string): VocabValue {
-    if (typeof key === 'symbol') {  // Symbols are always root level, no paths
+    if (typeof key === 'symbol') {
+      // Symbols are always root level, no paths
       return this.global[key as any];
     }
 
@@ -67,18 +71,16 @@ export class Vocabulary {
       throw new Error(`Invalid key: ${key}`);
     }
 
-    return Vocabulary
-      .makePath(key)
-      .reduce((curr, key) => {
-        if (!curr) {
-          return;
-        }
-        let value = curr[key];
-        if (typeof value === 'symbol') {
-          return this.global[value];
-        }
-        return value;
-      }, this.locals);
+    return Vocabulary.makePath(key).reduce((curr, key) => {
+      if (!curr) {
+        return;
+      }
+      let value = curr[key];
+      if (typeof value === 'symbol') {
+        return this.global[value];
+      }
+      return value;
+    }, this.locals);
   }
 
   set(_key: string, value: VocabValue): void {
@@ -89,13 +91,17 @@ export class Vocabulary {
     let scope = this.locals;
     key = path.shift();
 
-    if (key === TOP) {  // special case... can write to %top object which is root
+    if (key === TOP) {
+      // special case... can write to %top object which is root
       key = path.shift();
       scope = this.root;
     }
 
-    if (path.length > 0 ||  // cannot set to path
-      (key.length > 1 && INVALID_WORDS.some(r => key.match(r)))) {  // invalid keys
+    if (
+      path.length > 0 || // cannot set to path
+      (key.length > 1 && INVALID_WORDS.some(r => key.match(r)))
+    ) {
+      // invalid keys
       throw new Error(`Invalid definition key: ${_key}`);
     }
 

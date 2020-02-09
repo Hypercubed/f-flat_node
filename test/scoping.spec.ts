@@ -2,12 +2,12 @@ import { ƒ } from './helpers/setup';
 
 test('in/fork', async () => {
   expect(await ƒ('a: ["before"] def [ a ] in')).toEqual(`[ [ 'before' ] ]`);
-  expect(
-    await ƒ('a: ["outer"] def [ a: ["inner"] def a ] fork a')
-  ).toEqual(`[ [ 'inner' ] 'outer' ]`);
-  expect(
-    await ƒ('a: ["outer"] def [ b: ["inner"] def a ] in b')
-  ).toEqual(`[ [ 'outer' ] 'inner' ]`);
+  expect(await ƒ('a: ["outer"] def [ a: ["inner"] def a ] fork a')).toEqual(
+    `[ [ 'inner' ] 'outer' ]`
+  );
+  expect(await ƒ('a: ["outer"] def [ b: ["inner"] def a ] in b')).toEqual(
+    `[ [ 'outer' ] 'inner' ]`
+  );
 });
 
 test('module `use` scoping', async () => {
@@ -217,7 +217,8 @@ test('explicit locals', async () => {
   ).toEqual(`[ 5 7 3 15 ]`);
 });
 
-test.skip('prelude binding', async () => { // TODO
+test.skip('prelude binding', async () => {
+  // TODO
   expect(
     await ƒ(`
     x: [ 25 sqrt ] ;

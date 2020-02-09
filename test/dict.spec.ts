@@ -9,9 +9,9 @@ test('should def and use nested actions', async () => {
 });
 
 test('should def and use nested actions in a fork', async () => {
-  expect(
-    await ƒ('test_def: { x: [ 1 2 + ] } def [ test_def.x ] fork')
-  ).toEqual(`[ [ 3 ] ]`);
+  expect(await ƒ('test_def: { x: [ 1 2 + ] } def [ test_def.x ] fork')).toEqual(
+    `[ [ 3 ] ]`
+  );
 });
 
 test('cannot overwrite defined words', async () => {
@@ -22,19 +22,17 @@ test('cannot overwrite defined words', async () => {
 
 test('should shadow definitions in a fork', async () => {
   expect(
-    await ƒ(
-      '"a" [ "outsite-a" ] def a [ "a" [ "in-fork-a" ] def a ] fork a'
-    )
+    await ƒ('"a" [ "outsite-a" ] def a [ "a" [ "in-fork-a" ] def a ] fork a')
   ).toEqual(`[ 'outsite-a' [ 'in-fork-a' ] 'outsite-a' ]`);
   expect(
-    await ƒ(
-      '"a" [ "outsite-a" ] def a [ "b" [ "in-in-b" ] def a b ] in a b'
-    )
+    await ƒ('"a" [ "outsite-a" ] def a [ "b" [ "in-in-b" ] def a b ] in a b')
   ).toEqual(`[ 'outsite-a' [ 'outsite-a' 'in-in-b' ] 'outsite-a' 'in-in-b' ]`);
 });
 
 test('should isloate definitions in a fork', async () => {
-  expect(await ƒ('[ "a" ["in-fork-a"] def a ] fork')).toStrictEqual(`[ [ 'in-fork-a' ] ]`);
+  expect(await ƒ('[ "a" ["in-fork-a"] def a ] fork')).toStrictEqual(
+    `[ [ 'in-fork-a' ] ]`
+  );
   await expect(ƒ('[ "a" ["in-fork-a"] def a ] fork a')).rejects.toThrow(
     'a is not define'
   );
@@ -57,12 +55,17 @@ describe('inline', () => {
 
   test('should inline defined actions', async () => {
     expect(await ƒ('[ slip ] inline')).toEqual(`[ [ q< eval q> ] ]`);
-    expect(await ƒ('{ x: [ slip ] } inline')).toEqual(`[ { x: [ q< eval q> ] } ]`);
+    expect(await ƒ('{ x: [ slip ] } inline')).toEqual(
+      `[ { x: [ q< eval q> ] } ]`
+    );
   });
 
-  test('should inline local qualified words', async () => { // Maybe this shouldn't work if the defintion is not local??
+  test('should inline local qualified words', async () => {
+    // Maybe this shouldn't work if the defintion is not local??
     expect(await ƒ('[ .slip ] inline')).toEqual(`[ [ q< eval q> ] ]`);
-    expect(await ƒ('{ x: [ .slip ] } inline')).toEqual(`[ { x: [ q< eval q> ] } ]`);
+    expect(await ƒ('{ x: [ .slip ] } inline')).toEqual(
+      `[ { x: [ q< eval q> ] } ]`
+    );
   });
 
   test('should not inline keys', async () => {
@@ -99,42 +102,66 @@ test('defer', async () => {
 
 describe('rewrite', () => {
   test('rewrite words', async () => {
-    expect(await ƒ(`[ x y y z ] { x: 1, y: 2 } rewrite`)).toEqual(`[ [ 1 2 2 z ] ]`);
+    expect(await ƒ(`[ x y y z ] { x: 1, y: 2 } rewrite`)).toEqual(
+      `[ [ 1 2 2 z ] ]`
+    );
   });
 
   test('rewrite qualified words', async () => {
-    expect(await ƒ(`[ .x .y .y .z ] { x: 1, y: 2 } rewrite`)).toEqual(`[ [ 1 2 2 .z ] ]`);
+    expect(await ƒ(`[ .x .y .y .z ] { x: 1, y: 2 } rewrite`)).toEqual(
+      `[ [ 1 2 2 .z ] ]`
+    );
   });
 
   test('should not rewrite keys', async () => {
-    expect(await ƒ(`[ x y y: z ] { x: 1, y: 2 } rewrite`)).toEqual(`[ [ 1 2 y: z ] ]`);
+    expect(await ƒ(`[ x y y: z ] { x: 1, y: 2 } rewrite`)).toEqual(
+      `[ [ 1 2 y: z ] ]`
+    );
   });
 });
 
 describe('binding', () => {
   test('defined words are bound', async () => {
-    expect(await ƒ(`slip: [ 'junk' ] ; [ dip ] inline`))
-      .toEqual(`[ [ swap q< eval q> ] ]`);
+    expect(await ƒ(`slip: [ 'junk' ] ; [ dip ] inline`)).toEqual(
+      `[ [ swap q< eval q> ] ]`
+    );
   });
 
   test('internal words are bound', async () => {
-    expect(await ƒ(`eval: [ 'junk' ] ; [ dip ] inline`))
-      .toEqual(`[ [ swap q< eval q> ] ]`);
+    expect(await ƒ(`eval: [ 'junk' ] ; [ dip ] inline`)).toEqual(
+      `[ [ swap q< eval q> ] ]`
+    );
   });
 });
 
 describe('invalid words', () => {
   test('invalid keys', async () => {
-    await expect(ƒ(`'x:y' [456] def`)).rejects.toThrow('Invalid definition key');
-    await expect(ƒ(`'x y' [456] def`)).rejects.toThrow('Invalid definition key');
-    await expect(ƒ(`'x[y' [456] def`)).rejects.toThrow('Invalid definition key');
-    await expect(ƒ(`'x_%y' [456] def`)).rejects.toThrow('Invalid definition key');
-    await expect(ƒ(`'x,y' [456] def`)).rejects.toThrow('Invalid definition key');
-    await expect(ƒ(`'x"y' [456] def`)).rejects.toThrow('Invalid definition key');
-    await expect(ƒ(`"x\ty" [456] def`)).rejects.toThrow('Invalid definition key');
-    await expect(ƒ(`"123" [456] def`)).rejects.toThrow('Invalid definition key');
-    await expect(ƒ(`"1.23" [456] def`)).rejects.toThrow('Invalid definition key');
+    await expect(ƒ(`'x:y' [456] def`)).rejects.toThrow(
+      'Invalid definition key'
+    );
+    await expect(ƒ(`'x y' [456] def`)).rejects.toThrow(
+      'Invalid definition key'
+    );
+    await expect(ƒ(`'x[y' [456] def`)).rejects.toThrow(
+      'Invalid definition key'
+    );
+    await expect(ƒ(`'x_%y' [456] def`)).rejects.toThrow(
+      'Invalid definition key'
+    );
+    await expect(ƒ(`'x,y' [456] def`)).rejects.toThrow(
+      'Invalid definition key'
+    );
+    await expect(ƒ(`'x"y' [456] def`)).rejects.toThrow(
+      'Invalid definition key'
+    );
+    await expect(ƒ(`"x\ty" [456] def`)).rejects.toThrow(
+      'Invalid definition key'
+    );
+    await expect(ƒ(`"123" [456] def`)).rejects.toThrow(
+      'Invalid definition key'
+    );
+    await expect(ƒ(`"1.23" [456] def`)).rejects.toThrow(
+      'Invalid definition key'
+    );
   });
 });
-
-

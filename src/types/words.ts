@@ -63,7 +63,8 @@ export class Word extends Action {
     return x instanceof Word;
   }
 
-  constructor(public value: string, public displayString?: string) { // value s/b PropertyKey?
+  constructor(public value: string, public displayString?: string) {
+    // value s/b PropertyKey?
     super(value, displayString);
   }
 }

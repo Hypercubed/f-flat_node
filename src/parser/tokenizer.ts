@@ -6,14 +6,16 @@ const g = Object.create(null);
 
 const DELIMITER = ' \t\n\r\f,';
 const BRACKETS = '[]{}()';
-const QUOTES = '\'"\``';
+const QUOTES = '\'"``';
 const RESERVED = ',';
 const COLON = ':';
 
 // words
 g.bracket = Myna.char(BRACKETS).ast;
 g.identifierFirst = Myna.notChar(DELIMITER + QUOTES + RESERVED + BRACKETS);
-g.identifierNext = Myna.notChar(DELIMITER + QUOTES + RESERVED + BRACKETS + COLON);
+g.identifierNext = Myna.notChar(
+  DELIMITER + QUOTES + RESERVED + BRACKETS + COLON
+);
 g.identifier = Myna.seq(g.identifierFirst, g.identifierNext.zeroOrMore);
 
 g.word = Myna.seq(g.identifier).ast;

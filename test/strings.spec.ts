@@ -10,16 +10,26 @@ test('should push strings', async () => {
 
 test('should decode double quote', async () => {
   expect(
-    await ƒ(`'\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}'`)
-  ).toEqual(τ(['\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}']));
+    await ƒ(
+      `'\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}'`
+    )
+  ).toEqual(
+    τ([
+      '\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}'
+    ])
+  );
   expect(
-    await ƒ('"\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}"')
+    await ƒ(
+      '"\\u{48}\\u{65}\\u{6c}\\u{6c}\\u{6f}\\u{20}\\u{77}\\u{6f}\\u{72}\\u{6c}\\u{64}"'
+    )
   ).toEqual(`[ 'Hello world' ]`);
 });
 
 test('should quickcheck strings', async () => {
   expect(await ƒ('[rand-string] [ dup 1 * = ] for-all')).toEqual(`[ [ ] ]`);
-  expect(await ƒ('[rand-string] [ [ ln 2 *] [2 * ln ] bi = ] for-all')).toEqual(`[ [ ] ]`);
+  expect(await ƒ('[rand-string] [ [ ln 2 *] [2 * ln ] bi = ] for-all')).toEqual(
+    `[ [ ] ]`
+  );
 });
 
 test('should push strings with nested quotes', async () => {
@@ -76,7 +86,9 @@ test('should split string using string, rest', async () => {
 });
 
 test('should div rem, string', async () => {
-  expect(await ƒ('"a;b;c" [ ";" \\ ] [ ";" % ] bi')).toEqual(`[ 'a' [ 'b' 'c' ] ]`);
+  expect(await ƒ('"a;b;c" [ ";" \\ ] [ ";" % ] bi')).toEqual(
+    `[ 'a' [ 'b' 'c' ] ]`
+  );
 });
 
 test('should test equality', async () => {
@@ -142,7 +154,9 @@ test('should reverse strings', async () => {
 });
 
 test('should filter strings', async () => {
-  expect(await ƒ('"dead_beef_123" [alphanumeric?] filter')).toEqual(`[ 'deadbeef123' ]`);
+  expect(await ƒ('"dead_beef_123" [alphanumeric?] filter')).toEqual(
+    `[ 'deadbeef123' ]`
+  );
 });
 
 test('should rot13 strings', async () => {
@@ -153,7 +167,9 @@ test('should rot13 strings', async () => {
 test('should eval palindrome?', async () => {
   expect(await ƒ('"abc" palindrome?')).toEqual(`[ false ]`);
   expect(await ƒ('"racecar" palindrome?')).toEqual(`[ true ]`);
-  expect(await ƒ('"A man, a plan, a canal: Panama" palindrome?')).toEqual(`[ true ]`);
+  expect(await ƒ('"A man, a plan, a canal: Panama" palindrome?')).toEqual(
+    `[ true ]`
+  );
 });
 
 test('should get string length', async () => {

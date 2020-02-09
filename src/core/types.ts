@@ -77,7 +77,7 @@ class Base {
 
     switch (base) {
       case 2:
-        return new d(lhs).toBinary() as any;  // Check, sd here!!!
+        return new d(lhs).toBinary() as any; // Check, sd here!!!
       case 8:
         return new d(lhs).toOctal() as any;
       case 10:
@@ -256,7 +256,7 @@ export const types = {
    * converts a value to an array
    *
    */
-  array: (x: any) => new Array(x),  // used?
+  array: (x: any) => new Array(x), // used?
 
   /**
    * ## `of`

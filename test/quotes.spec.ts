@@ -19,7 +19,7 @@ test('should add quotes', async () => {
 
 test('should mul quotes', async () => {
   const plus = new Word('+');
-  expect(await ƒ('[ 1 2 + ] 2 *')).toEqual(τ([ [1, 2, plus, 1, 2, plus] ]));
+  expect(await ƒ('[ 1 2 + ] 2 *')).toEqual(τ([[1, 2, plus, 1, 2, plus]]));
 });
 
 test('should test equality', async () => {

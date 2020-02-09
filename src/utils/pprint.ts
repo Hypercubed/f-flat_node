@@ -4,7 +4,18 @@ import * as fixedWidthString from 'fixed-width-string';
 
 import { Sentence } from '../types';
 
-import { Milton, trimStrings, maxDepth, ansiColors, arrayDecender, objectDecender, jsValues, jsonValues, indent, /* breakLength, */ COLORIZE_OPTIONS  } from '@hypercubed/milton';
+import {
+  Milton,
+  trimStrings,
+  maxDepth,
+  ansiColors,
+  arrayDecender,
+  objectDecender,
+  jsValues,
+  jsonValues,
+  indent,
+  /* breakLength, */ COLORIZE_OPTIONS
+} from '@hypercubed/milton';
 
 export const objectToString = () => (s: any, _p: any, v: any) => {
   const t = toString.call(s);
@@ -15,11 +26,11 @@ export const objectToString = () => (s: any, _p: any, v: any) => {
   return s;
 };
 
-export const sentences = (_o: never, _r: never, get: any) =>
-  (s: any, path: any, v: any) =>
-  (v instanceof Sentence) ?
-    get(v.value, path) :
-    s;
+export const sentences = (_o: never, _r: never, get: any) => (
+  s: any,
+  path: any,
+  v: any
+) => (v instanceof Sentence ? get(v.value, path) : s);
 
 export const symbols = () => (s: any) => {
   if (typeof s === 'symbol') {
@@ -39,11 +50,8 @@ export const breakLength = (options: any) => {
   };
 };
 
-export const oneline = () =>
-  (s: any) =>
-  (typeof s === 'string') ?
-    s.replace(/\n\s*/g, ' ') :
-    s;
+export const oneline = () => (s: any) =>
+  typeof s === 'string' ? s.replace(/\n\s*/g, ' ') : s;
 
 function base(_: Milton) {
   _.add(jsValues);
@@ -102,7 +110,10 @@ export const ffPrettyPrint = {
 
   stringify: stringify.stringify.bind(stringify),
 
-  formatTrace({ stack, queue, currentAction }, max = ffPrettyPrint.consoleWidth): string {
+  formatTrace(
+    { stack, queue, currentAction },
+    max = ffPrettyPrint.consoleWidth
+  ): string {
     const maxOutputWidth = ffPrettyPrint.consoleWidth;
     max = max < 0 ? maxOutputWidth / 2 + max : max / 2;
     max -= 16;

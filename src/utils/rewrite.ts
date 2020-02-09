@@ -38,7 +38,11 @@ function create(dictObject: Object | undefined) {
       const path = Vocabulary.makePath(action.value);
       const value: StackValue = getIn(dictObject, path);
 
-      if (is.undefined(value) && (typeof action.value !== 'string' || !(action.value as string).endsWith(IIF)))
+      if (
+        is.undefined(value) &&
+        (typeof action.value !== 'string' ||
+          !(action.value as string).endsWith(IIF))
+      )
         return action;
       if (is.function_(value)) return new ReturnValues([action]);
 

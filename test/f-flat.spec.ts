@@ -1,9 +1,4 @@
-import {
-  F,
-  Decimal,
-  ƒ,
-  τ
-} from './helpers/setup';
+import { F, Decimal, ƒ, τ } from './helpers/setup';
 
 test('setup', async () => {
   expect(F().eval).toBeDefined();
@@ -18,7 +13,9 @@ test('get-system-property', async () => {
   expect(await ƒ(`'decimal-precision' get-system-property`)).toEqual(`[ 20 ]`);
   expect(await ƒ(`'auto-undo' get-system-property`)).toEqual(`[ true ]`);
 
-  expect(ƒ(`'unknown-prop' get-system-property`)).rejects.toThrow('Invalid flag: unknown-prop');
+  expect(ƒ(`'unknown-prop' get-system-property`)).rejects.toThrow(
+    'Invalid flag: unknown-prop'
+  );
 });
 
 test('should be chainable', async () => {
@@ -30,31 +27,24 @@ test('should be chainable', async () => {
 
 test('should push numeric values', async () => {
   expect(await ƒ('1 2 -3 +5')).toEqual(τ([1, 2, -3, 5]));
-  expect(await ƒ('1.1 2.2 -3.14, +2.17')).toEqual(τ([
-    1.1,
-    2.2,
-    -3.14,
-    2.17
-  ]));
+  expect(await ƒ('1.1 2.2 -3.14, +2.17')).toEqual(τ([1.1, 2.2, -3.14, 2.17]));
   expect(await ƒ('1.1e-1 2.2e+2 -3.14e-1')).toEqual(τ([0.11, 220, -0.314]));
   expect(await ƒ('10_000 1_00')).toEqual(τ([10000, 100]));
 });
 
 test('should push hexidecimal numeric values', async () => {
   expect(await ƒ('0x5 0x55 0xff')).toEqual(τ([5, 85, 255]));
-  expect(await ƒ('0x5.5 0xff.ff')).toEqual(τ([
-    85 * Math.pow(16, -1),
-    65535 * Math.pow(16, -2)
-  ]));
+  expect(await ƒ('0x5.5 0xff.ff')).toEqual(
+    τ([85 * Math.pow(16, -1), 65535 * Math.pow(16, -2)])
+  );
   expect(await ƒ('0x1p+1 0xffp-2')).toEqual(τ([2, 255 * Math.pow(2, -2)]));
 });
 
 test('should push binary numeric values', async () => {
   expect(await ƒ('0b1 0b10 0b11')).toEqual(τ([1, 2, 3]));
-  expect(await ƒ('0b1.1 0b11.11')).toEqual(τ([
-    3 * Math.pow(2, -1),
-    15 * Math.pow(2, -2)
-  ]));
+  expect(await ƒ('0b1.1 0b11.11')).toEqual(
+    τ([3 * Math.pow(2, -1), 15 * Math.pow(2, -2)])
+  );
   expect(await ƒ('0b1p+1 0b11p-2')).toEqual(τ([2, 3 * Math.pow(2, -2)]));
 });
 
@@ -96,9 +86,7 @@ test('should branch on truthy and falsy', async () => {
   expect(await ƒ('5 false [ 2 + ] [ 2 * ] branch')).toEqual(τ([10]));
   expect(await ƒ('5 true [ 2 + ] [ 2 * ] branch')).toEqual(τ([7]));
   expect(await ƒ('5 null [ 2 + ] [ 2 * ] branch')).toEqual(τ([10]));
-  expect(await ƒ('5 "this is truthy" [ 2 + ] [ 2 * ] branch')).toEqual(τ([
-    7
-  ]));
+  expect(await ƒ('5 "this is truthy" [ 2 + ] [ 2 * ] branch')).toEqual(τ([7]));
 });
 
 test('in', async () => {
@@ -189,21 +177,15 @@ test('others2', async () => {
 
 test('should slice', async () => {
   expect(await ƒ('["a" "b" "c" "d"] 0 1 slice')).toEqual(τ([['a']]));
-  expect(await ƒ('["a" "b" "c" "d"] 0 -1 slice')).toEqual(τ([
-    ['a', 'b', 'c']
-  ]));
+  expect(await ƒ('["a" "b" "c" "d"] 0 -1 slice')).toEqual(τ([['a', 'b', 'c']]));
   expect(await ƒ('["a" "b" "c" "d"] 1 -1 slice')).toEqual(τ([['b', 'c']]));
 });
 
 test('should split at', async () => {
-  expect(await ƒ('["a" "b" "c" "d"] 1 /')).toEqual(τ([
-    ['a'],
-    ['b', 'c', 'd']
-  ]));
-  expect(await ƒ('["a" "b" "c" "d"] -1 /')).toEqual(τ([
-    ['a', 'b', 'c'],
-    ['d']
-  ]));
+  expect(await ƒ('["a" "b" "c" "d"] 1 /')).toEqual(τ([['a'], ['b', 'c', 'd']]));
+  expect(await ƒ('["a" "b" "c" "d"] -1 /')).toEqual(
+    τ([['a', 'b', 'c'], ['d']])
+  );
 });
 
 test('filter and reduce', async () => {
@@ -216,7 +198,9 @@ test('filter and reduce', async () => {
 
 test('zip, zipwith and dot', async () => {
   expect(await ƒ('[ 1 2 3 ] [ 4 5 6 ] zip')).toEqual(`[ [ 1 4 2 5 3 6 ] ]`);
-  expect(await ƒ('[ 1 2 3 ] [ 4 5 6 ] [ + ] zipwith in')).toEqual(`[ [ 5 7 9 ] ]`);
+  expect(await ƒ('[ 1 2 3 ] [ 4 5 6 ] [ + ] zipwith in')).toEqual(
+    `[ [ 5 7 9 ] ]`
+  );
   expect(await ƒ('[ 1 2 3 ] [ 4 5 6 ] dot')).toEqual(`[ 32 ]`);
   expect(await ƒ('[ 1 2 3 4 ] [ 4 5 6 ] dot')).toEqual(`[ 32 ]`);
 });
@@ -274,7 +258,9 @@ describe('errors on async command in eval', () => {
 });
 
 test('can spawn a future', async () => {
-  expect(await ƒ('[ 1 2 + 100 sleep ] spawn 3 4 +')).toEqual(`[ [Future:pending [1,2,+,100,sleep]] 7 ]`);
+  expect(await ƒ('[ 1 2 + 100 sleep ] spawn 3 4 +')).toEqual(
+    `[ [Future:pending [1,2,+,100,sleep]] 7 ]`
+  );
 });
 
 test('pick', async () => {
@@ -300,8 +286,12 @@ test('pick into object', async () => {
 
 test('pick into object with default', async () => {
   expect(await ƒ('{ a: { a: 1 } b: @ 2 orelse }')).toEqual(`[ { a: 2 } ]`);
-  expect(await ƒ('{ a: 3 } q< { b: q> over @ 5 orelse }')).toEqual(`[ { b: 5 } ]`);
-  expect(await ƒ('{ a: 7 } q< { c: q> b: @ 11 orelse }')).toEqual(`[ { c: 11 } ]`);
+  expect(await ƒ('{ a: 3 } q< { b: q> over @ 5 orelse }')).toEqual(
+    `[ { b: 5 } ]`
+  );
+  expect(await ƒ('{ a: 7 } q< { c: q> b: @ 11 orelse }')).toEqual(
+    `[ { c: 11 } ]`
+  );
 });
 
 test('pick into array', async () => {
@@ -350,15 +340,15 @@ test('immutable array actions', async () => {
 test('immutable object actions', async () => {
   const first = 'Manfred';
   const last = 'Von Thun';
-  expect(
-    await ƒ('{ first: "Manfred" } dup { last: "Von Thun" } +')
-  ).toEqual(τ([{ first }, { first, last }]));
-  expect(
-    await ƒ('{ first: "Manfred" } dup { last: "Von Thun" } <<')
-  ).toEqual(τ([{ first }, { first, last }]));
-  expect(
-    await ƒ('{ first: "Manfred" } dup { last: "Von Thun" } >>')
-  ).toEqual(τ([{ first }, { last, first }]));
+  expect(await ƒ('{ first: "Manfred" } dup { last: "Von Thun" } +')).toEqual(
+    τ([{ first }, { first, last }])
+  );
+  expect(await ƒ('{ first: "Manfred" } dup { last: "Von Thun" } <<')).toEqual(
+    τ([{ first }, { first, last }])
+  );
+  expect(await ƒ('{ first: "Manfred" } dup { last: "Von Thun" } >>')).toEqual(
+    τ([{ first }, { last, first }])
+  );
 });
 
 test('immutable sto', async () => {
@@ -386,7 +376,9 @@ test('atoms are not executed by stack actions', async () => {
 
 test('can perform actions from module', async () => {
   expect(await ƒ(`core: 'core.ff' import ; 5 core.pred`)).toEqual(`[ 5 4 ]`);
-  expect(await ƒ(`math: 'math.ff' import ; 12 math.!`)).toEqual(`[ 479001600 ]`);
+  expect(await ƒ(`math: 'math.ff' import ; 12 math.!`)).toEqual(
+    `[ 479001600 ]`
+  );
 });
 
 test('postfix "macros"', async () => {
@@ -417,21 +409,41 @@ test('base, pos integers', async () => {
   expect(await ƒ('5 2 base')).toEqual(`[ '0b101' ]`);
 
   expect(await ƒ('3735928559 16 base')).toEqual(`[ '0xDEADBEEF' ]`);
-  expect(await ƒ('3735928559 2 base')).toEqual(`[ '0b11011110101011011011111011101111' ]`);
+  expect(await ƒ('3735928559 2 base')).toEqual(
+    `[ '0b11011110101011011011111011101111' ]`
+  );
 
-  expect(await ƒ('18446744073709551615 16 base')).toEqual(`[ '0xFFFFFFFFFFFFFFFF' ]`);
-  expect(await ƒ('18446744073709551615 10 base')).toEqual(`[ '18446744073709551615' ]`);
-  expect(await ƒ('18446744073709551615 8 base')).toEqual(`[ '0o1777777777777777777777' ]`);
-  expect(await ƒ('18446744073709551615 4 base')).toEqual(`[ '33333333333333333333333333333333' ]`);
-  expect(await ƒ('18446744073709551615 2 base')).toEqual(`[ '0b1111111111111111111111111111111111111111111111111111111111111111' ]`);
+  expect(await ƒ('18446744073709551615 16 base')).toEqual(
+    `[ '0xFFFFFFFFFFFFFFFF' ]`
+  );
+  expect(await ƒ('18446744073709551615 10 base')).toEqual(
+    `[ '18446744073709551615' ]`
+  );
+  expect(await ƒ('18446744073709551615 8 base')).toEqual(
+    `[ '0o1777777777777777777777' ]`
+  );
+  expect(await ƒ('18446744073709551615 4 base')).toEqual(
+    `[ '33333333333333333333333333333333' ]`
+  );
+  expect(await ƒ('18446744073709551615 2 base')).toEqual(
+    `[ '0b1111111111111111111111111111111111111111111111111111111111111111' ]`
+  );
 });
 
 test('base, neg integers', async () => {
   expect(await ƒ('-3735928559 16 base')).toEqual(`[ '-0xDEADBEEF' ]`);
-  expect(await ƒ('-18446744073709551615 16 base')).toEqual(`[ '-0xFFFFFFFFFFFFFFFF' ]`);
-  expect(await ƒ('-18446744073709551615 10 base')).toEqual(`[ '-18446744073709551615' ]`);
-  expect(await ƒ('-18446744073709551615 8 base')).toEqual(`[ '-0o1777777777777777777777' ]`);
-  expect(await ƒ('-18446744073709551615 2 base')).toEqual(`[ '-0b1111111111111111111111111111111111111111111111111111111111111111' ]`);
+  expect(await ƒ('-18446744073709551615 16 base')).toEqual(
+    `[ '-0xFFFFFFFFFFFFFFFF' ]`
+  );
+  expect(await ƒ('-18446744073709551615 10 base')).toEqual(
+    `[ '-18446744073709551615' ]`
+  );
+  expect(await ƒ('-18446744073709551615 8 base')).toEqual(
+    `[ '-0o1777777777777777777777' ]`
+  );
+  expect(await ƒ('-18446744073709551615 2 base')).toEqual(
+    `[ '-0b1111111111111111111111111111111111111111111111111111111111111111' ]`
+  );
 });
 
 test('base, pos floats', async () => {
@@ -458,14 +470,24 @@ test('base with inf and nan', async () => {
 });
 
 test('hex, bin', async () => {
-  expect(await ƒ('18446744073709551615 hex')).toEqual(`[ '0xFFFFFFFFFFFFFFFF' ]`);
-  expect(await ƒ('18446744073709551615 bin')).toEqual(`[ '0b1111111111111111111111111111111111111111111111111111111111111111' ]`);
-  expect(await ƒ('18446744073709551615 oct')).toEqual(`[ '0o1777777777777777777777' ]`);
+  expect(await ƒ('18446744073709551615 hex')).toEqual(
+    `[ '0xFFFFFFFFFFFFFFFF' ]`
+  );
+  expect(await ƒ('18446744073709551615 bin')).toEqual(
+    `[ '0b1111111111111111111111111111111111111111111111111111111111111111' ]`
+  );
+  expect(await ƒ('18446744073709551615 oct')).toEqual(
+    `[ '0o1777777777777777777777' ]`
+  );
 
   expect(await ƒ('0.125 hex')).toEqual(`[ '0x0.2' ]`);
 
-  expect(await ƒ('-18446744073709551615 hex')).toEqual(`[ '-0xFFFFFFFFFFFFFFFF' ]`);
-  expect(await ƒ('-18446744073709551615 bin')).toEqual(`[ '-0b1111111111111111111111111111111111111111111111111111111111111111' ]`);
+  expect(await ƒ('-18446744073709551615 hex')).toEqual(
+    `[ '-0xFFFFFFFFFFFFFFFF' ]`
+  );
+  expect(await ƒ('-18446744073709551615 bin')).toEqual(
+    `[ '-0b1111111111111111111111111111111111111111111111111111111111111111' ]`
+  );
   expect(await ƒ('-0.125 hex')).toEqual(`[ '-0x0.2' ]`);
 });
 
@@ -508,8 +530,8 @@ test('integer precent formats', async () => {
 });
 
 test('hexadecimal integer formats', async () => {
-  expect(await ƒ('0xDEAD')).toEqual(τ([ 0xdead ]));
-  expect(await ƒ('-0xBEEF')).toEqual(τ([ -0xbeef ]));
+  expect(await ƒ('0xDEAD')).toEqual(τ([0xdead]));
+  expect(await ƒ('-0xBEEF')).toEqual(τ([-0xbeef]));
 });
 
 test('hexadecimal float formats', async () => {
@@ -536,14 +558,20 @@ test('underscore seperators hexadecimal integer formats', async () => {
 test('should resolve', async () => {
   expect(await ƒ('"core" resolve')).toMatch(/^\[ 'file:.*core' \]$/);
   expect(await ƒ('"core.ff" resolve')).toMatch(/^\[ 'file:.*core.ff' \]$/);
-  expect(await ƒ('"/home/core.ff" resolve')).toMatch(/^\[ 'file:\/\/\/.*home\/core.ff' \]$/);
-  expect(await ƒ('"file:///home/core.ff" resolve')).toMatch(/^\[ 'file:\/\/\/.*home\/core.ff' \]$/);
-  expect(await ƒ('"http://www.home.com/core.ff" resolve')).toEqual(`[ 'http://home.com/core.ff' ]`);
+  expect(await ƒ('"/home/core.ff" resolve')).toMatch(
+    /^\[ 'file:\/\/\/.*home\/core.ff' \]$/
+  );
+  expect(await ƒ('"file:///home/core.ff" resolve')).toMatch(
+    /^\[ 'file:\/\/\/.*home\/core.ff' \]$/
+  );
+  expect(await ƒ('"http://www.home.com/core.ff" resolve')).toEqual(
+    `[ 'http://home.com/core.ff' ]`
+  );
 });
 
 test('keywords are case insenstivive', async () => {
   expect(await ƒ('null NULL')).toEqual(`[ null null ]`);
-  expect(await ƒ('nan NAN NaN nAn')).toEqual(`[ NaN NaN NaN NaN ]`);  // todo: shoulf be nan
+  expect(await ƒ('nan NAN NaN nAn')).toEqual(`[ NaN NaN NaN NaN ]`); // todo: shoulf be nan
   expect(await ƒ('i I')).toEqual('[ 0+1i 0+1i ]');
   expect(await ƒ('true TRUE tRue')).toEqual(`[ true true true ]`);
   expect(await ƒ('false FALSE fAlsE')).toEqual(`[ false false false ]`);
@@ -562,7 +590,10 @@ test('stack underflow', async () => {
 });
 
 test('lambdas', async () => {
-  expect(await ƒ('l: [ [ a: b: c: ] => [ .b .c .c .a ] ] lambda ; 1 2 3 l')).toEqual(`[ 2 3 3 1 ]`);
-  expect(await ƒ('d: [ [ a: b: ] => [ .a .b - abs .a / ] ] lambda ; 10 5 d')).toEqual(`[ 0.5 ]`);
+  expect(
+    await ƒ('l: [ [ a: b: c: ] => [ .b .c .c .a ] ] lambda ; 1 2 3 l')
+  ).toEqual(`[ 2 3 3 1 ]`);
+  expect(
+    await ƒ('d: [ [ a: b: ] => [ .a .b - abs .a / ] ] lambda ; 10 5 d')
+  ).toEqual(`[ 0.5 ]`);
 });
-

@@ -11,7 +11,9 @@ test('should split string using regexp', async () => {
 
 test('should replace string using regexp', async () => {
   // todo: better comparisons with NaN
-  expect(await ƒ('"a;b:c" "[;:]" regexp "-->" replace')).toEqual(`[ 'a-->b-->c' ]`);
+  expect(await ƒ('"a;b:c" "[;:]" regexp "-->" replace')).toEqual(
+    `[ 'a-->b-->c' ]`
+  );
 });
 
 test('regular expressions, replace', async () => {
@@ -39,9 +41,15 @@ test('regular expressions, match?', async () => {
 });
 
 test('regular expressions, match @', async () => {
-  expect(await ƒ('"aaaa1aaaa2aaaa3" "/[0-9]/g" regexp match 0 @')).toEqual(`[ '1' ]`);
-  expect(await ƒ('"aaaa1aaaa2aaaa3" "/[0-9]/g" regexp match 1 @')).toEqual(`[ '2' ]`);
-  expect(await ƒ('"aaaa1aaaa2aaaa3" "/[0-9]/g" regexp match 2 @')).toEqual(`[ '3' ]`);
+  expect(await ƒ('"aaaa1aaaa2aaaa3" "/[0-9]/g" regexp match 0 @')).toEqual(
+    `[ '1' ]`
+  );
+  expect(await ƒ('"aaaa1aaaa2aaaa3" "/[0-9]/g" regexp match 1 @')).toEqual(
+    `[ '2' ]`
+  );
+  expect(await ƒ('"aaaa1aaaa2aaaa3" "/[0-9]/g" regexp match 2 @')).toEqual(
+    `[ '3' ]`
+  );
 });
 
 test('can add (or) regexp', async () => {
@@ -49,13 +57,17 @@ test('can add (or) regexp', async () => {
   expect(await ƒ('":" regexp ";" regexp +')).toEqual(`[ /:|;/ ]`);
   expect(await ƒ('"abc" regexp "def" regexp +')).toEqual(`[ /abc|def/ ]`);
   expect(await ƒ('"/abc/i" regexp "/def/" regexp +')).toEqual(`[ /abc|def/i ]`);
-  expect(await ƒ('"a;b:c" ";" regexp ":" regexp + /')).toEqual(`[ [ 'a' 'b' 'c' ] ]`);
+  expect(await ƒ('"a;b:c" ";" regexp ":" regexp + /')).toEqual(
+    `[ [ 'a' 'b' 'c' ] ]`
+  );
 });
 
 test('can mul (and) regexp', async () => {
   expect(await ƒ('"abc" regexp "def" regexp * type')).toEqual(`[ 'regexp' ]`);
   expect(await ƒ('":" regexp ";" regexp *')).toEqual(`[ /(?=:)(?=;)/ ]`);
-  expect(await ƒ('"abc" regexp "def" regexp *')).toEqual(`[ /(?=abc)(?=def)/ ]`);
+  expect(await ƒ('"abc" regexp "def" regexp *')).toEqual(
+    `[ /(?=abc)(?=def)/ ]`
+  );
 });
 
 // todo: nor, xor, etc.
@@ -94,5 +106,7 @@ test('regexp works as a macro "macro"', async () => {
 });
 
 test('regexp are not statefull', async () => {
-  expect(await ƒ(`'abc' 'abc' '/abc/g' regexp dup [ =~ swap ] dip =~`)).toEqual(`[ true true ]`);
+  expect(await ƒ(`'abc' 'abc' '/abc/g' regexp dup [ =~ swap ] dip =~`)).toEqual(
+    `[ true true ]`
+  );
 });

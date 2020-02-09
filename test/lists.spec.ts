@@ -16,10 +16,12 @@ test('should get length', async () => {
 
 test('should add', async () => {
   expect(await ƒ('(1) (2) +')).toEqual(`[ [ 1 2 ] ]`);
-  expect(await ƒ('(1 2 3) dup (4 5 6) +')).toEqual(τ([
-    [1, 2, 3],
-    [1, 2, 3, 4, 5, 6]
-  ]));
+  expect(await ƒ('(1 2 3) dup (4 5 6) +')).toEqual(
+    τ([
+      [1, 2, 3],
+      [1, 2, 3, 4, 5, 6]
+    ])
+  );
 });
 
 test('should multiply', async () => {
@@ -117,20 +119,20 @@ test('should uncons', async () => {
 });
 
 test('should quicksort', async () => {
-  expect(await ƒ('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] quicksort')).toEqual(`[ [ 1 2 2 3 3 4 4 5 6 7 8 9 10 ] ]`);
+  expect(await ƒ('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] quicksort')).toEqual(
+    `[ [ 1 2 2 3 3 4 4 5 6 7 8 9 10 ] ]`
+  );
 });
 
 test('should filter', async () => {
-  expect(
-    await ƒ('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] [ even? ] filter')
-  ).toEqual(`[ [ 10 2 6 4 2 4 8 ] ]`);
+  expect(await ƒ('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] [ even? ] filter')).toEqual(
+    `[ [ 10 2 6 4 2 4 8 ] ]`
+  );
 });
 
 test('should filter arrays of arrays', async () => {
   expect(
-    await ƒ(
-      '[ [10 2] [5] [3 1 6 7] [4 2 3] [4] [8 9] ] [ ln even? ] filter'
-    )
+    await ƒ('[ [10 2] [5] [3 1 6 7] [4 2 3] [4] [8 9] ] [ ln even? ] filter')
   ).toEqual(`[ [ [ 10 2 ] [ 3 1 6 7 ] [ 8 9 ] ] ]`);
 });
 

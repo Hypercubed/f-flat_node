@@ -68,7 +68,6 @@ function invertObject(source: any) {
  *
  */
 class Add {
-
   /**
    * - list concatenation/function composition
    *
@@ -802,7 +801,7 @@ class Unshift {
    * [ 16 ]
    * ```
    */
-  @signature([Number, Decimal], [Number, Decimal])  // check large decimals
+  @signature([Number, Decimal], [Number, Decimal]) // check large decimals
   number(lhs: number, rhs: number) {
     return +lhs >> +rhs;
   }
