@@ -4,47 +4,42 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Bugs
 - [ ] pprint functions
-- [ ] pprint `Infinity` etc.
+- [ ] pprint `Infinity`, `ComplexInfinity`, `NaN` etc.
 
 # Testing
 - [ ] `base` (`Deciaml.toBinary`) precision.
 - [ ] more tests for `bind` and `defer`
 - [ ] Test unbound defs (macro-like expansion)
 - [ ] test for invalid word defintions
+- [ ] Test for `%top`
+- [ ] Tests for `vocab`, `use`, etc.
+- [ ] More tests for stack object immutablity
+- [ ] Test all internal words
+  - [ ] Basis
+  - [ ] Core
+  - [ ] Dictionary words
 
 # TODOs
+- [ ] all pprint values shoudl be copy-pasteable?
 - [ ] More stats on trace (max stack size, max queue size, time, etc)
 - [?] Decimal shift/unshift
 - [ ] More complexInfinity/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
 - [ ] finish and use https://github.com/Hypercubed/real
   - [ ] Number subtypes: integer (BigInt), real (decimaljs), rational (tbd), complex (internal)
-- [?] More scoping words? `%top`, `%parent`, `%self`?
-  - [ ] Test for each
-  - [?] Disable getter without path (`%top`)
 - [ ] immutable imports (https://github.com/moonad/Formality/blob/master/DOCUMENTATION.md#import)
 - [ ] flags for pprinting (*maxDepth*, etc)
+- [ ] pick for module? `math [ '!' ] pick use`?
+- [ ] Store using symbols as keys `#aword [ dup 123 ] ;`? always global and collision free?
+- [ ] `@`should always return a value or null (remove `?@`)
 
 # Parser
 - [ ] Regex literal
-- [ ] Use `#:` as symbol prefix?  Symbols with whitespace (`#:'foo'`)?
 - [ ] `undefined`?
-- [ ] complex, i
-- [ ] +/-Infinity
+- [ ] complex, `i`
+- [ ] `+/-infinity`
 - [ ] Symbols `(`, `_`
     - [ ] Use `#:` as symbol prefix?  Symbols with whitespace (`#:'foo'`)?
     - [ ] well known symbols?
-
-# Improved scoping and namespaces
-- [x] immutable words (ex. `slip%8df57134`)
-  - [ ] add tests for execute using hash
-  - [ ] use hash instead of uuid!!?
-  - [x] mutually recursive definitions?
-- [?] ensure pretty display for unique words?
-- [ ] Tests for `vocab`, `use`, etc.
-- [?] Tests for scoping
-- [?] disallow shadowing guid
-- [ ] allow finding words by name (`abc`), hash (`%xyz`), or both (`abc%xyz`)?
-- [ ] pick for module?
 
 # Testing words
 - [ ] `try` `[ T ] [ C ] [ F ]`
@@ -54,12 +49,12 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Improved user space
 - [ ] Start in user directory
-- [ ] `add` - adds a word/vacabulary to the user's persistant dictionary? `math: add`
+- [ ] `add` - adds a word/vacabulary to the user's persistant dictionary/bootstrap? `math: add`
 
 # Safer?
 - [ ] redefine action `:` ( string -> Key )?
-- [?] restrict types on stack, queue and dictionary
-- [ ] Safer module loading (`Sentence` -> `Array` on `module`)
+- [?] more restrictions types on stack, queue and dictionary
+- [ ] Safer module loading (module class?)
 
 # Type cleaning
 - [ ] `:xyz` -> `ImmediateWord`?
@@ -68,21 +63,18 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `ResolvedWord`?
 
 # Decide
-- [x] Decide on macros, `dupn!3`, `dup<5>`, `range<1, 100>`, `range:(1, 10).` ?
+- [?] Better macro system, `dupn!3`, `dup<5>`, `range<1, 100>`, `range:(1, 10).` ?
   - Using `range:(1, 10)|>`, aka sap
-- [ ] `~` vs `!`, `!` vs `factorial`, `/=` or `!=`, `?` vs `println`
+- [ ] `~` vs `!`, `!` vs `factorial`, `/=` or `!=`
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [ ] Choose `regex` vs `regexp`
 - [ ] Ranges?  Infinite ranges? generators?
-- [ ] Symbols vs internal classes?
-- [?] Bitwise ops on decimals (`|`, `bitwise-or`, `lor`, etc).
 - [ ] map over strings should return strings?
-- [?] Store using symbols as keys `#aword dup 123 sto rcl`, collision free?
 
 # Todo:
 
 - [ ] Finish JSON output
-- [ ] Serialize to ff
+- [ ] Serialize to `.ff` file?
 - [ ] Tagged templates `fn'${A}-${B}'` -> `${A fn}-${B fn}`?
 - [ ] Mixed numeric and string indecies for arrays and maps `[ 1 2 x: 3 ]` `{ x: 1 y: 2 3 4 5}`?
 - [?] Combine lambdas and pattern matching?
@@ -91,17 +83,12 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [x] `undoable` -> `autoundo`,
   - [ ] add `undoable` flag.
   - [ ] reset by `.clear`?
-- [ ] Fix API docs for base
+- [ ] Fix API docs
     - [ ] Move docs from gitbook?
 - [ ] Consistant and predictable display precision:
   - [ ] `1 acos` => `0` (precision issue)
   - [ ] precision in complex calculations (on print)
   - [ ] Pretty printing complex values: `5e-20+2i` -> `2i`?
-- [ ] More tests for stack object immutablity
-- [ ] Test all internal words
-  - [ ] Basis
-  - [ ] Core
-  - [ ] Dictionary words
 - [ ] JSON
   - [ ] to simplified JSON (Decimal -> number, regex, symbols, etc)
   - [ ] Decimal/Complex .fromJSON + Tests
@@ -111,6 +98,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Ensure predictable cmp with `null` and `nan`
 
 # New Words
+- [ ] `alias` `x: y: alias`
 - [ ] `bit-set`, `bit-flip`, `bit-clr`, `bit-get`
 - [ ] `cld`: (Smallest integer larger than or equal to x/y)
 - [ ] `isfinite?`, `isinf?`, `isnan?`
@@ -127,7 +115,6 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] radians -> rads-per-degree, etc. ?
 - [ ] `lesser-of`, `greater-of` vs `max`, `min`?
 - [ ] `gte` vs `>=`
-- [?] `&` vs `bit-and`
 - [ ] Derivatives:
   - [ ] `deriv = (f, h) => x => (f(x + h) - f(x)) / h`
   - [x] `nd = (f, x, h) => (f(x + h) - f(x)) / h`
@@ -135,8 +122,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Radix from number: `radix = (n, radix) => n.toString(radix)`
   - [ ] Fix `bin` and `oct` floating point
   - [ ] fix `hex`, `bin`, ect with neg values
-- [-] Elvis operastor `?:` (replaces `choose`?)
-- [x] Safe at `?@` performs @ if lhs is not null
+- [x] Safe at `?@` performs `@` if lhs is not null, always retruns a value or null
 - [ ] Lazy ranges
 - [ ] Use standard words, `foldl`, etc
 - [ ] `each*`, recursive each, no stack overflow?
@@ -180,7 +166,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [x] Undo history
   - [x] undo
   - [ ] redo?
-- [ ] better stack printing
+- [?] better stack printing
 - [ ] Dates
   - [ ] More date base operations
   - [ ] Add Duration type... example: https://github.com/moment/moment/blob/develop/src/lib/duration/constructor.js
@@ -191,7 +177,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Preserved precision base on user input (2.50 vs 2.5)?
   - [ ] `2.50M`?
 - [ ] Better JSON iterop
-  - [ ] StackEnv.prototype.toJSON should serialize entire state?
+  - [ ] `StackEnv.prototype.toJSON` should serialize entire state?
   - [ ] FFlat Extended JSON, `{ value: i 2 * }`
   - [ ] Deserialize JSON
   - [ ] Simplified JSON
@@ -212,7 +198,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Parser / compiler output
 - [ ] Infinite Ranges? 1..Infinity?
 - [ ] Pattern matching?
-  - [ ] Pattern matching substitution? `[_ _]` => `[a,b]`
+  - [ ] Pattern matching substitution? `[_ _]` => `[a,b]` (lambdas?)
   - [x] place holder `_`
   - [x] rest pattern in arrays `[ 1 ... ]`
   - [-] OR patterns `1 | 2` (now using regex)
