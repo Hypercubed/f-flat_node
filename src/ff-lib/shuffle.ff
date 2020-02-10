@@ -11,7 +11,6 @@ keep2: [ q< dup2 q> dive ] ;  // [c] [b] [a] -> [c] [b] a [c] [b]   (aka 2keep)
 
 nip: [ swap drop ] ;          // B A -> A
 dropd: [ q< drop q> ] ;       // B A -> A          (aka nip)
-tuck: [ swap over ] ;         // B A -> A B A
 
 overd: [ q< over q> ] ;       // C B A -> C B C A
 pick: [ overd swap ] ;        // C B A -> C B A C

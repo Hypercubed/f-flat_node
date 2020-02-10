@@ -12,6 +12,7 @@
     "docs": "node ./scripts/generate-docs.js",
     "prettier": "prettier \"{test,src,bin}/**/*.{js,ts,spec.ts}\" --write",
     "test": "npm run lint && jest",
+    "watch": "jest --watch",
     "lint": "tslint \"{test,src,bin}/**/*.{js,ts,spec.ts}\"",
     "check": "npm run coverage && npm run lint",
     "coverage": "nyc -r lcov -r html -r text ava ./test/*.spec.ts",

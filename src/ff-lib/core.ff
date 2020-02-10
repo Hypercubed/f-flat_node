@@ -12,11 +12,13 @@
 
 'types.ff' require
 'testing.ff' require
+'shuffle.ff' require
 
 // core shuffle words
 slip: [ q< eval q> ] ;      // [b] A -> b A
 run: [ dup slip ] ;;        // [a] -> a [a]
 dip: [ swap slip ] ;;       // B [a] -> a B
+tuck: [ swap over ] ;         // B A -> A B A
 
     [ [ 'b' ] 'A' slip stack [ 'b' 'A' ] assert_equal ] 'slip' test
     [ ['a'] run stack [ 'a' ['a'] ] assert_equal ] 'run' test
@@ -49,6 +51,7 @@ bi: [ sipd eval ] ;;        // C [b] [a] -> C b C a
 // keep/check
 keep: [ sip ] ;;      // B [a] -> B a B    (aka sip)
 check: [ dupd eval ] ;;     // B [a] -> B B a    (aka w)
+dupn: [ [ dup ] swap times ] ;
 
 // truthy/falsy
 truthy?: [ boolean ] ;
@@ -191,3 +194,27 @@ p-choose: [
     branch
   ] unless
 ] ;
+
+/**
+ * quicksort
+*/
+qsort: [
+  dup ln 1 >             // when length > 1
+  [
+    uncons                      // split into first [ ...rest ]
+    over dup                    // shuffle
+    [ [ <= ] >> filter ] >>     // filter values less than or equal to pivot
+    swap [ [ > ] >> filter ] >> // filter values greater than the pivot
+    bi
+    [ qsort ] bi@           // quicksort each sublist
+    [ swap + ] dip +            // merge results 
+  ] when
+] ;
+
+    [
+      [ 3 2 1 ] qsort [ 1 2 3 ] assert_equal
+      [ -3 2 1 ] qsort [ -3 1 2 ] assert_equal
+      [ -3 2 -1 ] qsort [ -3 -1 2 ] assert_equal
+      [ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] qsort [ 1 2 2 3 3 4 4 5 6 7 8 9 10 ] assert_equal
+      "the quick brown fox jumps over the lazy dog" qsort '        abcdeeefghhijklmnoooopqrrsttuuvwxyz' assert_equal
+    ] 'qsort' test

@@ -188,6 +188,9 @@ export const node = {
    *
    */
   'get-env'(x: string) {
-    return process.env[x];
+    if (x in process.env) {
+      return process.env[x];
+    }
+    return null;
   }
 };

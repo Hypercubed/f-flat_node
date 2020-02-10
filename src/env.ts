@@ -15,7 +15,6 @@ import {
   StackValue,
   Future,
   Word,
-  Key,
   Sentence
 } from './types';
 import {
@@ -68,7 +67,9 @@ export class StackEnv {
   parent: StackEnv;
   depth = 0;
 
+  // system properties
   autoundo = true;
+  silent = true;
 
   lastFnDispatch: any;
   currentAction: StackValue;

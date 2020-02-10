@@ -18,7 +18,7 @@ export const log = new Logger({
 log.level = (process.env as any).NODE_ENV || 'warn';
 
 export const bar = new ProgressBar(
-  ':elapsed s [:bar] S::stack Q::queue ::lastAction',
+  ':elapsed s [:bar] S::stack Q::queue :: :lastAction',
   {
     complete: '=',
     incomplete: ' ',

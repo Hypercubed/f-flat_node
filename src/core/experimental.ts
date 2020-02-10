@@ -68,13 +68,6 @@ export const experimental = {
   },
 
   /**
-   * ## `parse-json`
-   */
-  'parse-json'(a: string) {
-    return JSON.parse(a);
-  },
-
-  /**
    * ## `||>` (apply)
    */
   '||>': dynamo.function(Apply),

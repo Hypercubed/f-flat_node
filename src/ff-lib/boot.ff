@@ -4,9 +4,14 @@
 
 'loader.ff'
   ( __sys_path__ ) >> resolve         // resolve
-  read eval                                   // eval and export
+  read eval                           // read and eval
 
 'core.ff' require
 'types.ff' require
+'math.ff' require
+'strings.ff' require
+'datetime.ff' require
+'lambdas.ff' require
 
-'usr.ff' if-exists-load
+'NODE_ENV' get-env 'test' != 
+  [ 'usr.ff' if-exists-load ] when

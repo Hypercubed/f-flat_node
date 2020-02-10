@@ -5,6 +5,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 # Bugs
 - [ ] pprint functions
 - [ ] pprint `Infinity`, `ComplexInfinity`, `NaN` etc.
+- [ ] Parse bug `"abc":123`
+- [ ] blessed gui broken
 
 # Testing
 - [ ] `base` (`Deciaml.toBinary`) precision.
@@ -18,6 +20,10 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] Basis
   - [ ] Core
   - [ ] Dictionary words
+- [ ] Move `silent` flag to system properties
+  - [ ] Progress bar flag?
+- [ ] move repl and gui to src
+- [ ] More errors
 
 # TODOs
 - [ ] all pprint values shoudl be copy-pasteable?
@@ -31,6 +37,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] pick for module? `math [ '!' ] pick use`?
 - [ ] Store using symbols as keys `#aword [ dup 123 ] ;`? always global and collision free?
 - [ ] `@`should always return a value or null (remove `?@`)
+- [ ] `__sys_path__` to flags? `sys_paths`?
+- [ ] os/platform specific bootloading?
 
 # Parser
 - [ ] Regex literal

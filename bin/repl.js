@@ -13,8 +13,6 @@ const { log, type, bar, ffPrettyPrint } = require('../dist/utils');
 
 const pkg = require('../package.json');
 
-const nonInteractive = !process || !process.stdin.isTTY;
-
 const welcome = gradient.rainbow(`
 
           []]
@@ -30,6 +28,8 @@ const welcome = gradient.rainbow(`
 
 const initialPrompt = 'F♭> ';
 const altPrompt = 'F♭| ';
+
+const bindings = [];
 
 let arg = '';
 let buffer = '';
@@ -52,7 +52,7 @@ program
 program.parse(process.argv);
 
 if (typeof program.interactive === 'undefined') {
-  program.interactive = !program.file && arg === '';
+  program.interactive = !program.file && arg === '' && process && process.stdin.isTTY;
 }
 
 if (program.logLevel) {
@@ -86,7 +86,7 @@ function exitOrStartREPL() {
   if (!program.interactive) {
     process.exit();
   } else {
-    startREPL();
+    stackRepl = startREPL();
   }
 }
 
@@ -142,13 +142,13 @@ function startREPL() {
 
   r.context = Object.create(null);
 
-  stackRepl = r;
+  return r;
 }
 
 function newStack() {
   log.level = program.logLevel || 'warn';
 
-  const newParent = createStack('true set-auto-undo', createRootEnv());
+  const newParent = createStack('', createRootEnv());
 
   const rl =
     stackRepl ||
@@ -167,6 +167,7 @@ function newStack() {
   }
 
   const child = newParent.createChild(undefined);
+  child.silent = !program.interactive;
   child.idle.add(() => bar.terminate());
   return child;
 }
@@ -240,49 +241,50 @@ function getKeys() {
   return keys;
 }
 
-let bindings = [];
-
 function addBefore() {
-  bindings.forEach(b => b.detach());
-  bindings = [];
+  while (bindings.length > 0) {
+    b = bindings.pop();
+    b.detach();
+  }
 
-  const level = log.level.toString();
+  let qMax = f.stack.length + f.queue.length;
+  let last = new Date();
 
-  if (level === 'trace') {
-    const printTrace = () => console.log(ffPrettyPrint.formatTrace(f));
-    bindings.push(f.before.add(printTrace));
-    bindings.push(f.beforeEach.add(printTrace));
-    bindings.push(f.idle.add(printTrace));
-  } else if (!nonInteractive || (!f.silent && level === 'warn')) {
-    let qMax = f.stack.length + f.queue.length;
-    let c = 0;
+  switch (log.level.toString()) {
+    case 'trace':
+      bindings.push(f.before.add(trace));
+      bindings.push(f.beforeEach.add(trace));
+      bindings.push(f.idle.add(trace));
+      break;
+    case 'warn': {
+      if (f.silent) return;
+      bindings.push(f.before.add(updateBar));
+      bindings.push(f.beforeEach.add(throttledUpdateBar));
+    }
+  }
 
-    const b = () => {
-      c++;
-      if (c % 1000 === 0) {
-        const q = f.stack.length + f.queue.length;
-        if (q > qMax) {
-          qMax = q;
-        }
+  function trace() {
+    console.log(ffPrettyPrint.formatTrace(f));
+  }
 
-        let lastAction;
+  function throttledUpdateBar() {
+    const q = f.stack.length + f.queue.length;
+    if (q > qMax) qMax = q;
 
-        // todo: fix this, sometimes last action is a symbol
-        try {
-          lastAction = String(f.lastAction);
-        } catch (e) {
-          lastAction = '';
-        }
+    const now = new Date();
+    const delta = now - last;
+    if (delta > 120) { // output frequency in ms
+      updateBar();
+      last = now;
+    }
+  }
 
-        bar.update(f.stack.length / qMax, {
-          stack: f.stack.length,
-          queue: f.queue.length,
-          depth: f.depth,
-          lastAction
-        });
-      }
-    };
-
-    bindings.push(f.before.add(b));
+  function updateBar() {
+    bar.update(f.stack.length / qMax, {
+      stack: f.stack.length,
+      queue: f.queue.length,
+      depth: f.depth,
+      lastAction: ffPrettyPrint.trace(f.currentAction)
+    });
   }
 }

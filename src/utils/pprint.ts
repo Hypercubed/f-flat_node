@@ -110,6 +110,8 @@ export const ffPrettyPrint = {
 
   stringify: stringify.stringify.bind(stringify),
 
+  trace: trace.stringify.bind(trace),
+
   formatTrace(
     { stack, queue, currentAction },
     max = ffPrettyPrint.consoleWidth

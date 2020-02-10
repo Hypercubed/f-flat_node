@@ -217,8 +217,7 @@ test('explicit locals', async () => {
   ).toEqual(`[ 5 7 3 15 ]`);
 });
 
-test.skip('prelude binding', async () => {
-  // TODO
+test('prelude binding', async () => {
   expect(
     await ƒ(`
     x: [ 25 sqrt ] ;
@@ -284,4 +283,84 @@ test('bind', async () => {
     eval
   `)
   ).toEqual(`[ 4 ]`);
+});
+
+test('binding vocab', async () => {
+  expect(
+    await ƒ(`
+    δx: { δy: [ 1 ] } ;
+    δx.δy
+    'δx' defined?
+    'δy' defined?
+  `)
+  ).toEqual(`[ 1 true false ]`);
+
+  expect(
+    await ƒ(`
+    δx: { δy: [ 2 ] } ;
+    [ δx.δy ] bind eval
+    'δx' defined?
+    'δy' defined?
+  `)
+  ).toEqual(`[ 2 true false ]`);
+
+  expect(
+    await ƒ(`
+    δx: { δy: [ 3 ] } ;
+    [ δx.δy ] inline
+    'δx' defined?
+    'δy' defined?
+  `)
+  ).toEqual(`[ [ 3 ] true false ]`);
+
+  expect(
+    await ƒ(`
+    [
+      δy: { δz: [ 5 ] } ;
+      δx: [ δy.δz ] ;
+      export
+    ] fork drop use
+    δx
+    'δx' defined?
+    'δy' defined?
+    'δz' defined?
+  `)
+  ).toEqual(`[ 5 true true false ]`);
+
+  expect(
+    await ƒ(`
+    [
+      δy: [
+        δz: [ 8 ] ;
+        export
+      ] fork drop ;
+      δx: [ δy.δz ] ;
+      export
+    ] fork drop use
+    δx
+    'δx' defined?
+    'δy' defined?
+    'δz' defined?
+  `)
+  ).toEqual(`[ 8 true true false ]`);
+
+  expect(
+    await ƒ(`
+    [
+      [
+        δy: [
+          δz: [ 13 ] ;
+          export
+        ] fork drop ;
+        export
+      ] fork drop use
+      δx: [ δy.δz ] ;
+      export
+    ] fork drop use
+    δx
+    'δx' defined?
+    'δy' defined?
+    'δz' defined?
+  `)
+  ).toEqual(`[ 13 true false false ]`);
 });

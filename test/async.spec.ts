@@ -9,7 +9,7 @@ const good = {
 
 nock('https://api.github.com/')
   .get('/users/Hypercubed/repos/')
-  .reply(200, good);
+  .reply(200, JSON.stringify(good, null, ' '));
 
 test('yield', async () => {
   const yieldAction = new Word('yield');
@@ -119,9 +119,9 @@ test('should work with async/await', async () => {
   expect(await ƒ('100 sleep 10 !')).toEqual(`[ 3628800 ]`);
 });
 
-test('should fetch', async () => {
+test('should read and parse JSON', async () => {
   expect(
-    await ƒ('"https://api.github.com/users/Hypercubed/repos/" fetch-json')
+    await ƒ('"https://api.github.com/users/Hypercubed/repos/" read eval')
   ).toEqual(τ([good]));
 });
 

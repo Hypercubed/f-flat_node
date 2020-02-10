@@ -118,12 +118,6 @@ test('should uncons', async () => {
   expect(await ƒ('(5 4 3) uncons')).toEqual(`[ 5 [ 4 3 ] ]`);
 });
 
-test('should quicksort', async () => {
-  expect(await ƒ('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] quicksort')).toEqual(
-    `[ [ 1 2 2 3 3 4 4 5 6 7 8 9 10 ] ]`
-  );
-});
-
 test('should filter', async () => {
   expect(await ƒ('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] [ even? ] filter')).toEqual(
     `[ [ 10 2 6 4 2 4 8 ] ]`

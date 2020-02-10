@@ -1,9 +1,5 @@
-'math.ff' require
 'shuffle.ff' require
-'strings.ff' require
-'datetime.ff' require
 'testing.ff' require
-'lambdas.ff' require
 
 !!: [ null? ~ ] ;;
 ?@: [ [ dup !! ] dip [ @ ] >> [ drop null ] branch ] ;
@@ -16,7 +12,6 @@ with: [ [ swap [ swap ] ] dip + >> ] ;
 eval2: [ slip eval ] ;
 replicate: [ [ unit ] dip * ] ;
 nth: [ -- @ ] ;
-dupn: [ [ dup ] swap times ] ;
 
 with-system-property: [ 
   over get-system-property
@@ -47,7 +42,6 @@ spawn2: [ [ spawn ] dip spawn ] ;
 spawnsplit: [ spawn2 eval2 ] ;
 
 // fetch
-fetch-json: [ read parse-json ] ;
 site-size: [ read ln ] ;
 site-war: [ dup [ [ site-size ] >> ] map all zip object ] ;
 
@@ -70,25 +64,6 @@ switch: [ [ unstack case ] each ] ;;
 // short circuit logicals
 &&: [ slip when ] ;;
 ||: [ slip [] swap branch ] ;;
-
-quicksort: [
-  dup ln 1 >             // when length > 1
-  [
-    uncons                         // split into first [ ...rest ]
-    over dup                    // shuffle
-    [ [ <= ] >> filter ] >>     // filter values less than or equal to pivot
-    swap [ [ > ] >> filter ] >> // filter values greater than the pivot
-    bi
-    [ quicksort ] bi@           // quicksort each sublist
-    [ swap + ] dip +            // merge results 
-  ] when
-] ;
-
-    [
-      [ 3 2 1 ] quicksort [ 1 2 3 ] assert_equal
-      [ -3 2 1 ] quicksort [ -3 1 2 ] assert_equal
-      [ -3 2 -1 ] quicksort [ -3 -1 2 ] assert_equal
-    ] 'quicksort' test
 
 p-reverse: [
   dup ln

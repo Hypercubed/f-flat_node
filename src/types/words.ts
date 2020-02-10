@@ -63,7 +63,7 @@ export class Word extends Action {
     return x instanceof Word;
   }
 
-  constructor(public value: string, public displayString?: string) {
+  constructor(public value: string /* | symbol */, public displayString?: string) {
     // value s/b PropertyKey?
     super(value, displayString);
   }
@@ -89,7 +89,7 @@ export class Alias extends Action {
     return x instanceof Alias;
   }
 
-  constructor(value: string, displayString?: string) {
+  constructor(value: symbol, displayString?: string) {
     super(value, displayString);
   }
 }

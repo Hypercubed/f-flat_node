@@ -25,13 +25,6 @@ test('should decode double quote', async () => {
   ).toEqual(`[ 'Hello world' ]`);
 });
 
-test('should quickcheck strings', async () => {
-  expect(await ƒ('[rand-string] [ dup 1 * = ] for-all')).toEqual(`[ [ ] ]`);
-  expect(await ƒ('[rand-string] [ [ ln 2 *] [2 * ln ] bi = ] for-all')).toEqual(
-    `[ [ ] ]`
-  );
-});
-
 test('should push strings with nested quotes', async () => {
   expect(await ƒ(`"ab 'de' fg"`)).toEqual(`[ 'ab \\'de\\' fg' ]`);
   expect(await ƒ(`'ab "de" fg'`)).toEqual(`[ 'ab \\"de\\" fg' ]`);
@@ -186,12 +179,6 @@ test('should concat strings using << and >>', async () => {
 test('should left and right shift', async () => {
   expect(await ƒ('"deadbeef" 4 <<')).toEqual(`[ 'beef' ]`);
   expect(await ƒ('"deadbeef" 4 >>')).toEqual(`[ 'dead' ]`);
-});
-
-test('should quicksort strings', async () => {
-  expect(
-    await ƒ('"the quick brown fox jumps over the lazy dog" quicksort')
-  ).toEqual(`[ '        abcdeeefghhijklmnoooopqrrsttuuvwxyz' ]`);
 });
 
 test('string works as a "macro"', async () => {

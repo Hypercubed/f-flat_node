@@ -3,7 +3,7 @@ import is from '@sindresorhus/is';
 import { VocabValue } from './vocabulary-value';
 
 import { Word, Sentence } from './words';
-import { rewrite } from '../utils/rewrite';
+import { rewrite } from '../utils/';
 import { SEP } from '../constants';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -37,7 +37,7 @@ export class Vocabulary {
     return key.split(SEP);
   }
 
-  protected readonly global: { [k in symbol]: VocabValue }; // stores VocabValue by symbol
+  protected readonly global: { [k in symbol]: VocabValue }; // stores VocabValue by symbol, TODO: Use Map?
 
   protected readonly root: ScopeModule;
   protected readonly scope: ScopeModule;
@@ -53,7 +53,7 @@ export class Vocabulary {
 
       const sym = Symbol(TOP);
       this.global[sym] = this.root;
-      this.root[TOP] = sym as any;
+      this.root[TOP] = sym;
     }
     const par = parent?.locals || this.root;
 
@@ -62,25 +62,33 @@ export class Vocabulary {
   }
 
   get(key: string): VocabValue {
-    if (typeof key === 'symbol') {
-      // Symbols are always root level, no paths
-      return this.global[key as any];
-    }
+    const s = this._get(key);
+    return typeof s === 'symbol' ? this.global[s] : s;
+  }
+
+  _get(key: string): symbol {
+    if (typeof key === 'symbol') return key;
 
     if ([TOP].includes(key)) {
-      throw new Error(`Invalid key: ${key}`);
+      throw new Error(`Invalid key: ${key}`); // make FFlatError
     }
 
-    return Vocabulary.makePath(key).reduce((curr, key) => {
-      if (!curr) {
+    const path = Vocabulary.makePath(key);
+    let scope = this.locals;
+    let value = undefined;
+
+    while (scope && path.length > 0) {
+      const k = path.shift();
+      value = scope ? scope[k] : undefined;
+      if (typeof value === 'symbol') {
+        scope = this.global[value];
+      }
+      if (typeof value === 'undefined') {
         return;
       }
-      let value = curr[key];
-      if (typeof value === 'symbol') {
-        return this.global[value];
-      }
-      return value;
-    }, this.locals);
+    }
+
+    return value;
   }
 
   set(_key: string, value: VocabValue): void {
@@ -121,13 +129,13 @@ export class Vocabulary {
   }
 
   /**
-   * Recursivly converts actions with string keys to actions with symbols
+   * Recursively converts actions with string keys to actions with symbols
    */
   bind(action: Word | Sentence | Array<any> | Object): any {
     if (action instanceof Word) {
-      if (typeof action.value === 'string') {
-        const sym = this.locals[action.value];
-        if (sym) return new Word(sym as any, action.value);
+      if (typeof action.value === 'string' && !action.value.startsWith(LOCAL)) { // TODO: should only be key
+        const sym = this._get(action.value);
+        if (typeof sym === 'symbol') return new Word(sym as any, action.value); // TODO: alias?
       }
       return action;
     }
@@ -180,7 +188,7 @@ export class Vocabulary {
     Object.keys(dict).forEach(key => {
       const value = dict[key];
       if (typeof value !== 'symbol') {
-        throw new Error(`Invalid vocabulary`);
+        throw new Error(`Invalid vocabulary`); // make FFlatError
       }
       this.scope[key] = value;
     });

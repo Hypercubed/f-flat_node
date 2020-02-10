@@ -122,7 +122,6 @@ const p = blessed.textbox({
 screen.key(['escape', 'q', 'C-c'], () => process.exit(0));
 
 const f = newStack();
-f.silent = true;
 
 const history = [];
 let historyIndex = 0;

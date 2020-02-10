@@ -81,9 +81,6 @@ export const dict = {
    * ```
    */
   def(this: StackEnv, lhs: string, rhs: StackValue) {
-    if (['true', 'false', 'null', 'nan'].includes(lhs)) {
-      throw new FFlatError('Cannot overwrite reserved words', this);
-    }
     try {
       this.dict.set(lhs, createAction(rhs));
     } catch (e) {
@@ -105,7 +102,11 @@ export const dict = {
    * ```
    */
   use(this: StackEnv, dict: { [key: string]: StackValue }) {
-    this.dict.useVocab(createAction(dict));
+    try {
+      this.dict.useVocab(createAction(dict));
+    } catch (e) {
+      throw new FFlatError(e.message, this);
+    }
   },
 
   /**
@@ -169,8 +170,12 @@ export const dict = {
    * ```
    */
   'defined?'(this: StackEnv, a: string) {
-    const r = this.dict.get(a);
-    return typeof r !== 'undefined';
+    try {
+      const r = this.dict.get(a);
+      return typeof r !== 'undefined';
+    } catch (e) {
+      throw new FFlatError(e.message, this);
+    }
   },
 
   /**
@@ -186,11 +191,15 @@ export const dict = {
    * ```
    */
   see(this: StackEnv, a: string) {
-    const r = this.dict.get(a);
-    if (typeof r === 'undefined') {
-      return null;
+    try {
+      const r = this.dict.get(a);
+      if (typeof r === 'undefined') {
+        return null;
+      }
+      return ffPrettyPrint.stringify(r);
+    } catch (e) {
+      throw new FFlatError(e.message, this);
     }
-    return ffPrettyPrint.stringify(r);
   },
 
   /**
@@ -206,8 +215,12 @@ export const dict = {
    * ```
    */
   show(this: StackEnv, a: string) {
-    const r = this.dict.get(a);
-    return console.log(ffPrettyPrint.color(r));
+    try {
+      const r = this.dict.get(a);
+      return console.log(ffPrettyPrint.color(r));
+    } catch (e) {
+      throw new FFlatError(e.message, this);
+    }
   },
 
   /**
