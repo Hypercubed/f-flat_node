@@ -7,15 +7,15 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] pprint `Infinity`, `ComplexInfinity`, `NaN` etc.
 - [ ] Parse bug `"abc":123`
 - [ ] blessed gui broken
+- [ ] defining unquote values `x: 123 ;`?
 
 # Testing
 - [ ] `base` (`Deciaml.toBinary`) precision.
-- [ ] more tests for `bind` and `defer`
+- [?] more tests for `bind` and `defer`
 - [ ] Test unbound defs (macro-like expansion)
-- [ ] test for invalid word defintions
+- [?] test for invalid word definitions
 - [ ] Test for `%top`
-- [ ] Tests for `vocab`, `use`, etc.
-- [ ] More tests for stack object immutablity
+- [?] Tests for `vocab`, `use`, etc.
 - [ ] Test all internal words
   - [ ] Basis
   - [ ] Core
@@ -26,7 +26,12 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] More errors
 
 # TODOs
-- [ ] all pprint values shoudl be copy-pasteable?
+- [ ] ensure defining a module (`x: 'xx.ff' import ;`) doesn't created extra globals
+- [ ] Standardize error messages
+- [ ] all pprint values should be copy-pasteable?
+  - [ ] regex
+  - [ ] dates
+  - [ ] special numers (`complexinfinity`, etc)
 - [ ] More stats on trace (max stack size, max queue size, time, etc)
 - [?] Decimal shift/unshift
 - [ ] More complexInfinity/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
@@ -37,8 +42,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] pick for module? `math [ '!' ] pick use`?
 - [ ] Store using symbols as keys `#aword [ dup 123 ] ;`? always global and collision free?
 - [ ] `@`should always return a value or null (remove `?@`)
-- [ ] `__sys_path__` to flags? `sys_paths`?
+- [ ] `__sys_path__` to system property? `sys_paths`?
 - [ ] os/platform specific bootloading?
+- [ ] different pprint for bound words?
 
 # Parser
 - [ ] Regex literal
@@ -46,8 +52,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] complex, `i`
 - [ ] `+/-infinity`
 - [ ] Symbols `(`, `_`
-    - [ ] Use `#:` as symbol prefix?  Symbols with whitespace (`#:'foo'`)?
-    - [ ] well known symbols?
+  - [ ] Use `#:` as symbol prefix?  Symbols with whitespace (`#:'foo'`)?
+  - [ ] well known symbols?
 
 # Testing words
 - [ ] `try` `[ T ] [ C ] [ F ]`
@@ -63,8 +69,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] redefine action `:` ( string -> Key )?
 - [?] more restrictions types on stack, queue and dictionary
 - [ ] Safer module loading (module class?)
+- [ ] defining objects? `z: { x: [ y ] } ;`?
 
-# Type cleaning
+# Internal Type cleaning
 - [ ] `:xyz` -> `ImmediateWord`?
 - [ ] `Action` vs `Word`?
 - [ ] `Alias` type?
@@ -79,8 +86,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Ranges?  Infinite ranges? generators?
 - [ ] map over strings should return strings?
 
-# Todo:
-
+# Older Todos:
 - [ ] Finish JSON output
 - [ ] Serialize to `.ff` file?
 - [ ] Tagged templates `fn'${A}-${B}'` -> `${A fn}-${B fn}`?
@@ -105,7 +111,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] `q> q< ` -> ``
 - [ ] Ensure predictable cmp with `null` and `nan`
 
-# New Words
+# Words?
 - [ ] `alias` `x: y: alias`
 - [ ] `bit-set`, `bit-flip`, `bit-clr`, `bit-get`
 - [ ] `cld`: (Smallest integer larger than or equal to x/y)

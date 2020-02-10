@@ -76,28 +76,46 @@ describe('inline', () => {
   });
 });
 
-test('defer', async () => {
-  expect(
-    await ƒ(`
-    c: defer
+describe('defer', () => {
+  test('can defer, but not use', async () => {
+    expect(ƒ('x: defer x')).rejects.toThrow('x is not defined');
+  });
 
-    e: [ dup 2 / c ] ;
-    o: [ dup 3 * 1 + c ] ;
+  test('can defer, then define and use', async () => {
+    expect(await ƒ('x: defer x: [ 1 ] def x')).toEqual(`[ 1 ]`);
+  });
 
-    c: [
-      dup 1 =
-      [
-        dup even?
-          [ e ]
-          [ o ]
-          branch
-      ]
-      unless
-    ] ;
+  test('can defer multiple times before defining', async () => {
+    expect(await ƒ('x: defer x: defer x: [ 1 ] def x')).toEqual(`[ 1 ]`);
+  });
 
-    12 c
-  `)
-  ).toEqual(`[ 12 6 3 10 5 16 8 4 2 1 ]`);
+  test(`can't defer after defining`, async () => {
+    expect(ƒ('x: [ 1 ] def x: defer')).rejects.toThrow('Cannot overwrite definition: x');
+  });
+
+  test('mutually recursive', async () => {
+    expect(
+      await ƒ(`
+      c: defer
+
+      e: [ dup 2 / c ] ;
+      o: [ dup 3 * 1 + c ] ;
+
+      c: [
+        dup 1 =
+        [
+          dup even?
+            [ e ]
+            [ o ]
+            branch
+        ]
+        unless
+      ] ;
+
+      12 c
+    `)
+    ).toEqual(`[ 12 6 3 10 5 16 8 4 2 1 ]`);
+  });
 });
 
 describe('rewrite', () => {

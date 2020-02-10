@@ -1,50 +1,54 @@
 import { ƒ } from './helpers/setup';
 
 test('in/fork', async () => {
-  expect(await ƒ('a: ["before"] def [ a ] in')).toEqual(`[ [ 'before' ] ]`);
-  expect(await ƒ('a: ["outer"] def [ a: ["inner"] def a ] fork a')).toEqual(
+  expect(await ƒ(`a: [ 'before' ] def [ a ] in`)).toEqual(`[ [ 'before' ] ]`);
+  expect(await ƒ(`a: [ "outer" ] def [ a: [ "inner" ] def a ] fork a`)).toEqual(
     `[ [ 'inner' ] 'outer' ]`
   );
-  expect(await ƒ('a: ["outer"] def [ b: ["inner"] def a ] in b')).toEqual(
+  expect(await ƒ(`a: [ 'outer' ] def [ b: [ 'inner' ] def a ] in b`)).toEqual(
     `[ [ 'outer' ] 'inner' ]`
   );
 });
 
-test('module `use` scoping', async () => {
-  expect(
-    await ƒ(`
-    [
-      x: [ 1 2 + ] ;
-      y: [ x 2 * ] ;
-      export
-    ] fork drop use
-    x: [ 8 ] ;
-    x y
-  `)
-  ).toEqual(`[ 8 6 ]`);
+describe('module `use` scoping', () => {
+  test('scoped words', async () => {
+    expect(
+      await ƒ(`
+      [
+        δx: [ 1 2 + ] ;
+        δy: [ δx 2 * ] ;
+        export
+      ] fork drop use
+      δx δy
+    `)
+    ).toEqual(`[ 3 6 ]`);
+  });
 
-  expect(
-    await ƒ(`
-    x: [ 8 ] ;
-    [
-      x: [ 1 2 + ] ;
-      y: [ x 2 * ] ;
-      export
-    ] fork drop use
-    x y
-  `)
-  ).toEqual(`[ 8 6 ]`);
+  test('local words over scoped words', async () => {
+    expect(
+      await ƒ(`
+      [
+        δx: [ 1 2 + ] ;
+        δy: [ δx 2 * ] ;
+        export
+      ] fork drop use
+      δx: [ 8 ] ;
+      δx δy
+    `)
+    ).toEqual(`[ 8 6 ]`);
 
-  expect(
-    await ƒ(`
-    [
-      x: [ 1 2 + ] ;
-      y: [ x 2 * ] ;
-      export
-    ] fork drop use
-    x y
-  `)
-  ).toEqual(`[ 3 6 ]`);
+    expect(
+      await ƒ(`
+      δx: [ 8 ] ;
+      [
+        δx: [ 1 2 + ] ;
+        δy: [ δx 2 * ] ;
+        export
+      ] fork drop use
+      δx δy
+    `)
+    ).toEqual(`[ 8 6 ]`);
+  });
 });
 
 test('module def scoping', async () => {
@@ -127,10 +131,10 @@ test('deep calling within child', async () => {
 test(`locals don't collide with scoped definitions`, async () => {
   expect(
     await ƒ(`
-    x: 128 ;
+    x: [ 128 ] ;
     y: [ x x + ] ;
     [
-      x: 256 ;
+      x: [ 256 ] ;
       y
     ] fork
   `)
@@ -145,7 +149,8 @@ test('hides private', async () => {
       y: [ _x 3 * ] ;
       export
     ] fork drop use
-    y 'x' defined?
+    y
+    '_x' defined?
   `)
   ).toEqual(`[ 9 false ]`);
 
@@ -156,7 +161,8 @@ test('hides private', async () => {
       y: [ _x 3 * ] ;
       export
     ] fork drop ;
-    s.y 's._x' defined?
+    s.y
+    's._x' defined?
   `)
   ).toEqual(`[ 9 false ]`);
 });
@@ -164,6 +170,7 @@ test('hides private', async () => {
 test('module `include` scoping', async () => {
   expect(
     await ƒ(`
+    drop2: [ dup ] ;
     [
       'shuffle.ff' include
       x: [ 1 2 3 drop2 ] ;
@@ -177,6 +184,7 @@ test('module `include` scoping', async () => {
 test('module `use` scoping', async () => {
   expect(
     await ƒ(`
+    drop2: [ dup ] ;
     [
       'shuffle.ff' import use
       x: [ 1 2 3 drop2 ] ;
@@ -202,7 +210,7 @@ test('def does not bind', async () => {
   ).toEqual(`[ 5 7 3 15 ]`);
 });
 
-test('explicit locals', async () => {
+test('explicit locals are not bound', async () => {
   expect(
     await ƒ(`
     s: [
@@ -217,7 +225,7 @@ test('explicit locals', async () => {
   ).toEqual(`[ 5 7 3 15 ]`);
 });
 
-test('prelude binding', async () => {
+test('core words are bound', async () => {
   expect(
     await ƒ(`
     x: [ 25 sqrt ] ;
@@ -227,62 +235,79 @@ test('prelude binding', async () => {
   ).toEqual(`[ 5 ]`);
 });
 
-test('bind at defintion', async () => {
+describe('bind at defintion', () => {
   // Def does not bind
-  expect(
-    await ƒ(`
-    x: [ 5 ! ] def
-    !: [ drop 4 ] ;
-    x
-  `)
-  ).toEqual(`[ 4 ]`);
+  test('def does not bind', async () => {
+    expect(
+      await ƒ(`
+      x: [ 5 ! ] def
+      !: [ drop 4 ] ;
+      x
+    `)
+    ).toEqual(`[ 4 ]`);
+  });
 
-  // ; does
-  expect(
-    await ƒ(`
-    x: [ 5 ! ] ;
-    !: [ drop 4 ] ;
-    x
-  `)
-  ).toEqual(`[ 120 ]`);
+  test(`explicit bind`, async () => {
+    expect(
+      await ƒ(`
+      x: [ 5 ! ] bind def
+      !: [ drop 4 ] ;
+      x
+    `)
+    ).toEqual(`[ 120 ]`);
+  });
 
-  // with explicit non-bind
-  expect(
-    await ƒ(`
-    x: [ 5 .! ] ;
-    !: [ drop 4 ] ;
-    x
-  `)
-  ).toEqual(`[ 4 ]`);
+  test(`; does bind`, async () => {
+    expect(
+      await ƒ(`
+      x: [ 5 ! ] ;
+      !: [ drop 4 ] ;
+      x
+    `)
+    ).toEqual(`[ 120 ]`);
+  });
+
+  test(`explicit non-bind`, async () => {
+    expect(
+      await ƒ(`
+      x: [ 5 .! ] bind def
+      !: [ drop 4 ] ;
+      x
+    `)
+    ).toEqual(`[ 4 ]`);
+  });
 });
 
-test('bind', async () => {
-  // without bind, uses local scope
-  expect(
-    await ƒ(`
-    [ 5 ! ]
-    !: [ drop 4 ] ;
-    eval
-  `)
-  ).toEqual(`[ 4 ]`);
+describe('bind', () => {
+  test('without bind, uses local scope', async () => {
+    expect(
+      await ƒ(`
+      [ 5 ! ]
+      !: [ drop 4 ] ;
+      eval
+    `)
+    ).toEqual(`[ 4 ]`);
+  });
 
-  // with bind, binds to defintion at bind time
-  expect(
-    await ƒ(`
-    [ 5 ! ] bind
-    !: [ drop 4 ] ;
-    eval
-  `)
-  ).toEqual(`[ 120 ]`);
+  test('with bind, binds to defintion at bind time', async () => {
+    expect(
+      await ƒ(`
+      [ 5 ! ] bind
+      !: [ drop 4 ] ;
+      eval
+    `)
+    ).toEqual(`[ 120 ]`);
+  });
 
-  // with explicit non-bind at bind time
-  expect(
-    await ƒ(`
-    [ 5 .! ] bind
-    !: [ drop 4 ] ;
-    eval
-  `)
-  ).toEqual(`[ 4 ]`);
+  test('with explicit non-bind at bind time', async () => {
+    expect(
+      await ƒ(`
+      [ 5 .! ] bind
+      !: [ drop 4 ] ;
+      eval
+    `)
+    ).toEqual(`[ 4 ]`);
+  });
 });
 
 test('binding vocab', async () => {
