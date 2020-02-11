@@ -8,6 +8,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Parse bug `"abc":123`
 - [ ] blessed gui broken
 - [ ] defining unquote values `x: 123 ;`?
+- [ ] `println` interupts bar
+- [ ] pprint first level indets with 4 spaces
+- [ ] use console width for breakLength
 
 # Testing
 - [ ] `base` (`Deciaml.toBinary`) precision.

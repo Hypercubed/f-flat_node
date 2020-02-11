@@ -250,7 +250,7 @@ describe('bind at defintion', () => {
   test(`explicit bind`, async () => {
     expect(
       await ƒ(`
-      x: [ 5 ! ] bind def
+      x: [ 5 ! ] inline def
       !: [ drop 4 ] ;
       x
     `)
@@ -270,7 +270,7 @@ describe('bind at defintion', () => {
   test(`explicit non-bind`, async () => {
     expect(
       await ƒ(`
-      x: [ 5 .! ] bind def
+      x: [ 5 .! ] inline def
       !: [ drop 4 ] ;
       x
     `)
@@ -292,7 +292,7 @@ describe('bind', () => {
   test('with bind, binds to defintion at bind time', async () => {
     expect(
       await ƒ(`
-      [ 5 ! ] bind
+      [ 5 ! ] inline
       !: [ drop 4 ] ;
       eval
     `)
@@ -302,7 +302,7 @@ describe('bind', () => {
   test('with explicit non-bind at bind time', async () => {
     expect(
       await ƒ(`
-      [ 5 .! ] bind
+      [ 5 .! ] inline
       !: [ drop 4 ] ;
       eval
     `)
@@ -323,20 +323,20 @@ test('binding vocab', async () => {
   expect(
     await ƒ(`
     δx: { δy: [ 2 ] } ;
-    [ δx.δy ] bind eval
+    [ δx.δy ] inline eval
     'δx' defined?
     'δy' defined?
   `)
   ).toEqual(`[ 2 true false ]`);
 
-  expect(
-    await ƒ(`
-    δx: { δy: [ 3 ] } ;
-    [ δx.δy ] inline
-    'δx' defined?
-    'δy' defined?
-  `)
-  ).toEqual(`[ [ 3 ] true false ]`);
+  // expect(
+  //   await ƒ(`
+  //   δx: { δy: [ 3 ]  } ;  // δy is not an action!
+  //   [ δx.δy ] inline
+  //   'δx' defined?
+  //   'δy' defined?
+  // `)
+  // ).toEqual(`[ [ 3 ] true false ]`);
 
   expect(
     await ƒ(`

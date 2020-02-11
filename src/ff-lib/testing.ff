@@ -1,9 +1,9 @@
 
 dup2: [ q< dup q> swap q< dup q> swap ] ;
 slip: [ q< eval q> ] ;
-dip: [ swap slip ] ;;
+dip: [ swap slip ] ;
 unless: [ q< boolean q> [ ] swap choose eval ] ;
-<=: [ > ~ ] ;;
+<=: [ > ~ ] ;
 
 assert: [
   dup boolean
@@ -13,7 +13,7 @@ assert: [
     throw
   ]
   choose eval
-] ;;
+] ;
 
 assert_false: [
   dup false =
@@ -23,7 +23,7 @@ assert_false: [
     throw
   ]
   choose eval
-] ;;
+] ;
 
 assert_equal: [
   dup2 =
@@ -33,7 +33,7 @@ assert_equal: [
     throw
   ]
   choose eval
-] ;;
+] ;
 
 assert_zero: [
   dup 5e-20 <=
@@ -43,7 +43,7 @@ assert_zero: [
     throw
   ]
   choose eval
-] ;;
+] ;
 
 assert_length: [
   dup2 [ ln ] dip =
@@ -54,7 +54,7 @@ assert_length: [
     throw
   ]
   choose eval
-] ;;
+] ;
 
 red: [
   "\u001b[31m"
@@ -68,7 +68,7 @@ test: [
   [ throws? ] dip
   [ ]
   choose eval
-] ;;
+] ;
 
 // [ false assert ] 'testing assert' test
 // [ 1 2 assert_equal ] 'assert_equal' test

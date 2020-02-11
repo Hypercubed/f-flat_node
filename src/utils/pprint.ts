@@ -86,14 +86,14 @@ pretty.use(base);
 pretty.add(trimStrings);
 pretty.add(maxDepth, { max: 5 });
 pretty.add(indent);
-pretty.add(breakLength, { compact: false, breakLength: 40 });
+pretty.add(breakLength, { compact: false, breakLength: 60 });
 
 const color = new Milton();
 color.use(base);
 color.add(trimStrings);
 color.add(maxDepth, { max: 5 });
 color.add(indent);
-color.add(breakLength, { compact: false, breakLength: 40 });
+color.add(breakLength, { compact: false, breakLength: 60 });
 color.add(ansiColors, COLORS);
 
 const trace = new Milton();

@@ -7,7 +7,6 @@ import {
   StackValue,
   Sentence,
   Word,
-  Key,
   ReturnValues,
   Vocabulary
 } from '../types';

@@ -12,7 +12,7 @@ lcase: [ [ lcase-char ] char-map ] ;
 
 // rot12
 _rot13-char*: [ [ atoi ] dip [ - 13 + 26 % ] [ + ] bi itoa ] ;
-rot13-char: [ dup ucase-char? 64 97 choose _rot13-char* ] ;;
+rot13-char: [ dup ucase-char? 64 97 choose _rot13-char* ] ;
 rot13: [ [ rot13-char ] char-map ] ;
 
 // inquisitive
@@ -28,4 +28,4 @@ palindrome?: [ [ alphanumeric? ] filter lcase dup reverse = ] ;
   *
   * {string}, {regexp | string}, {string} -> {string}
   */
-replace: [ [ / ] dip * ] ;;
+replace: [ [ / ] dip * ] ;

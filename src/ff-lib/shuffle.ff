@@ -24,9 +24,9 @@ rot: [ bury swap ] ;          // C B A -> A B C
 
 dip2: [ swap dipd ] ;            // [c] [b] [a] -> a [c] [b]
 
-bi2: [ q< keep2 q> eval ] ;;     // D C [b] [a] -> D C b D C a
-bi*: [ dipd eval ] ;;            // D C [b] [a] -> D b C a
-bi@: [ dup bi* ] ;;              // C B [a] -> C a B a
-tri: [ q< sipd sip q> eval ] ;;  // D [c] [b] [a] -> D c D b D a
+bi2: [ q< keep2 q> eval ] ;     // D C [b] [a] -> D C b D C a
+bi*: [ dipd eval ] ;            // D C [b] [a] -> D b C a
+bi@: [ dup bi* ] ;              // C B [a] -> C a B a
+tri: [ q< sipd sip q> eval ] ;  // D [c] [b] [a] -> D c D b D a
 
 

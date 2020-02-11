@@ -2,13 +2,15 @@
  * # Core defined words
  */
 
+/**
+ * `;` - define function
+ *
+ */
 ';' [ 
-  [ dup defer ] swap q< eval q>  // forward definition to support recursive defintions
-  bind                         // bind to scope
-  def                          // define
+  [ dup defer ] swap q< eval q>  // forward definition to support recursive words
+  inline                         // inline and bind to scope
+  def                            // define
 ] def
-
-';;' [ inline def ] ;
 
 'types.ff' require
 'testing.ff' require
@@ -16,9 +18,8 @@
 
 // core shuffle words
 slip: [ q< eval q> ] ;      // [b] A -> b A
-run: [ dup slip ] ;;        // [a] -> a [a]
-dip: [ swap slip ] ;;       // B [a] -> a B
-tuck: [ swap over ] ;         // B A -> A B A
+run: [ dup slip ] ;        // [a] -> a [a]
+dip: [ swap slip ] ;       // B [a] -> a B
 
     [ [ 'b' ] 'A' slip stack [ 'b' 'A' ] assert_equal ] 'slip' test
     [ ['a'] run stack [ 'a' ['a'] ] assert_equal ] 'run' test
@@ -27,35 +28,36 @@ tuck: [ swap over ] ;         // B A -> A B A
 // diped
 dupd: [ q< dup q> ] ;       // B A -> B B A
 over: [ dupd swap ] ;      // B A -> B A B  (aka peek)
-sip: [ over slip ] ;;       // B [a] -> B a B    (aka keep)
-dipd: [ q< dip q> ] ;;      // D C [b] A -> D b C A
-sipd: [ q< sip q> ] ;;      // C B [a] -> C a C B
-slipd: [ q< slip q> ] ;;    // [c] B A -> c B A
-swapd: [ q< swap q> ] ;;     // C B A -> B C A
-dive: [ swap dipd ] ;;       // [c] [b] [a] -> a [c] [b]   (aka dip2)
-dup2: [ over over ] ;;       // B A -> B A B A
-sap: [ dip eval ] ;;    // [B] [A] -> A B
+sip: [ over slip ] ;       // B [a] -> B a B    (aka keep)
+dipd: [ q< dip q> ] ;      // D C [b] A -> D b C A
+sipd: [ q< sip q> ] ;      // C B [a] -> C a C B
+slipd: [ q< slip q> ] ;    // [c] B A -> c B A
+swapd: [ q< swap q> ] ;     // C B A -> B C A
+dive: [ swap dipd ] ;       // [c] [b] [a] -> a [c] [b]   (aka dip2)
+dup2: [ over over ] ;       // B A -> B A B A
+sap: [ dip eval ] ;    // [B] [A] -> A B
+tuck: [ swap over ] ;         // B A -> A B A
 
   [ [ 'b' ] [ 'a' ] sap stack [ 'a' 'b' ] assert_equal ] 'sap' test
   [ [ dup 1 - ] (5) sap stack [ 5 4 ] assert_equal ] 'sap' test
   [ +:(4, 5) sap 9 assert_equal ] 'sap' test
   [ +:(*:(5,6) sap *:(5,2) sap) sap 40 assert_equal ] 'sap' test
 
-bi: [ sipd eval ] ;;        // C [b] [a] -> C b C a
+bi: [ sipd eval ] ;        // C [b] [a] -> C b C a
 
     [ 5 [ 2 * ] [ 2 + ] bi stack [ 10 7 ] assert_equal ] 'bi' test
 
 // swap apply `[ B ] [ A ] -> A B` (aka sap)
-'|>' [ sap ] ;;
+'|>' [ sap ] ;
 
 // keep/check
-keep: [ sip ] ;;      // B [a] -> B a B    (aka sip)
-check: [ dupd eval ] ;;     // B [a] -> B B a    (aka w)
+keep: [ sip ] ;      // B [a] -> B a B    (aka sip)
+check: [ dupd eval ] ;     // B [a] -> B B a    (aka w)
 dupn: [ [ dup ] swap times ] ;
 
 // truthy/falsy
 truthy?: [ boolean ] ;
-falsy?: [ truthy? ~ ] ;;
+falsy?: [ truthy? ~ ] ;
 
 // incrementors
 --: [ 1 - ] ;
@@ -66,8 +68,8 @@ succ: [ dup ++ ] ;
 // Comparisons
 >: [ <=> 1 = ] ;
 <: [ <=> -1 = ] ;
->=: [ < ~ ] ;;
-<=: [ > ~ ] ;;
+>=: [ < ~ ] ;
+<=: [ > ~ ] ;
 !=: [ = ~ ] ;
 
 // 
@@ -79,12 +81,12 @@ yield: [ return suspend ] ;
 delay: [ [ sleep ] >> slip eval ] ;
 
 // control
-_do: [ dup dipd ] ;;
+_do: [ dup dipd ] ;
 _check: [ q< q< boolean q> q> ] ;
-branch: [ _check choose eval ] ;;
+branch: [ _check choose eval ] ;
 when: [ [ ] branch ] ;
 unless: [ [ ] swap branch ] ;
-ifte: [ slipd branch ] ;;
+ifte: [ slipd branch ] ;
 if: [ slip when ] ;
 loop: [ [ eval ] keep [ loop ] >> when ] ;
 while: [ swap _do + [ loop ] >> when ] ;
@@ -100,8 +102,8 @@ last: [ -1 @ ] ;
 rest: [ 1 % ] ;
 head: [ \ ] ;
 tail: [ % ] ;
-startswith: [ dup ln [ head ] >> dip = ] ;;
-endswith: [ dup ln [ tail ] >> dip = ] ;;
+startswith: [ dup ln [ head ] >> dip = ] ;
+endswith: [ dup ln [ tail ] >> dip = ] ;
 contains: [ indexof 1 > ] ;
 
 // lists
@@ -109,16 +111,16 @@ empty?: [ ln 0 = ] ;
 unit: [ [ ] >> ] ;
 cons: [ >> ] ;
 pair: [ unit >> ] ;
-uncons: [ [ first ] [ rest ] bi ] ;;
+uncons: [ [ first ] [ rest ] bi ] ;
 
 // folds
 each: [ * eval ] ;
 reverse-each: [ / eval ] ;
-foldl: [ swapd each ] ;;
-foldr: [ [ swap ] swap + swapd reverse-each ] ;;
-foldl1: [ [ uncons ] dip each ] ;;
-foldr1: [ [ uncons ] dip reverse-each ] ;;
-fold: [ foldl1 ] ;;
+foldl: [ swapd each ] ;
+foldr: [ [ swap ] swap + swapd reverse-each ] ;
+foldl1: [ [ uncons ] dip each ] ;
+foldr1: [ [ uncons ] dip reverse-each ] ;
+fold: [ foldl1 ] ;
 runn: [ [ -- dup -1 > ] [ [ run ] dip ] while drop ] ;
 times: [ runn drop ] ;
 guard: [ [ keep ] >> dip branch ] ;
@@ -132,7 +134,7 @@ appl: [ >> in ] ;
 y: [ [ dup >> ] swap + dup >> ] ;
 
 // functional
-map: [ * in ] ;;
+map: [ * in ] ;
 
     [ [ 1 2 3 ] [ 2 * ] map [ 2 4 6 ] assert_equal ] 'map' test
     [ [ 1 2 3 4 ] [ 2 % 0 = ] map [ false true false true ] assert_equal ] 'map' test
@@ -140,7 +142,7 @@ map: [ * in ] ;;
 chain: [ over nothing? ~ swap when ] ;
 fmap: [ eval ] ;
 map-reduce: [ [ map ] dip fold ] ;
-reduce: [ foldl ] ;;
+reduce: [ foldl ] ;
 filter: [ [ dup empty swap ] dip [ keepif ] >> map swap * ] ;
 
     [ [ 1 2 3 4 ] [ 2 % 0 = ] filter [ 2 4 ] assert_equal ] 'filter' test

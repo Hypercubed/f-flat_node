@@ -7,7 +7,7 @@
 // timing
 time: [ clock swap 100 times drop clock swap - 100 / ] ;
 _timefn: [ clock swap [ dup in drop ] 1000 times drop clock - ] ;
-timefn: [ _timefn () _timefn - -1000000 / inv ' ops/sec' +  ] ;;
+timefn: [ _timefn () _timefn - -1000000 / inv ' ops/sec' +  ] ;
 
 // dates
 zeller-congruence: [

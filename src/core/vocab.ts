@@ -129,7 +129,7 @@ export const dict = {
   /**
    * ## `inline`
    *
-   * inline a quote, recursively expands defined words to core words
+   * inline a quote, recursively expands defined words to global symbols
    *
    * ( [A B C] -> [a b c])
    *
@@ -138,7 +138,7 @@ export const dict = {
    * [ [ 2 dup * ] ]
    * ```
    */
-  inline(this: StackEnv, x: Word | Sentence | Key) {
+  inline(this: StackEnv, x: Array<any>) {
     return this.dict.inline(x);
   },
 
@@ -154,9 +154,9 @@ export const dict = {
    * [ [ 2 sqr ] ]
    * ```
    */
-  bind(this: StackEnv, x: Word | Sentence | Key) {
-    return this.dict.bind(x);
-  },
+  // bind(this: StackEnv, x: Word | Sentence | Key) {
+  //   return this.dict.bind(x);
+  // },
 
   /**
    * ## `defined?`

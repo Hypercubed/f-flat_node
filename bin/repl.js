@@ -258,8 +258,9 @@ function addBefore() {
       break;
     case 'warn': {
       if (f.silent) return;
-      bindings.push(f.before.add(updateBar));
-      bindings.push(f.beforeEach.add(throttledUpdateBar));
+      // bindings.push(f.before.add(updateBar));
+      // bindings.push(f.beforeEach.add(throttledUpdateBar));
+      // bindings.push(f.idle.add(() => bar.terminate()));
     }
   }
 

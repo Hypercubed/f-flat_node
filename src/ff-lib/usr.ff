@@ -1,7 +1,7 @@
 'shuffle.ff' require
 'testing.ff' require
 
-!!: [ null? ~ ] ;;
+!!: [ null? ~ ] ;
 ?@: [ [ dup !! ] dip [ @ ] >> [ drop null ] branch ] ;
 
 // Misc
@@ -57,13 +57,13 @@ cls: [ "\u001B[2J\u001B[0;0f" println ] ;
 
 // switch
 stack-copy: [ stack run ] ;
-stack-check: [ q< stack-copy q> =~ ] ;;
-case: [ [ stack-check ] dip when ] ;;
-switch: [ [ unstack case ] each ] ;;
+stack-check: [ q< stack-copy q> =~ ] ;
+case: [ [ stack-check ] dip when ] ;
+switch: [ [ unstack case ] each ] ;
 
 // short circuit logicals
-&&: [ slip when ] ;;
-||: [ slip [] swap branch ] ;;
+&&: [ slip when ] ;
+||: [ slip [] swap branch ] ;
 
 p-reverse: [
   dup ln

@@ -3,7 +3,8 @@ import is from '@sindresorhus/is';
 import { VocabValue } from './vocabulary-value';
 
 import { Word, Sentence } from './words';
-import { rewrite } from '../utils/';
+import { ReturnValues } from './return-values';
+// import { rewrite } from '../utils/';
 import { SEP } from '../constants';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -209,16 +210,48 @@ export class Vocabulary {
   /**
    * Inlines local and scoped defintions
    */
-  inline(x: Word | Sentence | Array<any>) {
-    const locals = {};
-    for (const key in this.locals) {
-      // eslint-disable-line guard-for-in
-      let value = this.locals[key];
-      if (typeof value === 'symbol') {
-        value = this.global[value];
+  inline(_action: Array<any>) {
+    const symbolStack = [];
+
+    const _bind = (v: any) => {
+      if (v instanceof Word) {
+        if ((typeof v.value === 'string' && !v.value.startsWith(LOCAL)) || typeof v.value === 'symbol') {
+          const s = this._get(v.value);
+          if (typeof s !== 'symbol') return v;
+          if (symbolStack.includes(s)) return new Word(s as any, v.toString());
+          const value = this.global[s];
+          if (typeof value === 'undefined' || typeof value === 'function') return new Word(s as any, v.toString());
+          symbolStack.push(s);
+          const r = _bind(value);
+          symbolStack.pop();
+          return r;
+        }
+        return v;
       }
-      locals[key] = value;
-    }
-    return rewrite(locals, x); // TODO: optomize this, pass this.global
+
+      if (v instanceof Sentence) {
+        const value = _bind(v.value);
+        return new ReturnValues(value);
+      }
+
+      if (Array.isArray(v)) {
+        return v.reduce((p, i) => {
+          const n = _bind(i);
+          n instanceof ReturnValues ? p.push(...n.value) : p.push(n);
+          return p;
+        }, []);
+      }
+
+      if (is.plainObject(v)) {
+        return Object.keys(v).reduce((p, key) => {
+          const n = _bind(v[key]);
+          p[key] = n instanceof ReturnValues ? n.value : n;
+          return p;
+        }, {});
+      }
+
+      return v;
+    };
+    return _bind(_action);
   }
 }

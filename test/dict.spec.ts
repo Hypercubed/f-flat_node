@@ -60,11 +60,11 @@ describe('inline', () => {
     );
   });
 
-  test('should inline local qualified words', async () => {
+  test('should not inline local qualified words', async () => {
     // Maybe this shouldn't work if the defintion is not local??
-    expect(await ƒ('[ .slip ] inline')).toEqual(`[ [ q< eval q> ] ]`);
+    expect(await ƒ('[ .slip ] inline')).toEqual(`[ [ .slip ] ]`);
     expect(await ƒ('{ x: [ .slip ] } inline')).toEqual(
-      `[ { x: [ q< eval q> ] } ]`
+      `[ { x: [ .slip ] } ]`
     );
   });
 
@@ -73,6 +73,10 @@ describe('inline', () => {
     expect(await ƒ('slip: inline')).toEqual(`[ slip: ]`);
     expect(await ƒ('{ x: slip: } inline')).toEqual(`[ { x: slip: } ]`);
     expect(await ƒ('[ slip: ] inline')).toEqual(`[ [ slip: ] ]`);
+  });
+
+  test('should inline deeply', async () => {
+    expect(await ƒ('[ sip ] inline')).toEqual(`[ [ q< dup q> swap q< eval q> ] ]`);
   });
 });
 
