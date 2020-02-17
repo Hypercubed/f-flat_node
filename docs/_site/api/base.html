@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Internal Base Words | F-Flat</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Internal Base Words" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="F♭ (pronounced F-flat) is a toy language." />
+<meta property="og:description" content="F♭ (pronounced F-flat) is a toy language." />
+<link rel="canonical" href="http://localhost:4000/jekyll-test/api/base.html" />
+<meta property="og:url" content="http://localhost:4000/jekyll-test/api/base.html" />
+<meta property="og:site_name" content="F-Flat" />
+<script type="application/ld+json">
+{"headline":"Internal Base Words","url":"http://localhost:4000/jekyll-test/api/base.html","description":"F♭ (pronounced F-flat) is a toy language.","@type":"WebPage","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/jekyll-test/assets/css/style.css?v=afd591ce0f0219be68cffee53f8c3bdfb6674e27">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="/jekyll-test/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/jekyll-test/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/Hypercubed/f-flat_node">View On GitHub</a></li>
+          
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>F-Flat</h1>
+          <p>F♭ (pronounced F-flat) is a toy language.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/Hypercubed">Hypercubed</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1 id="internal-base-words">Internal Base Words</h1>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L63">[src]</a></div>
+
+<h2 id="-add"><code class="language-plaintext highlighter-rouge">+</code> (add)</h2>
+
+<p>( x y -&gt; z)</p>
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L71">[src]</a></div>
+
+<ul>
+  <li>list concatenation/function composition</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; [ 1 2 ] [ 3 ] +
+[ [ 1 2 3 ] ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L81">[src]</a></div>
+
+<ul>
+  <li>boolean or</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; true false +
+[ true ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L104">[src]</a></div>
+
+<ul>
+  <li>RegExp union</li>
+</ul>
+
+<p>Return a Regexp object that is the union of the given patterns.
+That is the regexp matches either input regex</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; "skiing" regexp "sledding" regexp +
+[ /(?:skiing)|(?:sledding)/ ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L118">[src]</a></div>
+
+<ul>
+  <li>arithmetic addition</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 0.1 0.2 +
+[ 0.3 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L129">[src]</a></div>
+
+<ul>
+  <li>map assign/assoc</li>
+</ul>
+
+<p>Shallow merges two maps</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; { first: 'Manfred' } { last: 'von Thun' } +
+[ { first: 'Manfred' last: 'von Thun' } ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L154">[src]</a></div>
+
+<ul>
+  <li>date addition</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; '3/17/2003' date dup 1000 +
+[ Mon Mar 17 2003 00:00:00 GMT-0700 (MST)
+  Mon Mar 17 2003 00:00:01 GMT-0700 (MST) ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L166">[src]</a></div>
+
+<ul>
+  <li>string concatenation</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; "abc" "xyz" +
+[ "abcxyz" ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L194">[src]</a></div>
+
+<h2 id="--minus"><code class="language-plaintext highlighter-rouge">-</code> (minus)</h2>
+
+<p>( x y -&gt; z)</p>
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L205">[src]</a></div>
+
+<ul>
+  <li>boolean nor</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; true true -
+[ false ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L225">[src]</a></div>
+
+<ul>
+  <li>RegExp joint denial (nor)</li>
+</ul>
+
+<p>Return a Regexp object that is the joint denial of the given patterns.
+That is the regexp matches neither</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; "skiing" regexp "sledding" regexp -
+[ /(?!skiing|sledding)/ ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L239">[src]</a></div>
+
+<ul>
+  <li>arithmetic subtraction</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 2 1 -
+[ 1 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L250">[src]</a></div>
+
+<ul>
+  <li>date subtraction</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; '3/17/2003' date dup 1000 +
+[ Mon Mar 17 2003 00:00:00 GMT-0700 (MST)
+  Sun Mar 16 2003 23:59:59 GMT-0700 (MST) ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L275">[src]</a></div>
+
+<h2 id="-times"><code class="language-plaintext highlighter-rouge">*</code> (times)</h2>
+
+<p>( x y -&gt; z)</p>
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L301">[src]</a></div>
+
+<ul>
+  <li>array/string intersparse</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; [ 'a' ] [ 'b' ] *
+[ [ 'a' 'b' ] ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L311">[src]</a></div>
+
+<ul>
+  <li>Array join</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; [ 'a' 'b' ] ';' *
+[ 'a;b' ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L332">[src]</a></div>
+
+<ul>
+  <li>string join</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 'xyz' ';'
+[ [ 'x;y;z' ] ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L345">[src]</a></div>
+
+<ul>
+  <li>boolean and</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; true true *
+[ true ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L359">[src]</a></div>
+
+<ul>
+  <li>object and</li>
+</ul>
+
+<p>Returns a new object containing keys contained in both objects with values from the rhs</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; { first: 'James' } { first: 'Manfred', last: 'von Thun' } *
+[ { first: 'Manfred' } ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L372">[src]</a></div>
+
+<ul>
+  <li>RegExp join (and)</li>
+</ul>
+
+<p>Return a Regexp object that is the join of the given patterns.
+That is the regexp matches both inputs</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; "skiing" regexp "sledding" regexp *
+[ /(?=skiing)(?=sledding)/ ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L388">[src]</a></div>
+
+<ul>
+  <li>RegExp repeat (multiply)</li>
+</ul>
+
+<p>Return a Regexp object that matches n repeats of the given pattern</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; "skiing" regexp 3 *
+[ /(?:skiing){3}/ ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L401">[src]</a></div>
+
+<ul>
+  <li>repeat sequence</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 'abc' 3 *
+[ 'abcabcabc' ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L412">[src]</a></div>
+
+<ul>
+  <li>arithmetic multiplication</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 2 3 *
+[ 6 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L431">[src]</a></div>
+
+<h2 id="-forward-slash"><code class="language-plaintext highlighter-rouge">/</code> (forward slash)</h2>
+
+<p>( x y -&gt; z)</p>
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L463">[src]</a></div>
+
+<ul>
+  <li>array/string inverse intersparse</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; [ 'a' ] [ 'b' ] /
+[ [ 'a' 'b' ] ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L473">[src]</a></div>
+
+<ul>
+  <li>logical material nonimplication or abjunction</li>
+</ul>
+
+<p>p but not q</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; true true /
+[ false ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L491">[src]</a></div>
+
+<ul>
+  <li>Split</li>
+</ul>
+
+<p>Split a string into substrings using the specified a string or regexp seperator</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 'a;b;c' ';' /
+[ [ 'a' 'b' 'c' ] ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L504">[src]</a></div>
+
+<ul>
+  <li>Array/string split at</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 'abcdef' 3 /
+[ 'abc' 'def' ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L517">[src]</a></div>
+
+<ul>
+  <li>arithmetic division</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 6 2 /
+[ 3 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L542">[src]</a></div>
+
+<h2 id="-backslash"><code class="language-plaintext highlighter-rouge">\</code> (backslash)</h2>
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L569">[src]</a></div>
+
+<ul>
+  <li>Floored division.</li>
+</ul>
+
+<p>Largest integer less than or equal to x/y.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 7 2 \
+[ 3 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L590">[src]</a></div>
+
+<ul>
+  <li>Array/string head</li>
+</ul>
+
+<p>Returns the head of string or array</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 'abcdef' 3 \
+[ 'abc' ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L611">[src]</a></div>
+
+<ul>
+  <li>Split first</li>
+</ul>
+
+<p>Split a string into substrings using the specified a string or regexp seperator
+Returns the first</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 'a;b;c' ';' \
+[ 'a' ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L627">[src]</a></div>
+
+<ul>
+  <li>logical converse non-implication, the negation of the converse of implication</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; true true \
+[ false ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L640">[src]</a></div>
+
+<h2 id="-modulo"><code class="language-plaintext highlighter-rouge">%</code> (modulo)</h2>
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L647">[src]</a></div>
+
+<ul>
+  <li>remainder after division</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 7 2 %
+[ 1 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L657">[src]</a></div>
+
+<ul>
+  <li>Array/string tail</li>
+</ul>
+
+<p>Returns tail of a string or array</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 'abcdef' 3 /
+[ 'def' ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L677">[src]</a></div>
+
+<ul>
+  <li>Split rest</li>
+</ul>
+
+<p>Split a string into substrings using the specified a string or regexp seperator
+Returns the rest</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 'a;b;c' ';' %
+[ [ 'b' 'c' ] ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L693">[src]</a></div>
+
+<ul>
+  <li>RegExp inverse join (nand)</li>
+</ul>
+
+<p>Return a Regexp object that is the inverse join of the given patterns.
+That is the regexp does not match both inputs</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; "skiing" regexp "sledding" regexp /
+[ /(?!(?=skiing)(?=sledding))/ ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L711">[src]</a></div>
+
+<ul>
+  <li>boolean nand</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; true false %
+[ true ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L722">[src]</a></div>
+
+<h2><code class="language-plaintext highlighter-rouge">&gt;&gt;</code></h2>
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L729">[src]</a></div>
+
+<ul>
+  <li>unshift/cons</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 1 [ 2 3 ] &gt;&gt;
+[ 1 2 3 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L739">[src]</a></div>
+
+<ul>
+  <li>concat</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 'dead' 'beef' &gt;&gt;
+'deadbeef'
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L765">[src]</a></div>
+
+<ul>
+  <li>string right shift</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 'abcdef' 3 &gt;&gt;
+'abc'
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L778">[src]</a></div>
+
+<ul>
+  <li>map merge</li>
+</ul>
+
+<p>Deeply merge a lhs into the rhs</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; { first: 'Manfred' } { last: 'von Thun' } &gt;&gt;
+[ { last: 'von Thun', first: 'Manfred' } ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L793">[src]</a></div>
+
+<ul>
+  <li>Sign-propagating right shift</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 64 2 &gt;&gt;
+[ 16 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L806">[src]</a></div>
+
+<ul>
+  <li>logical material implication (P implies Q)</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; true true &gt;&gt;
+[ true ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L819">[src]</a></div>
+
+<ul>
+  <li>RegExp right seq</li>
+</ul>
+
+<p>Return a Regexp that sequentially matchs the input Regexps
+And uses the right-hand-side flags</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; "/skiing/i" regexp "sledding" regexp &gt;&gt;
+[ /skiingsledding/ ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L833">[src]</a></div>
+
+<h2 id="-1"><code class="language-plaintext highlighter-rouge">&lt;&lt;</code></h2>
+<p>Left shift</p>
+
+<p>( x y -&gt; z)</p>
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L844">[src]</a></div>
+
+<ul>
+  <li>push/snoc</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; [ 1 2 ] 3 &lt;&lt;
+[ [ 1 2 3 ] ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L854">[src]</a></div>
+
+<ul>
+  <li>concat</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 'dead' 'beef' &lt;&lt;
+'deadbeef'
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L872">[src]</a></div>
+
+<ul>
+  <li>string left shift</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 'abcdef' 3 &lt;&lt;
+'def'
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L885">[src]</a></div>
+
+<ul>
+  <li>converse implication (p if q)</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; true true &lt;&lt;
+[ true ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L898">[src]</a></div>
+
+<ul>
+  <li>object merge</li>
+</ul>
+
+<p>Deeply merge a rhs into the lhs</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; { first: 'Manfred' } { last: 'von Thun' } &lt;&lt;
+[ { first: 'Manfred' last: 'von Thun' } ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L911">[src]</a></div>
+
+<ul>
+  <li>left shift</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 64 2 &lt;&lt;
+[ 256 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L924">[src]</a></div>
+
+<ul>
+  <li>RegExp right seq</li>
+</ul>
+
+<p>Return a Regexp that sequentially matchs the input Regexps
+And uses the left-hand-side flags</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; "/skiing/i" regexp "sledding" regexp &lt;&lt;
+[ /skiingsledding/i ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L945">[src]</a></div>
+
+<h2 id="-pow"><code class="language-plaintext highlighter-rouge">^</code> (pow)</h2>
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L953">[src]</a></div>
+
+<ul>
+  <li>pow function (base^exponent)</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 7 2 %
+[ 49 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L963">[src]</a></div>
+
+<ul>
+  <li>string pow</li>
+</ul>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L977">[src]</a></div>
+
+<ul>
+  <li>array pow</li>
+</ul>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L990">[src]</a></div>
+
+<ul>
+  <li>boolean xor</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; true false ^
+[ true ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1008">[src]</a></div>
+
+<ul>
+  <li>RegExp xor</li>
+</ul>
+
+<p>Return a Regexp object that is the exclsive or of the given patterns.
+That is the regexp that matches one, but not both patterns</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; "skiing" regexp "sledding" regexp ^
+[ /(?=skiing|sledding)(?=(?!(?=skiing)(?=sledding)))/ ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1022">[src]</a></div>
+
+<h2 id="ln"><code class="language-plaintext highlighter-rouge">ln</code></h2>
+
+<p>( x -&gt; {number} )</p>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1030">[src]</a></div>
+
+<ul>
+  <li>natural log</li>
+</ul>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1035">[src]</a></div>
+
+<ul>
+  <li>length of the Array or string</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; [ 1 2 3 ] length
+[ 3 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1059">[src]</a></div>
+
+<ul>
+  <li>number of keys in a map</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; { x: 1, y: 2, z: 3 } length
+[ 3 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1072">[src]</a></div>
+
+<ul>
+  <li>“length” of a nan, null, and booleans are 0</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; true length
+[ 0 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1085">[src]</a></div>
+
+<h2 id="-not"><code class="language-plaintext highlighter-rouge">~</code> (not)</h2>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1093">[src]</a></div>
+
+<ul>
+  <li>number negate</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 5 ~
+[ -5 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1103">[src]</a></div>
+
+<ul>
+  <li>boolean (indeterminate) not</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; true ~
+[ false ]
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; NaN ~
+[ NaN ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1128">[src]</a></div>
+
+<ul>
+  <li>regex avoid</li>
+</ul>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1134">[src]</a></div>
+
+<ul>
+  <li>object/array invert</li>
+</ul>
+
+<p>Returns a new object with the keys of the given object as values, and the values of the given object</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; { first: 'Manfred', last: 'von Thun' } ~
+[ { Manfred: 'first' von Thun: 'last' } ]
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; [ 'a' 'b' 'c' ] ~
+[ { a: '0' b: '1'  c: '2' } ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1152">[src]</a></div>
+
+<h2 id="empty"><code class="language-plaintext highlighter-rouge">empty</code></h2>
+
+<p>Returns an empty value of the same type</p>
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1170">[src]</a></div>
+
+<h2 id="cmp"><code class="language-plaintext highlighter-rouge">cmp</code></h2>
+
+<p>Pushes a -1, 0, or 1 when x is logically ‘less than’, ‘equal to’, or ‘greater than’ y.
+Push null if sort order is unknown</p>
+
+<p>( x y -&gt; z )</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 1 2 &lt;=&gt;
+[ -1 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1209">[src]</a></div>
+
+<ul>
+  <li>number comparisons</li>
+</ul>
+
+<p>give results of either 1, 0 or -1</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 1 0 &lt;=&gt;
+[ 1 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1221">[src]</a></div>
+
+<ul>
+  <li>vector comparisons</li>
+</ul>
+
+<p>the longer vector is always “greater” regardless of contents</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; [1 2 3 4] [4 5 6] &lt;=&gt;
+[ 1 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1250">[src]</a></div>
+
+<ul>
+  <li>string comparisons</li>
+</ul>
+
+<p>compare strings in alphabetically</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; "abc" "def" &lt;=&gt;
+[ -1 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1267">[src]</a></div>
+
+<ul>
+  <li>boolean comparisons</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; false true &lt;=&gt;
+[ -1 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1280">[src]</a></div>
+
+<ul>
+  <li>date comparisons</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; now now &lt;=&gt;
+[ -1 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1293">[src]</a></div>
+
+<ul>
+  <li>object comparisons</li>
+</ul>
+
+<p>compares number of keys, regardless of contents</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; { x: 123, z: 789 } { y: 456 } &lt;=&gt;
+[ 1 ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1310">[src]</a></div>
+
+<h2 id="-equal"><code class="language-plaintext highlighter-rouge">=</code> equal</h2>
+
+<p>Pushes true if x is equal to y.</p>
+
+<p>( x y -&gt; z )</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 1 2 =
+[ false ]
+</code></pre></div></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1350">[src]</a></div>
+
+
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>

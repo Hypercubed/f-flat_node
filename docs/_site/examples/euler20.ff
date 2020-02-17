@@ -1,0 +1,4 @@
+200 set-precision
+100 !
+[ 0 [ swap 10 divrem ] 200 times ] >> in sum
+println

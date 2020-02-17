@@ -22,8 +22,7 @@ npm start
   - easy to type and read
   - reads left to right, top to bottom (like a book)
   - whitespace not significant syntax
-  - no lambdas/parameters (built in at least)
-  - interactive development
+  - interactive development.
 - flat concatenative language
   - name code not values
   - multiple return values
@@ -32,10 +31,8 @@ npm start
 - no surprises (Principle of "least astonishment")
   - immutable data
   - decimal and complex numbers
-  - percent values
   - both double and single quotes
   - no order of operations (RPN)
-- state is serializable (In progress)
 - Use common work-flow in Forth-like languages:
   - Write some code to perform a task
   - Identify some fragment that might be generally useful
