@@ -14,7 +14,7 @@ import {
   StackValue,
   Decimal
 } from '../types';
-import { StackEnv } from '../env';
+import { StackEnv } from '../engine/env';
 
 class Apply {
   @signature()

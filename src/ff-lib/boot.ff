@@ -3,15 +3,17 @@
  */
 
 'loader.ff'
-  ( __sys_path__ ) >> resolve         // resolve
-  read eval                           // read and eval
+  resolve
+  read eval
 
 'core.ff' require
+'shuffle.ff' require
 'types.ff' require
 'math.ff' require
 'strings.ff' require
 'datetime.ff' require
 'lambdas.ff' require
+'switch-patterns.ff' require
 
 'NODE_ENV' get-env 'test' != 
   [ 'usr.ff' if-exists-load ] when

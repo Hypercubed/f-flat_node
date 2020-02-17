@@ -1,7 +1,8 @@
-import { Word, Key } from './words';
+import { Word, Key, Alias } from './words';
 import { Future } from './future';
 import { Complex } from './complex';
 import { Decimal } from './decimal';
+import { ScopeModule } from './vocabulary-values';
 
 export type StackValue =
   | number // TODO: remove this, should only be Decimal?
@@ -9,11 +10,16 @@ export type StackValue =
   | boolean
   | Symbol
   | Key
-  | Word
   | Future
   | undefined
   | null
   | Complex
   | Decimal
+  | ScopeModule
   | { [s: string]: StackValue }
   | StackValue[];
+
+export type QueueValue =
+  | StackValue
+  | Alias
+  | Word;

@@ -2,15 +2,11 @@
  * # Module loader
  */
 
-// Resolve path relative to file
-__import-resolve: [ ( __sys_path__ ) >> resolve ] def
-
 /**
  * ## `include`
  * Reads a file onto the stack as a string and evaluates the content
  */
- __include: [ read eval ] def
-include: [ __import-resolve __include ] def
+include: [ resolve read eval ] def
 
 /**
  * ## `export`
@@ -19,7 +15,7 @@ include: [ __import-resolve __include ] def
 export: [ vocab send ] def
 
 __module_hash: [ hex-hash '%top._' swap + ] def
-__load-module: [ [ dup [ ] >> '__filename' swap def __include export ] >> fork drop ] def
+__load-module: [ [ dup [ ] >> '__filename' swap def read eval export ] >> fork drop ] def
 __load-and-sto-module: [ dup __load-module swap __module_hash swap def ] def
 
 /**
@@ -27,7 +23,7 @@ __load-and-sto-module: [ dup __load-module swap __module_hash swap def ] def
  * Loads and creates a module from a file
  */
 import: [
-  __import-resolve   
+  resolve   
   dup __module_hash defined?
     [ __module_hash eval ]
     [ dup __load-and-sto-module __module_hash eval ]
@@ -47,4 +43,4 @@ require: [
  * ## `if-exists-load`
  * Loads a file if it exists
  */
-if-exists-load: [ dup exists swap [ __include ] >> [ ] choose eval ] def
+if-exists-load: [ dup exists swap [ read eval ] >> [ ] choose eval ] def

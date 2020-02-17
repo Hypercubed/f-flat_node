@@ -16,37 +16,6 @@
 'testing.ff' require
 'shuffle.ff' require
 
-// core shuffle words
-slip: [ q< eval q> ] ;      // [b] A -> b A
-run: [ dup slip ] ;        // [a] -> a [a]
-dip: [ swap slip ] ;       // B [a] -> a B
-
-    [ [ 'b' ] 'A' slip stack [ 'b' 'A' ] assert_equal ] 'slip' test
-    [ ['a'] run stack [ 'a' ['a'] ] assert_equal ] 'run' test
-    [ 'B' ['a'] dip stack [ 'a' 'B' ] assert_equal ] 'dip' test
-
-// diped
-dupd: [ q< dup q> ] ;       // B A -> B B A
-over: [ dupd swap ] ;      // B A -> B A B  (aka peek)
-sip: [ over slip ] ;       // B [a] -> B a B    (aka keep)
-dipd: [ q< dip q> ] ;      // D C [b] A -> D b C A
-sipd: [ q< sip q> ] ;      // C B [a] -> C a C B
-slipd: [ q< slip q> ] ;    // [c] B A -> c B A
-swapd: [ q< swap q> ] ;     // C B A -> B C A
-dive: [ swap dipd ] ;       // [c] [b] [a] -> a [c] [b]   (aka dip2)
-dup2: [ over over ] ;       // B A -> B A B A
-sap: [ dip eval ] ;    // [B] [A] -> A B
-tuck: [ swap over ] ;         // B A -> A B A
-
-  [ [ 'b' ] [ 'a' ] sap stack [ 'a' 'b' ] assert_equal ] 'sap' test
-  [ [ dup 1 - ] (5) sap stack [ 5 4 ] assert_equal ] 'sap' test
-  [ +:(4, 5) sap 9 assert_equal ] 'sap' test
-  [ +:(*:(5,6) sap *:(5,2) sap) sap 40 assert_equal ] 'sap' test
-
-bi: [ sipd eval ] ;        // C [b] [a] -> C b C a
-
-    [ 5 [ 2 * ] [ 2 + ] bi stack [ 10 7 ] assert_equal ] 'bi' test
-
 // swap apply `[ B ] [ A ] -> A B` (aka sap)
 '|>' [ sap ] ;
 
@@ -54,16 +23,6 @@ bi: [ sipd eval ] ;        // C [b] [a] -> C b C a
 keep: [ sip ] ;      // B [a] -> B a B    (aka sip)
 check: [ dupd eval ] ;     // B [a] -> B B a    (aka w)
 dupn: [ [ dup ] swap times ] ;
-
-// truthy/falsy
-truthy?: [ boolean ] ;
-falsy?: [ truthy? ~ ] ;
-
-// incrementors
---: [ 1 - ] ;
-++: [ 1 + ] ;
-pred: [ dup -- ] ;
-succ: [ dup ++ ] ;
 
 // Comparisons
 >: [ <=> 1 = ] ;
@@ -109,9 +68,9 @@ contains: [ indexof 1 > ] ;
 // lists
 empty?: [ ln 0 = ] ;
 unit: [ [ ] >> ] ;
-cons: [ >> ] ;
+cons: [ >> ] ;                       // aka unshift
 pair: [ unit >> ] ;
-uncons: [ [ first ] [ rest ] bi ] ;
+uncons: [ [ first ] [ rest ] bi ] ;  // aka shift
 
 // folds
 each: [ * eval ] ;
@@ -161,62 +120,4 @@ reverse: [ dup ln 1 > [ uncons [ reverse ] eval swap + ] when ] ;
   */
 nop: [] ;
 
-/**
- * Calls the second quotation in the first pair whose first quotation yields a truthy value.
- */
-cond: [
-  dup empty?
-  [
-    uncons slip slipd
-    [ cond ] >>
-    branch
-  ] unless
-] ;
 
-/**
- * Calls the second quotation in the first pair whose first quotation matches the last item on the stack
- */
-p-cond: [
-  dup empty?
-  [
-    uncons [ eval [ dupd =~ ] dip ] dip
-    [ p-cond ] >>
-    branch
-  ] unless
-] ;
-
-/**
- * Returns the second item in the first pair whose first quotation matches the last item on the stack
- */
-p-choose: [
-  dup empty?
-  [
-    uncons [ eval [ dupd =~ ] dip [ drop ] swap << ] dip
-    [ p-choose ] >>
-    branch
-  ] unless
-] ;
-
-/**
- * quicksort
-*/
-qsort: [
-  dup ln 1 >             // when length > 1
-  [
-    uncons                      // split into first [ ...rest ]
-    over dup                    // shuffle
-    [ [ <= ] >> filter ] >>     // filter values less than or equal to pivot
-    swap [ [ > ] >> filter ] >> // filter values greater than the pivot
-    bi
-    [ qsort ] bi@           // quicksort each sublist
-    [ swap + ] dip +            // merge results 
-  ] when
-] ;
-
-    [
-      [ 3 2 1 ] qsort [ 1 2 3 ] assert_equal
-      [ -3 2 1 ] qsort [ -3 1 2 ] assert_equal
-      [ -3 2 -1 ] qsort [ -3 -1 2 ] assert_equal
-      [ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] qsort [ 1 2 2 3 3 4 4 5 6 7 8 9 10 ] assert_equal
-      "the quick brown fox jumps over the lazy dog" qsort '        abcdeeefghhijklmnoooopqrrsttuuvwxyz' assert_equal
-    ] 'qsort' test

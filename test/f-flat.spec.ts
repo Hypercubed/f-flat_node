@@ -375,7 +375,7 @@ test('atoms are not executed by stack actions', async () => {
 });
 
 test('can perform actions from module', async () => {
-  expect(await ƒ(`core: 'core.ff' import ; 5 core.pred`)).toEqual(`[ 5 4 ]`);
+  expect(await ƒ(`core: 'math.ff' import ; 5 core.pred`)).toEqual(`[ 5 4 ]`);
   expect(await ƒ(`math: 'math.ff' import ; 12 math.!`)).toEqual(
     `[ 479001600 ]`
   );

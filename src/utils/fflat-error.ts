@@ -1,5 +1,5 @@
 import { ffPrettyPrint } from './pprint';
-import { StackEnv } from '../env';
+import { StackEnv } from '../engine/env';
 
 export class FFlatError extends Error {
   constructor(message = 'FFlatError', state?: StackEnv) {

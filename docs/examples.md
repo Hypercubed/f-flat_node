@@ -63,54 +63,63 @@ prompt
 /**
  * FizzBuzz using branching
  */
-fizzbuzz: [
+20 integers
+[
   dup 15 divisor?
-  [ drop 'fizzbuzz' ]
+  [ drop 'fizzbuzz' println ]
   [
     dup 3 divisor?
-    [ drop 'fizz' ]
+    [ drop 'fizz' println ]
     [ 
       dup 5 divisor?
-      [ drop 'buzz' ]
-      when
+      [ drop 'buzz' println ]
+      [ println ]
+      branch
     ]
     branch
   ]
   branch
-  println
-] ;
-
-20 integers [ fizzbuzz ] each
+] each
 
 /**
- * FizzBuzz using conditionals
+ * FizzBuzz using switch-case
  */
-c-fizzbuzz: [
+20 integers
+[
   [
-    [[dup 15 divisor?] [drop 'fizzbuzz']]
-    [[dup 3 divisor?]  [drop 'fizz']]
-    [[dup 5 divisor?]  [drop 'buzz']]
-    [[true]            []]
-  ] cond println
-] ;
-
-20 integers [ c-fizzbuzz ] each
+    [ [15 divisor?] case     [drop 'fizzbuzz' println]]
+    [ [3 divisor?] case      [drop 'fizz' println]]
+    [ [dup 5 divisor?] case  [drop 'buzz' println]]
+    [ [true] case            [println]]
+  ] switch
+] each
 
 /**
  * FizzBuzz using pattern matching
  */
-p-fizzbuzz: [
+20 integers [
   dup [ 5 divisor? ] [ 3 divisor? ] bi pair
   [
-    [[ true true  ]   [ drop 'fizzbuzz' ] ]
-    [[ false true ]   [ drop 'fizz' ] ]
-    [[ true false ]   [ drop 'buzz' ] ]
-    [[ false false ]  [] ]
-  ]
-  p-choose eval println
-] ;
+    [dup [true true]   =~  [ drop 'fizzbuzz' println ]]
+    [dup [false true]  =~  [ drop 'fizz' println ]]
+    [dup [true false]  =~  [ drop 'buzz' println ]]
+    [dup [false false] =~  [ drop println ]]
+  ] switch
+] each
 
-20 integers [ p-fizzbuzz ] each
+/**
+ * FizzBuzz using lambdas as switch
+ */
+20 integers [
+  [ x: ] => [
+    [
+      [ .x 15 divisor? ['fizzbuzz' println]]
+      [ .x 3 divisor?  ['fizz' println]]
+      [ .x 5 divisor?  ['buzz' println]]
+      [ true           [.x println]]
+    ] switch
+  ]
+] lambda each
 ```
 
 ## The quadratic equation using lambdas

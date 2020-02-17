@@ -59,6 +59,10 @@ if (program.logLevel) {
   log.level = program.logLevel;
 }
 
+if (typeof program.quiet === 'undefined') {
+  program.quiet = !program.interactive;
+}
+
 // TODO: start in user directory
 process.chdir('./src/ff-lib/');
 
@@ -176,7 +180,7 @@ function writer(_) {
   if (_ instanceof Error) {
     return _.stack;
   }
-  return silent ? '' : `${ffPrettyPrint.color(_.stack, -1)}\n`;
+  return silent ? '' : `${ffPrettyPrint.color(_.stack)}\n`;
 }
 
 function fEval(code, _, __, cb) {
@@ -212,7 +216,7 @@ function fEval(code, _, __, cb) {
 
     function fin() {
       log.profile('dispatch');
-      stackRepl.setPrompt(f.depth === 0 ? initialPrompt : altPrompt);
+      stackRepl.setPrompt(f.depth < 1 ? initialPrompt : `F♭${' '.repeat(f.depth)}| `);
     }
   }
 }
@@ -250,6 +254,7 @@ function addBefore() {
   let qMax = f.stack.length + f.queue.length;
   let last = new Date();
 
+  // move these be part of winston logger?
   switch (log.level.toString()) {
     case 'trace':
       bindings.push(f.before.add(trace));

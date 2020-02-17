@@ -1,6 +1,6 @@
 /* global window, global, process */
 
-import { StackEnv } from './env';
+import { StackEnv } from './engine/env';
 import { join } from 'path';
 
 import {

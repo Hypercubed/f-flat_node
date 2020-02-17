@@ -1,0 +1,29 @@
+'testing.ff' require
+
+instack: [ [ stack dup [ unstack ] dip ] dip + in ] ;
+case: [ instack last truthy? ] ;
+
+->: [ instack last truthy? ] ;
+~>: [ [ =~ ] >> case ] ;
+
+/**
+ * Calls the second quotation in the first pair whose first quotation yields a truthy value.
+ */
+switch: [
+  dup empty?
+  [
+    uncons slip // pop and evaluate first item in list
+    [ switch ] >>      // switch rest
+    branch
+  ] unless
+] ;
+
+  [
+    1
+    [
+      [ dup 0 = [drop 'no apples']]
+      [ dup 1 = [drop 'one apple']]
+      [ true    [string ' apples' +]]
+    ] switch
+    'one apple' assert_equal
+  ] 'switch' test

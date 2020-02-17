@@ -521,61 +521,66 @@ f♭> =~
 Let's define fizzbuzz
 
 ```
-f♭> fizzbuzz: [
+/**
+ * FizzBuzz using branching
+ */
+20 integers
+[
   dup 15 divisor?
-  [ drop 'fizzbuzz' ]
+  [ drop 'fizzbuzz' println ]
   [
     dup 3 divisor?
-    [ drop 'fizz' ]
+    [ drop 'fizz' println ]
     [ 
       dup 5 divisor?
-      [ drop 'buzz' ]
-      when
+      [ drop 'buzz' println ]
+      [ println ]
+      branch
     ]
     branch
   ]
   branch
-  println
-] ;
-[  ]
+] each
 
-f♭> 20 integers [ fizzbuzz ] each
-1
-2
-fizz
-4
-buzz
-fizz
-7
-8
-fizz
-buzz
-11
-fizz
-13
-14
-fizzbuzz
-16
-17
-fizz
-19
-buzz
-[  ]
-```
+/**
+ * FizzBuzz using switch
+ */
+20 integers
+[
+  [
+    [ [15 divisor?] check   [drop 'fizzbuzz' println]]
+    [ [3 divisor?] check    [drop 'fizz' println]]
+    [ [5 divisor?] check    [drop 'buzz' println]]
+    [ [true]                [println]]
+  ] switch
+] each
 
-Here is fizzbuzz using pattern matching:
-
-```f-flat
-p-fizzbuzz: [
+/**
+ * FizzBuzz using pattern matching
+ */
+20 integers [
   dup [ 5 divisor? ] [ 3 divisor? ] bi pair
   [
-    [[ true true  ]   [ drop 'fizzbuzz' ] ]
-    [[ false true ]   [ drop 'fizz' ] ]
-    [[ true false ]   [ drop 'buzz' ] ]
-    [[ false false ]  [] ]
+    [[true true]   ~case  [ drop drop 'fizzbuzz' println ]]
+    [[false true]  ~case  [ drop drop 'fizz' println ]]
+    [[true false]  ~case  [ drop drop 'buzz' println ]]
+    [[false false] ~case  [ drop println ]]
+  ] switch
+] each
+
+/**
+ * FizzBuzz using lambdas as switch
+ */
+20 integers [
+  [ x: ] => [
+    [
+      [ .x 15 divisor? ['fizzbuzz' println]]
+      [ .x 3 divisor?  ['fizz' println]]
+      [ .x 5 divisor?  ['buzz' println]]
+      [ true           [.x println]]
+    ] switch
   ]
-  p-choose eval println
-] ;
+] lambda each
 ```
 
 ## More Stack Combinators

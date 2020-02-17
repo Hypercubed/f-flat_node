@@ -5,18 +5,19 @@ import * as MiniSignal from 'mini-signals';
 import { freeze, splice } from 'icepick';
 import is from '@sindresorhus/is';
 
-import { lexer } from './parser';
-import { FFlatError, encode } from './utils';
+import { lexer } from '../parser';
+import { FFlatError, encode } from '../utils';
+import { Vocabulary } from './vocabulary';
 
 import {
   dynamo,
   ReturnValues,
-  Vocabulary,
   StackValue,
   Future,
   Word,
+  Alias,
   Sentence
-} from './types';
+} from '../types';
 import {
   MAXSTACK,
   MAXRUN,
@@ -25,7 +26,7 @@ import {
   YIELDING,
   ERR,
   IIF
-} from './constants';
+} from '../constants';
 
 function createDefineAction(self: StackEnv) {
   class DefinedAction {
@@ -249,25 +250,20 @@ export class StackEnv {
     this.stack = freeze([...this.stack, ...a]);
   }
 
-  private isImmediate(c: Word): boolean {
+  private isImmediate(c: Word | Alias): boolean {
     if (this.depth < 1) return true; // in immediate state
-    if (typeof c.value !== 'string') return false;
-    if ('[]{}:'.indexOf(c.value) > -1) return true; // these words are always immediate
-    if (typeof c.value === 'string') {
-      return (
-        typeof c.value === 'string' &&
-        c.value.startsWith(IIF) && // tokens prefixed with : are imediate
-        !c.value.endsWith(IIF) &&
-        c.value.length > 1
-      );
-    }
-    return false;
+    if (!is.string(c.value)) return false;
+    if (c.value.length === 1 && '[]{}:'.indexOf(c.value) > -1) return true; // these words are always immediate
+
+    return (
+      c.value.length > 1 &&
+      c.value.startsWith(IIF) && // tokens prefixed with : are imediate
+      !c.value.endsWith(IIF)
+    );
   }
 
   private dispatchValue(token: StackValue): void {
-    if (typeof token === 'undefined') {
-      return;
-    }
+    if (is.undefined(token)) return;
 
     if (token instanceof Future) {
       return token.isResolved()
@@ -284,38 +280,35 @@ export class StackEnv {
       return this.dispatchWord(token);
     }
 
+    if (token instanceof Alias) {
+      return this.dispatchWord(token); // TODO: optomize for Alias which is always a global symbol
+    }
+
     return this.push(token);
   }
 
-  private dispatchWord(token: Word) {
+  private dispatchWord(token: Word | Alias) {
     let tokenValue = token.value;
 
-    if (tokenValue.length > 1) {
-      if (tokenValue[tokenValue.length - 1] === IIF) {
-        tokenValue = tokenValue.slice(0, -1);
-        return this.push(new Word(tokenValue));
-      }
-
-      if (tokenValue[0] === IIF) {
-        tokenValue = tokenValue.slice(1);
-      }
+    if (is.string(tokenValue) && tokenValue.length > 1 && tokenValue.startsWith(IIF)) {
+      tokenValue = tokenValue.slice(1);
     }
 
     const lookup = this.dict.get(tokenValue);
     if (is.undefined(lookup)) {
-      throw new FFlatError(`${tokenValue} is not defined`, this);
+      throw new FFlatError(`${String(tokenValue)} is not defined`, this);
     }
 
-    if (lookup instanceof Word || lookup instanceof Sentence) {
+    if (lookup instanceof Sentence) {
       this.enqueueFront(lookup.value);
       return;
     }
 
     if (is.function_(lookup)) {
-      return this.dispatchFn(lookup, functionLength(lookup), tokenValue);
+      return this.dispatchFn(lookup, functionLength(lookup), String(tokenValue));
     }
 
-    return this.push(lookup as StackValue);
+    return this.push(lookup as StackValue);  // likely a ScopeModule
   }
 
   private dispatchFn(fn: Function, args?: number, name?: string): void {
@@ -359,7 +352,7 @@ export class StackEnv {
       });
       return;
     }
-    if (typeof value !== 'undefined') {
+    if (!is.undefined(value)) {
       this.dispatchValue(value);
       return;
     }

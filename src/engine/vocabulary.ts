@@ -1,16 +1,18 @@
 import is from '@sindresorhus/is';
 
-import { VocabValue } from './vocabulary-value';
+import { VocabValue, ScopeModule } from '../types/vocabulary-values';
 
-import { Word, Sentence } from './words';
-import { ReturnValues } from './return-values';
-// import { rewrite } from '../utils/';
+import { StackValue } from '../types/stack-values';
+import { Alias, Word, Sentence } from '../types/words';
+import { ReturnValues } from '../types/return-values';
 import { SEP } from '../constants';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
+// constants
 const TOP = '%top';
 const LOCAL = '.';
+
 const INVALID_WORDS = [
   /[\[\]\{\}\(\)]/, // quotes
   /[\s,]/, // whitespace
@@ -20,13 +22,9 @@ const INVALID_WORDS = [
   /^[\d_]+$/ // number like
 ];
 
-export type ScopeModule = { [k in string]: symbol };
-
 export class Vocabulary {
-  static makePath(key: string) {
-    if (typeof key === 'symbol') {
-      return [key];
-    }
+  // TODO: util?
+  static makePath(key: string): string[] {
     key = String(key)
       .toLowerCase()
       .trim();
@@ -62,34 +60,9 @@ export class Vocabulary {
     this.locals = Object.create(this.scope);
   }
 
-  get(key: string): VocabValue {
-    const s = this._get(key);
-    return typeof s === 'symbol' ? this.global[s] : s;
-  }
-
-  _get(key: string): symbol {
-    if (typeof key === 'symbol') return key;
-
-    if ([TOP].includes(key)) {
-      throw new Error(`Invalid key: ${key}`); // make FFlatError
-    }
-
-    const path = Vocabulary.makePath(key);
-    let scope = this.locals;
-    let value = undefined;
-
-    while (scope && path.length > 0) {
-      const k = path.shift();
-      value = scope ? scope[k] : undefined;
-      if (typeof value === 'symbol') {
-        scope = this.global[value];
-      }
-      if (typeof value === 'undefined') {
-        return;
-      }
-    }
-
-    return value;
+  get(key: string | symbol): VocabValue {
+    const s = this.findSymbol(key);
+    return is.symbol(s) ? this.global[s] : s;
   }
 
   set(_key: string, value: VocabValue): void {
@@ -106,18 +79,18 @@ export class Vocabulary {
       scope = this.root;
     }
 
-    if (
-      path.length > 0 || // cannot set to path
-      (key.length > 1 && INVALID_WORDS.some(r => key.match(r)))
-    ) {
-      // invalid keys
+    if (path.length > 0) {  // cannot set to path
+      throw new Error(`Invalid definition key: ${_key}`);
+    }
+
+    if (key.length > 1 && INVALID_WORDS.some(r => key.match(r))) { // invalid keys
       throw new Error(`Invalid definition key: ${_key}`);
     }
 
     let sym = Symbol(key);
     if (hasOwnProperty.call(scope, key)) {
       const w = scope[key];
-      if (typeof w === 'symbol' && typeof this.global[w] === 'undefined') {
+      if (is.symbol(w) && is.undefined(this.global[w])) {
         // allow defintion to words that have been declared but not defined
         sym = w;
       } else {
@@ -127,42 +100,6 @@ export class Vocabulary {
 
     this.global[sym] = value;
     scope[key] = sym;
-  }
-
-  /**
-   * Recursively converts actions with string keys to actions with symbols
-   */
-  bind(action: Word | Sentence | Array<any> | Object): any {
-    if (action instanceof Word) {
-      if (typeof action.value === 'string' && !action.value.startsWith(LOCAL)) { // TODO: should only be key
-        const sym = this._get(action.value);
-        if (typeof sym === 'symbol') return new Word(sym as any, action.value); // TODO: alias?
-      }
-      return action;
-    }
-
-    if (action instanceof Sentence) {
-      const value = this.bind(action.value);
-      return new Sentence(value, action.displayString);
-    }
-
-    if (Array.isArray(action)) {
-      return action.reduce((p, i) => {
-        const n = this.bind(i);
-        p.push(n);
-        return p;
-      }, []);
-    }
-
-    if (is.plainObject(action)) {
-      return Object.keys(action).reduce((p, key) => {
-        const n = this.bind(action[key]);
-        p[key] = n;
-        return p;
-      }, {});
-    }
-
-    return action;
   }
 
   words(): string[] {
@@ -210,19 +147,24 @@ export class Vocabulary {
   /**
    * Inlines local and scoped defintions
    */
-  inline(_action: Array<any>) {
+  inline(_action: Array<StackValue>) {  // TODO: Dynamo?
     const symbolStack = [];
 
     const _bind = (v: any) => {
+      if (v instanceof Alias) {
+        return v;
+      }
+
       if (v instanceof Word) {
         if ((typeof v.value === 'string' && !v.value.startsWith(LOCAL)) || typeof v.value === 'symbol') {
-          const s = this._get(v.value);
-          if (typeof s !== 'symbol') return v;
-          if (symbolStack.includes(s)) return new Word(s as any, v.toString());
-          const value = this.global[s];
-          if (typeof value === 'undefined' || typeof value === 'function') return new Word(s as any, v.toString());
-          symbolStack.push(s);
-          const r = _bind(value);
+          const sym = this.findSymbol(v.value);
+          if (is.undefined(sym)) return v; // Error?
+          if (symbolStack.includes(sym)) return new Alias(sym, v.toString());
+          const value = this.global[sym];
+          const type = typeof value;
+          if (type === 'undefined' || type === 'function') return new Alias(sym, v.toString());
+          symbolStack.push(sym);
+          const r = _bind(value); // Should be a Sentence at this point
           symbolStack.pop();
           return r;
         }
@@ -253,5 +195,28 @@ export class Vocabulary {
       return v;
     };
     return _bind(_action);
+  }
+
+  private findSymbol(key: string | symbol): symbol {
+    if (is.symbol(key)) return key;
+
+    if ([TOP].includes(key)) {
+      throw new Error(`Invalid key: ${key}`); // make FFlatError
+    }
+
+    const path = Vocabulary.makePath(key);
+    let scope = this.locals;
+    let value = undefined;
+
+    while (scope && path.length > 0) {
+      const k = path.shift() as string;
+      value = scope ? scope[k] : undefined;
+      if (is.undefined(value)) return;
+      if (is.symbol(value)) {
+        scope = this.global[value];
+      }
+    }
+
+    return value;
   }
 }

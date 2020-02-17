@@ -1,7 +1,7 @@
 import { guard } from '@hypercubed/dynamo';
 
 import { Sentence, Word } from './words';
-import { StackValue } from './stack-value';
+import { StackValue } from './stack-values';
 
 export class Future {
   @guard()

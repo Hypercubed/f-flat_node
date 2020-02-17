@@ -92,11 +92,11 @@ function singleQuotedString(val: string): string {
   return val.slice(1, -1);
 }
 
-function convertWord(value: string) {
-  return new Word(value);
-}
+// function convertWord(value: string) {
+//   return new Word(value);
+// }
 
-function convertLiteral(value: string): StackValue | undefined {
-  // move these to parser
-  return new Word(value);
-}
+// function convertLiteral(value: string): StackValue | undefined {
+//   // move these to parser
+//   return new Word(value);
+// }

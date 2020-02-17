@@ -54,9 +54,9 @@ describe('inline', () => {
   });
 
   test('should inline defined actions', async () => {
-    expect(await ƒ('[ slip ] inline')).toEqual(`[ [ q< eval q> ] ]`);
+    expect(await ƒ('[ slip ] inline')).toEqual(`[ [ << eval ] ]`);
     expect(await ƒ('{ x: [ slip ] } inline')).toEqual(
-      `[ { x: [ q< eval q> ] } ]`
+      `[ { x: [ << eval ] } ]`
     );
   });
 
@@ -76,7 +76,7 @@ describe('inline', () => {
   });
 
   test('should inline deeply', async () => {
-    expect(await ƒ('[ sip ] inline')).toEqual(`[ [ q< dup q> swap q< eval q> ] ]`);
+    expect(await ƒ('[ sip ] inline')).toEqual(`[ [ q< dup q> swap << eval ] ]`);
   });
 });
 
@@ -145,13 +145,13 @@ describe('rewrite', () => {
 describe('binding', () => {
   test('defined words are bound', async () => {
     expect(await ƒ(`slip: [ 'junk' ] ; [ dip ] inline`)).toEqual(
-      `[ [ swap q< eval q> ] ]`
+      `[ [ swap << eval ] ]`
     );
   });
 
   test('internal words are bound', async () => {
     expect(await ƒ(`eval: [ 'junk' ] ; [ dip ] inline`)).toEqual(
-      `[ [ swap q< eval q> ] ]`
+      `[ [ swap << eval ] ]`
     );
   });
 });

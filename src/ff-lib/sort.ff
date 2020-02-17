@@ -1,0 +1,26 @@
+'testing.ff' require
+'shuffle.ff' require
+
+/**
+ * quicksort
+ * Recursive quick sort implementation
+*/
+qsort: [
+  dup ln 1 >             // when length > 1
+  [
+    uncons                            // split into first [ ...rest ]
+    over dup                          // shuffle
+    [ [ <= ] >> filter qsort ] >>     // filter values less than or equal to pivot
+    swap [ [ > ] >> filter qsort ] >> // filter values greater than the pivot
+    bi
+    [ swap + ] dip +                  // merge results 
+  ] when
+] ;
+
+    [
+      [ 3 2 1 ] qsort [ 1 2 3 ] assert_equal
+      [ -3 2 1 ] qsort [ -3 1 2 ] assert_equal
+      [ -3 2 -1 ] qsort [ -3 -1 2 ] assert_equal
+      [ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] qsort [ 1 2 2 3 3 4 4 5 6 7 8 9 10 ] assert_equal
+      "the quick brown fox jumps over the lazy dog" qsort '        abcdeeefghhijklmnoooopqrrsttuuvwxyz' assert_equal
+    ] 'qsort' test

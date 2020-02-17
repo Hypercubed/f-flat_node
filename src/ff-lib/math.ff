@@ -5,6 +5,12 @@
 'shuffle.ff' require
 'testing.ff' require
 
+// incrementors
+--: [ 1 - ] ;
+++: [ 1 + ] ;
+pred: [ dup -- ] ;
+succ: [ dup ++ ] ;
+
 // lazy constants to match precision
 pi: [ 1 atan 4 * ] ;
 e: [ 1 exp ] ;              // Euler's number

@@ -3,6 +3,35 @@
  * Many words derived from (Joy)[http://tunes.org/~iepos/joy.html] and Factor (http://factorcode.org/).
  */
 
+ 'testing.ff' require
+
+// core shuffle words
+slip: [ << eval ] ;         // [b] A -> b A
+run: [ dup slip ] ;         // [a] -> a [a]
+dip: [ swap slip ] ;        // B [a] -> a B
+
+    [ [ 'b' ] 'A' slip stack [ 'b' 'A' ] assert_equal ] 'slip' test
+    [ ['a'] run stack [ 'a' ['a'] ] assert_equal ] 'run' test
+    [ 'B' ['a'] dip stack [ 'a' 'B' ] assert_equal ] 'dip' test
+
+// diped
+dupd: [ q< dup q> ] ;      // B A -> B B A
+over: [ dupd swap ] ;      // B A -> B A B  (aka peek)
+sip: [ over slip ] ;       // B [a] -> B a B    (aka keep)
+dipd: [ q< dip q> ] ;      // D C [b] A -> D b C A
+sipd: [ q< sip q> ] ;      // C B [a] -> C a C B
+slipd: [ q< slip q> ] ;    // [c] B A -> c B A
+swapd: [ q< swap q> ] ;    // C B A -> B C A
+dive: [ swap dipd ] ;      // [c] [b] [a] -> a [c] [b]   (aka dip2)
+dup2: [ over over ] ;      // B A -> B A B A
+sap: [ dip eval ] ;        // [B] [A] -> A B
+tuck: [ swap over ] ;      // B A -> A B A
+
+  [ [ 'b' ] [ 'a' ] sap stack [ 'a' 'b' ] assert_equal ] 'sap' test
+  [ [ dup 1 - ] (5) sap stack [ 5 4 ] assert_equal ] 'sap' test
+  [ +:(4, 5) sap 9 assert_equal ] 'sap' test
+  [ +:(*:(5,6) sap *:(5,2) sap) sap 40 assert_equal ] 'sap' test
+
 drop2: [ drop drop ] ;        // B A -> (2drop in forth)
 
 m: [ dup eval ] ;             // [a] -> [a] a
@@ -15,7 +44,6 @@ dropd: [ q< drop q> ] ;       // B A -> A          (aka nip)
 overd: [ q< over q> ] ;       // C B A -> C B C A
 pick: [ overd swap ] ;        // C B A -> C B A C
 dup3: [ pick pick pick ] ;    // C B A -> C B A C B A
-swapd: [ q< swap q> ] ;       // C B A -> B C A
 dig: [ swapd swap ] ;         // C B A -> B A C (rot in forth)
 rolldown: [ swapd swap ] ;    // C B A -> B A C (aka dig)
 bury: [ swap swapd ] ;        // C B A -> A C B
@@ -23,6 +51,10 @@ flip: [ swapd bury ] ;        // C B A -> A B C
 rot: [ bury swap ] ;          // C B A -> A B C
 
 dip2: [ swap dipd ] ;            // [c] [b] [a] -> a [c] [b]
+
+bi: [ sipd eval ] ;        // C [b] [a] -> C b C a
+
+    [ 5 [ 2 * ] [ 2 + ] bi stack [ 10 7 ] assert_equal ] 'bi' test
 
 bi2: [ q< keep2 q> eval ] ;     // D C [b] [a] -> D C b D C a
 bi*: [ dipd eval ] ;            // D C [b] [a] -> D b C a

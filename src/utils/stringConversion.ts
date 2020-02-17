@@ -1,6 +1,6 @@
 import * as punycode from 'punycode';
 
-import { StackEnv } from '../env';
+import { StackEnv } from '../engine/env';
 
 const cap = '${expression-hole}';
 const reExpression = /\$\([^\)]*\)/g;

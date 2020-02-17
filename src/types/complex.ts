@@ -1,7 +1,7 @@
 import { guard, conversion } from '@hypercubed/dynamo';
 
 import { Decimal, gammaDecimal, zero, pi, twoPiSqrt } from './decimal';
-import { g, c } from './gamma';
+import { g, c } from '../utils/gamma';
 
 const precision = Math.pow(10, -(<number>Decimal.precision) + 5);
 

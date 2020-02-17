@@ -1,6 +1,6 @@
 import { guard } from '@hypercubed/dynamo';
 import { encode } from '../utils/json';
-import { StackValue } from './stack-value';
+import { StackValue } from './stack-values';
 
 function toString(x: any) {
   if (Array.isArray(x)) {
@@ -63,7 +63,7 @@ export class Word extends Action {
     return x instanceof Word;
   }
 
-  constructor(public value: string /* | symbol */, public displayString?: string) {
+  constructor(public value: string, public displayString?: string) {
     // value s/b PropertyKey?
     super(value, displayString);
   }
@@ -83,13 +83,13 @@ export class Key extends Action {
   }
 }
 
-export class Alias extends Action {
+export class Alias extends Action { // global word
   @guard()
   static isAlias(x: unknown): x is Alias {
     return x instanceof Alias;
   }
 
-  constructor(value: symbol, displayString?: string) {
+  constructor(public value: symbol, public displayString?: string) {
     super(value, displayString);
   }
 }

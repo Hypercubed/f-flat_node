@@ -13,7 +13,7 @@ import {
 } from '../types';
 import { template, templateParts, toObject } from '../utils';
 import { patternMatch } from '../utils/pattern';
-import { StackEnv } from '../env';
+import { StackEnv } from '../engine/env';
 
 function dequoteStack(env: StackEnv, s: StackValue) {
   const r: StackValue[] = [];
@@ -492,10 +492,15 @@ export const core = {
     return dequoteStack(this, s);
   },
 
+  '|': function(this: StackEnv, s: StackValue) {
+    const st = dequoteStack(this, s);
+    return new ReturnValues([st, Symbol.for('(')]);
+  },
+
   /**
    * ## `{` (immediate object quote)
    *
-   * pushes a quotation maker onto the stack
+   * pushes a quotation marker onto the stack
    *
    * ( -> #( )
    */

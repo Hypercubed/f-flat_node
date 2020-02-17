@@ -2,14 +2,16 @@ import { signature, Any } from '@hypercubed/dynamo';
 import is from '@sindresorhus/is';
 import { getIn } from 'icepick';
 
+import { Vocabulary } from '../engine/vocabulary';
+
 import {
   dynamo,
   StackValue,
   Sentence,
   Word,
   ReturnValues,
-  Vocabulary
 } from '../types';
+
 import { IIF } from '../constants';
 
 function create(dictObject: Object | undefined) {
@@ -31,11 +33,11 @@ function create(dictObject: Object | undefined) {
     }
     @signature()
     Word(action: Word) {
-      if (wordPaths.includes(action.value)) {
+      if (wordPaths.includes(action.value as string)) {
         return action;
       }
-      const path = Vocabulary.makePath(action.value);
-      const value: StackValue = getIn(dictObject, path);
+      const path = Vocabulary.makePath(action.value as string);
+      const value: StackValue = getIn(dictObject, path as string[]);
 
       if (
         is.undefined(value) &&
@@ -45,7 +47,7 @@ function create(dictObject: Object | undefined) {
         return action;
       if (is.function_(value)) return new ReturnValues([action]);
 
-      wordPaths.push(action.value);
+      wordPaths.push(action.value as string);
       const ret = _rewrite(value);
       wordPaths.pop();
       return ret;

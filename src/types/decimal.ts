@@ -1,7 +1,7 @@
 import { guard, conversion } from '@hypercubed/dynamo';
 import { Decimal } from 'decimal.js';
 
-import { g, c } from './gamma';
+import { g, c } from '../utils/gamma';
 
 export { Decimal };
 

@@ -13,19 +13,19 @@ eval2: [ slip eval ] ;
 replicate: [ [ unit ] dip * ] ;
 nth: [ -- @ ] ;
 
-with-system-property: [ 
-  over get-system-property
-  [ dupd set-system-property ] dip
-  swapd swap
-  in
-  [ set-system-property ] dip
-] ;
+// with-system-property: [ 
+//   over get-system-property
+//   [ dupd set-system-property ] dip
+//   swapd swap
+//   in
+//   [ set-system-property ] dip
+// ] ;
 
 // side effects
 traceoff: [ 'log-level' 'warn'  set-system-property ] ;
 traceon: [ 'log-level' 'trace' set-system-property ] ;
 timing: [ 'log-level' 'timing' set-system-property ] ;
-trace: [ traceon eval traceoff ] ; // doesn't work!!
+// trace: [ traceon eval traceoff ] ; // doesn't work!!
 
 // quick check
 for-all: [ [ [ 100 times ] >> in ] dip [ ~ ] + filter ] ;
@@ -56,10 +56,10 @@ rand-bool: [ rand-u32 even? ] ;
 cls: [ "\u001B[2J\u001B[0;0f" println ] ;
 
 // switch
-stack-copy: [ stack run ] ;
-stack-check: [ q< stack-copy q> =~ ] ;
-case: [ [ stack-check ] dip when ] ;
-switch: [ [ unstack case ] each ] ;
+// stack-copy: [ stack run ] ;
+// stack-check: [ q< stack-copy q> =~ ] ;
+// case: [ [ stack-check ] dip when ] ;
+// switch: [ [ unstack case ] each ] ;
 
 // short circuit logicals
 &&: [ slip when ] ;
@@ -89,11 +89,11 @@ quad: [
     [ 5 6 1 quad -0.2 assert_equal -1 assert_equal ] 'quadradic equation lambda' test
     [ 5 2 1 quad -0.2 0.4 i * + assert_equal -0.2 -0.4 i * + assert_equal ] 'quadradic equation lambda' test
 
-s-test: [
-  `
-  Multi line string
-  Hello
-  World
-  `
-] ;
+// s-test: [
+//   `
+//   Multi line string
+//   Hello
+//   World
+//   `
+// ] ;
 

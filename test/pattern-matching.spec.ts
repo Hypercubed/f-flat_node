@@ -112,84 +112,99 @@ test('should pattern match deep objects and wildcards', async () => {
   expect(await ƒ('{x: {y: [1]}} {x: {y: [...]}} =~')).toEqual(`[ true ]`);
 });
 
-test('should pattern match p-cond', async () => {
+test('switch', async () => {
   expect(
     await ƒ(`
-
-  0
-  [
-    [0 [drop 'zero']]
-    [5 [drop 'five']]
-    [_ [string ' = other' + ]]
-  ] p-cond
-
-  `)
-  ).toEqual(`[ 'zero' ]`);
-
+    0
+    [
+      [ dup 0 = [drop 'no apples']]
+      [ dup 1 = [drop 'one apple']]
+      [ true    [string ' apples' +]]
+    ] switch
+    `)).toEqual(`[ 'no apples' ]`);
   expect(
     await ƒ(`
-
-  2
-  [
-    [0 [drop 'zero']]
-    [5 [drop 'five']]
-    [_ [string ' = other' + ]]
-  ] p-cond
-
-  `)
-  ).toEqual(`[ '2 = other' ]`);
-
+    1
+    [
+      [ dup 0 = [drop 'no apples']]
+      [ dup 1 = [drop 'one apple']]
+      [ true    [string ' apples' +]]
+    ] switch
+    `)).toEqual(`[ 'one apple' ]`);
   expect(
     await ƒ(`
-
-  5
-  [
-    [0 [drop 'zero']]
-    [5 [drop 'five']]
-    [_ [string ' = other' + ]]
-  ] p-cond
-
-  `)
-  ).toEqual(`[ 'five' ]`);
+    2
+    [
+      [ dup 0 = [drop 'no apples']]
+      [ dup 1 = [drop 'one apple']]
+      [ true    [string ' apples' +]]
+    ] switch
+    `)).toEqual(`[ '2 apples' ]`);
 });
 
-test('should pattern match p-choose', async () => {
+test('switch -> (case)', async () => {
   expect(
     await ƒ(`
-
-  0
-  [
-    [0 'zero']
-    [5 'five']
-    [_ 'other']
-  ] p-choose
-
-  `)
-  ).toEqual(`[ 'zero' ]`);
+    0
+    [
+      [[ 0 = ] ->  [drop 'no apples']]
+      [[ 1 = ] ->  [drop 'one apple']]
+      [[ true ] -> [string ' apples' +]]
+    ] switch
+    `)).toEqual(`[ 'no apples' ]`);
 
   expect(
     await ƒ(`
-
-  2
-  [
-    [0 'zero']
-    [5 'five']
-    [_ 'other']
-  ] p-choose
-
-  `)
-  ).toEqual(`[ 'other' ]`);
+    1
+    [
+      [[ 0 = ] ->  [drop 'no apples']]
+      [[ 1 = ] ->  [drop 'one apple']]
+      [[ true ] -> [string ' apples' +]]
+    ] switch
+    `)).toEqual(`[ 'one apple' ]`);
 
   expect(
     await ƒ(`
+    3
+    [
+      [[ 0 = ] ->  [drop 'no apples']]
+      [[ 1 = ] ->  [drop 'one apple']]
+      [[ true ] -> [string ' apples' +]]
+    ] switch
+    `)).toEqual(`[ '3 apples' ]`);
+});
 
-  5
-  [
-    [0 'zero']
-    [5 'five']
-    [_ 'other']
-  ] p-choose
-
+test('switch ~> (pattern case)', async () => {
+  expect(
+    await ƒ(`
+      0
+      [
+        [ 0 ~> [drop 'no apples']]
+        [ 5 ~> [drop 'one apple']]
+        [ _ ~> [string ' apples' +]]
+      ] switch
   `)
-  ).toEqual(`[ 'five' ]`);
+  ).toEqual(`[ 'no apples' ]`);
+
+  expect(
+    await ƒ(`
+      1
+      [
+        [ 0 ~> [drop 'no apples']]
+        [ 1 ~> [drop 'one apple']]
+        [ _ ~> [string ' apples' +]]
+      ] switch
+  `)
+  ).toEqual(`[ 'one apple' ]`);
+
+  expect(
+    await ƒ(`
+      5
+      [
+        [ 0 ~> [drop 'no apples']]
+        [ 1 ~> [drop 'one apple']]
+        [ _ ~> [string ' apples' +]]
+      ] switch
+  `)
+  ).toEqual(`[ '5 apples' ]`);
 });

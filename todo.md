@@ -5,11 +5,10 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 # Bugs
 - [ ] pprint functions
 - [ ] pprint `Infinity`, `ComplexInfinity`, `NaN` etc.
-- [ ] Parse bug `"abc":123`
 - [ ] blessed gui broken
 - [ ] defining unquote values `x: 123 ;`?
 - [ ] `println` interupts bar
-- [ ] pprint first level indets with 4 spaces
+- [ ] pprint first level indents with 4 spaces
 - [ ] use console width for breakLength
 
 # Testing
@@ -29,6 +28,11 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] More errors
 
 # TODOs
+- [ ] pattern lambdas `[ 1 2 a ] ~> [ a a * ]`
+- [ ] stack matcher `[ 1 2 3 [ _ 3 ] stack-match ]` -> `[ 1 2 3 true ]`
+- [ ] fried defintions `[ .x 2 ^ .y 2 ^ + .y abs - ] fry` -> `[[ x: y: ] => [ .x 2 ^ .y 2 ^ + .y abs - ]] lambda`
+- [ ] should undo always be immdiate?
+- [ ] ability to create immediate words?
 - [ ] ensure defining a module (`x: 'xx.ff' import ;`) doesn't created extra globals
 - [ ] Standardize error messages
 - [ ] all pprint values should be copy-pasteable?
@@ -77,8 +81,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 # Internal Type cleaning
 - [ ] `:xyz` -> `ImmediateWord`?
 - [ ] `Action` vs `Word`?
-- [ ] `Alias` type?
-- [ ] `ResolvedWord`?
+- [?] `Alias` type?
+- [?] `ResolvedWord`?
 
 # Decide
 - [?] Better macro system, `dupn!3`, `dup<5>`, `range<1, 100>`, `range:(1, 10).` ?
@@ -115,6 +119,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Ensure predictable cmp with `null` and `nan`
 
 # Words?
+- [ ] `->` vs `case`
 - [ ] `alias` `x: y: alias`
 - [ ] `bit-set`, `bit-flip`, `bit-clr`, `bit-get`
 - [ ] `cld`: (Smallest integer larger than or equal to x/y)
@@ -151,7 +156,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Detail boolean / Three valued logic
 - [ ] Basis
 - [ ] Regexp
-- [ ] `bind`, `defer`
+- [ ] `inline`, `defer`
 - [ ] Module loader, expanding functions, circular references.
 - [ ] Defined words
 - [ ] Child stacks, forks, etc.
@@ -222,3 +227,5 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [-] ranges `1...4` (now using regex)
   - [ ] guards `3 >`
 - [-] Classes/inheritance?
+
+

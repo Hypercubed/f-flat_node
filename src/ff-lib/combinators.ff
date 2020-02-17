@@ -1,16 +1,46 @@
 /**
  * # Classic combinators
+ * (http://tunes.org/~iepos/joy.html)
  */
 
-'shuffle.ff' require
+zap:    [ drop ] ;                      //                 [A] zap  ==
+i:      [ eval ] ;                      //                 [A] i    == A
+unit:   [ [] >> ] ;                     //                 [A] unit == [[A]]
+rep:    [ dup << i i ] ;                //                 [A] rep  == A A
+m:      [ dup eval ] ;                  //                 [A] m    == [A] A
+run:    [ dup << i ] ;                  //                 [A] run  == A [A]
+                                        //                 [A] dup  == [A] [A]
+k:      [ [zap] dip i ] ;               //             [B] [A] k    == A
+z:      [ zap i ]                       //             [B] [A] z    == B
+nip:    [ swap zap ] ;                  //             [B] [A] nip  == [A]
+sap:    [ dip i ] ;                     //             [B] [A] sap  == A B
+t:      [ swap eval ] ;                 //             [B] [A] t    == [A] B
+dip:    [ swap << i ] ;                 //             [B] [A] dip  == A [B]
+cat:    [ + ] ;                         //             [B] [A] cat  == [B A]
+swat:   [ swap + ] ;                    //             [B] [A] swat == [A B]
+                                        //             [B] [A] swap == [A] [B]
+cons:   [ >> ] ;                        //             [B] [A] cons == [[B] A]
+take:   [ swap << ]                     //             [B] [A] take == [A [B]]
+tack:   [ << ] ;                        //             [B] [A] tack == [B [A]]
+sip:    [ [dup] dip swap slip ] ;       //             [B] [A] sip  == [B] A [B]
+w:      [ [dup] dip i ] ;               //             [B] [A] w    == [B] [B] A
+                                        //             [B] [A] peek == [B] [A] [B]
+                                        //             [B] [A] cake == [[B] A] [A [B]]
+                                        //         [C] [B] [A] poke == [A] [B]
+b:      [ [ >> ] dip i ] ;              //         [C] [B] [A] b    == [[C] B] A
+c:      [ [swap] dip i ] ;              //         [C] [B] [A] c    == [B] [C] A
+dig:    [ [swap] dip swap ] ;           //         [C] [B] [A] dig  == [B] [A] [C]
+bury:   [ swap [swap] dip ] ;           //         [C] [B] [A] bury == [A] [C] [B]
+flip:   [ [swap] dip bury ] ;           //         [C] [B] [A] flip == [A] [B] [C]
+s:      [ [ over >> swap ] dip i ] ;    //         [C] [B] [A] s    == [[C] B] [C] A
+                                        //     [D] [C] [B] [A] s'   == [[D] C] A [D] B
+                                        //     [D] [C] [B] [A] j    == [[C] [D] A] [B] A
+                                        // [E] [D] [C] [B] [A] j'   == [[D] A [E] B] [C] B
 
 x: [ dup eval ] ;
-i: [ eval ] ;
 ?: [ dup [ [ '_?' eval ] >> ] dip ] ;
-w: [ dupd eval ] ;
-b: [ [ >> ] dip eval ] ;
-c: [ swapd eval ] ;
-k: [ dropd eval ] ;
-t: [ swap eval ] ;
-s: [ [ over >> swap ] dip eval ] ;
 y: [ [ dup >> ] swap + dup >> eval ] ;
+id: [] ;
+
+
+

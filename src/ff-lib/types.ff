@@ -24,3 +24,7 @@ array?: [ type 'array' = ] ;
 hex: [ 16 base ] ;
 oct: [ 8 base ] ;
 bin: [ 2 base ] ;
+
+// truthy/falsy
+truthy?: [ boolean ] ;
+falsy?: [ truthy? ~ ] ;

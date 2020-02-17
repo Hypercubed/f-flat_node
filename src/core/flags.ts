@@ -1,6 +1,6 @@
 import { Decimal } from '../types';
 import { log, FFlatError } from '../utils';
-import { StackEnv } from '../env';
+import { StackEnv } from '../engine/env';
 
 /**
  * # Internal Flags
