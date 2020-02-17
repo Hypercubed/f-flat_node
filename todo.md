@@ -5,10 +5,12 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 # Bugs
 - [ ] pprint functions
 - [ ] pprint `Infinity`, `ComplexInfinity`, `NaN` etc.
+- [ ] pprint `:regex`, `:complex`, `:dates`
 - [ ] blessed gui broken
-- [ ] defining unquote values `x: 123 ;`?
+- [?] defining unquote values `x: 123 ;`?
 - [ ] `println` interupts bar
-- [ ] pprint first level indents with 4 spaces
+- [ ] `print` gets swollowed by stack
+- [?] pprint first level indents with 4 spaces
 - [ ] use console width for breakLength
 
 # Testing
@@ -28,6 +30,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] More errors
 
 # TODOs
+- [ ] Jekyll Docs
 - [ ] pattern lambdas `[ 1 2 a ] ~> [ a a * ]`
 - [ ] stack matcher `[ 1 2 3 [ _ 3 ] stack-match ]` -> `[ 1 2 3 true ]`
 - [ ] fried defintions `[ .x 2 ^ .y 2 ^ + .y abs - ] fry` -> `[[ x: y: ] => [ .x 2 ^ .y 2 ^ + .y abs - ]] lambda`
@@ -52,6 +55,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `__sys_path__` to system property? `sys_paths`?
 - [ ] os/platform specific bootloading?
 - [ ] different pprint for bound words?
+- [ ] Interactive errors
+  - [ ] Prompt to undo?
 
 # Parser
 - [ ] Regex literal
@@ -119,8 +124,9 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] Ensure predictable cmp with `null` and `nan`
 
 # Words?
+- [ ] `p-case` for patter case match
 - [ ] `->` vs `case`
-- [ ] `alias` `x: y: alias`
+- [?] `alias` `x: y: alias`
 - [ ] `bit-set`, `bit-flip`, `bit-clr`, `bit-get`
 - [ ] `cld`: (Smallest integer larger than or equal to x/y)
 - [ ] `isfinite?`, `isinf?`, `isnan?`
