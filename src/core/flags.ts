@@ -33,7 +33,7 @@ export const flags = {
         Decimal.config({ precision: +v });
         break;
       default:
-        throw new FFlatError(`Invalid flag: ${p}`, this);
+        throw new FFlatError(`'set-system-property' value is not a valid flag: "${p}"`, this);
     }
   },
 
@@ -59,7 +59,7 @@ export const flags = {
       case 'decimal-precision':
         return Decimal.precision;
       default:
-        throw new FFlatError(`Invalid flag: ${p}`, this);
+        throw new FFlatError(`'get-system-property' value is not a valid flag: "${p}"`, this);
     }
   }
 };

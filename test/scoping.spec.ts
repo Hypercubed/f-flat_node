@@ -145,7 +145,7 @@ test(`defined?`, async () => {
   expect(await ƒ(`'swap' defined?`)).toEqual(`[ true ]`);
   expect(await ƒ(`'slip' defined?`)).toEqual(`[ true ]`);
   expect(await ƒ(`'junk' defined?`)).toEqual(`[ false ]`);
-  expect(ƒ(`'%top' defined?`)).rejects.toThrow('Invalid key: %top');  // ????
+  expect(ƒ(`'%top' defined?`)).rejects.toThrow(`'defined?' invalid key: "%top"`);  // ????
 });
 
 test('hides private', async () => {
@@ -203,8 +203,8 @@ test('module `use` scoping', async () => {
 });
 
 test('only `use` modules', async () => {
-  expect(ƒ(`{ x: [ 1 2 + ] } use`)).rejects.toThrow('Invalid vocabulary');
-  expect(ƒ(`{ x: #y } use`)).rejects.toThrow('Invalid vocabulary');
+  expect(ƒ(`{ x: [ 1 2 + ] } use`)).rejects.toThrow(`'use' invalid vocabulary. Vocabulary should be a map of global symbols`);
+  expect(ƒ(`{ x: #y } use`)).rejects.toThrow(`'use' invalid vocabulary. Symbol is undefined: y`);
 });
 
 test('def does not bind', async () => {

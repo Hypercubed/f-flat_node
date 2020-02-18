@@ -28,15 +28,15 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [?] Progress bar flag?
 - [ ] move repl and gui to src
 - [ ] Test all errors
+  - [ ] MAXSTACK
+  - [ ] MAXRUN
 - [ ] circular imports?
 - [ ] test pprint?
 - [ ] `read`
 
 # TODOs
 - [ ] Running in browser
-- [ ] Error on undefined words on inline?
 - [ ] Move vscode extension
-- [?] Jekyll Docs
 - [ ] pattern + lambdas `[ 1 2 a: ] ~> [ .a .a * ]`
 - [ ] stack matcher `[ 1 2 3 [ _ 3 ] stack-match ]` -> `[ 1 2 3 true ]`
 - [ ] fried defintions `[ .x 2 ^ .y 2 ^ + .y abs - ] fry` -> `[[ x: y: ] => [ .x 2 ^ .y 2 ^ + .y abs - ]] lambda`
@@ -44,8 +44,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] Interactive errors
   - [ ] Prompt to undo?
 - [ ] ability to define words as immediate (without prefix)?
-- [ ] ensure defining a module (`x: 'xx.ff' import ;`) doesn't created extra globals
-- [ ] Standardize error messages
+- [ ] ensure defining a module (`x: 'xx.ff' import ;`) doesn't create extra globals
 - [?] all pprint values should be copy-pasteable?
   - [?] regex
   - [?] dates
@@ -71,7 +70,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] complex, `i`
 - [?] `+/-infinity`
 - [ ] Symbols `(`, `_`
-  - [ ] Use `#:` as symbol prefix?  Symbols with whitespace (`#:'foo'`)?
+  - [?] Use `#:` as symbol prefix?  Symbols with whitespace (`#:'foo'`)?
   - [ ] well known symbols?
 
 # Testing words
@@ -88,7 +87,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [?] redefine action `:` ( string -> Key )?
 - [?] more restrictions types on stack, queue and dictionary
 - [ ] Safer module loading (module class?)
-- [ ] defining objects? `z: { x: [ y ] } ;`?
+- [?] defining objects? `z: { x: [ y ] } ;`?
 
 # Internal Type cleaning
 - [ ] `:xyz` -> `ImmediateWord`?
@@ -98,7 +97,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Decide
 - [-] Better macro system, `dupn!3`, `dup<5>`, `range<1, 100>`, `range:(1, 10).` ?
-  - Using sap, prefer post fix "macros" `1 10 :range`
+  - Using sap, prefer post-fix "macros" `1 10 :range`
 - [ ] `~` vs `!`, `!` vs `factorial`, `/=` or `!=`
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [ ] Choose `regex` vs `regexp`
@@ -116,8 +115,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [x] `undoable` -> `autoundo`,
   - [ ] add `undoable` flag.
   - [ ] reset by `.clear`?
-- [ ] Fix API docs
-    - [ ] Move docs from gitbook?
+- [ ] Fix/improve API docs
+    - [x] Move docs from gitbook?
 - [ ] Consistant and predictable display precision:
   - [ ] `1 acos` => `0` (precision issue)
   - [ ] precision in complex calculations (on print)
@@ -128,11 +127,11 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] rewrite reduction rules?  user-defined?
   - [ ] `dup drop` -> ``
   - [ ] `q> q< ` -> ``
-- [ ] Ensure predictable cmp with `null` and `nan`
+- [ ] Ensure predictable `<=>` with `null` and `nan`
 
 # Words?
-- [ ] `p-case` for pattern case match
-- [-] `->` vs `case`
+- [?] `p-case` for pattern case match
+- [-] `->` vs `case`, `~>` vs `p-case`
 - [?] `alias` `x: y: alias`
 - [ ] `bit-set`, `bit-flip`, `bit-clr`, `bit-get`
 - [ ] `cld`: (Smallest integer larger than or equal to x/y)
@@ -142,10 +141,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `sinpi`, `cospi` (more accurate than `cos(pi*x)`, especially for large `x`)?
 - [ ] Better complex inputs
   - [ ] `1+2i` (Literal)?
-  - [x] `"1+2i" complex`
-  - [x] `[1,2] complex`
-  - [x] `complex:((1,2))|>`
-  - [x] `complex:("1+2i")|>`
+  - [x] `"1+2i" :complex`
+  - [x] `[1,2] :complex`
 - [ ] `clamp`, `scale`
 - [ ] radians -> rads-per-degree, etc. ?
 - [ ] `lesser-of`, `greater-of` vs `max`, `min`?

@@ -126,7 +126,7 @@ test('should read and parse JSON', async () => {
 });
 
 test('throw on missing file', async () => {
-  expect(ƒ(`'file:///Users/missing/file.ff' read`)).rejects.toThrow(`ENOENT: no such file or directory, open '/Users/missing/file.ff'`)
+  expect(ƒ(`'file:///Users/missing/file.ff' read`)).rejects.toThrow(`'read' ENOENT: no such file or directory, open '/Users/missing/file.ff'`);
 });
 
 test('sleep', async () => {
@@ -183,16 +183,16 @@ test('multiple promises correct order', async () => {
 });
 
 test('errors on unknown command, async', async () => {
-  await expect(F().promise('abc')).rejects.toThrow('abc is not defined');
+  await expect(F().promise('abc')).rejects.toThrow(`Word is not defined: "abc"`);
 });
 
 test('errors on unknown command in child, async', async () => {
-  await expect(F().promise('[ abc ] in')).rejects.toThrow('abc is not defined');
+  await expect(F().promise('[ abc ] in')).rejects.toThrow(`Word is not defined: "abc"`);
 });
 
 test('errors on unknown command in child, async 2', async () => {
   await expect(F().promise('[ abc ] await')).rejects.toThrow(
-    'abc is not defined'
+    `Word is not defined: "abc"`
   );
 });
 

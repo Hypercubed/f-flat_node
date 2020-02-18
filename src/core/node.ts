@@ -6,7 +6,7 @@ import * as normalizeUrl from 'normalize-url';
 import { URL } from 'url';
 import { signature } from '@hypercubed/dynamo';
 
-import { FFlatError, bar } from '../utils';
+import { bar } from '../utils';
 import { dynamo } from '../types';
 
 // const stdin = process.stdin;

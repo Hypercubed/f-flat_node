@@ -209,10 +209,10 @@ export class StackEnv {
     // Used to detect MAXSTACK and MAXRUN errors
     function checkMaxErrors(self: StackEnv) {
       if (self.stack.length > MAXSTACK || self.queue.length > MAXSTACK) {
-        throw new FFlatError('MAXSTACK exceeded', self);
+        throw new FFlatError(`Maximum stack size of ${MAXSTACK} exceeded`, self);
       }
       if (loopCount++ > MAXRUN) {
-        throw new FFlatError('MAXRUN exceeded', self);
+        throw new FFlatError(`Maximum loop count of ${MAXRUN} exceeded`, self);
       }
     }
   }
@@ -295,8 +295,9 @@ export class StackEnv {
     }
 
     const lookup = this.dict.get(tokenValue);
+    const name = typeof tokenValue === 'symbol' ? tokenValue.description : String(tokenValue);
     if (is.undefined(lookup)) {
-      throw new FFlatError(`${String(tokenValue)} is not defined`, this);
+      throw new FFlatError(`Word is not defined: "${name}"`, this);
     }
 
     if (lookup instanceof Sentence) {
@@ -305,7 +306,7 @@ export class StackEnv {
     }
 
     if (is.function_(lookup)) {
-      return this.dispatchFn(lookup, functionLength(lookup), String(tokenValue));
+      return this.dispatchFn(lookup, functionLength(lookup), name);
     }
 
     return this.push(lookup as StackValue);  // likely a ScopeModule
@@ -313,29 +314,35 @@ export class StackEnv {
 
   private dispatchFn(fn: Function, args?: number, name?: string): void {
     args = typeof args === 'undefined' ? functionLength(fn) : args;
-    if (args! < 1 || args! <= this.stack.length) {
-      let argArray: StackValue[] = [];
-      if (args! > 0) {
-        argArray = this.stack.slice(-args!);
-        this.stack = splice(this.stack, -args!, this.stack.length);
-      }
+    name = typeof name === 'undefined' ? functionName(fn) : name;
+    const len = this.stack.length;
 
-      this.lastFnDispatch = {
-        fn,
-        args,
-        name,
-        argArray
-      };
-
-      try {
-        const retValue = fn.apply(this, argArray) as StackValue | ReturnValues;
-        return this.dispatchReturnValue(retValue);
-      } catch (e) {
-        throw new FFlatError(e.message, this);
-      }
+    if (args > len) {
+      throw new FFlatError(`'${name}' stack underflow. Too few values in the stack. Requires ${args} values, ${len} found.`, this);
     }
 
-    throw new FFlatError('Stack underflow', this);
+    let argArray: StackValue[] = [];
+    if (args! > 0) {
+      argArray = this.stack.slice(-args!);
+      this.stack = splice(this.stack, -args!, this.stack.length);
+    }
+
+    this.lastFnDispatch = {
+      fn,
+      args,
+      name,
+      argArray
+    };
+
+    try {
+      const retValue = fn.apply(this, argArray) as StackValue | ReturnValues;
+      return this.dispatchReturnValue(retValue);
+    } catch (e) {
+      if (e instanceof FFlatError) {
+        throw e;
+      }
+      throw new FFlatError(`'${name}' ${e.message}`, this);
+    }
   }
 
   private dispatchReturnValue(value: StackValue | ReturnValues): void {

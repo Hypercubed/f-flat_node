@@ -14,8 +14,13 @@ test('get-system-property', async () => {
   expect(await ƒ(`'auto-undo' get-system-property`)).toEqual(`[ true ]`);
 
   expect(ƒ(`'unknown-prop' get-system-property`)).rejects.toThrow(
-    'Invalid flag: unknown-prop'
+    `'get-system-property' value is not a valid flag: "unknown-prop"`
   );
+});
+
+test('set-system-property', async () => {
+  expect(await ƒ(`'decimal-precision' 20 set-system-property`)).toEqual(`[ ]`);
+  expect(ƒ(`'unknown-prop' true set-system-property`)).rejects.toThrow(`'set-system-property' value is not a valid flag: "unknown-prop"`);
 });
 
 test('should be chainable', async () => {
@@ -110,7 +115,7 @@ test('should undo on error', async () => {
   const f = F('1 2').eval();
   expect(f.stack).toEqual([1, 2].map(x => new Decimal(x)));
 
-  expect(() => f.eval('+ whatwhat')).toThrow('whatwhat is not defined');
+  expect(() => f.eval('+ whatwhat')).toThrow('Word is not defined: "whatwhat"');
   expect(f.stack).toEqual([1, 2].map(x => new Decimal(x)));
 });
 
@@ -231,15 +236,15 @@ describe('errors on unknown command', () => {
   test('sync', () => {
     expect(() => {
       F().eval('abc');
-    }).toThrow('abc is not defined');
+    }).toThrow('Word is not defined: "abc"');
   });
 
   test('async', () => {
-    expect(ƒ(`abc`)).rejects.toThrow('abc is not defined');
+    expect(ƒ(`abc`)).rejects.toThrow('Word is not defined: "abc"');
   });
 
   test('in child', () => {
-    expect(ƒ(`[ abc ] in`)).rejects.toThrow('abc is not defined');
+    expect(ƒ(`[ abc ] in`)).rejects.toThrow('Word is not defined: "abc"');
   });
 });
 
@@ -577,15 +582,12 @@ test('keywords are case insenstivive', async () => {
 });
 
 test('type errors', async () => {
-  expect(() => {
-    F().eval('4 "d" *');
-  }).toThrow('Unexpected type of arguments');
+  expect(ƒ('4 "d" *')).rejects.toThrow(`'*' Unexpected type of arguments`);
 });
 
 test('stack underflow', async () => {
-  expect(() => {
-    F().eval('4 *');
-  }).toThrow('Stack underflow');
+  expect(ƒ('4 *')).rejects.toThrow(`'*' stack underflow. Too few values in the stack. Requires 2 values, 1 found.`);
+  expect(ƒ('4 slip')).rejects.toThrow(`'<<' stack underflow. Too few values in the stack. Requires 2 values, 1 found.`);
 });
 
 test('lambdas', async () => {
@@ -596,3 +598,4 @@ test('lambdas', async () => {
     await ƒ('d: [ [ a: b: ] => [ .a .b - abs .a / ] ] lambda ; 10 5 d')
   ).toEqual(`[ 0.5 ]`);
 });
+

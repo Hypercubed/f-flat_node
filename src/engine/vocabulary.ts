@@ -79,11 +79,11 @@ export class Vocabulary {
     }
 
     if (path.length > 0) {  // cannot set to path
-      throw new Error(`Invalid definition key: ${_key}`);
+      throw new Error(`invalid key: "${_key}"`);
     }
 
     if (key.length > 1 && INVALID_WORDS.some(r => key.match(r))) { // invalid keys
-      throw new Error(`Invalid definition key: ${_key}`);
+      throw new Error(`invalid key: "${_key}"`);
     }
 
     let sym = Symbol(key);
@@ -93,7 +93,7 @@ export class Vocabulary {
         // allow defintion to words that have been declared but not defined
         sym = w;
       } else {
-        throw new Error(`Cannot overwrite definition: ${key}`);
+        throw new Error(`cannot overwrite definition: "${key}"`);
       }
     }
 
@@ -124,8 +124,11 @@ export class Vocabulary {
   useVocab(dict: ScopeModule) {
     Object.keys(dict).forEach(key => {
       const value = dict[key];
-      if (typeof value !== 'symbol' || !this.global[value]) {
-        throw new Error(`Invalid vocabulary`); // make FFlatError
+      if (typeof value !== 'symbol') {
+        throw new Error(`'use' invalid vocabulary. Vocabulary should be a map of global symbols`); // make FFlatError
+      }
+      if (!this.global[value]) {
+        throw new Error(`'use' invalid vocabulary. Symbol is undefined: ${value.description}`); // make FFlatError
       }
       this.scope[key] = value;
     });
@@ -158,12 +161,18 @@ export class Vocabulary {
         if ((typeof v.value === 'string' && !v.value.startsWith(LOCAL))) {
           const sym = this.findSymbol(v.value);
           if (is.undefined(sym)) {
-            throw new Error(`${v.value} is not defined`);
+            throw new Error(`Word is not defined: "${v.value}"`);
           }
           if (symbolStack.includes(sym)) return new Alias(sym, v.toString());
           const value = this.global[sym];
           const type = typeof value;
-          if (type === 'undefined' || type === 'function') return new Alias(sym, v.toString());
+          if (type === 'undefined') {
+            if (!(sym in this.global)) {
+              throw new Error(`Word is not defined: "${v.value}"`);
+            }
+            return new Alias(sym, v.toString());  // defered
+          }
+          if (type === 'function') return new Alias(sym, v.toString());
           symbolStack.push(sym);
           const r = _bind(value); // Should be a Sentence at this point
           symbolStack.pop();
@@ -202,7 +211,7 @@ export class Vocabulary {
     if (is.symbol(key)) return key;
 
     if ([TOP].includes(key)) {
-      throw new Error(`Invalid key: ${key}`); // make FFlatError
+      throw new Error(`invalid key: "${key}"`);
     }
 
     const path = Vocabulary.makePath(key);

@@ -16,7 +16,7 @@ test('should def and use nested actions in a fork', async () => {
 
 test('cannot overwrite defined words', async () => {
   await expect(ƒ('x: [123] def x: [456] def')).rejects.toThrow(
-    'Cannot overwrite definition: x'
+    `'def' cannot overwrite definition: "x"`
   );
 });
 
@@ -34,7 +34,7 @@ test('should isloate definitions in a fork', async () => {
     `[ [ 'in-fork-a' ] ]`
   );
   await expect(ƒ('[ "a" ["in-fork-a"] def a ] fork a')).rejects.toThrow(
-    'a is not define'
+    'Word is not defined: "a"'
   );
 });
 
@@ -82,7 +82,7 @@ describe('inline', () => {
 
 describe('defer', () => {
   test('can defer, but not use', async () => {
-    expect(ƒ('x: defer x')).rejects.toThrow('x is not defined');
+    expect(ƒ('x: defer x')).rejects.toThrow('Word is not defined: "x"');
   });
 
   test('can defer, then define and use', async () => {
@@ -94,7 +94,7 @@ describe('defer', () => {
   });
 
   test(`can't defer after defining`, async () => {
-    expect(ƒ('x: [ 1 ] def x: defer')).rejects.toThrow('Cannot overwrite definition: x');
+    expect(ƒ('x: [ 1 ] def x: defer')).rejects.toThrow(`'defer' cannot overwrite definition: "x"`);
   });
 
   test('mutually recursive', async () => {
@@ -159,7 +159,7 @@ describe('binding', () => {
 describe('undefined words', () => {
   test('defined words are bound', async () => {
     expect(ƒ(`[ junk ] inline`)).rejects.toThrow(
-      'junk is not defined'
+      `'inline' Word is not defined: "junk"`
     );
   });
 });
@@ -167,31 +167,31 @@ describe('undefined words', () => {
 describe('invalid words', () => {
   test('invalid keys', async () => {
     await expect(ƒ(`'x:y' [456] def`)).rejects.toThrow(
-      'Invalid definition key'
+      `'def' invalid key: "x:y"`
     );
     await expect(ƒ(`'x y' [456] def`)).rejects.toThrow(
-      'Invalid definition key'
+      `'def' invalid key: "x y"`
     );
     await expect(ƒ(`'x[y' [456] def`)).rejects.toThrow(
-      'Invalid definition key'
+      `'def' invalid key: "x[y"`
     );
     await expect(ƒ(`'x_%y' [456] def`)).rejects.toThrow(
-      'Invalid definition key'
+      `'def' invalid key: "x_%y"`
     );
     await expect(ƒ(`'x,y' [456] def`)).rejects.toThrow(
-      'Invalid definition key'
+      `'def' invalid key: "x,y"`
     );
     await expect(ƒ(`'x"y' [456] def`)).rejects.toThrow(
-      'Invalid definition key'
+      `'def' invalid key: "x"y"`
     );
     await expect(ƒ(`"x\ty" [456] def`)).rejects.toThrow(
-      'Invalid definition key'
+      `'def' invalid key: "x\ty"`
     );
     await expect(ƒ(`"123" [456] def`)).rejects.toThrow(
-      'Invalid definition key'
+      `'def' invalid key: "123"`
     );
     await expect(ƒ(`"1.23" [456] def`)).rejects.toThrow(
-      'Invalid definition key'
+      `'def' invalid key: "1.23"`
     );
   });
 });
@@ -200,5 +200,5 @@ test('see', async () => {
   expect(await ƒ(`'slip' see`)).toEqual(`[ '[ << eval ]' ]`);
   expect(await ƒ(`'swap' see`)).toEqual(`[ '[function swap]' ]`);
   // expect(await ƒ(`'math' see`)).toEqual(`[ '[function swap]' ]`);
-  expect(ƒ(`'%top' see`)).rejects.toThrow('Invalid key: %top');  // ???
+  expect(ƒ(`'%top' see`)).rejects.toThrow(`'see' invalid key: "%top"`);  // ???
 });
