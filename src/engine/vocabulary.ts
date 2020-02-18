@@ -23,7 +23,6 @@ const INVALID_WORDS = [
 ];
 
 export class Vocabulary {
-  // TODO: util?
   static makePath(key: string): string[] {
     key = String(key)
       .toLowerCase()
@@ -125,7 +124,7 @@ export class Vocabulary {
   useVocab(dict: ScopeModule) {
     Object.keys(dict).forEach(key => {
       const value = dict[key];
-      if (typeof value !== 'symbol') {
+      if (typeof value !== 'symbol' || !this.global[value]) {
         throw new Error(`Invalid vocabulary`); // make FFlatError
       }
       this.scope[key] = value;
@@ -156,9 +155,11 @@ export class Vocabulary {
       }
 
       if (v instanceof Word) {
-        if ((typeof v.value === 'string' && !v.value.startsWith(LOCAL)) || typeof v.value === 'symbol') {
+        if ((typeof v.value === 'string' && !v.value.startsWith(LOCAL))) {
           const sym = this.findSymbol(v.value);
-          if (is.undefined(sym)) return v; // Error?
+          if (is.undefined(sym)) {
+            throw new Error(`${v.value} is not defined`);
+          }
           if (symbolStack.includes(sym)) return new Alias(sym, v.toString());
           const value = this.global[sym];
           const type = typeof value;

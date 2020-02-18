@@ -121,8 +121,12 @@ test('should work with async/await', async () => {
 
 test('should read and parse JSON', async () => {
   expect(
-    await ƒ('"https://api.github.com/users/Hypercubed/repos/" read eval')
+    await ƒ(`'https://api.github.com/users/Hypercubed/repos/' read eval`)
   ).toEqual(τ([good]));
+});
+
+test('throw on missing file', async () => {
+  expect(ƒ(`'file:///Users/missing/file.ff' read`)).rejects.toThrow(`ENOENT: no such file or directory, open '/Users/missing/file.ff'`)
 });
 
 test('sleep', async () => {

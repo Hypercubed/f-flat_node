@@ -1,7 +1,10 @@
 'testing.ff' require
+'types.ff' require
 
 instack: [ [ stack dup [ unstack ] dip ] dip + in ] ;
+
 case: [ instack last truthy? ] ;
+p-case: [ [ =~ ] >> case ] ;
 
 ->: [ instack last truthy? ] ;
 ~>: [ [ =~ ] >> case ] ;

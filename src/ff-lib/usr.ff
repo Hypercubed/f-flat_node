@@ -1,5 +1,6 @@
 'shuffle.ff' require
 'testing.ff' require
+'switch-patterns.ff' require
 
 !!: [ null? ~ ] ;
 ?@: [ [ dup !! ] dip [ @ ] >> [ drop null ] branch ] ;
@@ -68,11 +69,11 @@ cls: [ "\u001B[2J\u001B[0;0f" println ] ;
 p-reverse: [
   dup ln
   [
-    [ 0 [] ]
-    [ 1 [] ]
-    [ _ [ uncons p-reverse swap + ] ]
+    [ 0 p-case [] ]
+    [ 1 p-case [] ]
+    [ _ p-case [ uncons p-reverse swap + ] ]
   ]
-  p-cond
+  switch
 ] ;
 
 /**

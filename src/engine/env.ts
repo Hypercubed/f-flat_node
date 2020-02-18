@@ -327,8 +327,12 @@ export class StackEnv {
         argArray
       };
 
-      const retValue = fn.apply(this, argArray) as StackValue | ReturnValues;
-      return this.dispatchReturnValue(retValue);
+      try {
+        const retValue = fn.apply(this, argArray) as StackValue | ReturnValues;
+        return this.dispatchReturnValue(retValue);
+      } catch (e) {
+        throw new FFlatError(e.message, this);
+      }
     }
 
     throw new FFlatError('Stack underflow', this);

@@ -141,6 +141,13 @@ test(`locals don't collide with scoped definitions`, async () => {
   ).toEqual(`[ [ 256 ] ]`);
 });
 
+test(`defined?`, async () => {
+  expect(await ƒ(`'swap' defined?`)).toEqual(`[ true ]`);
+  expect(await ƒ(`'slip' defined?`)).toEqual(`[ true ]`);
+  expect(await ƒ(`'junk' defined?`)).toEqual(`[ false ]`);
+  expect(ƒ(`'%top' defined?`)).rejects.toThrow('Invalid key: %top');  // ????
+});
+
 test('hides private', async () => {
   expect(
     await ƒ(`
@@ -193,6 +200,11 @@ test('module `use` scoping', async () => {
     x
   `)
   ).toEqual(`[ 1 ]`);
+});
+
+test('only `use` modules', async () => {
+  expect(ƒ(`{ x: [ 1 2 + ] } use`)).rejects.toThrow('Invalid vocabulary');
+  expect(ƒ(`{ x: #y } use`)).rejects.toThrow('Invalid vocabulary');
 });
 
 test('def does not bind', async () => {
@@ -310,47 +322,6 @@ describe('inline', () => {
 });
 
 test('binding vocab', async () => {
-  // expect(
-  //   await ƒ(`
-  //   δx: { δy: [ 1 ] } ;
-  //   δx.δy
-  //   'δx' defined?
-  //   'δy' defined?
-  // `)
-  // ).toEqual(`[ 1 true false ]`);
-
-  // expect(
-  //   await ƒ(`
-  //   δx: { δy: [ 2 ] } ;
-  //   [ δx.δy ] inline eval
-  //   'δx' defined?
-  //   'δy' defined?
-  // `)
-  // ).toEqual(`[ 2 true false ]`);
-
-  // expect(
-  //   await ƒ(`
-  //   δx: { δy: [ 3 ]  } ;  // δy is not an action!
-  //   [ δx.δy ] inline
-  //   'δx' defined?
-  //   'δy' defined?
-  // `)
-  // ).toEqual(`[ [ 3 ] true false ]`);
-
-  // expect(
-  //   await ƒ(`
-  //   [
-  //     δy: { δz: [ 5 ] } ;
-  //     δx: [ δy.δz ] ;
-  //     export
-  //   ] fork drop use
-  //   δx
-  //   'δx' defined?
-  //   'δy' defined?
-  //   'δz' defined?
-  // `)
-  // ).toEqual(`[ 5 true true false ]`);
-
   expect(
     await ƒ(`
     [

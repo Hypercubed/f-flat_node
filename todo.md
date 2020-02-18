@@ -3,15 +3,15 @@
 _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 
 # Bugs
-- [ ] pprint functions
+- [ ] `.editor` in repl
 - [ ] pprint `Infinity`, `ComplexInfinity`, `NaN` etc.
-- [ ] pprint `:regex`, `:complex`, `:dates`
+- [?] pprint `:regex`, `:complex`, `:dates`
 - [ ] blessed gui broken
-- [?] defining unquote values `x: 123 ;`?
-- [ ] `println` interupts bar
-- [ ] `print` gets swollowed by stack
+- [?] `println` interupts bar
+- [ ] `print` gets swallowed by stack
 - [?] pprint first level indents with 4 spaces
-- [ ] use console width for breakLength
+- [ ] `1000 !`?
+- [ ] `'math' see` -> `[module]`?
 
 # Testing
 - [ ] `base` (`Deciaml.toBinary`) precision.
@@ -25,23 +25,32 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] Core
   - [ ] Dictionary words
 - [ ] Move `silent` flag to system properties
-  - [ ] Progress bar flag?
+  - [?] Progress bar flag?
 - [ ] move repl and gui to src
-- [ ] More errors
+- [ ] Test all errors
+- [ ] circular imports?
+- [ ] test pprint?
+- [ ] `read`
 
 # TODOs
-- [ ] Jekyll Docs
-- [ ] pattern lambdas `[ 1 2 a ] ~> [ a a * ]`
+- [ ] Running in browser
+- [ ] Error on undefined words on inline?
+- [ ] Move vscode extension
+- [?] Jekyll Docs
+- [ ] pattern + lambdas `[ 1 2 a: ] ~> [ .a .a * ]`
 - [ ] stack matcher `[ 1 2 3 [ _ 3 ] stack-match ]` -> `[ 1 2 3 true ]`
 - [ ] fried defintions `[ .x 2 ^ .y 2 ^ + .y abs - ] fry` -> `[[ x: y: ] => [ .x 2 ^ .y 2 ^ + .y abs - ]] lambda`
 - [ ] should undo always be immdiate?
-- [ ] ability to create immediate words?
+  - [ ] Interactive errors
+  - [ ] Prompt to undo?
+- [ ] ability to define words as immediate (without prefix)?
 - [ ] ensure defining a module (`x: 'xx.ff' import ;`) doesn't created extra globals
 - [ ] Standardize error messages
-- [ ] all pprint values should be copy-pasteable?
-  - [ ] regex
-  - [ ] dates
-  - [ ] special numers (`complexinfinity`, etc)
+- [?] all pprint values should be copy-pasteable?
+  - [?] regex
+  - [?] dates
+  - [?] special numbers (`complexinfinity`, etc)
+  - [ ] symbols?
 - [ ] More stats on trace (max stack size, max queue size, time, etc)
 - [?] Decimal shift/unshift
 - [ ] More complexInfinity/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
@@ -49,20 +58,18 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
   - [ ] Number subtypes: integer (BigInt), real (decimaljs), rational (tbd), complex (internal)
 - [ ] immutable imports (https://github.com/moonad/Formality/blob/master/DOCUMENTATION.md#import)
 - [ ] flags for pprinting (*maxDepth*, etc)
-- [ ] pick for module? `math [ '!' ] pick use`?
+- [ ] pick for module? `math [ '!' ] pluck use`?
 - [ ] Store using symbols as keys `#aword [ dup 123 ] ;`? always global and collision free?
-- [ ] `@`should always return a value or null (remove `?@`)
-- [ ] `__sys_path__` to system property? `sys_paths`?
+- [?] `@` should always return a value or null (remove `?@`)
+- [?] `__sys_path__` to system property? `sys_paths`?
 - [ ] os/platform specific bootloading?
 - [ ] different pprint for bound words?
-- [ ] Interactive errors
-  - [ ] Prompt to undo?
 
 # Parser
 - [ ] Regex literal
 - [ ] `undefined`?
 - [ ] complex, `i`
-- [ ] `+/-infinity`
+- [?] `+/-infinity`
 - [ ] Symbols `(`, `_`
   - [ ] Use `#:` as symbol prefix?  Symbols with whitespace (`#:'foo'`)?
   - [ ] well known symbols?
@@ -78,7 +85,7 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] `add` - adds a word/vacabulary to the user's persistant dictionary/bootstrap? `math: add`
 
 # Safer?
-- [ ] redefine action `:` ( string -> Key )?
+- [?] redefine action `:` ( string -> Key )?
 - [?] more restrictions types on stack, queue and dictionary
 - [ ] Safer module loading (module class?)
 - [ ] defining objects? `z: { x: [ y ] } ;`?
@@ -90,8 +97,8 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [?] `ResolvedWord`?
 
 # Decide
-- [?] Better macro system, `dupn!3`, `dup<5>`, `range<1, 100>`, `range:(1, 10).` ?
-  - Using `range:(1, 10)|>`, aka sap
+- [-] Better macro system, `dupn!3`, `dup<5>`, `range<1, 100>`, `range:(1, 10).` ?
+  - Using sap, prefer post fix "macros" `1 10 :range`
 - [ ] `~` vs `!`, `!` vs `factorial`, `/=` or `!=`
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [ ] Choose `regex` vs `regexp`
@@ -101,10 +108,10 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 # Older Todos:
 - [ ] Finish JSON output
 - [ ] Serialize to `.ff` file?
-- [ ] Tagged templates `fn'${A}-${B}'` -> `${A fn}-${B fn}`?
-- [ ] Mixed numeric and string indecies for arrays and maps `[ 1 2 x: 3 ]` `{ x: 1 y: 2 3 4 5}`?
+- [?] Tagged templates `fn'${A}-${B}'` -> `${A fn}-${B fn}`?
+- [?] Mixed numeric and string indecies for arrays and maps `[ 1 2 x: 3 ]` `{ x: 1 y: 2 3 4 5}`?
 - [?] Combine lambdas and pattern matching?
-- [ ] Online help?
+- [?] Online help?
 - [ ] Undo flags
   - [x] `undoable` -> `autoundo`,
   - [ ] add `undoable` flag.
@@ -118,14 +125,14 @@ _\( managed using [todo-md](https://github.com/Hypercubed/todo-md) \)_
 - [ ] JSON
   - [ ] to simplified JSON (Decimal -> number, regex, symbols, etc)
   - [ ] Decimal/Complex .fromJSON + Tests
-- [ ] rewrite rules?  user-defined?
+- [ ] rewrite reduction rules?  user-defined?
   - [ ] `dup drop` -> ``
   - [ ] `q> q< ` -> ``
 - [ ] Ensure predictable cmp with `null` and `nan`
 
 # Words?
-- [ ] `p-case` for patter case match
-- [ ] `->` vs `case`
+- [ ] `p-case` for pattern case match
+- [-] `->` vs `case`
 - [?] `alias` `x: y: alias`
 - [ ] `bit-set`, `bit-flip`, `bit-clr`, `bit-get`
 - [ ] `cld`: (Smallest integer larger than or equal to x/y)

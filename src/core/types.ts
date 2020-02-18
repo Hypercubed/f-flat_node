@@ -233,13 +233,12 @@ export const types = {
    */
   ':'(x: any) {
     if (x instanceof Word) {
-      // Converts to key?
-      return new ReturnValues([x]);
+      return new Key(x.value);
     }
     if (x instanceof Key) {
-      return new ReturnValues([x]);
+      return x;
     }
-    return new ReturnValues([new Word(x)]);
+    return new Key(x);
   },
 
   /**

@@ -19,15 +19,15 @@ const welcome = gradient.rainbow(`
           []]
 []]]]]]]] []] []]]      F♭ Version ${pkg.version}
 []]       []]]   []]    Copyright (c) 2000-2020 by Jayson Harshbarger
-[]]       []]   []]
-[]]]]]]   []]  []]      Type '.exit' to exit the repl
-[]]       []][]]        Type '.clear' to reset
+[]]       []]   []]     Documentation: http://hypercubed.github.io/f-flat_node/
+[]]]]]]   []]  []]
+[]]       []][]]        Type '.exit' to exit the repl
+[]]                     Type '.clear' to reset
 []]                     Type '.help' for more help
-[]]
 `);
 
 const initialPrompt = 'F♭> ';
-const altPrompt = 'F♭| ';
+// const altPrompt = 'F♭| ';
 
 const bindings = [];
 
@@ -36,6 +36,14 @@ let buffer = '';
 let timeout = null;
 let silent = false;
 let stackRepl = null;
+
+const writers = {
+  pretty: (_) => ffPrettyPrint.color(_.stack) + '\n',
+  literal: (_) => ffPrettyPrint.literal(_.stack) + '\n',
+  silent: (_) => '',
+};
+
+let _writer = writers.pretty;
 
 program
   .version(pkg.version)
@@ -98,8 +106,8 @@ function startREPL() {
   const r = repl.start({
     prompt: initialPrompt,
     eval: fEval,
-    writer,
-    ignoreUndefined: false,
+    writer: (_) => (_ instanceof Error) ? _.stack : _writer(_),
+    ignoreUndefined: true,
     useColors: true,
     useGlobal: false,
     completer: memoize(completer, { maxAge: 10000 })
@@ -110,10 +118,14 @@ function startREPL() {
     stackRepl.setPrompt(initialPrompt);
   });
 
-  r.defineCommand('silent', {
-    help: 'Toggle silent mode',
+  r.defineCommand('echo', {
+    help: 'Toggle echo mode',
     action() {
-      silent = !silent;
+      const entries = Object.entries(writers);
+      const i = entries.findIndex(([_, v]) => v === _writer);
+      const n = (i + 1) % entries.length;
+      console.log(`Switched to ${entries[n][0]} mode\n`);
+      _writer = entries[n][1];
       this.displayPrompt();
     }
   });
@@ -137,7 +149,7 @@ function startREPL() {
   });
 
   r.defineCommand('j', {
-    help: 'Print the stack',
+    help: 'Print the stack as JSON',
     action() {
       console.log(f.toJSON());
       this.displayPrompt();
@@ -174,13 +186,6 @@ function newStack() {
   child.silent = !program.interactive;
   child.idle.add(() => bar.terminate());
   return child;
-}
-
-function writer(_) {
-  if (_ instanceof Error) {
-    return _.stack;
-  }
-  return silent ? '' : `${ffPrettyPrint.color(_.stack)}\n`;
 }
 
 function fEval(code, _, __, cb) {
@@ -263,9 +268,9 @@ function addBefore() {
       break;
     case 'warn': {
       if (f.silent) return;
-      // bindings.push(f.before.add(updateBar));
-      // bindings.push(f.beforeEach.add(throttledUpdateBar));
-      // bindings.push(f.idle.add(() => bar.terminate()));
+      bindings.push(f.before.add(updateBar));
+      bindings.push(f.beforeEach.add(throttledUpdateBar));
+      bindings.push(f.idle.add(() => bar.terminate()));
     }
   }
 

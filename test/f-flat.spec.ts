@@ -304,10 +304,9 @@ test('pick from array', async () => {
   expect(await ƒ('([7 11] 0 @)')).toEqual(`[ [ 7 ] ]`);
 });
 
-test('actions', async () => {
+test('keys', async () => {
   expect(await ƒ('eval:')).toEqual(`[ eval: ]`);
   expect(await ƒ('eval: :')).toEqual(`[ eval: ]`);
-  expect(await ƒ('[ 1 2 eval ] :')).toEqual(`[ [ 1 2 eval ] ]`);
 });
 
 test('=', async () => {
@@ -389,15 +388,15 @@ test('postfix "macros"', async () => {
 });
 
 test('prefix "macros"', async () => {
-  expect(await ƒ('pred: (5) |>')).toEqual(`[ 5 4 ]`);
-  expect(await ƒ('!: (12) |>')).toEqual(`[ 479001600 ]`);
-  expect(await ƒ('+: (5,4) |>')).toEqual(`[ 9 ]`);
-  expect(await ƒ('+: (pred: (5) |>) |>')).toEqual(`[ 9 ]`);
-  expect(await ƒ('+: (*: (5, 6) |>, *: (5,2) |>) |>')).toEqual(`[ 40 ]`);
-  expect(await ƒ('logn: (1000, 10) |>')).toEqual(`[ 3 ]`);
-  expect(await ƒ('!: (2 6 *) |>')).toEqual(`[ 479001600 ]`);
-  expect(await ƒ('regexp: ("/a./") |>')).toEqual(`[ /a./ ]`);
-  expect(await ƒ('[i *] (10) |>')).toEqual(`[ 0+10i ]`);
+  expect(await ƒ('pred: (5) sap')).toEqual(`[ 5 4 ]`);
+  expect(await ƒ('!: (12) sap')).toEqual(`[ 479001600 ]`);
+  expect(await ƒ('+: (5,4) sap')).toEqual(`[ 9 ]`);
+  expect(await ƒ('+: (pred: (5) sap) sap')).toEqual(`[ 9 ]`);
+  expect(await ƒ('+: (*: (5, 6) sap, *: (5,2) sap) sap')).toEqual(`[ 40 ]`);
+  expect(await ƒ('logn: (1000, 10) sap')).toEqual(`[ 3 ]`);
+  expect(await ƒ('!: (2 6 *) sap')).toEqual(`[ 479001600 ]`);
+  expect(await ƒ('regexp: ("/a./") sap')).toEqual(`[ /a./ ]`);
+  expect(await ƒ('[i *] (10) sap')).toEqual(`[ 0+10i ]`);
 });
 
 test('length', async () => {

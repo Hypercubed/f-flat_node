@@ -70,12 +70,13 @@ test('should pattern match arrays with wild cards', async () => {
 });
 
 test('should pattern match complex arrays', async () => {
-  expect(await ƒ('[ "abc" ] ( "/a./" regexp ) =~')).toEqual(`[ true ]`);
-  expect(await ƒ('[ "abc" ] ( "/b./" regexp ) =~')).toEqual(`[ true ]`);
-  expect(await ƒ('[ 1 "abc" 2 3 ] ( 1 regexp: ("/b./") |> 2 3 ) =~')).toEqual(
+  expect(await ƒ(`[ 'abc' ] [ '/a./' :regexp ] =~`)).toEqual(`[ true ]`);
+  expect(await ƒ(`[ "abc" ] [ '/b./' :regexp ] =~`)).toEqual(`[ true ]`);
+  expect(await ƒ(`[ 'abc' ] [ '/f./' :regexp ] =~`)).toEqual(`[ false ]`);
+  expect(await ƒ(`[ 1 'abc' 2 3 ] [ 1 '/b./' :regexp 2 3 ] =~`)).toEqual(
     `[ true ]`
   );
-  expect(await ƒ('[ 1 "abc" 2 3 ] ( 1 regexp: ("/b./") |> _ 3 ) =~')).toEqual(
+  expect(await ƒ(`[ 1 'abc' 2 3 ] [ 1 '/b./' :regexp _ 3 ] =~`)).toEqual(
     `[ true ]`
   );
 

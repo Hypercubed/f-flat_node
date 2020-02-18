@@ -70,8 +70,7 @@ inv: [ 1 swap / ] ;
     [ 0.25 inv 4 assert_equal ] 'inv 0.25' test
 
 sq: [ dup * ] ;
-sum-of-squares: [ 0 [ sq + ] reduce ] ;
-square-of-sum: [ sum sq ] ;
+
 
 // angles
 toradians: [ radians * ] ;
@@ -193,6 +192,9 @@ product: [ [ * ] fold ] ;
 
 dot: [ [ * ] zipwith sum ] ;
 
+sum-of-squares: [ 0 [ sq + ] reduce ] ;
+square-of-sum: [ sum sq ] ;
+
 // math-ish
 integers: [ [ count ] appl ] ;
 
@@ -215,6 +217,6 @@ ndm: [ dup 2 * [ [ - ] [ + ] bi2 rot bi@ - ] dip / ] ;  // symmetric difference 
 
 // bits
 on-bits: /* ( m -- n ) */ [ dup 0 <= [ drop 0 ] [ 2 swap ^ 1 - ] branch ] ;
-bits: /* ( m n -- m' ) */ [ on-bits & ] ;
+bits: /* ( m n -- m' ) */ [ on-bits bit-and ] ;
 random-bits: /* ( m -- n ) */ [ rand-u32 swap bits ] ;  // generate n bits (n < 32)
 random-bytes: /* ( m -- n ) */ [ 8 / random-bits ] ;  // generate n bytes (n < 8)

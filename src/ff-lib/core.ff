@@ -12,24 +12,20 @@
   def                            // define
 ] def
 
-'types.ff' require
-'testing.ff' require
-'shuffle.ff' require
-
-// swap apply `[ B ] [ A ] -> A B` (aka sap)
-'|>' [ sap ] ;
-
-// keep/check
-keep: [ sip ] ;      // B [a] -> B a B    (aka sip)
-check: [ dupd eval ] ;     // B [a] -> B B a    (aka w)
-dupn: [ [ dup ] swap times ] ;
-
 // Comparisons
 >: [ <=> 1 = ] ;
 <: [ <=> -1 = ] ;
 >=: [ < ~ ] ;
 <=: [ > ~ ] ;
 !=: [ = ~ ] ;
+
+'types.ff' require
+'testing.ff' require
+'shuffle.ff' require
+
+// keep/check
+keep: [ sip ] ;      // B [a] -> B a B    (aka sip)
+check: [ dupd eval ] ;     // B [a] -> B B a    (aka w)
 
 // 
 in: [ ( swap eval ) ] ;
@@ -49,6 +45,9 @@ ifte: [ slipd branch ] ;
 if: [ slip when ] ;
 loop: [ [ eval ] keep [ loop ] >> when ] ;
 while: [ swap _do + [ loop ] >> when ] ;
+runn: [ [ 1 - dup -1 > ] [ [ run ] dip ] while drop ] ;
+times: [ runn drop ] ;
+dupn: [ [ dup ] swap times ] ;
 
 // aggregates
 slice: [ [ % ] dip \ ] ;
@@ -80,8 +79,6 @@ foldr: [ [ swap ] swap + swapd reverse-each ] ;
 foldl1: [ [ uncons ] dip each ] ;
 foldr1: [ [ uncons ] dip reverse-each ] ;
 fold: [ foldl1 ] ;
-runn: [ [ -- dup -1 > ] [ [ run ] dip ] while drop ] ;
-times: [ runn drop ] ;
 guard: [ [ keep ] >> dip branch ] ;
 orelse: [ [ null? ~ ] guard ] ;
 keepif: [ over unit if ] ;
@@ -120,4 +117,6 @@ reverse: [ dup ln 1 > [ uncons [ reverse ] eval swap + ] when ] ;
   */
 nop: [] ;
 
+pluck: [ [ true ] * object swap * ] ;
 
+    [ { x: 1, y: 2, z: 3 } [ x: z: ] pluck { x: 1, z: 3} assert_equal ] 'pluck' test

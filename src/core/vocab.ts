@@ -60,11 +60,7 @@ export const dict = {
    * ```
    */
   defer(this: StackEnv, lhs: string | Key) {
-    try {
-      this.dict.set(String(lhs), undefined);
-    } catch (e) {
-      throw new FFlatError(e.message, this);
-    }
+    this.dict.set(String(lhs), undefined);
   },
 
   /**
@@ -80,11 +76,7 @@ export const dict = {
    * ```
    */
   def(this: StackEnv, lhs: string | Key, rhs: StackValue[] | ScopeModule) {
-    try {
-      this.dict.set(String(lhs), createAction(rhs));
-    } catch (e) {
-      throw new FFlatError(e.message, this);
-    }
+    this.dict.set(String(lhs), createAction(rhs));
   },
 
   /**
@@ -101,11 +93,7 @@ export const dict = {
    * ```
    */
   use(this: StackEnv, dict: ScopeModule) {
-    try {
-      this.dict.useVocab(createAction(dict)); // TODO: only allow namespaces
-    } catch (e) {
-      throw new FFlatError(e.message, this);
-    }
+    this.dict.useVocab(createAction(dict));
   },
 
   /**
@@ -153,12 +141,8 @@ export const dict = {
    * ```
    */
   'defined?'(this: StackEnv, a: string) {
-    try {
-      const r = this.dict.get(a);
-      return typeof r !== 'undefined';
-    } catch (e) {
-      throw new FFlatError(e.message, this);
-    }
+    const r = this.dict.get(a);
+    return typeof r !== 'undefined';
   },
 
   /**
@@ -174,15 +158,8 @@ export const dict = {
    * ```
    */
   see(this: StackEnv, a: string | Key) {
-    try {  // may error on bad key
-      const r = this.dict.get(String(a));
-      if (typeof r === 'undefined') {
-        return null;
-      }
-      return ffPrettyPrint.stringify(r);
-    } catch (e) {
-      throw new FFlatError(e.message, this);
-    }
+    const r = this.dict.get(String(a));
+    return (typeof r === 'undefined') ?  null : ffPrettyPrint.stringify(r);
   },
 
   /**
@@ -198,12 +175,8 @@ export const dict = {
    * ```
    */
   show(this: StackEnv, a: string) {
-    try {
-      const r = this.dict.get(String(a));
-      return console.log(ffPrettyPrint.color(r));
-    } catch (e) {
-      throw new FFlatError(e.message, this);
-    }
+    const r = this.dict.get(String(a));
+    return console.log(ffPrettyPrint.color(r));
   },
 
   /**

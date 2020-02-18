@@ -6,7 +6,7 @@ import * as normalizeUrl from 'normalize-url';
 import { URL } from 'url';
 import { signature } from '@hypercubed/dynamo';
 
-import { FFlatError } from '../utils';
+import { FFlatError, bar } from '../utils';
 import { dynamo } from '../types';
 
 // const stdin = process.stdin;
@@ -69,12 +69,8 @@ export const node = {
    * Prints the value followed by (newline)
    *
    */
-  println(a: any, ...b: any[]) {
-    try {
-      stdout.clearLine();
-      stdout.cursorTo(0);
-    } catch (e) {}
-    console.log(a, ...b);
+  println(a: any) {
+    bar.interrupt(String(a));
   },
 
   /**
@@ -151,14 +147,10 @@ export const node = {
    */
   read(name: string): string {
     const url = resolve(name);
-    try {
-      if (url.protocol === 'file:') {
-        return readFileSync(url, 'utf8');
-      }
-      return fetch(url.href).then(res => res.text());
-    } catch (e) {
-      throw new FFlatError(e, this);
+    if (url.protocol === 'file:') {
+      return readFileSync(url, 'utf8');
     }
+    return fetch(url.href).then((res: any) => res.text());
   },
 
   /**

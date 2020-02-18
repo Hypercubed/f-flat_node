@@ -43,8 +43,8 @@ test('should execute stored actions', async () => {
   expect(await ƒ('test: { x: [ 1 2 + ] } def test.x')).toEqual(`[ 3 ]`);
 });
 
-test('create actions', async () => {
-  expect(await ƒ('"eval" :')).toEqual(`[ eval ]`); // ??
+test('create keys', async () => {
+  expect(await ƒ('"eval" :')).toEqual(`[ eval: ]`); // ??
 });
 
 describe('inline', () => {
@@ -156,6 +156,14 @@ describe('binding', () => {
   });
 });
 
+describe('undefined words', () => {
+  test('defined words are bound', async () => {
+    expect(ƒ(`[ junk ] inline`)).rejects.toThrow(
+      'junk is not defined'
+    );
+  });
+});
+
 describe('invalid words', () => {
   test('invalid keys', async () => {
     await expect(ƒ(`'x:y' [456] def`)).rejects.toThrow(
@@ -186,4 +194,11 @@ describe('invalid words', () => {
       'Invalid definition key'
     );
   });
+});
+
+test('see', async () => {
+  expect(await ƒ(`'slip' see`)).toEqual(`[ '[ << eval ]' ]`);
+  expect(await ƒ(`'swap' see`)).toEqual(`[ '[function swap]' ]`);
+  // expect(await ƒ(`'math' see`)).toEqual(`[ '[function swap]' ]`);
+  expect(ƒ(`'%top' see`)).rejects.toThrow('Invalid key: %top');  // ???
 });
