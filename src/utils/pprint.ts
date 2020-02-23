@@ -2,7 +2,7 @@ import is from '@sindresorhus/is';
 import stripAnsi from 'strip-ansi';
 import * as fixedWidthString from 'fixed-width-string';
 
-import { Sentence, Complex } from '../types';
+import { Sentence, Complex, Decimal } from '../types';
 
 import {
   Milton,
@@ -23,6 +23,13 @@ function getDefaultWidth() {
   }
   return 70;
 }
+
+export const decimal = () => (s: any, _p: any, v: any) => {
+  if (v instanceof Decimal) {
+    return v.toString();
+  }
+  return s;
+};
 
 export const objectToString = () => (s: any, _p: any, v: any) => {
   const t = toString.call(s);
@@ -90,6 +97,7 @@ function base(_: Milton) {
   _.add(jsValues);
   _.add(jsonValues, { quote: `'` });
   _.add(functions);
+  _.add(decimal);
 
   _.add(symbols);
   _.add(sentences);

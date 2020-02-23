@@ -1,10 +1,11 @@
 import { join } from 'path';
+import stripAnsi from 'strip-ansi';
 
 import { createStack } from '../../src/stack';
 import { log } from '../../src/utils/logger';
 import { ffPrettyPrint } from '../../src/utils/pprint';
 
-const { stringify } = ffPrettyPrint;
+const { trace, stringify } = ffPrettyPrint;
 
 export * from '../../src/types';
 
@@ -36,7 +37,7 @@ export async function ƒ(strings: any, ...values: any[]): Promise<string> {
     strings = τ(strings, ...values);
   }
   const f = await createStack().promise(strings);
-  return stringify(f.stack);
+  return stripAnsi(trace(f.stack));
 }
 
 /**

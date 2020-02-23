@@ -1,12 +1,12 @@
 import { ƒ } from './helpers/setup';
 
-test('in/fork', async () => {
+test('in', async () => {
   expect(await ƒ(`a: [ 'before' ] def [ a ] in`)).toEqual(`[ [ 'before' ] ]`);
-  expect(await ƒ(`a: [ "outer" ] def [ a: [ "inner" ] def a ] fork a`)).toEqual(
+  expect(await ƒ(`a: [ "outer" ] def [ a: [ "inner" ] def a ] in a`)).toEqual(
     `[ [ 'inner' ] 'outer' ]`
   );
-  expect(await ƒ(`a: [ 'outer' ] def [ b: [ 'inner' ] def a ] in b`)).toEqual(
-    `[ [ 'outer' ] 'inner' ]`
+  expect(await ƒ(`a: [ 'outer' ] def [ b: [ 'inner' ] def a ] in b: defined?`)).toEqual(
+    `[ [ 'outer' ] false ]`
   );
 });
 
@@ -18,7 +18,7 @@ describe('module `use` scoping', () => {
         δx: [ 1 2 + ] ;
         δy: [ δx 2 * ] ;
         export
-      ] fork drop use
+      ] in drop use
       δx δy
     `)
     ).toEqual(`[ 3 6 ]`);
@@ -31,7 +31,7 @@ describe('module `use` scoping', () => {
         δx: [ 1 2 + ] ;
         δy: [ δx 2 * ] ;
         export
-      ] fork drop use
+      ] in drop use
       δx: [ 8 ] ;
       δx δy
     `)
@@ -44,7 +44,7 @@ describe('module `use` scoping', () => {
         δx: [ 1 2 + ] ;
         δy: [ δx 2 * ] ;
         export
-      ] fork drop use
+      ] in drop use
       δx δy
     `)
     ).toEqual(`[ 8 6 ]`);
@@ -58,7 +58,7 @@ test('module def scoping', async () => {
       x: [ 1 2 + ] ;
       y: [ x 3 * ] ;
       export
-    ] fork drop ;
+    ] in drop ;
     x: [ 5 ] ;
     y: [ 7 ] ;
     x y s.x s.y
@@ -73,7 +73,7 @@ test('module def scoping', async () => {
       x: [ 1 2 + ] ;
       y: [ x 3 * ] ;
       export
-    ] fork drop ;
+    ] in drop ;
     x y s.x s.y
   `)
   ).toEqual(`[ 5 7 3 9 ]`);
@@ -85,7 +85,7 @@ test('module def scoping', async () => {
     s: [
       y: [ x 3 * ] ;
       export
-    ] fork drop ;
+    ] in drop ;
     x y s.y
   `)
   ).toEqual(`[ 5 7 15 ]`);
@@ -100,10 +100,10 @@ test('calling within child', async () => {
       x: [ 1 2 + ] ;
       y: [ x 3 * ] ;
       export
-    ] fork drop ;
+    ] in drop ;
     [
       x y s.x s.y
-    ] fork
+    ] in
   `)
   ).toEqual(`[ [ 5 7 3 9 ] ]`);
 });
@@ -118,12 +118,12 @@ test('deep calling within child', async () => {
         x: [ 1 2 + ] ;
         y: [ x 3 * ] ;
         export
-      ] fork drop ;
+      ] in drop ;
       export
-    ] fork drop ;
+    ] in drop ;
     [
       x y s.s.x s.s.y
-    ] fork
+    ] in
   `)
   ).toEqual(`[ [ 5 7 3 9 ] ]`);
 });
@@ -136,7 +136,7 @@ test(`locals don't collide with scoped definitions`, async () => {
     [
       x: [ 256 ] ;
       y
-    ] fork
+    ] in
   `)
   ).toEqual(`[ [ 256 ] ]`);
 });
@@ -155,7 +155,7 @@ test('hides private', async () => {
       _x: [ 1 2 + ] ;
       y: [ _x 3 * ] ;
       export
-    ] fork drop use
+    ] in drop use
     y
     '_x' defined?
   `)
@@ -167,7 +167,7 @@ test('hides private', async () => {
       _x: [ 1 2 + ] ;
       y: [ _x 3 * ] ;
       export
-    ] fork drop ;
+    ] in drop ;
     s.y
     's._x' defined?
   `)
@@ -182,7 +182,7 @@ test('module `include` scoping', async () => {
       'shuffle.ff' include
       x: [ 1 2 3 drop2 ] ;
       export
-    ] fork drop use
+    ] in drop use
     x
   `)
   ).toEqual(`[ 1 ]`);
@@ -196,7 +196,7 @@ test('module `use` scoping', async () => {
       'shuffle.ff' import use
       x: [ 1 2 3 drop2 ] ;
       export
-    ] fork drop use
+    ] in drop use
     x
   `)
   ).toEqual(`[ 1 ]`);
@@ -214,7 +214,7 @@ test('def does not bind', async () => {
       x: [ 1 2 + ] def
       y: [ x 3 * ] def
       export
-    ] fork drop ;
+    ] in drop ;
     x: [ 5 ] ;
     y: [ 7 ] ;
     x y s.x s.y
@@ -229,7 +229,7 @@ test('explicit locals are not bound', async () => {
       x: [ 1 2 + ] ;
       y: [ .x 3 * ] ;
       export
-    ] fork drop ;
+    ] in drop ;
     x: [ 5 ] ;
     y: [ 7 ] ;
     x y s.x s.y
@@ -328,10 +328,10 @@ test('binding vocab', async () => {
       δy: [
         δz: [ 8 ] ;
         export
-      ] fork drop ;
+      ] in drop ;
       δx: [ δy.δz ] ;
       export
-    ] fork drop use
+    ] in drop use
     δx
     'δx' defined?
     'δy' defined?
@@ -346,12 +346,12 @@ test('binding vocab', async () => {
         δy: [
           δz: [ 13 ] ;
           export
-        ] fork drop ;
+        ] in drop ;
         export
-      ] fork drop use
+      ] in drop use
       δx: [ δy.δz ] ;
       export
-    ] fork drop use
+    ] in drop use
     δx
     'δx' defined?
     'δy' defined?

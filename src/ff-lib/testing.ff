@@ -1,3 +1,4 @@
+throws?: [ [ false ] + [ true ] in-catch -1 @ ] ;
 
 dup2: [ q< dup q> swap q< dup q> swap ] ;
 slip: [ q< eval q> ] ;

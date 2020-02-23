@@ -51,7 +51,7 @@ stops execution, push queue to stack, loses other state
 ( ... -> )
 
 ```
-f♭> [ 1 2 * suspend 3 4 *  ] fork
+f♭> [ 1 2 * suspend 3 4 *  ] in
 [ [ 2 3 4 * ] ]
 ```
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/experimental.ts#L121">[src]</a></div>

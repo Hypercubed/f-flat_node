@@ -14,31 +14,31 @@ nock('https://api.github.com/')
 test('yield', async () => {
   const yieldAction = new Word('yield');
   const plus = new Word('+');
-  expect(await ƒ('[1 2 yield 4 5 yield 6 7] fork')).toEqual(
+  expect(await ƒ('[1 2 yield 4 5 yield 6 7] in')).toEqual(
     τ([
       [1, 2],
       [4, 5, yieldAction, 6, 7]
     ])
   );
-  expect(await ƒ('[1 2 yield 4 5 yield 6 7] fork fork')).toEqual(
+  expect(await ƒ('[1 2 yield 4 5 yield 6 7] in in')).toEqual(
     τ([
       [1, 2],
       [4, 5],
       [6, 7]
     ])
   );
-  expect(await ƒ('[1 2 + yield 4 5 + ] fork')).toEqual(τ([[3], [4, 5, plus]]));
-  expect(await ƒ('[1 2 + yield 4 5 + ] fork drop')).toEqual(τ([[3]]));
+  expect(await ƒ('[1 2 + yield 4 5 + ] in')).toEqual(τ([[3], [4, 5, plus]]));
+  expect(await ƒ('[1 2 + yield 4 5 + ] in drop')).toEqual(τ([[3]]));
 });
 
 /* test('multiple yields', async t => {
   t.deepEqual(
-    await ƒ('[1 2 + yield 4 5 + yield ] fork fork drop'),
+    await ƒ('[1 2 + yield 4 5 + yield ] in in drop'),
     [3, 9],
     'multiple yields'
   );
   t.deepEqual(
-    await ƒ('count* [ fork ] 10 times drop'),
+    await ƒ('count* [ in ] 10 times drop'),
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     'multiple yields'
   );
@@ -72,8 +72,8 @@ test('should delay', async () => {
   expect(await ƒ('[ 10 ! ] 100 delay 4 5 + +')).toEqual(`[ 3628809 ]`);
 });
 
-/* test('should fork', async t => {
-  const f = await F().promise('[ 100 sleep 10 ! ] fork 4 5 +');
+/* test('should in', async t => {
+  const f = await F().promise('[ 100 sleep 10 ! ] in 4 5 +');
   t.deepEqual(f.toJSON(), [[], 9]);
 
   function done (err, f) {

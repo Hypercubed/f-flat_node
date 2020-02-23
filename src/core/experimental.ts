@@ -3,7 +3,6 @@ import { writeFileSync } from 'fs';
 import { signature } from '@hypercubed/dynamo';
 
 import { stringifyStrict } from '../utils/json';
-import { FFlatError } from '../utils/fflat-error';
 
 import {
   dynamo,
@@ -16,50 +15,17 @@ import {
 } from '../types';
 import { StackEnv } from '../engine/env';
 
-class Apply {
-  @signature()
-  app(a: any[], b: Function) {
-    return Reflect.apply(b, null, a);
-  }
-}
+// class Apply {
+//   @signature()
+//   app(a: any[], b: Function) {
+//     return Reflect.apply(b, null, a);
+//   }
+// }
 
 /**
  * # Internal Experimental Words
  */
 export const experimental = {
-  /**
-   * ## `throw`
-   *
-   * Throws an error
-   *
-   * ```
-   * f♭> 'PC LOAD LETTER' throw
-   * [ ]
-   * ```
-   */
-  throw(this: StackEnv, e: string) {
-    throw new FFlatError(e, this);
-  },
-
-  /**
-   * ## `throws?`
-   *
-   * Evaluates the quotation in a child, returns true if the evaluation errors
-   *
-   * ```
-   * f♭> [ 1 + ] throws?
-   * [ true ]
-   * ```
-   */
-  'throws?'(this: StackEnv, a: StackValue) {
-    try {
-      this.createChild().eval(a);
-      return false;
-    } catch (err) {
-      return true;
-    }
-  },
-
   /**
    * ## `stringify`
    */
@@ -70,7 +36,7 @@ export const experimental = {
   /**
    * ## `||>` (apply)
    */
-  '||>': dynamo.function(Apply),
+  // '||>': dynamo.function(Apply),
 
   /**
    * ## `spawn`
@@ -106,7 +72,7 @@ export const experimental = {
    * ( ... -> )
    *
    * ```
-   * f♭> [ 1 2 * suspend 3 4 *  ] fork
+   * f♭> [ 1 2 * suspend 3 4 *  ] in
    * [ [ 2 3 4 * ] ]
    * ```
    */

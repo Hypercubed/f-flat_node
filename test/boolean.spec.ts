@@ -150,7 +150,7 @@ test('should / (material non-implication)', async () => {
   expect(await ƒ('null null /')).toBe(`[ null ]`);
 });
 
-test('should  (converse non-implication)', async () => {
+test('should \\ (converse non-implication)', async () => {
   expect(await ƒ('true true \\')).toBe(`[ false ]`);
   expect(await ƒ('true false \\')).toBe(`[ false ]`);
   expect(await ƒ('false true \\')).toBe(`[ true ]`);
@@ -164,11 +164,10 @@ test('should  (converse non-implication)', async () => {
   expect(await ƒ('null null \\')).toBe(`[ null ]`);
 });
 
-///
-
 test('length of booleans are zero', async () => {
   expect(await ƒ('true ln')).toBe(`[ 0 ]`);
   expect(await ƒ('false ln')).toBe(`[ 0 ]`);
+  expect(await ƒ('null ln')).toBe(`[ 0 ]`);
 });
 
 test('convert falsy values', async () => {
@@ -176,8 +175,7 @@ test('convert falsy values', async () => {
   expect(await ƒ('0 boolean')).toBe(`[ false ]`);
   expect(await ƒ('-0 boolean')).toBe(`[ false ]`);
   expect(await ƒ('"" boolean')).toBe(`[ false ]`);
-  expect(await ƒ('null boolean')).toBe(`[ false ]`);
-  expect(await ƒ('nan boolean')).toBe(`[ false ]`);
+  expect(await ƒ('nan boolean')).toBe(`[ false ]`);  /// ?
 });
 
 test('convert truthiness values', async () => {
@@ -190,6 +188,10 @@ test('convert truthiness values', async () => {
   expect(await ƒ('{} boolean')).toBe(`[ true ]`);
   expect(await ƒ('infinity boolean')).toBe(`[ true ]`);
   expect(await ƒ('"1/1/1990" date boolean')).toBe(`[ true ]`);
-  expect(await ƒ('1 0 / boolean')).toBe(`[ true ]`);
+  expect(await ƒ('1 0 / boolean')).toBe(`[ true ]`);  /// ?
   expect(await ƒ('i boolean')).toBe(`[ true ]`);
+});
+
+test('null is neither true nor false', async () => {
+  expect(await ƒ('null boolean')).toBe(`[ null ]`);
 });

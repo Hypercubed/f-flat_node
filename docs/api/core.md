@@ -141,14 +141,14 @@ f♭> [ 1 2 * ] eval
 ```
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L339">[src]</a></div>
 
-## `fork`
+## `in`
 
 evalues the quote in a child environment
 
 ( [A] -> [a] )
 
 ```
-f♭> [ 1 2 * ] fork
+f♭> [ 1 2 * ] in
 [ [ 2 ] ]
 ```
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L353">[src]</a></div>
@@ -160,7 +160,7 @@ pushes one element from stack to parent.
 ( A -> )
 
 ```
-f♭> [ 1 2 3 send 4 ] fork
+f♭> [ 1 2 3 send 4 ] in
 [ 3 [ 1 2 4 ] ]
 ```
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/core.ts#L369">[src]</a></div>

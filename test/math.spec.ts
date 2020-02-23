@@ -133,10 +133,10 @@ test('should define gamma', async () => {
   // 9.5135076986687318362924871772654021925505786260883773
 });
 
-// test('should define factorial', async () => {
-//   expect(await fValues('20 !')).toEqual([2432902008176640000]);
-//   expect(nearly(await fValue('100 !'), 9.3326215443944152704e157)).toBeTruthy();
-// });
+test('should define factorial', async () => {
+  expect(await ƒ('20 !')).toEqual(`[ 2432902008176640000 ]`);
+  expect(await ƒ('1000 !')).toEqual(`[ 4.0238726007709377384e+2567 ]`);
+});
 
 test('should calculate exact powers', async () => {
   expect(await ƒ('2 0 ^')).toEqual(`[ 1 ]`);
@@ -148,24 +148,32 @@ test('should calculate exact powers', async () => {
   expect(await ƒ('0 1 ^')).toEqual(`[ 0 ]`);
   expect(await ƒ('0 10 ^')).toEqual(`[ 0 ]`);
 
+  expect(await ƒ('2 53 ^')).toEqual(`[ 9007199254740992 ]`);
+  expect(await ƒ('2 54 ^')).toEqual(`[ 18014398509481984 ]`);
+
   expect(await ƒ('0 0 ^')).toEqual(`[ ComplexInfinity ]`); // check this (indeterminate?)
 });
 
-// test(`should do Knuth's up-arrow notation`, async () => {
-//   expect(await fValues('3 2 ^^^')).toEqual([7625597484987]);
-// });
+test('should calculate inexact powers', async () => {
+  expect(await ƒ('2 1024 ^')).toEqual(`[ 1.7976931348623159077e+308 ]`);
+                                      // 1.7976931348623159077293051907890247336179769789423065 × 10^308
+});
 
-// test('should define max', async () => {
-//   expect(await fValues('3 2 max')).toEqual([3]);
-//   expect(await fValues('4 7 max')).toEqual([7]);
-//   expect(await fValues('9 4 3 max')).toEqual([9, 4]);
-// });
+test(`should do Knuth's up-arrow notation`, async () => {
+  expect(await ƒ('3 2 ^^^')).toEqual(`[ 7625597484987 ]`);
+});
 
-// test('should define min', async () => {
-//   expect(await fValues('3 2 min')).toEqual([2]);
-//   expect(await fValues('4 7 min')).toEqual([4]);
-//   expect(await fValues('9 4 3 min')).toEqual([9, 3]);
-// });
+test('should define max', async () => {
+  expect(await ƒ('3 2 max')).toEqual(`[ 3 ]`);
+  expect(await ƒ('4 7 max')).toEqual(`[ 7 ]`);
+  expect(await ƒ('9 4 3 max')).toEqual(`[ 9 4 ]`);
+});
+
+test('should define min', async () => {
+  expect(await ƒ('3 2 min')).toEqual(`[ 2 ]`);
+  expect(await ƒ('4 7 min')).toEqual(`[ 4 ]`);
+  expect(await ƒ('9 4 3 min')).toEqual(`[ 9 3 ]`);
+});
 
 // test('should test primes', async () => {
 //   expect(await fJSON('10 integers [ prime? ] map')).toEqual([
@@ -331,6 +339,7 @@ test('number works as a "macro"', async () => {
 
 test('get digits from a decimal', async () => {
   // 3.1415926535897932385
+  //    ^               ^
   expect(await ƒ('pi 2 @')).toEqual(`[ 4 ]`);
   expect(await ƒ('pi -2 @')).toEqual(`[ 8 ]`);
   expect(await ƒ('pi 20 @')).toEqual(`[ null ]`);

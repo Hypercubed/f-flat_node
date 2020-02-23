@@ -1,13 +1,11 @@
 'testing.ff' require
 'types.ff' require
 
-instack: [ [ stack dup [ unstack ] dip ] dip + in ] ;
-
-case: [ instack last truthy? ] ;
+case: [ nullary truthy? ] ;
 p-case: [ [ =~ ] >> case ] ;
 
-->: [ instack last truthy? ] ;
-~>: [ [ =~ ] >> case ] ;
+->: [ case ] ;
+~>: [ p-case ] ;
 
 /**
  * Calls the second quotation in the first pair whose first quotation yields a truthy value.
@@ -22,11 +20,31 @@ switch: [
 ] ;
 
   [
-    1
+    0
     [
       [ dup 0 = [drop 'no apples']]
       [ dup 1 = [drop 'one apple']]
       [ true    [string ' apples' +]]
     ] switch
-    'one apple' assert_equal
+    'no apples' assert_equal
   ] 'switch' test
+
+  [
+    1
+    [
+      [ [0 = ] case [drop 'no apples']]
+      [ [1 = ] case [drop 'one apple']]
+      [ true        [string ' apples' +]]
+    ] switch
+    'one apple' assert_equal
+  ] 'switch case' test
+
+  [
+    3
+    [
+      [ 0 p-case     [drop 'no apples']]
+      [ 1 p-case     [drop 'one apple']]
+      [ _ p-case     [string ' apples' +]]
+    ] switch
+    '3 apples' assert_equal
+  ] 'switch p-case' test

@@ -1,5 +1,6 @@
 import { randomBytes, createHash } from 'crypto';
 import { readFileSync, existsSync } from 'fs';
+import { arch } from 'os';
 import { dirname, join } from 'path';
 import * as fetch from 'isomorphic-fetch';
 import * as normalizeUrl from 'normalize-url';
@@ -184,5 +185,7 @@ export const node = {
       return process.env[x];
     }
     return null;
-  }
+  },
+
+  os: arch
 };

@@ -9,9 +9,9 @@ import {
   Sentence,
   Word,
   Key,
-  Decimal
+  Decimal,
 } from '../types';
-import { template, templateParts, toObject } from '../utils';
+import { deepEquals, template, templateParts, toObject, FFlatError } from '../utils';
 import { patternMatch } from '../utils/pattern';
 import { StackEnv } from '../engine/env';
 
@@ -40,6 +40,20 @@ class Choose {
   @signature(Future, Any, Any)
   future(ff: Future, t: any, f: any) {
     return ff.map((b: any) => (b ? t : f));
+  }
+}
+
+class IndexOf {
+  name = 'indexof';
+
+  @signature()
+  string(a: string, b: string) {
+    return a.indexOf(b);
+  }
+
+  @signature(Array, Any)
+  array(a: any[], b: string) {
+    return a.findIndex(v => deepEquals(v, b));
   }
 }
 
@@ -125,6 +139,12 @@ class At {
     const path = String(b).split('.');
     const r = getIn(a, path);
     return r === undefined ? null : r;
+  }
+
+  @signature(Any, null)
+  @signature(null, Any)
+  n(f: null, rhs: any) {
+    return null;
   }
 }
 
@@ -338,19 +358,52 @@ export const core = {
   eval: dynamo.function(Eval),
 
   /**
-   * ## `fork`
+   * ## `in`
    *
    * evalues the quote in a child environment
    *
    * ( [A] -> [a] )
    *
    * ```
-   * f♭> [ 1 2 * ] fork
+   * f♭> [ 1 2 * ] in
    * [ [ 2 ] ]
    * ```
    */
-  fork(this: StackEnv, a: StackValue): StackValue[] {
+  in(this: StackEnv, a: StackValue): StackValue[] {
     return this.createChild().eval(a).stack;
+  },
+
+  /**
+   * ## `in-catch`
+   *
+   * Evaluates the quotation in a child environment
+   * calls the second quotation in a child throws an error
+   *
+   * ```
+   * f♭> [ 1 + ] throws?
+   * [ true ]
+   * ```
+   */
+  'in-catch'(this: StackEnv, t: StackValue, c: StackValue) {
+    try {
+      return this.createChild().eval(t).stack;
+    } catch (err) {
+      return this.createChild().eval(c).stack;
+    }
+  },
+
+  /**
+   * ## `throw`
+   *
+   * Throws an error
+   *
+   * ```
+   * f♭> 'PC LOAD LETTER' throw
+   * [ ]
+   * ```
+   */
+  throw(this: StackEnv, e: string) {
+    throw new FFlatError(e, this);
   },
 
   /**
@@ -361,7 +414,7 @@ export const core = {
    * ( A -> )
    *
    * ```
-   * f♭> [ 1 2 3 send 4 ] fork
+   * f♭> [ 1 2 3 send 4 ] in
    * [ 3 [ 1 2 4 ] ]
    * ```
    */
@@ -427,7 +480,8 @@ export const core = {
    * [ 1 ]
    * ```
    */
-  indexof: (a: StackValue[], b: number | string) => a.indexOf(b), // doesn't work with Decimal!!!
+  indexof: dynamo.function(IndexOf),
+  // (a: StackValue[], b: number | string) => a.indexOf(b), // doesn't work with Decimal!!!
 
   /**
    * ## `zip`

@@ -8,8 +8,8 @@ test('should def and use nested actions', async () => {
   expect(await ƒ('test_def: { x: [ 1 2 + ] } def test_def.x')).toEqual(`[ 3 ]`);
 });
 
-test('should def and use nested actions in a fork', async () => {
-  expect(await ƒ('test_def: { x: [ 1 2 + ] } def [ test_def.x ] fork')).toEqual(
+test('should def and use nested actions in a in', async () => {
+  expect(await ƒ('test_def: { x: [ 1 2 + ] } def [ test_def.x ] in')).toEqual(
     `[ [ 3 ] ]`
   );
 });
@@ -20,20 +20,20 @@ test('cannot overwrite defined words', async () => {
   );
 });
 
-test('should shadow definitions in a fork', async () => {
+test('should shadow definitions in an in', async () => {
   expect(
-    await ƒ('"a" [ "outsite-a" ] def a [ "a" [ "in-fork-a" ] def a ] fork a')
+    await ƒ('"a" [ "outsite-a" ] def a [ "a" [ "in-fork-a" ] def a ] in a')
   ).toEqual(`[ 'outsite-a' [ 'in-fork-a' ] 'outsite-a' ]`);
   expect(
-    await ƒ('"a" [ "outsite-a" ] def a [ "b" [ "in-in-b" ] def a b ] in a b')
-  ).toEqual(`[ 'outsite-a' [ 'outsite-a' 'in-in-b' ] 'outsite-a' 'in-in-b' ]`);
+    await ƒ('"a" [ "outsite-a" ] def a [ "b" [ "in-in-b" ] def a b ] in a b: defined?')
+  ).toEqual(`[ 'outsite-a' [ 'outsite-a' 'in-in-b' ] 'outsite-a' false ]`);
 });
 
-test('should isloate definitions in a fork', async () => {
-  expect(await ƒ('[ "a" ["in-fork-a"] def a ] fork')).toStrictEqual(
+test('should isloate definitions in a in', async () => {
+  expect(await ƒ('[ "a" ["in-fork-a"] def a ] in')).toStrictEqual(
     `[ [ 'in-fork-a' ] ]`
   );
-  await expect(ƒ('[ "a" ["in-fork-a"] def a ] fork a')).rejects.toThrow(
+  await expect(ƒ('[ "a" ["in-fork-a"] def a ] in a')).rejects.toThrow(
     'Word is not defined: "a"'
   );
 });

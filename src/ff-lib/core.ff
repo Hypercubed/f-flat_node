@@ -28,16 +28,19 @@ keep: [ sip ] ;      // B [a] -> B a B    (aka sip)
 check: [ dupd eval ] ;     // B [a] -> B B a    (aka w)
 
 // 
-in: [ ( swap eval ) ] ;
+stackd: [ q< stack q> ] ;
 get: [ q< @ dup null? swap q> swap choose ] ;
 zipwith: [ zipinto in ] ;
 return: [ stack send ] ;
 yield: [ return suspend ] ;
 delay: [ [ sleep ] >> slip eval ] ;
 
+// No matter how many parameters the quotation consumes from the stack when nullary executes it, they are all restored and the final value calculated by the execution of the quotation is pushed on top of that
+nullary: [ [ stack dup ] dip + in -1 @ [ unstack ] dip ] ;
+
 // control
 _do: [ dup dipd ] ;
-_check: [ q< q< boolean q> q> ] ;
+_check: [ q< q< truthy? q> q> ] ;
 branch: [ _check choose eval ] ;
 when: [ [ ] branch ] ;
 unless: [ [ ] swap branch ] ;
@@ -60,9 +63,12 @@ last: [ -1 @ ] ;
 rest: [ 1 % ] ;
 head: [ \ ] ;
 tail: [ % ] ;
-startswith: [ dup ln [ head ] >> dip = ] ;
-endswith: [ dup ln [ tail ] >> dip = ] ;
-contains: [ indexof 1 > ] ;
+startswith?: [ dup ln [ head ] >> dip = ] ;
+endswith?: [ dup ln [ tail ] >> dip = ] ;
+contains?: [ indexof 1 > ] ;
+
+    [ [ 1 2 3 ] 3 contains? assert ] 'contains' test
+    [ [ 1 2 3 ] 4 contains? assert_false ] 'contains' test
 
 // lists
 empty?: [ ln 0 = ] ;

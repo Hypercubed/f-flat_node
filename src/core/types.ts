@@ -143,7 +143,7 @@ export const types = {
    * returns true if the item is a number
    *
    */
-  'number?': dynamo.function(IsNumber),
+  'number?': dynamo.function(IsNumber),  //  move to types.ff?
 
   /**
    * ## `complex?`
@@ -180,7 +180,7 @@ export const types = {
   /**
    * ## `atob`
    *
-   * encodes a string of data which has been encoded using base-64 encoding
+   * decodes a string of data which has been encoded using base-64 encoding
    *
    */
   atob: (x: string) => Buffer.from(x, 'base64').toString('binary'),
@@ -207,7 +207,7 @@ export const types = {
    * creates a hexidecimal hash from a String
    *
    */
-  'hex-hash': (x: string): string => hashCode(x).toString(16),
+  'hex-hash': (x: string): string => hashCode(x).toString(16),  // move to defined words?
 
   /**
    * ## `base`
@@ -223,7 +223,10 @@ export const types = {
    * converts a value to a boolean
    *
    */
-  boolean: (x: number) => (x ? Boolean(x.valueOf()) : false),
+  boolean: (x: any) => {
+    if (x === null) return x;
+    return x ? Boolean(x.valueOf()) : false;
+  },
 
   /**
    * ## `:` (key)

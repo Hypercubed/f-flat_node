@@ -3,7 +3,6 @@
 'switch-patterns.ff' require
 
 !!: [ null? ~ ] ;
-?@: [ [ dup !! ] dip [ @ ] >> [ drop null ] branch ] ;
 
 // Misc
 compose: [ + ] ;
@@ -56,12 +55,6 @@ rand-bool: [ rand-u32 even? ] ;
 // repl
 cls: [ "\u001B[2J\u001B[0;0f" println ] ;
 
-// switch
-// stack-copy: [ stack run ] ;
-// stack-check: [ q< stack-copy q> =~ ] ;
-// case: [ [ stack-check ] dip when ] ;
-// switch: [ [ unstack case ] each ] ;
-
 // short circuit logicals
 &&: [ slip when ] ;
 ||: [ slip [] swap branch ] ;
@@ -97,4 +90,20 @@ quad: [
 //   World
 //   `
 // ] ;
+
+phi: ( 1 5 sqrt + 2 / ) ;  // the golden ratio
+psi: ( phi inv ~ ) ;
+
+lucas: [ phi swap ^ floor ] ;
+binet: [ [ phi swap ^ ] [ psi swap ^ ] bi - 5 sqrt / ] ;
+
+fib: [
+  [
+    [ 0        p-case [ ]]
+    [ 1        p-case [ ]]
+    [ [ 10 > ] case   [ binet round ]]
+    [ [ 0 <  ] case   [ abs dup 1 + -1 swap ^ swap fib * ]]
+    [ true            [ [1 - fib]  [2 - fib] bi + ]]
+  ] switch
+] ;
 

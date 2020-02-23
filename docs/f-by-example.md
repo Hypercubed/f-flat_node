@@ -548,23 +548,24 @@ Let's define fizzbuzz
 20 integers
 [
   [
-    [ [15 divisor?] check   [drop 'fizzbuzz' println]]
-    [ [3 divisor?] check    [drop 'fizz' println]]
-    [ [5 divisor?] check    [drop 'buzz' println]]
-    [ [true]                [println]]
+    [ [15 divisor?] case    [drop 'fizzbuzz' println]]
+    [ [3 divisor?] case     [drop 'fizz' println]]
+    [ [5 divisor?] case     [drop 'buzz' println]]
+    [ true                [println]]
   ] switch
 ] each
 
 /**
  * FizzBuzz using pattern matching
  */
-20 integers [
+20 integers
+[
   dup [ 5 divisor? ] [ 3 divisor? ] bi pair
   [
-    [[true true]   ~case  [ drop drop 'fizzbuzz' println ]]
-    [[false true]  ~case  [ drop drop 'fizz' println ]]
-    [[true false]  ~case  [ drop drop 'buzz' println ]]
-    [[false false] ~case  [ drop println ]]
+    [[true true]   p-case  [ drop drop 'fizzbuzz' println ]]
+    [[false true]  p-case  [ drop drop 'fizz' println ]]
+    [[true false]  p-case  [ drop drop 'buzz' println ]]
+    [[false false] p-case  [ drop println ]]
   ] switch
 ] each
 

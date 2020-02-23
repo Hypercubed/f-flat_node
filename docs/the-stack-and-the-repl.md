@@ -16,5 +16,5 @@ Words \(and corresponding actions\) in F♭ are stored in a two dictionaries.  W
 
 ![](./assets/parent+child.png)
 
-In F♭, a sub-environment may be invoked using the `fork` word.  When a stack is forked it receives its initial stack content from the bottom of parent's stack \(in the form of an array\) and creates a new dictionary \(scope + locals\) that inherits from the parent.  In this way the child environment has access to all words defined in the parent.  A child can send a value from it's stack to the parent using the `send` verb.
+In F♭, a sub-environment may be invoked using the `in` word.  When a stack is forked it receives its initial stack content from the bottom of parent's stack \(in the form of an array\) and creates a new dictionary \(scope + locals\) that inherits from the parent.  In this way the child environment has access to all words defined in the parent.  A child can send a value from it's stack to the parent using the `send` verb.
 

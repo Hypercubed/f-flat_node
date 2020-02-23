@@ -15,15 +15,17 @@ include: [ resolve read eval ] def
 export: [ vocab send ] def
 
 __module_hash: [ hex-hash '%top._' swap + ] def
-__load-module: [ [ dup [ ] >> '__filename' swap def read eval export ] >> fork drop ] def
+__load-module: [ [ dup [ ] >> '__filename' swap def read eval export ] >> in drop ] def
 __load-and-sto-module: [ dup __load-module swap __module_hash swap def ] def
+
+imported?: [ resolve __module_hash defined? ] def
 
 /**
  * ## `import`
  * Loads and creates a module from a file
  */
 import: [
-  resolve   
+  resolve
   dup __module_hash defined?
     [ __module_hash eval ]
     [ dup __load-and-sto-module __module_hash eval ]
