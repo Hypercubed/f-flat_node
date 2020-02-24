@@ -6,59 +6,59 @@
  'testing.ff' require
 
 // core shuffle words
-slip: [ << eval ] ;         // [b] A -> b A
-run: [ dup slip ] ;         // [a] -> a [a]
-dip: [ swap slip ] ;        // B [a] -> a B
+slip: [ << eval ] ;         // [B*] a -> b* a
+run: [ dup slip ] ;         // [A*] -> a* [a*]
+dip: [ swap slip ] ;        // b [A*] -> a* b
 
     [ [ 'b' ] 'A' slip stack [ 'b' 'A' ] assert_equal ] 'slip' test
     [ ['a'] run stack [ 'a' ['a'] ] assert_equal ] 'run' test
     [ 'B' ['a'] dip stack [ 'a' 'B' ] assert_equal ] 'dip' test
 
 // diped
-dupd: [ q< dup q> ] ;      // B A -> B B A
-over: [ dupd swap ] ;      // B A -> B A B  (aka peek)
-sip: [ over slip ] ;       // B [a] -> B a B    (aka keep)
-dipd: [ q< dip q> ] ;      // D C [b] A -> D b C A
-sipd: [ q< sip q> ] ;      // C B [a] -> C a C B
-slipd: [ q< slip q> ] ;    // [c] B A -> c B A
-swapd: [ q< swap q> ] ;    // C B A -> B C A
-dive: [ swap dipd ] ;      // [c] [b] [a] -> a [c] [b]   (aka dip2)
-dup2: [ over over ] ;      // B A -> B A B A
-sap: [ dip eval ] ;        // [B] [A] -> A B
-tuck: [ swap over ] ;      // B A -> A B A
+dupd: [ q< dup q> ] ;      // b a -> b b a
+over: [ dupd swap ] ;      // b a -> b a b  (aka peek)
+sip: [ over slip ] ;       // b [A*] -> b a* b    (aka keep)
+dipd: [ q< dip q> ] ;      // d c [B*] a -> d b* c a
+sipd: [ q< sip q> ] ;      // c b [A*] -> c a* c b
+slipd: [ q< slip q> ] ;    // [C*] b a -> c* b a
+swapd: [ q< swap q> ] ;    // c b a -> b c a
+dive: [ swap dipd ] ;      // [C*] [B*] [A*] -> a* [C*] [B*]   (aka dip2)
+dup2: [ over over ] ;      // b a -> b a b a
+sap: [ dip eval ] ;        // [B*] [A*] -> a* b*
+tuck: [ swap over ] ;      // b a -> a b a
 
   [ [ 'b' ] [ 'a' ] sap stack [ 'a' 'b' ] assert_equal ] 'sap' test
   [ [ dup 1 - ] (5) sap stack [ 5 4 ] assert_equal ] 'sap' test
   [ +:(4, 5) sap 9 assert_equal ] 'sap' test
   [ +:(*:(5,6) sap *:(5,2) sap) sap 40 assert_equal ] 'sap' test
 
-drop2: [ drop drop ] ;        // B A -> (2drop in forth)
+drop2: [ drop drop ] ;        // b a -> (2drop in forth)
 
-m: [ dup eval ] ;             // [a] -> [a] a
+m: [ dup eval ] ;             // [A*] -> [A*] a*
 
-keep2: [ q< dup2 q> dive ] ;  // [c] [b] [a] -> [c] [b] a [c] [b]   (aka 2keep)
+keep2: [ q< dup2 q> dive ] ;  // [C*] [B*] [A*] -> [C*] [B*] a* [C*] [B*]   (aka 2keep)
 
-nip: [ swap drop ] ;          // B A -> A
-dropd: [ q< drop q> ] ;       // B A -> A          (aka nip)
+nip: [ swap drop ] ;          // b a -> a
+dropd: [ q< drop q> ] ;       // b a -> a          (aka nip)
 
-overd: [ q< over q> ] ;       // C B A -> C B C A
-pick: [ overd swap ] ;        // C B A -> C B A C
-dup3: [ pick pick pick ] ;    // C B A -> C B A C B A
-dig: [ swapd swap ] ;         // C B A -> B A C (rot in forth)
-rolldown: [ swapd swap ] ;    // C B A -> B A C (aka dig)
-bury: [ swap swapd ] ;        // C B A -> A C B
-flip: [ swapd bury ] ;        // C B A -> A B C
-rot: [ bury swap ] ;          // C B A -> A B C
+overd: [ q< over q> ] ;       // c b a -> c b c a
+pick: [ overd swap ] ;        // c b a -> c b a c
+dup3: [ pick pick pick ] ;    // c b a -> c b a c b a
+dig: [ swapd swap ] ;         // c b a -> b a c (rot in forth)
+rolldown: [ swapd swap ] ;    // c b a -> b a c (aka dig)
+bury: [ swap swapd ] ;        // c b a -> a c b
+flip: [ swapd bury ] ;        // c b a -> a b c
+rot: [ bury swap ] ;          // c b a -> a b c
 
-dip2: [ swap dipd ] ;            // [c] [b] [a] -> a [c] [b]
+dip2: [ swap dipd ] ;         // [C*] [B*] [A*] -> a* [C*] [B*]
 
-bi: [ sipd eval ] ;        // C [b] [a] -> C b C a
+bi: [ sipd eval ] ;           // c [B*] [A*] -> c b* c a*
 
     [ 5 [ 2 * ] [ 2 + ] bi stack [ 10 7 ] assert_equal ] 'bi' test
 
-bi2: [ q< keep2 q> eval ] ;     // D C [b] [a] -> D C b D C a
-bi*: [ dipd eval ] ;            // D C [b] [a] -> D b C a
-bi@: [ dup bi* ] ;              // C B [a] -> C a B a
-tri: [ q< sipd sip q> eval ] ;  // D [c] [b] [a] -> D c D b D a
+bi2: [ q< keep2 q> eval ] ;     // d c [B*] [A*] -> d c b* d c a*
+bi*: [ dipd eval ] ;            // d c [B*] [A*] -> d b* c a*
+bi@: [ dup bi* ] ;              // c b [A*] -> c a* b a*
+tri: [ q< sipd sip q> eval ] ;  // d [C*] [B*] [A*] -> d c* d b* d a*
 
 

@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>F♭ by example | F-Flat</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="F♭ by example" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="F♭ (pronounced F-flat) is a toy language." />
+<meta property="og:description" content="F♭ (pronounced F-flat) is a toy language." />
+<link rel="canonical" href="http://localhost:4000/f-flat_node/f-by-example.html" />
+<meta property="og:url" content="http://localhost:4000/f-flat_node/f-by-example.html" />
+<meta property="og:site_name" content="F-Flat" />
+<script type="application/ld+json">
+{"headline":"F♭ by example","url":"http://localhost:4000/f-flat_node/f-by-example.html","description":"F♭ (pronounced F-flat) is a toy language.","@type":"WebPage","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/f-flat_node/assets/css/style.css?v=d82c1b626faf4c31246431443e5fe2bfc2fc28d7">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="/f-flat_node/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/f-flat_node/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/Hypercubed/f-flat_node">View On GitHub</a></li>
+          
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>F-Flat</h1>
+          <p>F♭ (pronounced F-flat) is a toy language.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/Hypercubed">Hypercubed</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1 id="f-by-example">F♭ by example</h1>
+
+<h2 id="hello-world">Hello World</h2>
+
+<p>Our first example is to print a traditional “Hello World” message.  When you firt open f-flat in interactive mode you will see the wolcome message:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Welcome to F♭ REPL Interpreter
+F♭ Version 0.0.6 (C) 2000-2017 J. Harshbarger
+
+f♭&gt;
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">f♭&gt;</code> is the REPL input prompt.  To print our message type the string and <code class="language-plaintext highlighter-rouge">println</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 'Hello World' println
+Hello World
+[  ]
+</code></pre></div></div>
+
+<p>The empty brackets after the message indicate that the stack is empty.</p>
+
+<p>To exit the REPL type <code class="language-plaintext highlighter-rouge">.exit</code> or hit <code class="language-plaintext highlighter-rouge">ctrl-c</code> twice.</p>
+
+<p><a href="https://hypercubed.gitbooks.io/f-flat/content/the-repl.html">More information on the F-Flat REPL</a></p>
+
+<h2 id="comments">Comments</h2>
+
+<p>F♭ supports both:</p>
+
+<ul>
+  <li>// Line comments which go to the end of the line.</li>
+  <li>/_ Block comments which go to the closing delimiter. _/</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// This is an example of a line comments
+
+/* 
+ * This is another type of comment, the block comment.
+ */
+
+f♭&gt; 'Hello World' println
+</code></pre></div></div>
+
+<h2 id="stack-manipulation">Stack manipulation</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// push items onto the stack
+f♭&gt; 3 'Hello World'
+[ 3 'Hello World' ]
+
+// duplicate an item
+f♭&gt; dup
+[ 3 'Hello World' 'Hello World' ]
+
+// remove an item
+f♭&gt; drop
+[ 3 'Hello World' ]
+
+// swap items
+f♭&gt; swap
+[ 'Hello World' 3 ]
+
+// undo last user action
+f♭&gt; undo
+[ 3 'Hello World' ]
+
+// clear the stack
+f♭&gt; clr
+[ ]
+
+// clear the environment (cannot be undone)
+f♭&gt; .clear
+Clearing context...
+
+Welcome to F♭ REPL Interpreter
+F♭ Version 0.0.6 (C) 2000-2017 J. Harshbarger
+
+f♭&gt;
+// now ready for more input
+</code></pre></div></div>
+
+<h2 id="literals-and-operators">Literals and Operators</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// using postfix notation
+f♭&gt; 6 5 4 * +
+[ 26 ]
+
+f♭&gt; 6.5 /
+[ 4 ]
+
+f♭&gt; 10 *
+[ 40 ]
+
+f♭&gt; 5 /
+[ 8 ]
+
+f♭&gt; 2 %
+[ 0 ]
+
+// ln on a number to calculate natural log
+f♭&gt; ln
+[ -Infinity ]
+
+// println prints a value
+f♭&gt; clr 3 println
+3
+[  ]
+
+// single quotes for strings
+f♭&gt; 'Hello' println
+Hello
+[  ]
+
+// double quotes to use encoded strings
+f♭&gt; "f-flat === f\u{266D}" println
+f-flat === f♭
+[  ]
+
+// Use backticks for string templates
+f♭&gt; `1 + 2 is $(1 2 +)` println
+1 + 2 is 3
+[  ]
+
+// string concatenation with +
+f♭&gt; 'f' '-flat' + println
+f-flat
+[  ]
+
+// boolean logic
+f♭&gt; `true AND false is $(true false *)` println
+true AND false is false
+[  ]
+
+f♭&gt; `true OR false is $(true false +)` println
+true OR false is true
+[  ]
+
+f♭&gt; `NOT true is $(true ~)` println
+NOT true is false
+[  ]
+
+// Null is considered unknown for boolean logic
+f♭&gt; `false AND null is $(false null *)` println
+false AND null is false
+[  ]
+
+f♭&gt; `true AND null is $(true null *)` println
+true AND null is
+[  ]
+
+// Bitwise operations
+// Binary, octal, and hex values ca be entered using 0b, 0o, and 0b notation.
+f♭&gt; `0011 AND 0101 is $( 0b011 0b101 &amp; bin )` println
+0011 AND 0101 is 0b1
+[  ]
+
+f♭&gt; `0011 OR 0101 is $( 0b011 0b101 | bin )` println
+0011 OR 0101 is 0b111
+[  ]
+
+f♭&gt; `0011 XOR 0101 is $( 0b011 0b101 $ )` println
+0011 XOR 0101 is 6
+[  ]
+
+f♭&gt; `1 &lt;&lt; 5 is $( 1 5 &lt;&lt; )` println
+1 &lt;&lt; 5 is 32
+[  ]
+
+f♭&gt; `0x80 &gt;&gt; 2 is $( 0x80 2 &gt;&gt; hex )` println
+0x80 &gt;&gt; 2 is 0x20
+[  ]
+
+// Use underscores to improve readability!
+f♭&gt; `One million is written as $( 1_000_000 )` println
+One million is written as 1000000
+[  ]
+</code></pre></div></div>
+
+<p>Other internal operators can be found in the <a href="/docs/api/base.md">API</a> section.</p>
+
+<h2 id="arrays">Arrays</h2>
+
+<p>Expressions within square brackets are not evaluated.  Expressions within round brackets are.  Commas are whitespace.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; [ 5, 4 ]
+[ [ 5 4 ] ]
+
+f♭&gt; ( 3 2 * )
+[ [ 5 4 ] [ 6 ] ]
+
+f♭&gt; &lt;&lt;
+[ [ 5 4 [ 6 ] ] ]
+
+f♭&gt; [ println ] &gt;&gt;
+[ [ [ 5 4 3 [ 3 ] ] println ] ]
+
+f♭&gt; 0 @
+[ [ 5 4 3 [ 2 ] ] ]
+</code></pre></div></div>
+
+<h2 id="maps">Maps</h2>
+
+<p>Objects/Maps are key value pairs.  Keys can be strings or words (identifies with a colon suffix).  Again, commas are whitespace.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; { 'x' 123, y: 456 }
+[ { x: 123 y: 456 } ]
+
+f♭&gt; { "y": 890 }
+[ { x: 123 y: 456 } { y: 890 } ]
+
+f♭&gt; &lt;&lt;
+[ { y: 890 x: 123 } ]
+
+f♭&gt; x: @
+[ 123 ]
+
+f♭&gt; undo
+[ { y: 890 x: 123 } ]
+
+f♭&gt; { x: 123 y: 890 }
+[ { y: 890 x: 123 } { x: 123 y: 890 } ]
+
+f♭&gt; =
+[ true ]
+</code></pre></div></div>
+
+<p>Interesting note: <a href="https://hypercubed.gitbooks.io/f-flat/content/compared-to-json.html">F♭ is a superset of JSON</a></p>
+
+<h2 id="words">Words</h2>
+
+<p>Words can be recalled from the dictionary by entering the identifier directly.  If a word is defined as an expression it is executed. If a word contains a colon suffix, the word is pushed to the stack as a literal.  If the colon is a prefix, it is executed immediately, this is useful inside lazy lists.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; pi
+[ 3.1415926535897932385 ]
+
+f♭&gt; cos
+[ -1 ]
+
+f♭&gt; sin:
+[ -1 sin ]
+
+f♭&gt; clr [ -1 sin ]
+[ [ -1 sin ] ]
+
+f♭&gt; clr [ -1 :sin ]
+[ [ -0.84147098480789650665 ] ]
+</code></pre></div></div>
+
+<h2 id="storing-values">Storing values</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// Use sto to store a value in the dictionary
+f♭&gt; 45 x: sto
+[  ]
+
+// use rcl to recall the value
+f♭&gt; x
+[ 45 ]
+
+// dictionary words cannot be over written
+f♭&gt; 54 x: sto
+FFlatError: Error: Cannot overwrite definitions in strict mode: x
+</code></pre></div></div>
+
+<h2 id="slices-and-lengths">Slices and Lengths</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// first we store some values for later use... this is discouraged in general.
+f♭&gt; [1, 2, 3, 4, 5] xs: sto
+[  ]
+
+f♭&gt; 'Hello+World' ss: sto
+[  ]
+
+// Indexing starts at 0
+f♭&gt; `first element of the array: $( xs 0 @ )` println
+first element of the array: 1
+[  ]
+
+f♭&gt; `second element of the array: $( xs 1 @ )` println
+second element of the array: 2
+[  ]
+
+f♭&gt; `first character of the string: $( ss 0 @ )` println
+first character of the string: H
+[  ]
+
+f♭&gt; `second character of the string: $( ss 1 @ )` println
+second character of the string: e
+[  ]
+
+// `ln` returns the length/size
+f♭&gt; `array size: $( xs ln )` println
+array size: 5
+[  ]
+
+f♭&gt; `string size: $( ss ln )` println
+string size: 11
+[  ]
+
+// `/` splits an array or string
+f♭&gt; `array split at 2:` println xs 2 /
+ array split at 2:
+[ [ 1 2 ] [ 3 4 5 ] ]
+
+f♭&gt; clr `string split at 6:` println ss 6 /
+ string split at 6:
+[ 'Hello+' 'World' ]
+
+f♭&gt; clr ` string split at "+"` println ss '+' /
+ string split at "+"
+[ [ 'Hello' 'World' ] ]
+
+// * joins an array
+f♭&gt; clr [ 'Hello' 'World' ] '::' * println
+Hello::World
+[  ]
+</code></pre></div></div>
+
+<h2 id="types">Types</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 5 type println
+number
+[  ]
+
+f♭&gt; 'Hello' type println
+string
+[  ]
+
+f♭&gt; i type println
+complex
+[  ]
+
+f♭&gt; [] type println
+array
+[  ]
+
+f♭&gt; now type println
+date
+[  ]
+
+f♭&gt; {} type println
+object
+[  ]
+</code></pre></div></div>
+
+<h2 id="conversions">Conversions</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 15 string
+[ '15' ]
+
+f♭&gt; number
+[ 15 ]
+
+// string to regex
+f♭&gt; clr '/a/' regexp
+[ /a/ ]
+
+// string to complex value
+f♭&gt; clr '1+5i' complex
+[ 1+5i ]
+
+// string to date
+f♭&gt; clr '1/1/1990' date
+[ Mon Jan 01 1990 00:00:00 GMT-0700 (Mountain Standard Time) ]
+</code></pre></div></div>
+
+<p>Using the conversion words inside lazy lists are lazy.  However, using the colon word prefix the conversion can be executed immediately:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; [ '/a/i':regexp '1+5i':complex '1/1/1990':date ]
+[ [ /a/i
+    1+5i
+    Mon Jan 01 1990 00:00:00 GMT-0700 (Mountain Standard Time) ] ]
+
+f♭&gt; ln
+[ 3 ]
+</code></pre></div></div>
+
+<h2 id="expressions">Expressions</h2>
+
+<p>Expression are arrays containing literals and words. They are stored in thedictionary like any other value discussed above (using <code class="language-plaintext highlighter-rouge">sto</code>), however, they must first be converted to an expression using the colon (<code class="language-plaintext highlighter-rouge">:</code>) operator.  The semi-colon operator is a short cut definition for defining expressions.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// convert to an expression and sto
+f♭&gt; [ dup * ] : sqr: sto
+[  ]
+
+// same as above (; is defined as [ : swap sto ])
+f♭&gt; cube: [ dup sqr * ] ;
+[  ]
+
+f♭&gt; `5 is $( 5 )` println
+5 is 5
+[  ]
+
+f♭&gt; `5 squared is $( 5 sqr )` println
+5 squared is 25
+[  ]
+
+f♭&gt; `5 cubed is $( 5 cube)` println
+5 cubed is 125
+[  ]
+</code></pre></div></div>
+
+<p>To see the definition of a single word use <code class="language-plaintext highlighter-rouge">see</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; ';' see println
+[ : swap sto ]
+[  ]
+
+f♭&gt; sqr: see println
+[ dup * ]
+[  ]
+</code></pre></div></div>
+
+<p>Use <code class="language-plaintext highlighter-rouge">words</code> to see all words currently defined:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; words [ println ] each
+...etc
+sqr
+cubed
+...etc
+[ ]
+</code></pre></div></div>
+
+<h2 id="mapping-and-filters">Mapping and Filters</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// repeat items in an array with *
+f♭&gt; [ 2 ] 2 *
+[ [ 2 2 ] ]
+
+// Intersparse arrays using *
+
+f♭&gt; [ 2 * ] *
+[ [ 2 2 * 2 2 * ] ]
+
+// which can be evaluated
+f♭&gt; eval
+[ 4 4 ]
+
+// or use map (note map == * eval)
+f♭&gt; [ 2 2 ] [ 2 * ] map
+[ [ 4 4 ] ]
+
+// Add items to an array with &lt;&lt; (or &gt;&gt; from lhs)
+f♭&gt; [ 5 ] &lt;&lt;
+[ [ 4 4 [ 5 ] ] ]
+
+f♭&gt; eval: map
+[ [ 4 4 5 ] ]
+
+// Array are equal if that are deeply equal
+f♭&gt; [ 4 4 5 ] =
+[ true ]
+
+f♭&gt; clr [ 1 2 3 4 5 ] [ even? ] filter
+[ [ 2 4 ] ]
+
+f♭&gt; clr [ 1 2 3 4 5 ] [ println ] each
+1
+2
+3
+4
+5
+[  ]
+
+// these actions also work with strings
+f♭&gt; 'AbCDefg'
+[ 'AbCDefg' ]
+
+f♭&gt; [ ucase ] map '' *
+[ 'ABCDEFG' ]
+
+f♭&gt; undo
+[ 'AbCDefg' ]
+
+f♭&gt; [ dup ucase = ] filter
+[ 'ACD' ]
+</code></pre></div></div>
+
+<h2 id="flow-control">Flow Control</h2>
+
+<p>The base operator for flow control is choose… similar to the tertiary operator in other languages.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; true 'Value is true' 'Value is false' choose println
+Value is true
+[  ]
+
+f♭&gt; false [ 'Value is true' println ] [ 'Value is false' println ] branch
+Value is false
+[  ]
+</code></pre></div></div>
+
+<h2 id="pattern-matching-and-regular-expressions">Pattern Matching and Regular Expressions</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; 5 3 =~
+[ false ]
+
+f♭&gt; clr 'Hello' '/^Hell/' regexp =~
+[ true ]
+
+f♭&gt; clr 'This can be anything' _ =~
+[ true ]
+
+f♭&gt; clr [ 'Hello' 3 4 5 ] [ '/^Hell/':regexp 3 ... ]
+[ [ 'Hello' 3 4 5 ] [ /^Hell/ 3 ... ] ]
+
+f♭&gt; =~
+[ true ]
+</code></pre></div></div>
+
+<h2 id="functions">Functions</h2>
+
+<p>Let’s define fizzbuzz</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * FizzBuzz using branching
+ */
+20 integers
+[
+  dup 15 divisor?
+  [ drop 'fizzbuzz' println ]
+  [
+    dup 3 divisor?
+    [ drop 'fizz' println ]
+    [ 
+      dup 5 divisor?
+      [ drop 'buzz' println ]
+      [ println ]
+      branch
+    ]
+    branch
+  ]
+  branch
+] each
+
+/**
+ * FizzBuzz using switch
+ */
+20 integers
+[
+  [
+    [ [15 divisor?] case    [drop 'fizzbuzz' println]]
+    [ [3 divisor?] case     [drop 'fizz' println]]
+    [ [5 divisor?] case     [drop 'buzz' println]]
+    [ true                [println]]
+  ] switch
+] each
+
+/**
+ * FizzBuzz using pattern matching
+ */
+20 integers
+[
+  dup [ 5 divisor? ] [ 3 divisor? ] bi pair
+  [
+    [[true true]   p-case  [ drop drop 'fizzbuzz' println ]]
+    [[false true]  p-case  [ drop drop 'fizz' println ]]
+    [[true false]  p-case  [ drop drop 'buzz' println ]]
+    [[false false] p-case  [ drop println ]]
+  ] switch
+] each
+
+/**
+ * FizzBuzz using lambdas as switch
+ */
+20 integers [
+  [ x: ] =&gt; [
+    [
+      [ .x 15 divisor? ['fizzbuzz' println]]
+      [ .x 3 divisor?  ['fizz' println]]
+      [ .x 5 divisor?  ['buzz' println]]
+      [ true           [.x println]]
+    ] switch
+  ]
+] lambda each
+</code></pre></div></div>
+
+<h2 id="more-stack-combinators">More Stack Combinators</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// `dip` calls a quotation while temporarily hiding the top item on the stack
+f♭&gt; 1 2 4 [ + ] dip
+[ 3 4 ]
+
+// `keep` calls a quotation with an item on the stack, restoring that item after the quotation returns
+f♭&gt; clr 1 2 4 [ + ] keep
+[ 1 6 4 ]
+
+// `bi` applies quotation p to x, then applies quotation q to x
+f♭&gt; clr [ 1 2 3 ] [ sum ] [ length ] bi /
+[ 2 ]
+
+// `bi*` applies quotation p to x, then applies quotation q to y
+f♭&gt; clr [ 1 2 ] [ 3 4 ] [ 0 @ ] [ 1 @ ] bi*
+[ 1 4 ]
+
+// `bi@` applies the quotation to x, then to y
+f♭&gt; clr "Hello" "All" [ ln ] bi@
+[ 5 3 ]
+</code></pre></div></div>
+
+<h2 id="scoping-and-child-environments">Scoping and Child Environments</h2>
+
+<p>TBR</p>
+
+<h2 id="concurrency">Concurrency</h2>
+
+<p>TBR</p>
+
+<h2 id="modules">Modules</h2>
+
+<p>TBR</p>
+
+
+
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>

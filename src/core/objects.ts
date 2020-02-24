@@ -22,6 +22,8 @@ export const objects = {
   /**
    * ## `object`
    *
+   * `[ a: b ... ] -> { a: b ... }`
+   *
    * convert a quotation to an object
    *
    */
@@ -30,20 +32,26 @@ export const objects = {
   /**
    * ## `object?`
    *
+   * `a -> bool`
+   *
    * retruns true of the item is an object
    */
   'object?': dynamo.function(IsObject),
 
-  /**
-   * ## `contains?`
-   *
-   * returns true if an item contains a key
-   *
-   */
-  'contains?': (a: {}, b: any) => b in a, // object by keys, array by values (move to indexof?)
+  // /**
+  //  * ## `contains?`
+  //  *
+  //  * `{A} a: -> bool`
+  //  *
+  //  * returns true if an item contains a key
+  //  *
+  //  */
+  // 'contains?': (a: {}, b: any) => b in a, // object by keys, array by values (move to indexof?)
 
   /**
    * ## `keys`
+   *
+   * `{A} -> [str*]`
    *
    * returns an array of keys
    *
@@ -52,6 +60,8 @@ export const objects = {
 
   /**
    * ## `vals`
+   *
+   * `{A} -> [b*]`
    *
    * returns an array of values
    *

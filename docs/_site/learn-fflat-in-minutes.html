@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Introduction | F-Flat</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Introduction" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="F♭ (pronounced F-flat) is a toy language." />
+<meta property="og:description" content="F♭ (pronounced F-flat) is a toy language." />
+<link rel="canonical" href="http://localhost:4000/f-flat_node/learn-fflat-in-minutes.html" />
+<meta property="og:url" content="http://localhost:4000/f-flat_node/learn-fflat-in-minutes.html" />
+<meta property="og:site_name" content="F-Flat" />
+<script type="application/ld+json">
+{"headline":"Introduction","url":"http://localhost:4000/f-flat_node/learn-fflat-in-minutes.html","description":"F♭ (pronounced F-flat) is a toy language.","@type":"WebPage","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/f-flat_node/assets/css/style.css?v=d82c1b626faf4c31246431443e5fe2bfc2fc28d7">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="/f-flat_node/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/f-flat_node/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/Hypercubed/f-flat_node">View On GitHub</a></li>
+          
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>F-Flat</h1>
+          <p>F♭ (pronounced F-flat) is a toy language.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/Hypercubed">Hypercubed</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1 id="introduction">Introduction</h1>
+
+<p>This is a small F♭ tutorial that should take no more than a few minutes to complete.</p>
+
+<p>The code snippets below are meant to demonstrate input and outputs in the fflat repl.  Lines starting with <code class="language-plaintext highlighter-rouge">F♭&gt;</code> are user input followed by output.  The output by the repl is the currtent stack.  The stack is always displayed in brackets.  For example:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; 3 2 + 'Hello World' println   // user input
+Hello World                       // text printed to the console
+
+[ 5 ]                             // the current stack
+</code></pre></div></div>
+
+<p>For most examples below it is assumed that the current stack is clear. The stack can be cleared between examples by typing <code class="language-plaintext highlighter-rouge">clr</code>.  <code class="language-plaintext highlighter-rouge">.clear</code> will reset the entire environment.</p>
+
+<h2 id="syntax">Syntax</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// Single-line comments start with two slashes.
+/* Multiline comments start with slash-star,
+   and end with star-slash */
+</code></pre></div></div>
+
+<p>White space does not matter, comma is whitespace.  Brackets are always considered to have whitespace padding.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; ['these','are','equivalent']
+[ [ 'these' 'are' 'equivalent' ] ]
+
+F♭&gt; [
+  'these'
+  'are'
+  'equivalent'
+]
+[ [ 'these' 'are' 'equivalent' ] ]
+</code></pre></div></div>
+
+<h2 id="types">Types</h2>
+
+<h3 id="strings">Strings</h3>
+
+<p>Strings are created with <code class="language-plaintext highlighter-rouge">'</code>, <code class="language-plaintext highlighter-rouge">"</code> or <code class="language-plaintext highlighter-rouge">\</code>`.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; 'abc'
+[ 'abc' ]
+
+F♭&gt; 'λx:(μα.α→α).xx'            // can include Unicode characters
+[ 'λx:(μα.α→α).xx' ]
+
+F♭&gt; "f-flat === f\u{266D}"      // double quotes to use encoded strings
+[ 'f-flat === f♭' ]
+
+F♭&gt; `1 + 2 is $(1 2 +)`         // backticks for string templates
+[ '1 + 2 is 3' ]
+</code></pre></div></div>
+
+<h3 id="numbers">Numbers</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; 15            // a number
+[ 15 ]
+
+F♭&gt; 20%           // a percentage
+[ 0.2 ]
+
+F♭&gt; 1_000_000     // Use underscores to improve readability!
+[ 1000000 ]
+
+
+F♭&gt; (1 2) :complex  // Complex numbers
+[ 1+2i ]
+
+// Binary, octal, and hex values ca be entered using 0b, 0o, and 0b notation.
+
+F♭&gt; 0b111             // binary
+[ 7 ]
+
+F♭&gt; 0o111             // octal
+[ 73 ]
+
+F♭&gt; 0x111             // hexadecimal
+[ 273 ]
+</code></pre></div></div>
+
+<h3 id="booleans">Booleans</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; true
+[ true ]
+
+F♭&gt; false
+[ false ]
+
+F♭&gt; null      // used to indicate a deliberate non-value (neither true nor false)
+[ null ]
+</code></pre></div></div>
+
+<h3 id="words">Words</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; thing         // a word that is executed immediatly unless enclosed in an lazy array
+[ ??? ]
+
+F♭&gt; thing:        // this is a key, it is not execuated unless explicitly evaluated
+[ thing: ]
+
+F♭&gt; :thing        // a word that is executed immediatly even if it is enclosed in an lazy array
+[ :thing ]
+
+F♭&gt; #thing        // a unique symbol
+[ #thing ]
+</code></pre></div></div>
+
+<h3 id="non-literal-types">Non-Literal Types</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; "1/1/1990" :date // dates
+[ Mon Jan 01 1990 00:00:00 GMT-0700 (Mountain Standard Time) ]
+
+F♭&gt; '/a/' :regexp    // regular expressions
+[ /a/ ]
+</code></pre></div></div>
+
+<h2 id="arrays">Arrays</h2>
+
+<h3 id="active-arrays">Active arrays</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; (1 2 3)
+[ [ 1 2 3 ] ]
+
+F♭&gt; (1 2 +)
+[ [ 3 ] ]
+
+F♭&gt; ('Hello' 'World' +)
+[ [ 'HelloWorld' ] ]
+</code></pre></div></div>
+
+<h3 id="lazy-arrays">Lazy Arrays</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; [1 2 3]
+[ [ 1 2 3 ] ]
+
+F♭&gt; [1 2 +]
+[ [ 1 2 + ] ]
+
+F♭&gt; ['Hello' 'World' +]
+[ [ 'Hello' 'World' + ] ]
+
+F♭&gt; ['Hello' ' World' :+]
+[ [ 'Hello World' ] ]
+</code></pre></div></div>
+
+<h3 id="construction-and-concatination">Construction and concatination</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; 1 unit
+[ [ 1 ] ]
+
+F♭&gt; [ 2 ] 3 &lt;&lt;
+[ [ 2 3 ] ]
+
+F♭&gt; 5 [ 8 ] &gt;&gt;
+[ [ 5 8 ] ]
+
+F♭&gt; [ 13 ] [ 21 ] + 
+[ [ 13 21 ] ]
+</code></pre></div></div>
+
+<h3 id="operations">Operations</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; [ 5 8 13 ] ln             // `ln` is returns the length.
+[ 3 ]
+
+F♭&gt; 'Hello' ln                // Same for strings, which often work just like an array of characters
+[ 5 ]
+
+F♭&gt; [ 'first' 'second' ] 1 @  // Arrays are zero-based, negitive for access from the back
+[ 'first' ]
+
+F♭&gt; 'This is a string' 0 @
+[ 'T' ]
+
+F♭&gt; [ 'first' 'second' ] -2 @  // can acess from the end with negitive values
+[ 'first' ]
+
+F♭&gt; 'This is a string' -1 @
+[ 'g' ]
+
+// Some defined access words
+F♭&gt; [ 'first' 'second' ] first
+[ 'first' ]
+
+F♭&gt; 'This is a string' last
+[ 'g' ]
+
+F♭&gt; [ 1 2 3 4 ] rest
+[ [ 2 3 4 ] ]
+
+F♭&gt; [ 5 8 13 ] 8 indexof
+[ 1 ]
+
+F♭&gt; 'hello' 'l' indexof
+[ 2 ]
+
+// Arrays can be evaluated
+F♭&gt; 2 [ 3 + ] eval
+[ 5 ]
+</code></pre></div></div>
+
+<h3 id="operations-over-arrays">Operations over arrays</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; [ 2 ] 3 *               // repeat items in an array with *
+[ [ 2 2 2 ] ]
+
+F♭&gt; [ 1 2 3 ] [ 2 * ] *     // Intersparse arrays using *
+[ [ 1 2 * 2 2 * 3 2 * ] ]
+
+F♭&gt; [ 1 2 3 ] [ 2 * ] map
+[ [ 2 4 6 ] ]
+
+F♭&gt; [ 1 2 3 ] [ 2 &lt; ] filter
+[ [ 1 ] ]
+</code></pre></div></div>
+
+<h2 id="maps">Maps</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; { x: 1 y: 2 }
+[ { x: 1, y: 2 } ]
+
+F♭&gt; { x: 1 y: 2 } 'x' @   // accessed by key
+[ 1 ]
+
+F♭&gt; { x: 1 } { y: 2 } +   // joined
+[ { x: 1, y: 2 } ]
+
+F♭&gt; { x: 1 y: 2 } ln      // number of values
+[ 2 ]
+</code></pre></div></div>
+
+<h2 id="words-1">Words</h2>
+
+<h3 id="printing">Printing</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; 'hello' print    // prints without a new line
+hello
+[ ]
+
+F♭&gt; 'world' println    // prints with a new line
+'world'
+
+[ ]
+</code></pre></div></div>
+
+<h3 id="stack-operations">Stack Operations</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; 3 dup             // duplicate the top item
+[ 3 3 ]
+
+F♭&gt; 2 5 swap          // swap the top with the second element
+[ 5 2 ]
+
+F♭&gt; 4 0 drop          // remove the top item
+[ 4 ]
+
+F♭&gt; 1 2 clr           // wipe out the entire stack
+[ ]
+
+F♭&gt; 1 2 3 4 over      // duplicate the second item to the top
+[ 1 2 3 4 3 ]
+
+F♭&gt; 1 2 3 4 2 pick    // duplicate the third item to the top
+[ 1 2 3 4 2 3 ]
+</code></pre></div></div>
+
+<h3 id="math-is-reverse-polish">Math is reverse polish</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; 6 7 *
+[ 42 ]
+
+F♭&gt; 1360 23 -
+[ 1337 ]
+
+F♭&gt; 12 4 /
+[ 3 ]
+
+F♭&gt; 13 2 %
+[ 1 ]
+
+F♭&gt; 99 ~
+[ -99 ]
+
+F♭&gt; -10 abs                  // absolute value
+[ 10 ]
+
+F♭&gt; 2 3 ^                    // power function
+[ 8 ]
+
+F♭&gt; 1000 !                   // factorial
+[ 4.0238726007709377384e+2567 ]
+
+F♭&gt; 1.5 !                    // factorial approximation
+[ 1.3293403881791368454 ]
+
+F♭&gt; 10 ln                    // natural log
+[ 2.302585092994046 ]
+
+F♭&gt; 5 exp                   // exponential
+[ 148.41315910257660342 ]
+
+F♭&gt; 0.7 sin
+[ 0.64421768723769105367 ]
+
+F♭&gt; (1 2) :complex (6 -4) :complex *
+[ 14+8i ]
+</code></pre></div></div>
+
+<h3 id="boolean-operations">Boolean operations</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; true false +  // OR
+[ true ]
+
+F♭&gt; true false *  // AND
+[ false ]
+
+F♭&gt; true ~        // NOT
+[ false ]
+
+// Null is considered unknown for boolean logic (Three-valued logic)
+F♭&gt; false null *   // OR
+[ false ]
+
+F♭&gt; true null *    // AND
+[ null ]
+
+F♭&gt; false null *   // AND
+[ false ]
+
+F♭&gt; null ~         // NOT
+[ null ]
+</code></pre></div></div>
+
+<h3 id="bitwise-operations">Bitwise operations</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; 0xFF 0xF0 bit-and
+[ 240 ]
+
+F♭&gt; 0x0F 0xF0 bit-or
+[ 255 ]
+
+F♭&gt; 0xF0 bit-not
+[ -241 ]
+</code></pre></div></div>
+
+<h3 id="comparisons">Comparisons</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; 'a' 'b' &lt;=&gt;   // Three-way comparison returns -1, 0, 1
+[ 1 ]
+
+F♭&gt; 2 1 &lt;=&gt;
+[ -1 ]
+
+F♭&gt; 2 1 &lt;=&gt;
+[ -1 ]
+
+F♭&gt; 'x' 'x' &lt;=&gt;
+[ 0 ]
+
+// Equality defined as = and inequality defined !=
+F♭&gt; 1 1 =
+[ true ]
+
+F♭&gt; 2 1 =
+[ false ]
+
+F♭&gt; #x #x =    // symbols are never equal
+[ false ]
+
+F♭&gt; #x dup =   // unless they are the same
+[ true ]
+
+F♭&gt; [ 1 2 ] [ 1 2 ] =  // arrays are checked by element
+[ true ]
+
+F♭&gt; [1 [2]] [1 [3]] =  // and deeply
+[ false ]
+
+F♭&gt; 4 5 !=
+[true]
+
+// Compare with &lt;, &gt;, &gt;=, &lt;=
+F♭&gt; 'a' 'b' &lt;
+[ true ]
+
+F♭&gt; 'a' 'b' &gt;=
+[ false ]
+</code></pre></div></div>
+
+<h3 id="types-and-conversion">Types and Conversion</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; 255 type
+[ 'number' ]
+
+F♭&gt; 255 string?
+[ false ]
+
+F♭&gt; 255 string
+[ '255' ]
+
+F♭&gt; '300' number
+[ 300 ]
+
+F♭&gt; 'hello' boolean   // truthy?
+[ true ]
+</code></pre></div></div>
+
+<h2 id="word-defintions">Word Defintions</h2>
+
+<h3 id="defining-new-words">Defining new words</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//  name    body
+//  ------- ---------
+F♭&gt; square: [ dup * ] def
+[ ]
+
+// apply functions by invoking the word
+F♭&gt; 5 square
+[ 25 ]
+
+F♭&gt; x: 1 def                // creates a function that always returns 1
+[ ]
+
+// We can show what a word does.
+F♭&gt; 'square' show
+[ dup * ]
+
+[ ]
+
+// recursive words must be defered
+F♭&gt; x: defer x: [ 1 &gt; [ dup --] [ x ] branch ] def
+[ ]
+
+// for use outside current namespace, words should be inlined
+F♭&gt; x: [ a b c ] inline def
+[ ]
+
+// `;` will defer and inline
+F♭&gt; x: [ a b c ] ;  // same as x: defer x: [ a b c ] inline def
+[ ]
+</code></pre></div></div>
+
+<h2 id="pattern-matching-and-regular-expressions">Pattern Matching and Regular Expressions</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; 5 3 =~                      // pattern match
+[ false ]
+
+F♭&gt; 5 5 =~                      // for literals save as =
+[ true ]
+
+F♭&gt; 'Hello' '/^Hell/':regexp =~     // strinsg can match regex
+[ true ]
+
+F♭&gt; 'This can be anything' _ =~     // underscore matches anything
+[ true ]
+
+F♭&gt; [ 1 2 3 ] [ 1 _ 3 ] =~          // arrays matched per element
+[ true ]
+</code></pre></div></div>
+
+<h2 id="control-flow">Control Flow</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//  test  if true         if false             
+//  ----  --------------  ---------------
+F♭&gt; true  'this is true'  'this is false'  choose
+[ 'this is true' ]
+
+F♭&gt; 5 [ 'Five is true' ] when
+[ 'Five is true' ]
+
+F♭&gt; 0 [ 'Zero is flase' ] when
+[ ]
+
+F♭&gt; false [ 'false is false' ] unless
+[ 'false is false' ]
+
+F♭&gt; 2 [ 'Two is true' ] [ 'Two is false' ] branch
+[ 'Two is true' ]
+</code></pre></div></div>
+
+<h3 id="switch">Switch</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; 0
+  [
+    [ dup 0 = [drop 'no apples']]
+    [ dup 1 = [drop 'one apple']]
+    [ true    [string ' apples' +]]
+  ] switch
+[ 'no apples' ]
+</code></pre></div></div>
+
+<h3 id="switch-case">Switch-Case</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; 1 2 [ 2 = ] case   // case evaluates without consuming a value
+[ 1 2 true ]
+
+F♭&gt; 1
+  [
+    [ [0 = ] case [drop 'no apples']]
+    [ [1 = ] case [drop 'one apple']]
+    [ true        [string ' apples' +]]
+  ] switch
+[ 'one apple' ]
+</code></pre></div></div>
+
+<h3 id="switch-p-case">Switch-P-Case</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F♭&gt; 1 2 3 p-case       // p-case pattern matches without consuming a value
+[ 1 2 false ]
+
+F♭&gt; 3
+  [
+    [ 0 p-case     [drop 'no apples']]
+    [ 1 p-case     [drop 'one apple']]
+    [ _ p-case     [string ' apples' +]]
+  ] switch
+[ '3 apples' ]
+
+fib: [  // swicth can combine different case versions
+  [
+    [ 0 p-case      [ ]]
+    [ 1 p-case      [ ]]
+    [ [ 15 &gt; ] case [ binet ]]
+    [ true          [[1 - fib]  [2 - fib] bi + ]]
+  ] switch
+] ;
+</code></pre></div></div>
+
+<h2 id="lambdas">Lambdas</h2>
+
+<h2 id="modules-and-namespaces">Modules and namespaces</h2>
+
+<h2 id="scoping-and-child-environments">Scoping and Child Environments</h2>
+
+<h2 id="concurrency">Concurrency</h2>
+
+
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>

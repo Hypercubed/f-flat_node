@@ -1,8 +1,9 @@
 'use strict';
-
-const Myna = require('myna-parser');
-const g = require('../dist/parser/tokenizer').fflatGrammar;
 const fs = require('fs');
+const { join } = require('path');
+const Myna = require('myna-parser');
+
+const g = require('../dist/parser/tokenizer').fflatGrammar;
 
 const m = Myna.Myna;
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
@@ -105,10 +106,11 @@ Object.keys(g).forEach(k => {
 });
 
 const QUOTE = '```';
+const fp = join(__dirname, '../docs/spec.md');
 
-fs.writeFileSync(
-  './spec.md',
-  `
+console.log('Writing', fp);
+
+fs.writeFileSync(fp,`
 
 # FFlat Specification ${version}
 

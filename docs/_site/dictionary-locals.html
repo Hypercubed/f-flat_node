@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Dictionary / Locals | F-Flat</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Dictionary / Locals" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="F♭ (pronounced F-flat) is a toy language." />
+<meta property="og:description" content="F♭ (pronounced F-flat) is a toy language." />
+<link rel="canonical" href="http://localhost:4000/f-flat_node/dictionary-locals.html" />
+<meta property="og:url" content="http://localhost:4000/f-flat_node/dictionary-locals.html" />
+<meta property="og:site_name" content="F-Flat" />
+<script type="application/ld+json">
+{"headline":"Dictionary / Locals","url":"http://localhost:4000/f-flat_node/dictionary-locals.html","description":"F♭ (pronounced F-flat) is a toy language.","@type":"WebPage","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/f-flat_node/assets/css/style.css?v=d82c1b626faf4c31246431443e5fe2bfc2fc28d7">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="/f-flat_node/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/f-flat_node/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/Hypercubed/f-flat_node">View On GitHub</a></li>
+          
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>F-Flat</h1>
+          <p>F♭ (pronounced F-flat) is a toy language.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/Hypercubed">Hypercubed</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1 id="dictionary--locals">Dictionary / Locals</h1>
+
+<p>Unlike many other languages, f♭ does not have a concept of variables or lambdas.  Like most stack based languages the primary location for value storage is the stack.  f♭ has a write once dictionary for storage of word definitions.  Values within a dictionary cannot be overwritten or deleted. However, using child stacks (discussed later) dictionary words can be shadowed. (similar to JS scoping rules).</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; x: [ 123 ] ;
+[ ]
+
+f♭&gt; x
+[ 123 ]
+
+f♭&gt; x: [ 456 ] ;
+Error: Cannot overwrite definition: x
+[  ]
+
+f♭&gt; clr [ x: [ 456 ] ; x ] in x
+[ [ 456 ] 123 ]
+</code></pre></div></div>
+
+<h2 id="word-requirements">Word requirements</h2>
+
+<ul>
+  <li>Cannot contain a colon (<code class="language-plaintext highlighter-rouge">:</code>) (special meaning)</li>
+  <li>Cannot start with a period <code class="language-plaintext highlighter-rouge">.</code></li>
+  <li>Cannot contain white space (space, new lines, tabs, or comma <code class="language-plaintext highlighter-rouge">,</code>).</li>
+  <li>Cannot contain brackets ( <code class="language-plaintext highlighter-rouge">(){}[]</code> ).</li>
+  <li>Cannot contain quotes ( ‘”` )</li>
+  <li>Cannot be numeric (starting with a numeric value is ok)</li>
+  <li>Cannot begin with a hash (<code class="language-plaintext highlighter-rouge">#</code>)</li>
+  <li>Cannot be a reserved word (<code class="language-plaintext highlighter-rouge">null</code>, <code class="language-plaintext highlighter-rouge">true</code> or <code class="language-plaintext highlighter-rouge">false</code>)</li>
+</ul>
+
+
+
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>

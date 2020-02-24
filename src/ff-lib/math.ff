@@ -125,6 +125,7 @@ zero?: [ 0 = ] ;
 divisor?: [ % zero? ] ;
 even?: [ 2 divisor? ] ;
 odd?: [ even? ~ ] ;
+complex?: [ im zero? ~ ] ;
 
 // sequences
 find-next: [ [ ++ dup ] swap + [ ~ ] + loop ] ;

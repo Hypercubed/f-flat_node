@@ -20,6 +20,8 @@ import {
 /**
  * ## `re`
  *
+ * `z -> x`
+ *
  * Real part of a value
  *
  */
@@ -40,6 +42,8 @@ class Re {
 
 /**
  * ## `im`
+ *
+ * `z -> y`
  *
  * Imaginary part of a value
  *
@@ -63,6 +67,8 @@ class Im {
 
 /**
  * ## `arg`
+ *
+ * `z -> a`
  *
  * Argument (polar angle) of a complex number
  *
@@ -92,6 +98,8 @@ class Arg {
 /**
  * ## `abs`
  *
+ * `x -> x'`
+ *
  * Absolute value and complex magnitude
  *
  */
@@ -109,6 +117,8 @@ class Abs {
 
 /**
  * ## `cos`
+ *
+ * `x -> x'`
  *
  * Cosine of argument in radians
  *
@@ -128,6 +138,8 @@ class Cos {
 /**
  * ## `sin`
  *
+ * `x -> x'`
+ *
  * Sine of argument in radians
  *
  */
@@ -144,6 +156,8 @@ class Sin {
 
 /**
  * ## `tan`
+ *
+ * `x -> x'`
  *
  * Tangent of argument in radians
  *
@@ -162,6 +176,8 @@ class Tan {
 
 /**
  * ## `asin`
+ *
+ * `x -> x'`
  *
  * Inverse sine in radians
  *
@@ -183,6 +199,8 @@ class Asin {
 /*
  * ## `atan`
  *
+ * `x -> x'`
+ *
  * Inverse tangent in radians
  *
  */
@@ -201,6 +219,8 @@ class Atan {
 /**
  * ## `round`
  *
+ * `x -> n`
+ *
  * Round to nearest decimal or integer
  *
  */
@@ -213,6 +233,8 @@ class Round {
 
 /**
  * ## `floor`
+ *
+ * `x -> n`
  *
  * Round toward negative infinity
  *
@@ -228,6 +250,8 @@ class Floor {
 /**
  * ## `ceil`
  *
+ * `x -> n`
+ *
  * Round toward positive infinity
  *
  */
@@ -240,6 +264,8 @@ class Ceil {
 
 /**
  * ## `sqrt`
+ *
+ * `x -> x'`
  *
  * Square root
  */
@@ -264,6 +290,8 @@ class Sqrt {
 /**
  * ## `conj`
  *
+ * `z -> z'`
+ *
  * Complex conjugate
  *
  */
@@ -277,6 +305,8 @@ class Conj {
 /**
  * ## `exp`
  *
+ * `x -> x'`
+ *
  * Exponential
  *
  */
@@ -289,6 +319,8 @@ class Exp {
 
 /**
  * ## `gamma`
+ *
+ * `x -> x'`
  *
  * Gamma function
  *
@@ -320,6 +352,8 @@ export const math = {
   /**
    * ## `atan2`
    *
+   * `x₁ x₂ -> x₃`
+   *
    * Four-quadrant inverse tangent
    *
    */
@@ -341,6 +375,8 @@ export const math = {
   // /**
   //  * ## `nemes`
   //  *
+  //  * `x -> x'`
+  //  *
   //  * Nemes Gamma Function
   //  *
   //  */
@@ -348,6 +384,8 @@ export const math = {
 
   // /**
   //  * ## `spouge`
+  //  *
+  //  * `x -> x'`
   //  *
   //  * Sponge function
   //  *
@@ -357,6 +395,8 @@ export const math = {
   /**
    * ## `erf`
    *
+   * `x -> x'`
+   *
    * Error function
    *
    */
@@ -364,6 +404,8 @@ export const math = {
 
   /**
    * ## `bit-and`
+   *
+   * `x₁ x₂ -> x₃`
    *
    * bitwise and
    *
@@ -373,6 +415,8 @@ export const math = {
   /**
    * ## `bit-or`
    *
+   * `x₁ x₂ -> x₃`
+   *
    * bitwise or
    *
    */
@@ -380,6 +424,8 @@ export const math = {
 
   /**
    * ## `bit-xor`
+   *
+   * `x₁ x₂ -> x₃`
    *
    * bitwise xor
    *
@@ -389,6 +435,8 @@ export const math = {
   /**
    * ## `bit-not`
    *
+   * `x -> x'`
+   *
    * bitwise not
    *
    */
@@ -396,6 +444,8 @@ export const math = {
 
   /**
    * ## `rand`
+   *
+   * `-> x`
    *
    * pseudo-random number in the range [0, 1)
    *
@@ -405,27 +455,27 @@ export const math = {
   /**
    * ## `infinity`
    *
-   * pushes the value Infinity
+   * `-> -Infinity`
    *
-   * ( -> Infinity )
+   * pushes the value Infinity
    */
   infinity: () => new Decimal(Infinity),
 
   /**
    * ## `-infinity`
    *
-   * pushes the value -Infinity
+   * `-> -Infinity`
    *
-   * ( -> -Infinity )
+   * pushes the value -Infinity
    */
   '-infinity': () => new Decimal(-Infinity),
 
   /**
    * ## `complexinfinity`
    *
-   * pushes the value complexinfinity
+   * `-> ComplexInfinity`
    *
-   * ( -> ComplexInfinity )
+   * pushes the value complexinfinity
    */
   complexinfinity: () => complexInfinity
 };

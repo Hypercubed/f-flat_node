@@ -24,8 +24,8 @@
 'shuffle.ff' require
 
 // keep/check
-keep: [ sip ] ;      // B [a] -> B a B    (aka sip)
-check: [ dupd eval ] ;     // B [a] -> B B a    (aka w)
+keep: [ sip ] ;            // B [A*] -> B a* B    (aka sip)
+check: [ dupd eval ] ;     // B [A*] -> B B a*    (aka w)
 
 // 
 stackd: [ q< stack q> ] ;

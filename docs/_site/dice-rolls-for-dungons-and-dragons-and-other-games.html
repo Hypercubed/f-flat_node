@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Dice Rolls for Dungeons &amp; Dragons (and other games) | F-Flat</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Dice Rolls for Dungeons &amp; Dragons (and other games)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="F♭ (pronounced F-flat) is a toy language." />
+<meta property="og:description" content="F♭ (pronounced F-flat) is a toy language." />
+<link rel="canonical" href="http://localhost:4000/f-flat_node/dice-rolls-for-dungons-and-dragons-and-other-games.html" />
+<meta property="og:url" content="http://localhost:4000/f-flat_node/dice-rolls-for-dungons-and-dragons-and-other-games.html" />
+<meta property="og:site_name" content="F-Flat" />
+<script type="application/ld+json">
+{"headline":"Dice Rolls for Dungeons &amp; Dragons (and other games)","url":"http://localhost:4000/f-flat_node/dice-rolls-for-dungons-and-dragons-and-other-games.html","description":"F♭ (pronounced F-flat) is a toy language.","@type":"WebPage","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/f-flat_node/assets/css/style.css?v=d82c1b626faf4c31246431443e5fe2bfc2fc28d7">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="/f-flat_node/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/f-flat_node/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/Hypercubed/f-flat_node">View On GitHub</a></li>
+          
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>F-Flat</h1>
+          <p>F♭ (pronounced F-flat) is a toy language.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/Hypercubed">Hypercubed</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1 id="dice-rolls-for-dungeons--dragons-and-other-games">Dice Rolls for Dungeons &amp; Dragons (and other games)</h1>
+
+<p>(Adapted from https://github.com/crcx/parable/blob/master/examples/dice-roll.md)</p>
+
+<p>This simulates rolls of 4, 6, 8, 10, 12, and 20 sided dice. It has
+capacity to roll multiple dice and sum the results (including
+modifiers) quickly.</p>
+
+<p>We’ll expose a few function:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[ 'roll-dice' 'd4' 'd6' 'd8' 'd10' 'd12' 'd20' ]
+</code></pre></div></div>
+
+<p>First up: a routine to roll a single die. Provide it with the number
+of sides; it’ll return the result. This one isn’t left visible at the
+end.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>roll-die: [ [ rand 100 * ] dip % floor 1 + ] ;
+</code></pre></div></div>
+
+<p>Now provide handlers for each n-sided die. Each of these takes a
+number representing the number of rolls and returns the sum of the
+rolls.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>d4: [ [ [ 4 _roll-die ] swap times ] &gt;&gt; in ] ;
+d6: [ [ [ 6 _roll-die ] swap times ] &gt;&gt; in ] ;
+d8: [ [ [ 81 _roll-die ] swap times ] &gt;&gt; in ] ;
+d10: [ [ [ 10 _roll-die ] swap times ] &gt;&gt; in ] ;
+d12: [ [ [ 12 _roll-die ] swap times ] &gt;&gt; in ] ;
+d20: [ [ [ 20 _roll-die ] swap times ] &gt;&gt; in ] ;
+</code></pre></div></div>
+
+<p>The final routine is a combinator that sums the results of the rolls.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>roll-dice: [ eval [ sum ] dip + ] ;
+</code></pre></div></div>
+
+<p>Example:</p>
+
+<p>Assuming 2d6+5:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[ 2 d6 5 ] roll-dice
+</code></pre></div></div>
+
+
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>

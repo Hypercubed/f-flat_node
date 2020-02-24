@@ -32,9 +32,14 @@ function dequoteStack(env: StackEnv, s: StackValue) {
 class Choose {
   name = 'choose';
 
-  @signature([Boolean, null], Any, Any)
-  boolean(b: boolean | null, t: any, f: any) {
+  @signature(Boolean, Any, Any)
+  boolean(b: boolean, t: any, f: any) {
     return new ReturnValues([b ? t : f]);
+  }
+
+  @signature(null, Any, Any)
+  n(b: null, t: any, f: any) {
+    return null;
   }
 
   @signature(Future, Any, Any)
@@ -62,11 +67,14 @@ class IndexOf {
  *
  * returns the item at the specified index/key
  *
- * ( {seq} {index} -> {item} )
+ * `seq x -> a`
  *
  * ```
- * > [ 1 2 3 ] 1 @
+ * f♭> [ 1 2 3 ] 1 @
  * [ 2 ]
+ *
+ * f♭> [ 1 2 3 ] -1 @
+ * [ 3 ]
  * ```
  */
 class At {
@@ -231,12 +239,14 @@ class Match {
 }
 
 export const core = {
+  '@': dynamo.function(At),
+
   /**
    * ## `choose`
    *
    * conditional (ternary) operator
    *
-   * ( {boolean} [A] [B] -> {A|B} )
+   * `bool a b -> c`
    *
    * ```
    * f♭> true 1 2 choose
@@ -245,14 +255,12 @@ export const core = {
    */
   choose: dynamo.function(Choose),
 
-  '@': dynamo.function(At),
-
   /**
    * ## `q<`
    *
    * moves the top of the stack to the tail of the queue
    *
-   * ( {any} -> )
+   * `a ->`
    *
    * ```
    * f♭> 1 2 4 q< 3
@@ -268,7 +276,7 @@ export const core = {
    *
    * moves the tail of the queue to the top of the stack
    *
-   * ( -> {any} )
+   * `-> a`
    *
    * ```
    * f♭> 1 2 q> 4 3
@@ -284,7 +292,7 @@ export const core = {
    *
    * replaces the stack with a quote containing the current stack
    *
-   * ( ... -> [ ... ] )
+   * `a* -> [ a* ] )
    *
    * ```
    * f♭> 1 2 3 stack
@@ -302,7 +310,7 @@ export const core = {
    *
    * push items in a quote to the stack without evaluation
    *
-   * ( [A B C] -> A B C )
+   * `[ A* ] -> A*`
    *
    * ```
    * f♭> [ 1 2 * ] unstack
@@ -316,7 +324,7 @@ export const core = {
    *
    * clears the stack
    *
-   * ( ... clr )
+   * `a* ->`
    *
    * ```
    * f♭> 1 2 3 clr
@@ -332,7 +340,7 @@ export const core = {
    *
    * pushes the size of the current stack (number of items on the stack)
    *
-   * ( -> {number} )
+   * `-> x`
    *
    * ```
    * f♭> 0 1 2 depth
@@ -348,7 +356,7 @@ export const core = {
    *
    * evaluate quote or string
    *
-   * ( [A] -> a )
+   * `[A*] -> a*`
    *
    * ```
    * f♭> [ 1 2 * ] eval
@@ -362,7 +370,7 @@ export const core = {
    *
    * evalues the quote in a child environment
    *
-   * ( [A] -> [a] )
+   * `[A*] -> [a*]`
    *
    * ```
    * f♭> [ 1 2 * ] in
@@ -379,10 +387,8 @@ export const core = {
    * Evaluates the quotation in a child environment
    * calls the second quotation in a child throws an error
    *
-   * ```
-   * f♭> [ 1 + ] throws?
-   * [ true ]
-   * ```
+   * `[A*] [B*] -> [ {a*|b*} ]`
+   *
    */
   'in-catch'(this: StackEnv, t: StackValue, c: StackValue) {
     try {
@@ -396,6 +402,8 @@ export const core = {
    * ## `throw`
    *
    * Throws an error
+   *
+   * `str ->`
    *
    * ```
    * f♭> 'PC LOAD LETTER' throw
@@ -411,7 +419,7 @@ export const core = {
    *
    * pushes one element from stack to parent.
    *
-   * ( A -> )
+   * `a ->`
    *
    * ```
    * f♭> [ 1 2 3 send 4 ] in
@@ -429,7 +437,7 @@ export const core = {
    *
    * drops the item on the bottom of the stack
    *
-   * ( x -> )
+   * `a ->`
    *
    * ```
    * > 1 2 3 drop
@@ -445,7 +453,7 @@ export const core = {
    *
    * swaps the items on the bottom of the stack
    *
-   * ( x y -- y x )
+   * `a b -> b c`
    *
    * ```
    * > 1 2 3 swap
@@ -459,7 +467,7 @@ export const core = {
    *
    * duplicates the item on the bottom of the stack
    *
-   * ( x -- x x )
+   * `a -> a a`
    *
    * ```
    * > 1 2 3 dup
@@ -473,7 +481,7 @@ export const core = {
    *
    * returns the position of the first occurrence of a specified value in a sequence
    *
-   * ( seq item -> number )
+   * `[a*] b -> x`
    *
    * ```
    * f♭> [ '1' '2' '3' '4' ] '2' indexof
@@ -486,6 +494,8 @@ export const core = {
   /**
    * ## `zip`
    *
+   * `[A*] [B*] -> [C*]`
+   *
    * ```
    * f♭> [ 1 2 3 ] [ 4 5 6 ] zip
    * [ 1 4 2 5 3 6 ]
@@ -495,6 +505,8 @@ export const core = {
 
   /**
    * ## `zipinto`
+   *
+   * `[A*] [B*] [C*] -> [D*]`
    *
    * ```
    * f♭> [ 1 2 3 ] [ 4 5 6 ] [ 7 8 9 ] zipinto
@@ -508,7 +520,7 @@ export const core = {
    *
    * pushes a quotation maker onto the stack
    *
-   * ( -> ( )
+   * `-> #(`
    */
   '(': () => Symbol.for('('),
 
@@ -517,7 +529,7 @@ export const core = {
    *
    * collects stack items upto the last quote marker
    *
-   * ( #( ... -> [ ... ] )
+   * `#( a -> [ a ]`
    */
   ')': function(this: StackEnv, s: StackValue) {
     return dequoteStack(this, s);
@@ -527,7 +539,7 @@ export const core = {
    * ## `[` (lazy quote)
    * pushes a quotation maker onto the stack, increments depth
    *
-   * ( -> ( )
+   * `-> #(`
    */
   '[': function(this: StackEnv) {
     this.depth++;
@@ -539,7 +551,7 @@ export const core = {
    *
    * decrements depth, collects stack items upto the last quote marker
    *
-   * ( #( ... -> [ ... ] )
+   * `#( A* -> [ A* ]`
    */
   ']': function(this: StackEnv, s: StackValue) {
     this.depth--;
@@ -556,7 +568,7 @@ export const core = {
    *
    * pushes a quotation marker onto the stack
    *
-   * ( -> #( )
+   * `-> #(`
    */
   '{': () => Symbol.for('('),
 
@@ -565,7 +577,7 @@ export const core = {
    *
    * collects stack items upto the last quote marker, converts to an object
    *
-   * ( #( ... -> [ ... ] )
+   * `#( a* -> { A* }`
    */
   '}': function(this: StackEnv, s: StackValue) {
     const r = dequoteStack(this, s);
@@ -577,7 +589,7 @@ export const core = {
    *
    * converts a string to a string template
    *
-   * ( {string} -> {quote} )
+   * `str -> [A*]`
    *
    * ```
    * f♭> 'hello $(world)' template
@@ -601,7 +613,8 @@ export const core = {
    *
    * wait x milliseconds
    *
-   * ( x -> )
+   * `x ->`
+   *
    */
   sleep(ms: number): Promise<void> {
     // todo: make cancelable?
@@ -624,11 +637,11 @@ export const core = {
   },
 
   /**
-   * ## `match`
+   * ## `match
+   *
+   * `str a -> bool`
    *
    * Matches a string a regex and returns an array containing the results of that search.
-   *
-   * {string} {regexp | string} -> {boolean}
    *
    */
   match: dynamo.function(Match),
@@ -636,15 +649,17 @@ export const core = {
   /**
    * ## `=~`
    *
-   * Returns a Boolean value that indicates whether or not the lhs matches the rhs.
+   * `a b -> bool`
    *
-   * {any} {any} -> {boolean}
+   * Returns a Boolean value that indicates whether or not the lhs matches the rhs.
    *
    */
   '=~': patternMatch,
 
   /**
    * ## `_`
+   *
+   * `-> #_`
    *
    * Match symbol
    *

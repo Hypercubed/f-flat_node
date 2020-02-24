@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Data Structures | F-Flat</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Data Structures" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="F♭ (pronounced F-flat) is a toy language." />
+<meta property="og:description" content="F♭ (pronounced F-flat) is a toy language." />
+<link rel="canonical" href="http://localhost:4000/f-flat_node/data-stuctures.html" />
+<meta property="og:url" content="http://localhost:4000/f-flat_node/data-stuctures.html" />
+<meta property="og:site_name" content="F-Flat" />
+<script type="application/ld+json">
+{"headline":"Data Structures","url":"http://localhost:4000/f-flat_node/data-stuctures.html","description":"F♭ (pronounced F-flat) is a toy language.","@type":"WebPage","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/f-flat_node/assets/css/style.css?v=d82c1b626faf4c31246431443e5fe2bfc2fc28d7">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="/f-flat_node/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/f-flat_node/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/Hypercubed/f-flat_node">View On GitHub</a></li>
+          
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>F-Flat</h1>
+          <p>F♭ (pronounced F-flat) is a toy language.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/Hypercubed">Hypercubed</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1 id="data-structures">Data Structures</h1>
+
+<h2 id="lists">Lists</h2>
+
+<p>Lists / Arrays are surrounded by square (<code class="language-plaintext highlighter-rouge">[]</code>) or round (<code class="language-plaintext highlighter-rouge">()</code>) brackets with optionally comma-separated elements (recall that commas are whitespace).  The difference being that expressions within round brackets are executed while square brackets are lazy.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; ( 1 2 )
+[ [ 1 2 ] ]
+
+f♭&gt; ( 3, 4 )
+[ [ 1 2 ] [ 3 4 ] ]
+
+f♭&gt; ( 5 6 * )
+[ [ 1 2 ] [ 3 4 ] [ 30 ] ]
+
+f♭&gt; [ 1 2 * ]
+[ [ 1 2 ] [ 3 4 ] [ 30 ] [ 1 2 * ] ]
+</code></pre></div></div>
+
+<h2 id="maps">Maps</h2>
+
+<p>Maps (aka objects or records) are surrounded by curly brackets (<code class="language-plaintext highlighter-rouge">{}</code>) again with optionally comma-separated elements.  The key in a key value pair is actually a key as described above.  Expressions within curly brackets are executed immediately.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f♭&gt; { x: 1 y: 2 }
+[ { x: 1 y: 2 } ]
+
+f♭&gt; { z: 3, u: 4 5 * }
+[ { x: 1 y: 2 } { z: 3 u: 20 } ]
+
+f♭&gt; { 'v' : 3 , 'w' : 4 }
+[ { x: 1 y: 2 } { z: 3 u: 20 } { v: 3 w: 4 } ]
+</code></pre></div></div>
+
+
+
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>

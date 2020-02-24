@@ -102,6 +102,7 @@ test('should calculate powers of complex numbers', async () => {
 
 test('should define complex?', async () => {
   expect(await ƒ('2 i * 0 + complex?')).toBe(`[ true ]`);
+  expect(await ƒ('0 i * 1 + complex?')).toBe(`[ false ]`);
   expect(await ƒ('2 1 + complex?')).toBe(`[ false ]`);
 });
 

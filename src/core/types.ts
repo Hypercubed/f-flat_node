@@ -114,6 +114,8 @@ export const types = {
   /**
    * ## `type`
    *
+   * `a -> str`
+   *
    * retruns the type of an item
    *
    */
@@ -121,6 +123,8 @@ export const types = {
 
   /**
    * ## `number`
+   *
+   * `a -> x`
    *
    * converts to a number
    *
@@ -130,28 +134,14 @@ export const types = {
   /**
    * ## `complex`
    *
+   * `a -> z`
+   *
    * converts to a complex number
    *
    */
   complex(x: any) {
     return Complex.parse(x);
   },
-
-  /**
-   * ## `number?`
-   *
-   * returns true if the item is a number
-   *
-   */
-  'number?': dynamo.function(IsNumber),  //  move to types.ff?
-
-  /**
-   * ## `complex?`
-   *
-   * returns true if the item is a complex number
-   *
-   */
-  'complex?': dynamo.function(IsComplex),
 
   /**
    * ## `string`
@@ -164,6 +154,8 @@ export const types = {
   /**
    * ## `itoa`
    *
+   * `x -> str`
+   *
    * returns a string created from UTF-16 character code
    *
    */
@@ -171,6 +163,8 @@ export const types = {
 
   /**
    * ## `atoi`
+   *
+   * `str -> x`
    *
    * returns an integer between 0 and 65535 representing the UTF-16 code of the first character of a string
    *
@@ -180,6 +174,8 @@ export const types = {
   /**
    * ## `atob`
    *
+   * `str -> str`
+   *
    * decodes a string of data which has been encoded using base-64 encoding
    *
    */
@@ -187,6 +183,8 @@ export const types = {
 
   /**
    * ## `btoa`
+   *
+   * `str -> str`
    *
    * creates a base-64 encoded ASCII string from a String
    *
@@ -196,6 +194,8 @@ export const types = {
   /**
    * ## `hash`
    *
+   * `a -> x`
+   *
    * creates a numeric hash from a String
    *
    */
@@ -203,6 +203,8 @@ export const types = {
 
   /**
    * ## `hex-hash`
+   *
+   * `a -> str`
    *
    * creates a hexidecimal hash from a String
    *
@@ -212,6 +214,8 @@ export const types = {
   /**
    * ## `base`
    *
+   * `x -> str`
+   *
    * Convert an integer to a string in the given base
    *
    */
@@ -219,6 +223,8 @@ export const types = {
 
   /**
    * ## `boolean`
+   *
+   * `a -> bool`
    *
    * converts a value to a boolean
    *
@@ -230,6 +236,8 @@ export const types = {
 
   /**
    * ## `:` (key)
+   *
+   * `a -> a:`
    *
    * converts a string to a key
    *
@@ -247,6 +255,8 @@ export const types = {
   /**
    * ## `#` (symbol)
    *
+   * `a -> #a`
+   *
    * converts a string to a unique symbol
    *
    */
@@ -255,6 +265,8 @@ export const types = {
   /**
    * ## `array`
    *
+   * `a -> [A]`
+   *
    * converts a value to an array
    *
    */
@@ -262,6 +274,8 @@ export const types = {
 
   /**
    * ## `of`
+   *
+   * `a b -> c`
    *
    * converts the rhs value to the type of the lhs
    *
@@ -283,6 +297,8 @@ export const types = {
   /**
    * ## `is?`
    *
+   * `a b -> bool`
+   *
    * returns true if to values are the same value
    *
    */
@@ -290,6 +306,8 @@ export const types = {
 
   /**
    * ## `nothing?`
+   *
+   * `a -> bool`
    *
    * returns true if the value is null or undefined
    *
@@ -299,6 +317,8 @@ export const types = {
   /**
    * ## `date`
    *
+   * `a -> date`
+   *
    * convert a value to a date/time
    *
    */
@@ -306,6 +326,8 @@ export const types = {
 
   /**
    * ## `now`
+   *
+   * `-> date`
    *
    * returns the current date/time
    *
@@ -315,6 +337,8 @@ export const types = {
   /**
    * ## `clock`
    *
+   * `-> x`
+   *
    * returns a high resoltion time elapsed
    *
    */
@@ -322,6 +346,8 @@ export const types = {
 
   /**
    * ## `regexp`
+   *
+   * `a -> regexp`
    *
    * convert string to regular expresion
    *

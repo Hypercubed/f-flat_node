@@ -62,9 +62,9 @@ function invertObject(source: any) {
  */
 
 /**
- * ## `+` (add)
+ * ## `+` (plus, or, concat)
  *
- * ( x y -> z)
+ * `a b -> c`
  *
  */
 class Add {
@@ -196,9 +196,9 @@ class Add {
 }
 
 /**
- * ## `-` (minus)
+ * ## `-` (minus, nor)
  *
- * ( x y -> z)
+ * `a b -> c`
  *
  */
 class Sub {
@@ -292,9 +292,9 @@ class Sub {
 }
 
 /**
- * ## `*` (times)
+ * ## `*` (times, and, join)
  *
- * ( x y -> z)
+ * `a b -> c`
  *
  */
 class Mul {
@@ -454,9 +454,9 @@ class Mul {
 const mul = dynamo.function(Mul);
 
 /**
- * ## `/` (forward slash)
+ * ## `/` (forward slash, div)
  *
- * ( x y -> z)
+ * `a b -> c`
  *
  */
 class Div {
@@ -563,6 +563,8 @@ const div = dynamo.function(Div);
 /**
  * ## `\` (backslash)
  *
+ * `a b -> n`
+ *
  */
 class IDiv {
   @signature(Array, [Array, Word, Key, Sentence, Function])
@@ -641,6 +643,8 @@ class IDiv {
 
 /**
  * ## `%` (modulo)
+ *
+ * `a b -> n`
  *
  */
 class Rem {
@@ -723,6 +727,8 @@ class Rem {
 
 /**
  * ## `>>`
+ *
+ * `a b -> c`
  *
  */
 class Unshift {
@@ -837,7 +843,7 @@ const unshiftFn = dynamo.function(Unshift);
  * ## `<<`
  * Left shift
  *
- * ( x y -> z)
+ * `a b -> c`
  *
  */
 class Shift {
@@ -948,6 +954,8 @@ const pushFn = dynamo.function(Shift);
 /**
  * ## `^` (pow)
  *
+ * `a b -> c`
+ *
  */
 class Pow {
   /**
@@ -1024,7 +1032,7 @@ class Pow {
 /**
  * ## `ln`
  *
- * ( x -> {number} )
+ * `a b -> n`
  */
 class Ln {
   /**
@@ -1088,6 +1096,9 @@ class Ln {
 
 /**
  * ## `~` (not)
+ *
+ * `a -> b`
+ *
  */
 class Not {
   /**
@@ -1162,6 +1173,8 @@ class Not {
 /**
  * ## `empty`
  *
+ * `a b -> c`
+ *
  * Returns an empty value of the same type
  *
  */
@@ -1198,7 +1211,7 @@ class Empty {
  * Pushes a -1, 0, or 1 when x is logically 'less than', 'equal to', or 'greater than' y.
  * Push null if sort order is unknown
  *
- * ( x y -> z )
+ * `a b -> n`
  *
  * ```
  * f♭> 1 2 <=>
@@ -1338,7 +1351,7 @@ export const base = {
    *
    * Pushes true if x is equal to y.
    *
-   * ( x y -> z )
+   * `a b -> bool`
    *
    * ```
    * f♭> 1 2 =

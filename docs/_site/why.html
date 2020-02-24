@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Why F♭ | F-Flat</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Why F♭" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="F♭ (pronounced F-flat) is a toy language." />
+<meta property="og:description" content="F♭ (pronounced F-flat) is a toy language." />
+<link rel="canonical" href="http://localhost:4000/f-flat_node/why.html" />
+<meta property="og:url" content="http://localhost:4000/f-flat_node/why.html" />
+<meta property="og:site_name" content="F-Flat" />
+<script type="application/ld+json">
+{"headline":"Why F♭","url":"http://localhost:4000/f-flat_node/why.html","description":"F♭ (pronounced F-flat) is a toy language.","@type":"WebPage","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/f-flat_node/assets/css/style.css?v=d82c1b626faf4c31246431443e5fe2bfc2fc28d7">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="/f-flat_node/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/f-flat_node/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/Hypercubed/f-flat_node">View On GitHub</a></li>
+          
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>F-Flat</h1>
+          <p>F♭ (pronounced F-flat) is a toy language.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/Hypercubed">Hypercubed</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1 id="why-f">Why F♭</h1>
+
+<h2 id="why-concatenative-programming-matters">Why Concatenative Programming Matters</h2>
+
+<p>For a great explaination please see Jon Purdy’s <a href="http://evincarofautumn.blogspot.com/2012/02/why-concatenative-programming-matters.html">Why Concatenative Programming Matters</a>.</p>
+
+<p>In summary (all derived from the above):</p>
+
+<ul>
+  <li>function composition instead of function application</li>
+  <li>data flows in the order the functions are written in</li>
+  <li>return multiple values from a function, not just tuples</li>
+  <li>a parallel compiler is a plain old map-reduce (like Unix pipes)</li>
+  <li>It’s a stack</li>
+  <li>most language VMs are essentially concatenative</li>
+</ul>
+
+<h2 id="why-stack-based">Why stack-based</h2>
+
+<p>The primary use case for F♭ at this time is in an interactive REPL. RPN (and post-fix) based calculators were (are?) popular among engineers and scientists because they are simpler to understand the effects of each action.  If you are simply trying to calculate the value of of an equations (for example <code class="language-plaintext highlighter-rouge">(-b + sqrt(b^2 - 4*a*c)) / 2a</code> this can be done on any modern calculator (or computer) without  any understanding of the order of operations.  However, I would argue, if you are doing complex calculations it is better to perform the calculation step by step with with feedback verifying your intent.</p>
+
+<h2 id="why-f-is-interesting">Why F♭ is interesting</h2>
+
+<h3 id="post-fix-really">Post-fix… really!</h3>
+
+<p>One of the best things (or worse things if you’re so inclined) about stack based languages is post fix notation over the mixed bag of infix, prefix, and postfix you see in may languages.  For example, is this infix or postfix?</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">].</span><span class="nx">map</span><span class="p">((</span><span class="nx">x</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">PI</span><span class="p">));</span>
+</code></pre></div></div>
+
+<p>I count all three!  In a post-fix language we write:</p>
+
+<pre><code class="language-forth">[1 2 3] [ 2 * pi * sin ] map
+</code></pre>
+
+<p>Not only is it shorter but it is all postfix… in fact it is consistently Subject-Verb (or Subject-Object-Verb).  Also notice we didn’t need to choose a name for the temperary variable <code class="language-plaintext highlighter-rouge">x</code>.</p>
+
+<p>But look at how definitions are defined in <a href="https://hypercubed.github.io/joy/joy.html">Joy</a> (the grand father of concatenative languages):</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DEFINE tps == 2 * PI * sin .
+</code></pre></div></div>
+
+<p>This deviates from the Subject(s)-Verb paradigm.  In F♭ we could define words like:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tps: [ pi * sin ] def
+</code></pre></div></div>
+
+<p>Again we are postfix following Subject-Object-Verb.</p>
+
+<h3 id="flat">Flat…</h3>
+
+<p>F♭ is, well, flat.  Except for possibly the various brackets (for example (<code class="language-plaintext highlighter-rouge">(</code> and <code class="language-plaintext highlighter-rouge">)</code>) F♭ has no block structures. In fact, under the hood, the bracket themselves work like any other word.  The <code class="language-plaintext highlighter-rouge">(</code> pushes a “quote” symbol onto the stack, then ‘)’ collects all elements up to the last “quote” and places the results onto the stack as a list.</p>
+
+<h3 id="hierarchical-write-once-read-many-dictionary">Hierarchical Write once, read many dictionary</h3>
+
+<p>No concatinative language is complete without a dictionary of words.  This dictionary, however, could be abused.  Storing values inside the dictionary has the very real drawback of causing side effects.  One way around this is that in F♭ the dictionary is write once.  Definitions cannot be overwritten in the locals dictionary.  This may seam to cause issues with name collisions, however, the F♭ dictionaries are hierarchical (or scoped) that allow for shadowing, much like scoping rules in JavaScript.</p>
+
+<h3 id="immutability">Immutability</h3>
+
+<p>All items on the stack or in the dictionary are immutable using <a href="https://medium.com/@dtinth/immutable-js-persistent-data-structures-and-structural-sharing-6d163fbd73d2">structural sharing</a> at the object and array level.  This avoids unwanted side effects, makes object stores memory efficient, and enables easy back tracings (calculations can be undone).</p>
+
+<h3 id="arbitrary-precision-decimal-and-complex-number-types">Arbitrary-precision decimal and complex number types</h3>
+
+<p>Internally, numeric values in are stored as arbitrary-precision integers, floats, and complex values.  This allows for some interesting numerical capabilities.</p>
+
+<h3 id="json-format-is-a-valid-f-flat-programs">JSON format is a valid f-flat programs</h3>
+
+<p>Using a few internal and defined words JSON file are valid f-flat programs.  F♭ is able to parse a superset of JSON.  The following is valid input to F♭:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  foo: 'bar',
+  while: true,
+  nothing: null,
+  here: "is another",
+  half: 0.5,
+  to: Infinity,
+  finally: 'a trailing comma',
+  oh: [
+   "we shouldn't forget",
+   'arrays can have',
+   'trailing commas too', ],
+}
+</code></pre></div></div>
+
+
+
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>

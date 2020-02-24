@@ -60,12 +60,16 @@ export const node = {
   /**
    * ## `args`
    *
+   * `-> [str*]`
+   *
    * Returns an array containing of command line arguments passed when the process was launched
    */
   args: () => process.argv,
 
   /**
    * ## `println`
+   *
+   * `a ->`
    *
    * Prints the value followed by (newline)
    *
@@ -76,6 +80,8 @@ export const node = {
 
   /**
    * ## `print`
+   *
+   * `a ->`
    *
    * Prints the value
    *
@@ -91,6 +97,8 @@ export const node = {
   /**
    * ## `exit`
    *
+   * `->`
+   *
    * terminate the process synchronously with an a status code
    *
    */
@@ -101,6 +109,8 @@ export const node = {
   /**
    * ## `rand-u32`
    *
+   * `-> x`
+   *
    * Generates cryptographically strong pseudo-random with a givennumber of bytes to generate
    *
    */
@@ -108,6 +118,8 @@ export const node = {
 
   /**
    * ## `dirname`
+   *
+   * `str₁ -> str₂`
    *
    * returns the directory name of a path, similar to the Unix dirname command.
    * See https://nodejs.org/api/path.html#path_path_dirname_path
@@ -118,6 +130,8 @@ export const node = {
   /**
    * ## `path-join`
    *
+   * `[ str* ] -> str`
+   *
    * joins all given path segments together using the platform specific separator as a delimiter
    * See https://nodejs.org/api/path.html#path_path_join_paths
    *
@@ -127,6 +141,8 @@ export const node = {
   /**
    * ## `resolve`
    *
+   * `str₁ -> str₂`
+   *
    * returns a URL href releative to the current base
    *
    */
@@ -135,6 +151,8 @@ export const node = {
   /**
    * ## `exists`
    *
+   * `str -> bool`
+   *
    * Returns true if the file exists, false otherwise.
    *
    */
@@ -142,6 +160,8 @@ export const node = {
 
   /**
    * ## `read`
+   *
+   * `str₁ -> str₂`
    *
    * Pushes the content of a file as a utf8 string
    *
@@ -156,6 +176,8 @@ export const node = {
 
   /**
    * ## `cwd`
+   *
+   * `-> str`
    *
    * Pushes the current working directory
    *
@@ -177,7 +199,9 @@ export const node = {
   /**
    * ## `get-env`
    *
-   * Gets a envirnoment variable
+   * `str₁ -> str₂`
+   *
+   * Gets a environment variable
    *
    */
   'get-env'(x: string) {

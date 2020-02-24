@@ -9,7 +9,7 @@
   "scripts": {
     "dist": "rimraf ./dist && tsc",
     "build": "npm run dist && npm run docs",
-    "docs": "node ./scripts/generate-docs.js",
+    "docs": "node ./scripts/generate-docs.js && node ./scripts/gen-spec.js",
     "prettier": "prettier \"{test,src,bin}/**/*.{js,ts,spec.ts}\" --write",
     "test": "npm run lint && jest",
     "watch": "jest --watch",
