@@ -6,14 +6,13 @@ Type signatures are written in parentheses, with the input and output types to t
 
 `n` - an integer
 
-`A, B, C` - any value including words to be evalued
+`a, b, c` - any primitive value 
 
-`a, b, c` - any primitive value after evaluation 
-(if `A` and `a` are used together `a` signifies the evaluatted version of `A`)
+`A, B, C` - any value including words to be evaluated (if `A` and `a` are used together `a` signifies the evaluatted version of `A`)
 
 `a:, b:, c:` - a key (often may be substitued for a string)
 
-`{A}` or `{ a: b }` - an object of key value pairs
+`{A}`, `{ a: b }`, or `obj` - an object of key value pairs
 
 `bool` - a boolean value
 
@@ -23,9 +22,8 @@ Type signatures are written in parentheses, with the input and output types to t
 
 `#a, #b, #c` - a symbol
 
-`?` - Zero or one.
-`*` - Zero or more.
-`+` - One or more
+`*` - Zero or more. (i.e. `a*` indicates zero or more of any value)
+`'` - Value after evaluation (i.e. if `x'` and `x'` are used together `x'` signifies the value of `x` after some operation)
 
 
 

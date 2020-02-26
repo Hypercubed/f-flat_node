@@ -38,15 +38,15 @@ export const objects = {
    */
   'object?': dynamo.function(IsObject),
 
-  // /**
-  //  * ## `contains?`
-  //  *
-  //  * `{A} a: -> bool`
-  //  *
-  //  * returns true if an item contains a key
-  //  *
-  //  */
-  // 'contains?': (a: {}, b: any) => b in a, // object by keys, array by values (move to indexof?)
+  /**
+   * ## `has?`
+   *
+   * `{A} a: -> bool`
+   *
+   * returns true if an item contains a key
+   *
+   */
+  'has?': (a: {}, b: any) => b in a, // object by keys, array by values (move to indexof?)
 
   /**
    * ## `keys`

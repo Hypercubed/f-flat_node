@@ -124,6 +124,8 @@ test('indexof', async () => {
   expect(await ƒ('"abc" "b" indexof')).toEqual(`[ 1 ]`);
   expect(await ƒ(`[ 'a' 'b' 'c' ] "c" indexof`)).toEqual(`[ 2 ]`);
   expect(await ƒ(`[ 1 2 3 ] 2 indexof`)).toEqual(`[ 1 ]`);
+  expect(await ƒ(`{ x: 1, y: 2 } 1 indexof`)).toEqual(`[ 'x' ]`);
+  expect(await ƒ(`{ x: 1, y: 2 } 2 indexof`)).toEqual(`[ 'y' ]`);
 });
 
 test('zip', async () => {

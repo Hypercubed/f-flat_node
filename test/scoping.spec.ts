@@ -207,21 +207,6 @@ test('only `use` modules', async () => {
   expect(ƒ(`{ x: #y } use`)).rejects.toThrow(`'use' invalid vocabulary. Symbol is undefined: y`);
 });
 
-test('def does not bind', async () => {
-  expect(
-    await ƒ(`
-    s: [
-      x: [ 1 2 + ] def
-      y: [ x 3 * ] def
-      export
-    ] in drop ;
-    x: [ 5 ] ;
-    y: [ 7 ] ;
-    x y s.x s.y
-  `)
-  ).toEqual(`[ 5 7 3 15 ]`);
-});
-
 test('explicit locals are not bound', async () => {
   expect(
     await ƒ(`
@@ -248,26 +233,6 @@ test('core words are bound', async () => {
 });
 
 describe('inline at defintion', () => {
-  test('def does not inline', async () => {
-    expect(
-      await ƒ(`
-      x: [ 5 ! ] def
-      !: [ drop 4 ] ;
-      x
-    `)
-    ).toEqual(`[ 4 ]`);
-  });
-
-  test(`explicit inline`, async () => {
-    expect(
-      await ƒ(`
-      x: [ 5 ! ] inline def
-      !: [ drop 4 ] ;
-      x
-    `)
-    ).toEqual(`[ 120 ]`);
-  });
-
   test(`; does inline`, async () => {
     expect(
       await ƒ(`
@@ -281,41 +246,9 @@ describe('inline at defintion', () => {
   test(`explicit non-inline`, async () => {
     expect(
       await ƒ(`
-      x: [ 5 .! ] inline def
+      x: [ 5 .! ] ;
       !: [ drop 4 ] ;
       x
-    `)
-    ).toEqual(`[ 4 ]`);
-  });
-});
-
-describe('inline', () => {
-  test('without inline, uses local scope', async () => {
-    expect(
-      await ƒ(`
-      [ 5 ! ]
-      !: [ drop 4 ] ;
-      eval
-    `)
-    ).toEqual(`[ 4 ]`);
-  });
-
-  test('with inline, binds to defintion at inline time', async () => {
-    expect(
-      await ƒ(`
-      [ 5 ! ] inline
-      !: [ drop 4 ] ;
-      eval
-    `)
-    ).toEqual(`[ 120 ]`);
-  });
-
-  test('with explicit non-bind at inline time', async () => {
-    expect(
-      await ƒ(`
-      [ 5 .! ] inline
-      !: [ drop 4 ] ;
-      eval
     `)
     ).toEqual(`[ 4 ]`);
   });

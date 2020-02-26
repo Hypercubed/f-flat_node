@@ -75,8 +75,9 @@ export const dict = {
    * [ ]
    * ```
    */
-  def(this: StackEnv, lhs: string | Key, rhs: StackValue[] | ScopeModule) {
-    this.dict.set(String(lhs), createAction(rhs));
+  def(this: StackEnv, lhs: string | Key, rhs: StackValue[]) {
+    const action = createAction(this.dict.inline(rhs));
+    this.dict.set(String(lhs), action);
   },
 
   /**
@@ -111,22 +112,6 @@ export const dict = {
    */
   vocab(this: StackEnv) {
     return this.dict.getVocab();
-  },
-
-  /**
-   * ## `inline`
-   *
-   * inline a quote, recursively expands defined words to global symbols
-   *
-   * `[A] -> [A']`
-   *
-   * ```
-   * f♭> [ 2 sqr ] inline
-   * [ [ 2 dup * ] ]
-   * ```
-   */
-  inline(this: StackEnv, x: Array<StackValue>) {
-    return this.dict.inline(x);
   },
 
   /**

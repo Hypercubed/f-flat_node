@@ -60,6 +60,12 @@ class IndexOf {
   array(a: any[], b: string) {
     return a.findIndex(v => deepEquals(v, b));
   }
+
+  @signature(Object, Any)
+  object(a: {}, b: string) {
+    const index = Object.values(a).findIndex(v => deepEquals(v, b));
+    return Object.keys(a)[index];
+  }
 }
 
 /**

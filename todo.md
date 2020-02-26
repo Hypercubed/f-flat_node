@@ -26,15 +26,15 @@
 - [ ] test `read` and `resolve`
 
 ## TODOs
+- [ ] `resolve` to allow missing file extension?
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
-- [ ] `@` from complex value
+- [ ] `@` from complex value?
 - [ ] pprint `Infinity`, `ComplexInfinity`, `NaN` etc.
 - [ ] error conditions, switch on error type
-- [ ] `undefined` vs `null`
 - [ ] Running in browser
 - [ ] Move vscode extension
 - [ ] pattern + lambdas `[ 1 2 a: ] ~> [ .a .a * ]`
-- [ ] stack matcher `[ 1 2 3 [ _ 3 ] stack-match ]` -> `[ 1 2 3 true ]`
+- [ ] stack matcher `[ 1 2 3 [ _ 3 ] stack-case ]` -> `[ 1 2 3 true ]`
 - [ ] fried defintions `[ .x 2 ^ .y 2 ^ + .y abs - ] fry` -> `[[ x: y: ] => [ .x 2 ^ .y 2 ^ + .y abs - ]] lambda`
 - [ ] should undo always be immdiate?
   - [ ] Interactive errors
@@ -130,6 +130,11 @@
 - [ ] Ensure predictable `<=>` with `null` and `nan`
 
 ## Words
+- [ ] `%top` vs `root`?  `parent?`
+- [ ] `linrec` - 
+- [?] `publish` add a word to a dict? `math: my-math-func: publish`, `math.my-func: [ ] ;`?
+- [x] `indexof` for objs
+- [ ] `exists?` file exists?  `fstat`?
 - [x] `imported?` `[ resolve __module_hash defined? ]`?
 - [x] `p-case` for pattern case match
 - [-] `->` vs `case`, `~>` vs `p-case`
@@ -163,7 +168,7 @@
 
 ## Docs
 
-- [ ] Standardize all stack effects in docs and code comments
+- [?] Standardize all stack effects in docs and code comments
 - [ ] Detail boolean / Three valued logic
 - [ ] Basis
 - [ ] Regexp

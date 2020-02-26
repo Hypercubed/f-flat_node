@@ -47,36 +47,26 @@ test('create keys', async () => {
   expect(await ƒ('"eval" :')).toEqual(`[ eval: ]`); // ??
 });
 
-describe('inline', () => {
+describe('inline on def', () => {
   test('should inline internal actions', async () => {
-    expect(await ƒ('[ eval ] inline')).toEqual(`[ [ eval ] ]`);
-    expect(await ƒ('{ x: [ eval ] } inline')).toEqual(`[ { x: [ eval ] } ]`);
+    expect(await ƒ(`x: [ eval ] def 'x' see`)).toEqual(`[ '[ eval ]' ]`);
   });
 
   test('should inline defined actions', async () => {
-    expect(await ƒ('[ slip ] inline')).toEqual(`[ [ << eval ] ]`);
-    expect(await ƒ('{ x: [ slip ] } inline')).toEqual(
-      `[ { x: [ << eval ] } ]`
-    );
+    expect(await ƒ(`x: [ slip ] def 'x' see`)).toEqual(`[ '[ << eval ]' ]`);
   });
 
   test('should not inline local qualified words', async () => {
-    // Maybe this shouldn't work if the defintion is not local??
-    expect(await ƒ('[ .slip ] inline')).toEqual(`[ [ .slip ] ]`);
-    expect(await ƒ('{ x: [ .slip ] } inline')).toEqual(
-      `[ { x: [ .slip ] } ]`
-    );
+    expect(await ƒ(`x: [ .slip ] def 'x' see`)).toEqual(`[ '[ .slip ]' ]`);
   });
 
   test('should not inline keys', async () => {
-    expect(await ƒ('eval: inline')).toEqual(`[ eval: ]`);
-    expect(await ƒ('slip: inline')).toEqual(`[ slip: ]`);
-    expect(await ƒ('{ x: slip: } inline')).toEqual(`[ { x: slip: } ]`);
-    expect(await ƒ('[ slip: ] inline')).toEqual(`[ [ slip: ] ]`);
+    expect(await ƒ(`x: [ eval: ] def 'x' see`)).toEqual(`[ '[ eval: ]' ]`);
+    expect(await ƒ(`x: [ slip: ] def 'x' see`)).toEqual(`[ '[ slip: ]' ]`);
   });
 
   test('should inline deeply', async () => {
-    expect(await ƒ('[ sip ] inline')).toEqual(`[ [ q< dup q> swap << eval ] ]`);
+    expect(await ƒ(`x: [ sip ] def 'x' see`)).toEqual(`[ '[ q< dup q> swap << eval ]' ]`);
   });
 });
 
@@ -143,23 +133,23 @@ describe('rewrite', () => {
 });
 
 describe('binding', () => {
-  test('defined words are bound', async () => {
-    expect(await ƒ(`slip: [ 'junk' ] ; [ dip ] inline`)).toEqual(
-      `[ [ swap << eval ] ]`
+  test('internal words are bound', async () => {
+    expect(await ƒ(`eval: [ 'junk' ] def x: [ dip ] ; 'x' see`)).toEqual(
+      `[ '[ swap << eval ]' ]`
     );
   });
 
-  test('internal words are bound', async () => {
-    expect(await ƒ(`eval: [ 'junk' ] ; [ dip ] inline`)).toEqual(
-      `[ [ swap << eval ] ]`
+  test('defined words are bound', async () => {
+    expect(await ƒ(`slip: [ 'junk' ] def x: [ dip ] ; 'x' see`)).toEqual(
+      `[ '[ swap << eval ]' ]`
     );
   });
 });
 
 describe('undefined words', () => {
   test('defined words are bound', async () => {
-    expect(ƒ(`[ junk ] inline`)).rejects.toThrow(
-      `'inline' Word is not defined: "junk"`
+    expect(ƒ(`x: [ junk ] def`)).rejects.toThrow(
+      `'def' Word is not defined: "junk"`
     );
   });
 });
