@@ -36,10 +36,6 @@ node_modules
 
 dist/
 .esm-cache/
-
 **/.DS_Store
-
 .vscode
-./dist/
-
-./docs/_site
+docs/_site/

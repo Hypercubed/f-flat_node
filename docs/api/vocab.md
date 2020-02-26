@@ -40,7 +40,7 @@ Move the contents of a map into scope
 f♭> { ... } use
 [ ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L96">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L97">[src]</a></div>
 
 ## `vocab`
 
@@ -53,19 +53,7 @@ Write the current local vocabulary to the stack
 f♭> vocab
 [ { ... } ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L113">[src]</a></div>
-
-## `inline`
-
-inline a quote, recursively expands defined words to global symbols
-
-`[A] -> [A']`
-
-```
-f♭> [ 2 sqr ] inline
-[ [ 2 dup * ] ]
-```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L129">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L114">[src]</a></div>
 
 ## `defined?`
 returns true if the word is defined in the current vocabulary
@@ -76,7 +64,7 @@ returns true if the word is defined in the current vocabulary
 f♭> 'sqr' defined?
 [ true ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L144">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L129">[src]</a></div>
 
 ## `see`
 
@@ -88,7 +76,7 @@ recalls the definition of a word as a string
 f♭> 'sqr' see
 [ '[ dup * ]' ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L161">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L146">[src]</a></div>
 
 ## `show`
 
@@ -101,28 +89,28 @@ f♭> "sqr" show
 [ dup * ]
 [ ]
 ```
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L179">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L164">[src]</a></div>
 
 ## `words`
 
 `-> [str*]`
 
 returns a list of defined words
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L191">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L176">[src]</a></div>
 
 ## `locals`
 
 `-> [str*]`
 
 returns a list of locals words
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L202">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L187">[src]</a></div>
 
 ## `scoped`
 
 `-> [str*]`
 
 returns a list of local scoped words
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L213">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L198">[src]</a></div>
 
 ## `rewrite`
 
@@ -130,4 +118,4 @@ returns a list of local scoped words
 
 rewrites an expression using a set of rewrite rules
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L225">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/vocab.ts#L210">[src]</a></div>

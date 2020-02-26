@@ -453,12 +453,8 @@ F♭> 'square' show
 F♭> x: defer x: [ 1 > [ dup --] [ x ] branch ] def
 [ ]
 
-// for use outside current namespace, words should be inlined
-F♭> x: [ a b c ] inline def
-[ ]
-
-// `;` will defer and inline
-F♭> x: [ a b c ] ;  // same as x: defer x: [ a b c ] inline def
+// `;` will defer and define
+F♭> x: [ a b c ] ;  // same as x: defer x: [ a b c ] def
 [ ]
 ```
 

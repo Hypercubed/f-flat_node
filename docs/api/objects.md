@@ -16,6 +16,14 @@ convert a quotation to an object
 retruns true of the item is an object
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L40">[src]</a></div>
 
+## `has?`
+
+`{A} a: -> bool`
+
+returns true if an item contains a key
+
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/objects.ts#L50">[src]</a></div>
+
 ## `keys`
 
 `{A} -> [str*]`
