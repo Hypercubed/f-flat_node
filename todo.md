@@ -65,6 +65,7 @@
   - [ ] `unstack` vs `eval`.
 
 ## Parser
+- [ ] unicode words: `f\u266D`
 - [ ] Regex literal
 - [ ] `undefined`?
 - [ ] complex, `i`
@@ -172,7 +173,7 @@
 - [ ] Detail boolean / Three valued logic
 - [ ] Basis
 - [ ] Regexp
-- [ ] `inline`, `defer`
+- [ ] `defer`
 - [ ] Module loader, expanding functions, circular references.
 - [ ] Defined words
 - [ ] Child stacks, forks, etc.

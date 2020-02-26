@@ -48,7 +48,7 @@ F♭> 'abc'
 F♭> 'λx:(μα.α→α).xx'            // can include Unicode characters
 [ 'λx:(μα.α→α).xx' ]
 
-F♭> "f-flat === f\u{266D}"      // double quotes to use encoded strings
+F♭> "f-flat === f\u266D"      // double quotes to use encoded strings
 [ 'f-flat === f♭' ]
 
 F♭> `1 + 2 is $(1 2 +)`         // backticks for string templates

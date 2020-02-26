@@ -94,6 +94,11 @@ export const node = {
     stdout.write(String(a));
   },
 
+  table(a: any) {
+    console.table(a);
+    bar.interrupt('');
+  },
+
   /**
    * ## `exit`
    *
