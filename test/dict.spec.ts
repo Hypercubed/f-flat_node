@@ -1,46 +1,46 @@
 import { ƒ, τ, Word, Sentence } from './helpers/setup';
 
 test('should def and use actions', async () => {
-  expect(await ƒ('x: [ 1 2 + ] def 3 x x')).toEqual(`[ 3 3 3 ]`);
+  expect(await ƒ('x: [ 1 2 + ] ; 3 x x')).toEqual(`[ 3 3 3 ]`);
 });
 
 test('should def and use nested actions', async () => {
-  expect(await ƒ('test_def: { x: [ 1 2 + ] } def test_def.x')).toEqual(`[ 3 ]`);
+  expect(await ƒ('test_def: { x: [ 1 2 + ] } ; test_def.x')).toEqual(`[ 3 ]`);
 });
 
 test('should def and use nested actions in a in', async () => {
-  expect(await ƒ('test_def: { x: [ 1 2 + ] } def [ test_def.x ] in')).toEqual(
+  expect(await ƒ('test_def: { x: [ 1 2 + ] } ; [ test_def.x ] in')).toEqual(
     `[ [ 3 ] ]`
   );
 });
 
 test('cannot overwrite defined words', async () => {
-  await expect(ƒ('x: [123] def x: [456] def')).rejects.toThrow(
-    `'def' cannot overwrite definition: "x"`
+  await expect(ƒ('x: [123] ; x: [456] ;')).rejects.toThrow(
+    `';' cannot overwrite definition: "x"`
   );
 });
 
 test('should shadow definitions in an in', async () => {
   expect(
-    await ƒ('"a" [ "outsite-a" ] def a [ "a" [ "in-fork-a" ] def a ] in a')
+    await ƒ('"a" [ "outsite-a" ] ; a [ "a" [ "in-fork-a" ] ; a ] in a')
   ).toEqual(`[ 'outsite-a' [ 'in-fork-a' ] 'outsite-a' ]`);
   expect(
-    await ƒ('"a" [ "outsite-a" ] def a [ "b" [ "in-in-b" ] def a b ] in a b: defined?')
+    await ƒ('"a" [ "outsite-a" ] ; a [ "b" [ "in-in-b" ] ; a b ] in a b: defined?')
   ).toEqual(`[ 'outsite-a' [ 'outsite-a' 'in-in-b' ] 'outsite-a' false ]`);
 });
 
 test('should isloate definitions in a in', async () => {
-  expect(await ƒ('[ "a" ["in-fork-a"] def a ] in')).toStrictEqual(
+  expect(await ƒ('[ "a" ["in-fork-a"] ; a ] in')).toStrictEqual(
     `[ [ 'in-fork-a' ] ]`
   );
-  await expect(ƒ('[ "a" ["in-fork-a"] def a ] in a')).rejects.toThrow(
+  await expect(ƒ('[ "a" ["in-fork-a"] ; a ] in a')).rejects.toThrow(
     'Word is not defined: "a"'
   );
 });
 
 test('should execute stored actions', async () => {
-  expect(await ƒ('x: [ 1 2 + ] def x x')).toEqual(`[ 3 3 ]`);
-  expect(await ƒ('test: { x: [ 1 2 + ] } def test.x')).toEqual(`[ 3 ]`);
+  expect(await ƒ('x: [ 1 2 + ] ; x x')).toEqual(`[ 3 3 ]`);
+  expect(await ƒ('test: { x: [ 1 2 + ] } ; test.x')).toEqual(`[ 3 ]`);
 });
 
 test('create keys', async () => {
@@ -49,24 +49,24 @@ test('create keys', async () => {
 
 describe('inline on def', () => {
   test('should inline internal actions', async () => {
-    expect(await ƒ(`x: [ eval ] def 'x' see`)).toEqual(`[ '[ eval ]' ]`);
+    expect(await ƒ(`x: [ eval ] ; 'x' see`)).toEqual(`[ '[ eval ]' ]`);
   });
 
   test('should inline defined actions', async () => {
-    expect(await ƒ(`x: [ slip ] def 'x' see`)).toEqual(`[ '[ << eval ]' ]`);
+    expect(await ƒ(`x: [ slip ] ; 'x' see`)).toEqual(`[ '[ << eval ]' ]`);
   });
 
   test('should not inline local qualified words', async () => {
-    expect(await ƒ(`x: [ .slip ] def 'x' see`)).toEqual(`[ '[ .slip ]' ]`);
+    expect(await ƒ(`x: [ .slip ] ; 'x' see`)).toEqual(`[ '[ .slip ]' ]`);
   });
 
   test('should not inline keys', async () => {
-    expect(await ƒ(`x: [ eval: ] def 'x' see`)).toEqual(`[ '[ eval: ]' ]`);
-    expect(await ƒ(`x: [ slip: ] def 'x' see`)).toEqual(`[ '[ slip: ]' ]`);
+    expect(await ƒ(`x: [ eval: ] ; 'x' see`)).toEqual(`[ '[ eval: ]' ]`);
+    expect(await ƒ(`x: [ slip: ] ; 'x' see`)).toEqual(`[ '[ slip: ]' ]`);
   });
 
   test('should inline deeply', async () => {
-    expect(await ƒ(`x: [ sip ] def 'x' see`)).toEqual(`[ '[ q< dup q> swap << eval ]' ]`);
+    expect(await ƒ(`x: [ sip ] ; 'x' see`)).toEqual(`[ '[ q< dup q> swap << eval ]' ]`);
   });
 });
 
@@ -76,15 +76,15 @@ describe('defer', () => {
   });
 
   test('can defer, then define and use', async () => {
-    expect(await ƒ('x: defer x: [ 1 ] def x')).toEqual(`[ 1 ]`);
+    expect(await ƒ('x: defer x: [ 1 ] ; x')).toEqual(`[ 1 ]`);
   });
 
   test('can defer multiple times before defining', async () => {
-    expect(await ƒ('x: defer x: defer x: [ 1 ] def x')).toEqual(`[ 1 ]`);
+    expect(await ƒ('x: defer x: defer x: [ 1 ] ; x')).toEqual(`[ 1 ]`);
   });
 
   test(`can't defer after defining`, async () => {
-    expect(ƒ('x: [ 1 ] def x: defer')).rejects.toThrow(`'defer' cannot overwrite definition: "x"`);
+    expect(ƒ('x: [ 1 ] ; x: defer')).rejects.toThrow(`'defer' cannot overwrite definition: "x"`);
   });
 
   test('mutually recursive', async () => {
@@ -134,13 +134,13 @@ describe('rewrite', () => {
 
 describe('binding', () => {
   test('internal words are bound', async () => {
-    expect(await ƒ(`eval: [ 'junk' ] def x: [ dip ] ; 'x' see`)).toEqual(
+    expect(await ƒ(`eval: [ 'junk' ] ; x: [ dip ] ; 'x' see`)).toEqual(
       `[ '[ swap << eval ]' ]`
     );
   });
 
   test('defined words are bound', async () => {
-    expect(await ƒ(`slip: [ 'junk' ] def x: [ dip ] ; 'x' see`)).toEqual(
+    expect(await ƒ(`slip: [ 'junk' ] ; x: [ dip ] ; 'x' see`)).toEqual(
       `[ '[ swap << eval ]' ]`
     );
   });
@@ -148,40 +148,40 @@ describe('binding', () => {
 
 describe('undefined words', () => {
   test('defined words are bound', async () => {
-    expect(ƒ(`x: [ junk ] def`)).rejects.toThrow(
-      `'def' Word is not defined: "junk"`
+    expect(ƒ(`x: [ junk ] ;`)).rejects.toThrow(
+      `';' Word is not defined: "junk"`
     );
   });
 });
 
 describe('invalid words', () => {
   test('invalid keys', async () => {
-    await expect(ƒ(`'x:y' [456] def`)).rejects.toThrow(
-      `'def' invalid key: "x:y"`
+    await expect(ƒ(`'x:y' [456] ;`)).rejects.toThrow(
+      `';' invalid key: "x:y"`
     );
-    await expect(ƒ(`'x y' [456] def`)).rejects.toThrow(
-      `'def' invalid key: "x y"`
+    await expect(ƒ(`'x y' [456] ;`)).rejects.toThrow(
+      `';' invalid key: "x y"`
     );
-    await expect(ƒ(`'x[y' [456] def`)).rejects.toThrow(
-      `'def' invalid key: "x[y"`
+    await expect(ƒ(`'x[y' [456] ;`)).rejects.toThrow(
+      `';' invalid key: "x[y"`
     );
-    await expect(ƒ(`'x_%y' [456] def`)).rejects.toThrow(
-      `'def' invalid key: "x_%y"`
+    await expect(ƒ(`'x_%y' [456] ;`)).rejects.toThrow(
+      `';' invalid key: "x_%y"`
     );
-    await expect(ƒ(`'x,y' [456] def`)).rejects.toThrow(
-      `'def' invalid key: "x,y"`
+    await expect(ƒ(`'x,y' [456] ;`)).rejects.toThrow(
+      `';' invalid key: "x,y"`
     );
-    await expect(ƒ(`'x"y' [456] def`)).rejects.toThrow(
-      `'def' invalid key: "x"y"`
+    await expect(ƒ(`'x"y' [456] ;`)).rejects.toThrow(
+      `';' invalid key: "x"y"`
     );
-    await expect(ƒ(`"x\ty" [456] def`)).rejects.toThrow(
-      `'def' invalid key: "x\ty"`
+    await expect(ƒ(`"x\ty" [456] ;`)).rejects.toThrow(
+      `';' invalid key: "x\ty"`
     );
-    await expect(ƒ(`"123" [456] def`)).rejects.toThrow(
-      `'def' invalid key: "123"`
+    await expect(ƒ(`"123" [456] ;`)).rejects.toThrow(
+      `';' invalid key: "123"`
     );
-    await expect(ƒ(`"1.23" [456] def`)).rejects.toThrow(
-      `'def' invalid key: "1.23"`
+    await expect(ƒ(`"1.23" [456] ;`)).rejects.toThrow(
+      `';' invalid key: "1.23"`
     );
   });
 });

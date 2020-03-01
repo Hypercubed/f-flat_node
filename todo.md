@@ -1,5 +1,19 @@
 # Todo list
 
+## Roadmap
+- [ ] https://github.com/Hypercubed/real
+  - [ ] Finish needed methods
+  - [ ] `Complex` module
+- [ ] Classes
+  - [ ] Prototypes (https://vimeo.com/74314050), 
+  - [ ] go style interfaces (https://medium.com/@vtereshkov/how-i-implemented-go-style-interfaces-in-my-own-pascal-compiler-a0f8d37cd297)
+  - [ ] Magic (Dunder) methods (https://rszalski.github.io/magicmethods/)
+- [ ] Errors
+  - [ ] Known error types
+  - [ ] Continuations
+  - [ ] switch on error type
+- [ ] Running in browser
+
 ## Bugs
 - [ ] blessed gui broken
 - [ ] `print` gets swallowed by stack
@@ -30,8 +44,6 @@
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [ ] `@` from complex value?
 - [ ] pprint `Infinity`, `ComplexInfinity`, `NaN` etc.
-- [ ] error conditions, switch on error type
-- [ ] Running in browser
 - [ ] Move vscode extension
 - [ ] pattern + lambdas `[ 1 2 a: ] ~> [ .a .a * ]`
 - [ ] stack matcher `[ 1 2 3 [ _ 3 ] stack-case ]` -> `[ 1 2 3 true ]`
@@ -49,18 +61,16 @@
 - [ ] More stats on trace (max stack size, max queue size, time, etc)
 - [?] Decimal shift/unshift
 - [ ] More complexInfinity/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
-- [ ] finish and use https://github.com/Hypercubed/real
-  - [ ] Number subtypes: integer (BigInt), real (decimaljs), rational (tbd), complex (internal)
 - [?] immutable imports (https://github.com/moonad/Formality/blob/master/DOCUMENTATION.md#import)
 - [ ] flags for pprinting (*maxDepth*, etc)
 - [ ] pick for module? `math [ '!' ] pick use`
 - [?] Store using symbols as keys `#aword [ dup 123 ] ;`? always global and collision free?
 - [ ] os/platform specific bootloading?
+- [ ] all internal words are loaded at untime (`js-import`?)
 - [ ] different pprint for bound words?
-- [ ] Prototypes (https://vimeo.com/74314050), go style interfaces (https://medium.com/@vtereshkov/how-i-implemented-go-style-interfaces-in-my-own-pascal-compiler-a0f8d37cd297)
 - [ ] `stack` and `unstack`
-  - [ ] `stack` and `unstack` are reverse of commin defs
-  - [ ] should `unstack` replace the stack?
+  - [ ] `stack` and `unstack` are reverse of common defs
+  - [ ] should `unstack` replace the stack?  If not then is `unstack: [ eval ] ;`?
   - [ ] `unstack` allows pushing words to stack `[ 1 2 * ] unstack`!!
   - [ ] `unstack` vs `eval`.
 
@@ -70,7 +80,7 @@
 - [ ] `undefined`?
 - [ ] complex, `i`
 - [?] `+/-infinity`
-- [?] Dates (local dates, times, timestaps...)
+- [-] Dates (local dates, times, timestaps...) (could dates be user defined classes?)
 - [ ] Symbols `(`, `_`
   - [?] Use `#:`? as symbol prefix?  Symbols with whitespace (`#:'foo'`)?
   - [ ] well known symbols?
@@ -131,13 +141,10 @@
 - [ ] Ensure predictable `<=>` with `null` and `nan`
 
 ## Words
-- [ ] `%top` vs `root`?  `parent?`
+- [ ] `%top` vs `root`?  add `parent`, `local`?
 - [ ] `linrec` - 
 - [?] `publish` add a word to a dict? `math: my-math-func: publish`, `math.my-func: [ ] ;`?
-- [x] `indexof` for objs
 - [ ] `exists?` file exists?  `fstat`?
-- [x] `imported?` `[ resolve __module_hash defined? ]`?
-- [x] `p-case` for pattern case match
 - [-] `->` vs `case`, `~>` vs `p-case`
 - [?] `alias` `x: y: alias`
 - [ ] More bitwise words:

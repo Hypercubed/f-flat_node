@@ -384,12 +384,8 @@ f♭> ln
 
 Expression are arrays containing literals and words. They are stored in thedictionary like any other value discussed above \(using `sto`\), however, they must first be converted to an expression using the colon \(`:`\) operator.  The semi-colon operator is a short cut definition for defining expressions.
 
-    // convert to an expression and sto
-    f♭> [ dup * ] : sqr: sto
-    [  ]
-
-    // same as above (; is defined as [ : swap sto ])
-    f♭> cube: [ dup sqr * ] ;
+    // define an expression
+    f♭> sqr: [ dup * ] ;
     [  ]
 
     f♭> `5 is $( 5 )` println
@@ -407,11 +403,11 @@ Expression are arrays containing literals and words. They are stored in thedicti
 To see the definition of a single word use `see`:
 
 ```
-f♭> ';' see println
-[ : swap sto ]
+f♭> 'slip' show
+[ q< eval q> ]
 [  ]
 
-f♭> sqr: see println
+f♭> sqr: show
 [ dup * ]
 [  ]
 ```

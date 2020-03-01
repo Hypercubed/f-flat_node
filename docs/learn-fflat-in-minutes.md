@@ -433,28 +433,24 @@ F♭> 'hello' boolean   // truthy?
 ```
 //  name    body
 //  ------- ---------
-F♭> square: [ dup * ] def
+F♭> square: [ dup * ] ;
 [ ]
 
 // apply functions by invoking the word
 F♭> 5 square
 [ 25 ]
 
-F♭> x: 1 def                // creates a function that always returns 1
+F♭> x: 1 ;                // creates a function that always returns 1
 [ ]
 
 // We can show what a word does.
 F♭> 'square' show
 [ dup * ]
 
+// mutally recursive words must be defered
+F♭> x: defer y: defer
 [ ]
-
-// recursive words must be defered
-F♭> x: defer x: [ 1 > [ dup --] [ x ] branch ] def
-[ ]
-
-// `;` will defer and define
-F♭> x: [ a b c ] ;  // same as x: defer x: [ a b c ] def
+F♭> x: [ 1 > [ dup --] [ y ] branch ] ; y: [ 0 = [ dup ++ ] [ x ] branch ] ;
 [ ]
 ```
 

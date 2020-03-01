@@ -39,3 +39,4 @@ dist/
 **/.DS_Store
 .vscode
 docs/_site/
+.idea/

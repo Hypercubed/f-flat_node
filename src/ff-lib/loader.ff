@@ -6,19 +6,19 @@
  * ## `include`
  * Reads a file onto the stack as a string and evaluates the content
  */
-include: [ resolve read eval ] def
+include: [ resolve read eval ] ;
 
 /**
  * ## `export`
  * Exports the current vocab and sends to parent
  */
-export: [ vocab send ] def
+export: [ vocab send ] ;
 
-__module_hash: [ hex-hash '%top._' swap + ] def
-__load-module: [ [ dup [ ] >> '__filename' swap def read eval export ] >> in drop ] def
-__load-and-sto-module: [ dup __load-module swap __module_hash swap def ] def
+__module_hash: [ hex-hash '%top._' swap + ] ;
+__load-module: [ [ dup [ ] >> '__filename' swap ; read eval export ] >> in drop ] ;
+__load-and-sto-module: [ dup __load-module swap __module_hash swap ; ] ;
 
-imported?: [ resolve __module_hash defined? ] def
+imported?: [ resolve __module_hash defined? ] ;
 
 /**
  * ## `import`
@@ -30,7 +30,7 @@ import: [
     [ __module_hash eval ]
     [ dup __load-and-sto-module __module_hash eval ]
     choose eval
-] def
+] ;
 
 /**
  * ## `require`
@@ -39,10 +39,10 @@ import: [
 require: [
   import
   use
-] def
+] ;
 
 /**
  * ## `if-exists-load`
  * Loads a file if it exists
  */
-if-exists-load: [ dup exists swap [ read eval ] >> [ ] choose eval ] def
+if-exists-load: [ dup exists swap [ read eval ] >> [ ] choose eval ] ;

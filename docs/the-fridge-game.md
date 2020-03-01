@@ -33,7 +33,7 @@ fridge-game:
       [ fridge-game ]
       [ 'Thanks for playing.' println clr ]
     branch
-  ] def
+  ] ;
 
 fridge-game
 ```

@@ -1,11 +1,11 @@
 import { ƒ } from './helpers/setup';
 
 test('in', async () => {
-  expect(await ƒ(`a: [ 'before' ] def [ a ] in`)).toEqual(`[ [ 'before' ] ]`);
-  expect(await ƒ(`a: [ "outer" ] def [ a: [ "inner" ] def a ] in a`)).toEqual(
+  expect(await ƒ(`a: [ 'before' ] ; [ a ] in`)).toEqual(`[ [ 'before' ] ]`);
+  expect(await ƒ(`a: [ "outer" ] ; [ a: [ "inner" ] ; a ] in a`)).toEqual(
     `[ [ 'inner' ] 'outer' ]`
   );
-  expect(await ƒ(`a: [ 'outer' ] def [ b: [ 'inner' ] def a ] in b: defined?`)).toEqual(
+  expect(await ƒ(`a: [ 'outer' ] ; [ b: [ 'inner' ] ; a ] in b: defined?`)).toEqual(
     `[ [ 'outer' ] false ]`
   );
 });

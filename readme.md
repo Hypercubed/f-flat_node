@@ -58,7 +58,7 @@ f♭> abs
 f♭> clr
 []
 
-f♭> [ 2 swap ^ 1 - prime? ] "mersenne?" def
+f♭> "mersenne?" [ 2 swap ^ 1 - prime? ] ;
 []
 
 f♭> 10 integers

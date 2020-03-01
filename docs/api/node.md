@@ -30,7 +30,7 @@ Prints the value
 
 terminate the process synchronously with an a status code
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L106">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L111">[src]</a></div>
 
 ## `rand-u32`
 
@@ -38,7 +38,7 @@ terminate the process synchronously with an a status code
 
 Generates cryptographically strong pseudo-random with a givennumber of bytes to generate
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L118">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L123">[src]</a></div>
 
 ## `dirname`
 
@@ -47,7 +47,7 @@ Generates cryptographically strong pseudo-random with a givennumber of bytes to 
 returns the directory name of a path, similar to the Unix dirname command.
 See https://nodejs.org/api/path.html#path_path_dirname_path
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L129">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L134">[src]</a></div>
 
 ## `path-join`
 
@@ -56,7 +56,7 @@ See https://nodejs.org/api/path.html#path_path_dirname_path
 joins all given path segments together using the platform specific separator as a delimiter
 See https://nodejs.org/api/path.html#path_path_join_paths
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L140">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L145">[src]</a></div>
 
 ## `resolve`
 
@@ -64,7 +64,7 @@ See https://nodejs.org/api/path.html#path_path_join_paths
 
 returns a URL href releative to the current base
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L150">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L155">[src]</a></div>
 
 ## `exists`
 
@@ -72,7 +72,7 @@ returns a URL href releative to the current base
 
 Returns true if the file exists, false otherwise.
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L160">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L165">[src]</a></div>
 
 ## `read`
 
@@ -80,7 +80,7 @@ Returns true if the file exists, false otherwise.
 
 Pushes the content of a file as a utf8 string
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L170">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L175">[src]</a></div>
 
 ## `cwd`
 
@@ -88,7 +88,7 @@ Pushes the content of a file as a utf8 string
 
 Pushes the current working directory
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L186">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L191">[src]</a></div>
 
 ## `get-env`
 
@@ -96,4 +96,4 @@ Pushes the current working directory
 
 Gets a environment variable
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L208">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/node.ts#L213">[src]</a></div>

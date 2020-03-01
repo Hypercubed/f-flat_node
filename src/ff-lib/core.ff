@@ -2,15 +2,6 @@
  * # Core defined words
  */
 
-/**
- * `;` - define function
- *
- */
-';' [ 
-  [ dup defer ] swap q< eval q>  // forward definition to support recursive words
-  def                            // define
-] def
-
 // Comparisons
 >: [ <=> 1 = ] ;
 <: [ <=> -1 = ] ;

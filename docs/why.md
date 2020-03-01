@@ -44,7 +44,7 @@ DEFINE tps == 2 * PI * sin .
 This deviates from the Subject\(s\)-Verb paradigm.  In F♭ we could define words like:
 
 ```
-tps: [ pi * sin ] def
+tps: [ pi * sin ] ;
 ```
 
 Again we are postfix following Subject-Object-Verb.

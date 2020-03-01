@@ -181,7 +181,7 @@ test('immutable sto', async () => {
   const last = 'Von Thun';
   expect(
     await ƒ(`
-  name: { } def
+  name: { } ;
   name
   name { first: "Manfred" } <<
   name { last: "Von Thun" } <<

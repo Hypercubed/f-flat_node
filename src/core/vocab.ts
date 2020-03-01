@@ -64,18 +64,19 @@ export const dict = {
   },
 
   /**
-   * ## `def`
+   * ## `;` (def)
    *
    * stores a definition in the current dictionary
    *
    * `a: [A] ->`
    *
    * ```
-   * f♭> sqr: [ dup * ] def
+   * f♭> sqr: [ dup * ] ;
    * [ ]
    * ```
    */
-  def(this: StackEnv, lhs: string | Key, rhs: StackValue[]) {
+  ';'(this: StackEnv, lhs: string | Key, rhs: StackValue[]) {
+    this.dict.set(String(lhs), undefined);
     const action = createAction(this.dict.inline(rhs));
     this.dict.set(String(lhs), action);
   },
