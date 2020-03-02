@@ -15,6 +15,7 @@
 - [ ] Running in browser
 
 ## Bugs
+- [ ] `_ 3 =~`?
 - [ ] blessed gui broken
 - [ ] `print` gets swallowed by stack
 - [?] `'math' see` -> `[module]`?

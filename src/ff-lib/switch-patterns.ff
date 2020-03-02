@@ -8,7 +8,7 @@ p-case: [ [ =~ ] >> case ] ;
 ~>: [ p-case ] ;
 
 /**
- * Calls the second quotation in the first pair whose first quotation yields a truthy value.
+ * Calls the quotation in the first quotation whose first values yields a truthy value.
  */
 switch: [
   dup empty?

@@ -8,14 +8,8 @@
  */
 include: [ resolve read eval ] ;
 
-/**
- * ## `export`
- * Exports the current vocab and sends to parent
- */
-export: [ vocab send ] ;
-
 __module_hash: [ hex-hash '%top._' swap + ] ;
-__load-module: [ [ dup [ ] >> '__filename' swap ; read eval export ] >> in drop ] ;
+__load-module: [ [ dup [ ] >> '__filename' swap ; read eval vocab ] >> in -1 @ ] ;
 __load-and-sto-module: [ dup __load-module swap __module_hash swap ; ] ;
 
 imported?: [ resolve __module_hash defined? ] ;

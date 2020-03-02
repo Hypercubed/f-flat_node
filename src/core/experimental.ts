@@ -36,11 +36,6 @@ export const experimental = {
   },
 
   /**
-   * ## `||>` (apply)
-   */
-  // '||>': dynamo.function(Apply),
-
-  /**
    * ## `spawn`
    *
    * evalues the quote in a child environment, returns a future
