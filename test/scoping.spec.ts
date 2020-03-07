@@ -17,8 +17,7 @@ describe('module `use` scoping', () => {
       [
         δx: [ 1 2 + ] ;
         δy: [ δx 2 * ] ;
-        export
-      ] in drop use
+      ] :module use
       δx δy
     `)
     ).toEqual(`[ 3 6 ]`);
@@ -30,8 +29,7 @@ describe('module `use` scoping', () => {
       [
         δx: [ 1 2 + ] ;
         δy: [ δx 2 * ] ;
-        export
-      ] in drop use
+      ] :module use
       δx: [ 8 ] ;
       δx δy
     `)
@@ -43,8 +41,7 @@ describe('module `use` scoping', () => {
       [
         δx: [ 1 2 + ] ;
         δy: [ δx 2 * ] ;
-        export
-      ] in drop use
+      ] module use
       δx δy
     `)
     ).toEqual(`[ 8 6 ]`);
@@ -57,8 +54,7 @@ test('module def scoping', async () => {
     s: [
       x: [ 1 2 + ] ;
       y: [ x 3 * ] ;
-      export
-    ] in drop ;
+    ] module ;
     x: [ 5 ] ;
     y: [ 7 ] ;
     x y s.x s.y
@@ -72,8 +68,7 @@ test('module def scoping', async () => {
     s: [
       x: [ 1 2 + ] ;
       y: [ x 3 * ] ;
-      export
-    ] in drop ;
+    ] module ;
     x y s.x s.y
   `)
   ).toEqual(`[ 5 7 3 9 ]`);
@@ -84,8 +79,7 @@ test('module def scoping', async () => {
     y: [ 7 ] ;
     s: [
       y: [ x 3 * ] ;
-      export
-    ] in drop ;
+    ] module ;
     x y s.y
   `)
   ).toEqual(`[ 5 7 15 ]`);
@@ -99,8 +93,7 @@ test('calling within child', async () => {
     s: [
       x: [ 1 2 + ] ;
       y: [ x 3 * ] ;
-      export
-    ] in drop ;
+    ] module ;
     [
       x y s.x s.y
     ] in
@@ -117,10 +110,9 @@ test('deep calling within child', async () => {
       s: [
         x: [ 1 2 + ] ;
         y: [ x 3 * ] ;
-        export
-      ] in drop ;
-      export
-    ] in drop ;
+      ] module ;
+      vocab
+    ] module ;
     [
       x y s.s.x s.s.y
     ] in
@@ -154,8 +146,7 @@ test('hides private', async () => {
     [
       _x: [ 1 2 + ] ;
       y: [ _x 3 * ] ;
-      export
-    ] in drop use
+    ] module use
     y
     '_x' defined?
   `)
@@ -166,8 +157,7 @@ test('hides private', async () => {
     s: [
       _x: [ 1 2 + ] ;
       y: [ _x 3 * ] ;
-      export
-    ] in drop ;
+    ] module ;
     s.y
     's._x' defined?
   `)
@@ -181,8 +171,7 @@ test('module `include` scoping', async () => {
     [
       'shuffle.ff' include
       x: [ 1 2 3 drop2 ] ;
-      export
-    ] in drop use
+    ] module use
     x
   `)
   ).toEqual(`[ 1 ]`);
@@ -195,8 +184,7 @@ test('module `use` scoping', async () => {
     [
       'shuffle.ff' import use
       x: [ 1 2 3 drop2 ] ;
-      export
-    ] in drop use
+    ] module use
     x
   `)
   ).toEqual(`[ 1 ]`);
@@ -213,8 +201,7 @@ test('explicit locals are not bound', async () => {
     s: [
       x: [ 1 2 + ] ;
       y: [ .x 3 * ] ;
-      export
-    ] in drop ;
+    ] module ;
     x: [ 5 ] ;
     y: [ 7 ] ;
     x y s.x s.y
@@ -260,11 +247,9 @@ test('binding vocab', async () => {
     [
       δy: [
         δz: [ 8 ] ;
-        export
-      ] in drop ;
+      ] module ;
       δx: [ δy.δz ] ;
-      export
-    ] in drop use
+    ] module use
     δx
     'δx' defined?
     'δy' defined?
@@ -278,13 +263,10 @@ test('binding vocab', async () => {
       [
         δy: [
           δz: [ 13 ] ;
-          export
-        ] in drop ;
-        export
-      ] in drop use
+        ] module ;
+      ] module use
       δx: [ δy.δz ] ;
-      export
-    ] in drop use
+    ] module use
     δx
     'δx' defined?
     'δy' defined?

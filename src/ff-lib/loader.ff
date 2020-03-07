@@ -8,6 +8,8 @@
  */
 include: [ resolve read eval ] ;
 
+module: [ [vocab ] + in -1 @ ] ;
+
 __module_hash: [ hex-hash '%top._' swap + ] ;
 __load-module: [ [ dup [ ] >> '__filename' swap ; read eval vocab ] >> in -1 @ ] ;
 __load-and-sto-module: [ dup __load-module swap __module_hash swap ; ] ;

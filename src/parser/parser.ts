@@ -31,9 +31,8 @@ function processParserTokens(node: any): StackValue | undefined {
     case 'key': {
       const id = node.allText
         .trim()
-        .toLowerCase()
         .slice(0, -1);
-      return new Key(id); // replace with Key
+      return new Key(id);
     }
     case 'number': {
       const n = processNumeric(node.allText);
