@@ -2,7 +2,7 @@
 
 ## Roadmap
 - [ ] https://github.com/Hypercubed/real
-  - [ ] Finish needed methods
+  - [ ] Finish needed methods (`sin`, `cos`)
   - [ ] `Complex` module
 - [ ] Classes
   - [ ] Prototypes (https://vimeo.com/74314050), 
@@ -14,7 +14,13 @@
   - [ ] switch on error type
 - [ ] Running in browser
 
+## TODO Now
+- [ ] Replace `.x` syntax
+- [ ] Allow GC of defintions
+- [ ] Move undo to repl (`.undo`)
+
 ## Bugs
+- [ ] Uppercase leters in object keys
 - [ ] `_ 3 =~`?
 - [ ] blessed gui broken
 - [ ] `print` gets swallowed by stack
@@ -41,6 +47,7 @@
 - [ ] test `read` and `resolve`
 
 ## TODOs
+- [?] User defined sigils?
 - [ ] `resolve` to allow missing file extension?
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [ ] `@` from complex value?
