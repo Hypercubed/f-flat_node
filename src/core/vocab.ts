@@ -150,7 +150,7 @@ export const dict = {
    *
    * ```
    * f♭> 'sqr' see
-   * [ '[ dup * ]' ]
+   * [ '[ @@dup @@* ]' ]
    * ```
    */
   see(this: StackEnv, a: string | Key) {

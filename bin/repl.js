@@ -7,7 +7,7 @@ const memoize = require('memoizee');
 const process = require('process');
 const chalk = require('chalk');
 
-const { createStack, createRootEnv } = require('../dist/stack');
+const { createRootEnv } = require('../dist/stack');
 const { log, bar, ffPrettyPrint } = require('../dist/utils');
 
 const pkg = require('../package.json');
@@ -28,8 +28,8 @@ const WELCOME = gradient.rainbow(`
 const PRESS = chalk.dim(' › Press ');
 
 const CONTINUE = `Continue
-${PRESS}u${chalk.dim(' to undo the stack')}
-${PRESS}c${chalk.dim(' to continue')}
+${PRESS}{enter}${chalk.dim(' to undo the stack')}
+${PRESS}{esc}${chalk.dim(' to continue')}
 ${PRESS}a${chalk.dim(' to always restore the stack')}
 ${PRESS}n${chalk.dim(' to never restore the stack')}`;
 
@@ -51,6 +51,7 @@ let rl = null;
 let undoStack = [];
 let autoundo = undefined;
 
+// Writers, use `.echo` to cycle through writers
 const writers = {
   pretty: (_) => ffPrettyPrint.color(_.stack) + '\n',
   literal: (_) => ffPrettyPrint.literal(_.stack) + '\n',
@@ -112,11 +113,14 @@ function exitOrStartREPL() {
   if (!program.interactive) {
     process.exit();
   } else {
-    stackRepl = startREPL();
+    startREPL();
   }
 }
 
-function startREPL() {
+async function startREPL() {
+  let isPaused = false;
+  let watchCtrlC = false;
+
   rl = readline.createInterface({
     prompt: initialPrompt,
     input: process.stdin,
@@ -126,19 +130,40 @@ function startREPL() {
 
   rl.prompt();
 
+  rl.on('pause', () => {
+    isPaused = true;
+  });
+
+  rl.on('resume', () => {
+    isPaused = false;
+  });
+
   rl.on('line', (line) => {
-    if (!processReplCommand(line)) {
+    if (!isPaused && !processReplCommand(line)) {
       fEval(line);
     }
-  }).on('close', () => {
+    watchCtrlC = false;
+  });
+  
+  rl.on('close', () => {
     process.exit(0);
+  });
+
+  rl.on('SIGINT', () => {
+    if (watchCtrlC) {
+      rl.pause();
+    } else {
+      console.log(`\nTo exit, press ^C again or ^D or type .exit`);
+      prompt();
+      watchCtrlC = true;      
+    }
   });
 }
 
 function newStack() {
   log.level = program.logLevel || 'warn';
 
-  const newParent = createStack('', createRootEnv());
+  const newParent = createRootEnv();
 
   newParent.defineAction('prompt', () => {
     return new Promise(resolve => {
@@ -156,6 +181,7 @@ function newStack() {
   return child;
 }
 
+// buffer input and evaluate in the stack env
 function fEval(code) {
   buffer += `${code}\n`;
   global.clearTimeout(timeout);
@@ -168,10 +194,11 @@ function fEval(code) {
       return;
     }
 
-    addBefore();
+    addBeforeHooks();
 
     log.profile('dispatch');
     undoStack.push(f.stateSnapshot());
+    rl.pause();
     f.next(buffer)
       .catch(err => {
         console.error(err);
@@ -189,6 +216,7 @@ function fEval(code) {
     buffer = '';
 
     function fin() {
+      rl.resume();
       log.profile('dispatch');
       rl.setPrompt(f.depth < 1 ? initialPrompt : `F♭${' '.repeat(f.depth)}| `);
       prompt(f);
@@ -197,27 +225,21 @@ function fEval(code) {
 }
 
 function completer(line) {
-  const completions = getKeys();
-  const hits = completions.filter(c => c.startsWith(line));
-  return [hits.length ? hits : completions, line];
-}
-
-function getKeys() {
   const keys = [];
   for (const prop in f.dict.locals) {
     keys.push(prop);
   }
-  return keys;
+  const hits = keys.filter(c => c.startsWith(line));
+  return [hits.length ? hits : keys, line];
 }
 
-function addBefore() {
+function addBeforeHooks() {
   while (bindings.length > 0) {
     b = bindings.pop();
     b.detach();
   }
 
   let qMax = f.stack.length + f.queue.length;
-  let last = new Date();
 
   // move these be part of winston logger?
   switch (log.level.toString()) {
@@ -229,7 +251,7 @@ function addBefore() {
     case 'warn': {
       if (f.silent) return;
       bindings.push(f.before.add(updateBar));
-      bindings.push(f.beforeEach.add(throttledUpdateBar));
+      bindings.push(f.beforeEach.add(updateBar));
       bindings.push(f.idle.add(() => bar.terminate()));
     }
   }
@@ -238,19 +260,10 @@ function addBefore() {
     console.log(ffPrettyPrint.formatTrace(f));
   }
 
-  function throttledUpdateBar() {
+  function updateBar() {
     const q = f.stack.length + f.queue.length;
     if (q > qMax) qMax = q;
 
-    const now = new Date();
-    const delta = now - last;
-    if (delta > 120) { // output frequency in ms
-      updateBar();
-      last = now;
-    }
-  }
-
-  function updateBar() {
     bar.update(f.stack.length / qMax, {
       stack: f.stack.length,
       queue: f.queue.length,
@@ -270,34 +283,42 @@ function undo() {
   Object.assign(f, state);
 }
 
-function errorPrompt() {
+function getKeypress() {
+  process.stdin.setRawMode(true);
+  rl.pause();
+
   return new Promise(resolve => {
-    console.log(CONTINUE);
-    process.stdin.setRawMode(true);
-    process.stdin.once('keypress', data => {
+    process.stdin.once('data', data => {
       process.stdout.clearLine();
       process.stdout.cursorTo(0);
       rl.clearLine();
+      rl.resume();
 
-      data = data ? String(data).toLowerCase() : 'u';
-  
-      switch (data) {
-        case 'u':
-          undo();
-          break;
-        case 'a':
-          autoundo = true;
-          undo();
-          break;
-        case 'n':
-          autoundo = false;
-          undo();
-          break;
-      }
-      resolve(data);
-    })
-    .resume();
+      resolve(String(data));
+    });
+    process.stdin.resume();
   });
+}
+
+async function errorPrompt() {
+  console.log(CONTINUE);
+  let data = await getKeypress();
+  data = data ? String(data).toLowerCase() : 'u';
+
+  switch (data) {
+    case 'n':
+      autoundo = false;
+    case 'c':
+    case '\u001b':
+      break;
+    case 'a':
+      autoundo = true;
+    case 'u':
+    default:
+      undo();
+      break;
+  }
+  return data;
 }
 
 function processReplCommand(command) {
@@ -328,6 +349,17 @@ function processReplCommand(command) {
       undo();
       rl.setPrompt(initialPrompt);
       prompt();
+      return true;
+    case 'echo':
+      const entries = Object.entries(writers);
+      const i = entries.findIndex(([_, v]) => v === currentWriter);
+      const n = (i + 1) % entries.length;
+      console.log(`Switched to ${entries[n][0]} mode\n`);
+      currentWriter = entries[n][1];
+      prompt();
+      return true;
+    case 'exit':
+      process.exit();
       return true;
   }
   return false;

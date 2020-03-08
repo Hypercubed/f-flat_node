@@ -10,11 +10,10 @@ export const flags = {
    * ## `set-system-property`
    *
    * sets a system level flag
-   * - flags: `'auto-undo'`, `'log-level'`, `'decimal-precision'`
+   * - flags: `'log-level'`, `'decimal-precision'`
    *
    * `str a ->`
    *
-
    *
    * ```
    * f♭> 'log-level' 'trace' set-system-property
@@ -38,7 +37,7 @@ export const flags = {
    * ## `get-system-property`
    *
    * gets a system level flag
-   * - flags: `'auto-undo'`, `'log-level'`, `'decimal-precision'`
+   * - flags: `'log-level'`, `'decimal-precision'`
    *
    * `str -> a`
    *

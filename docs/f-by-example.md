@@ -62,7 +62,7 @@ f♭> swap
 [ 'Hello World' 3 ]
 
 // undo last user action
-f♭> undo
+f♭> .undo
 [ 3 'Hello World' ]
 
 // clear the stack
@@ -70,7 +70,7 @@ f♭> clr
 [ ]
 
 // clear the environment (cannot be undone)
-f♭> .clear
+f♭> .reset
 Clearing context...
 
 Welcome to F♭ REPL Interpreter
@@ -216,7 +216,7 @@ f♭> <<
 f♭> x: @
 [ 123 ]
 
-f♭> undo
+f♭> .undo
 [ { y: 890 x: 123 } ]
 
 f♭> { x: 123 y: 890 }
@@ -472,7 +472,7 @@ f♭> 'AbCDefg'
 f♭> [ ucase ] map '' *
 [ 'ABCDEFG' ]
 
-f♭> undo
+f♭> .undo
 [ 'AbCDefg' ]
 
 f♭> [ dup ucase = ] filter

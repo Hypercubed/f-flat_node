@@ -24,7 +24,7 @@ export const bar = new ProgressBar(
     total: 100,
     width: 50,
     clear: true,
-    renderThrottle: 3200,
+    renderThrottle: 1000,
     stream: process.stderr
   }
 );

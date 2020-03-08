@@ -15,20 +15,21 @@
 - [ ] Running in browser
 
 ## TODO Now
+- [ ] Use-case for symbols? Remove symbols from parser and vocab words?
 - [ ] contracts/guards
-  - [ ] guard
+  - [?] guard
   - [ ] stack case guard
-- [ ] Replace `.x` syntax
-- [?] Allow GC of defintions
+- [?] Replace `.x` syntax?
 - [?] Move undo to repl (`.undo`)
   - [?] move undo stack to repl
-  - [ ] docs
+  - [?] docs
   - [ ] redo
   - [ ] Interactive errors
   - [?] Prompt to undo?
-- [ ] doc `.reset` and `.clear`
+- [ ] move repl to `src`...  use TS
 
 ## Bugs
+- [ ] REPL should require ^C twice
 - [x] Uppercase leters in object keys
 - [ ] `_ 3 =~`?
 - [ ] blessed gui broken
@@ -36,6 +37,7 @@
 - [?] `'math' see` -> `[module]`?
 
 ## Testing
+- [ ] test the repl
 - [ ] `base` (`Deciaml.toBinary`) precision.
 - [ ] Test unbound defs (macro-like expansion)
 - [?] test for invalid word definitions
@@ -45,32 +47,29 @@
   - [ ] Basis
   - [x] Core
   - [ ] Dictionary words
-- [ ] Move `silent` flag to system properties
-  - [?] Progress bar flag?
-- [ ] move repl and gui to src
 - [ ] Test all errors
   - [ ] MAXSTACK
   - [ ] MAXRUN
 - [ ] circular imports?
 - [ ] test pprint?
 - [ ] test `read` and `resolve`
+- [ ] pick for module? `math [ '!' ] pluck use`
 
 ## TODOs
+- [ ] Move `silent` flag to system properties
+  - [?] Progress bar flag?
 - [?] User defined sigils?
 - [ ] `resolve` to allow missing file extension?
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
-- [ ] `@` from complex value?
+- [?] `@` from complex value?
 - [ ] pprint `Infinity`, `ComplexInfinity`, `NaN` etc.
 - [ ] Move vscode extension
 - [ ] pattern + lambdas `[ 1 2 a: ] ~> [ .a .a * ]`
 - [ ] stack matcher `[ 1 2 3 [ _ 3 ] stack-case ]` -> `[ 1 2 3 true ]`
 - [ ] fried defintions `[ .x 2 ^ .y 2 ^ + .y abs - ] fry` -> `[[ x: y: ] => [ .x 2 ^ .y 2 ^ + .y abs - ]] lambda`
-- [ ] should undo always be immdiate?
-  - [ ] Interactive errors
-  - [ ] Prompt to undo?
 - [ ] ability to define words as immediate (without prefix)?
 - [?] ensure defining a module (`x: 'xx.ff' import ;`) doesn't create extra globals
-- [?] all pprint values should be copy-pasteable?
+- [?] all pprint values should be copy-pasteable in literal?
   - [?] regex
   - [?] dates
   - [?] special numbers (`complexinfinity`, etc)
@@ -80,11 +79,10 @@
 - [ ] More complexInfinity/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
 - [?] immutable imports (https://github.com/moonad/Formality/blob/master/DOCUMENTATION.md#import)
 - [ ] flags for pprinting (*maxDepth*, etc)
-- [ ] pick for module? `math [ '!' ] pick use`
 - [?] Store using symbols as keys `#aword [ dup 123 ] ;`? always global and collision free?
 - [ ] os/platform specific bootloading?
-- [ ] all internal words are loaded at untime (`js-import`?)
-- [ ] different pprint for bound words?
+- [?] all internal words are loaded at runtime (`js-import`?)
+- [x] different pprint for bound words?
 - [ ] `stack` and `unstack`
   - [ ] `stack` and `unstack` are reverse of common defs
   - [ ] should `unstack` replace the stack?  If not then is `unstack: [ eval ] ;`?
@@ -92,9 +90,9 @@
   - [ ] `unstack` vs `eval`.
 
 ## Parser
-- [ ] unicode words: `f\u266D`
+- [ ] unicode words and keys: `f\u266D:`
 - [ ] Regex literal
-- [ ] `undefined`?
+- [?] `undefined` literal?
 - [ ] complex, `i`
 - [?] `+/-infinity`
 - [-] Dates (local dates, times, timestaps...) (could dates be user defined classes?)

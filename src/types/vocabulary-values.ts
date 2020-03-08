@@ -2,7 +2,10 @@ import { guard } from '@hypercubed/dynamo';
 import { Word, Sentence } from './words';
 
 export class GlobalSymbol {
+  private readonly name: string;
+
   constructor(public readonly description: string = '') {
+    this.name = `@@${description}`;
     if (new.target === GlobalSymbol) {
       Object.freeze(this);
     }
@@ -14,7 +17,7 @@ export class GlobalSymbol {
   }
 
   toString(): string {
-    return this.description;
+    return this.name;
   }
 }
 

@@ -66,6 +66,16 @@ export const node = {
    */
   args: () => process.argv,
 
+  // prompt: () => {
+  //   bar.interrupt('');
+  //   stdout.clearLine();
+  //   stdout.cursorTo(0);
+  //   rl.resume();
+  //   return new Promise(resolve => {
+  //     rl.question('what', resolve);
+  //   });
+  // },
+
   /**
    * ## `println`
    *
