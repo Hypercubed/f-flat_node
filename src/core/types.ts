@@ -1,7 +1,11 @@
 import { performance } from 'perf_hooks';
 import { signature, Any } from '@hypercubed/dynamo';
 
-import { dynamo, Word, Key, ReturnValues, Decimal, Complex } from '../types';
+import { dynamo } from '../types/dynamo';
+
+import { Decimal } from '../types/decimal';
+import { Complex } from '../types/complex';
+import { Word, Key } from '../types/words';
 import { type } from '../utils';
 
 const NUMERALS = '0123456789ABCDEF';
@@ -36,29 +40,6 @@ class CreateNumber {
   @signature(Any)
   any(x: any) {
     return new Decimal(x);
-  }
-}
-
-class IsNumber {
-  @signature([Number, Decimal, Complex])
-  number() {
-    return true;
-  }
-  @signature(Any)
-  any() {
-    return false;
-  }
-}
-
-class IsComplex {
-  @signature()
-  Complex(a: Complex) {
-    return !a.im.isZero();
-  }
-
-  @signature(Any)
-  'Decimal | number | any'() {
-    return false;
   }
 }
 

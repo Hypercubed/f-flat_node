@@ -15,12 +15,21 @@
 - [ ] Running in browser
 
 ## TODO Now
+- [ ] contracts/guards
+  - [ ] guard
+  - [ ] stack case guard
 - [ ] Replace `.x` syntax
-- [ ] Allow GC of defintions
-- [ ] Move undo to repl (`.undo`)
+- [?] Allow GC of defintions
+- [?] Move undo to repl (`.undo`)
+  - [?] move undo stack to repl
+  - [ ] docs
+  - [ ] redo
+  - [ ] Interactive errors
+  - [?] Prompt to undo?
+- [ ] doc `.reset` and `.clear`
 
 ## Bugs
-- [ ] Uppercase leters in object keys
+- [x] Uppercase leters in object keys
 - [ ] `_ 3 =~`?
 - [ ] blessed gui broken
 - [ ] `print` gets swallowed by stack
@@ -130,10 +139,6 @@
 - [?] Mixed numeric and string indecies for arrays and maps `[ 1 2 x: 3 ]` `{ x: 1 y: 2 3 4 5}`?
 - [?] Combine lambdas and pattern matching?
 - [?] Online help?
-- [ ] Undo flags
-  - [x] `undoable` -> `autoundo`,
-  - [ ] add `undoable` flag.
-  - [ ] reset by `.clear`?
 - [ ] Fix/improve API docs
     - [x] Move docs from gitbook?
 - [ ] Consistant and predictable display precision:
@@ -217,9 +222,6 @@
 - [ ] Separate state from environment and engine?
 - [ ] IO Class?
 - [ ] Session saving
-- [x] Undo history
-  - [x] undo
-  - [ ] redo?
 - [ ] Dates & Time
   - [ ] More date base operations
   - [ ] Add Duration type... example: https://github.com/moment/moment/blob/develop/src/lib/duration/constructor.js

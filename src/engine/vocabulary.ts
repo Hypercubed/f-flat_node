@@ -1,10 +1,10 @@
 import is from '@sindresorhus/is';
 
-import { VocabValue, ScopeModule } from '../types/vocabulary-values';
-
 import { StackValue } from '../types/stack-values';
-import { Alias, Word, Sentence } from '../types/words';
+import { Word, Sentence } from '../types/words';
 import { ReturnValues } from '../types/return-values';
+import { VocabValue, ScopeModule, GlobalSymbol } from '../types/vocabulary-values';
+
 import { SEP } from '../constants';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -35,22 +35,22 @@ export class Vocabulary {
     return key.split(SEP);
   }
 
-  protected readonly global: { [k in symbol]: VocabValue }; // stores VocabValue by symbol, TODO: Use Map?
+  protected readonly globalMap: WeakMap<GlobalSymbol, VocabValue>;
 
   protected readonly root: ScopeModule;
   protected readonly scope: ScopeModule;
   protected readonly locals: ScopeModule;
 
   constructor(parent?: Vocabulary) {
-    this.global = parent?.global || Object.create(null);
+    this.globalMap = parent?.globalMap || new WeakMap();
 
     if (parent?.root) {
       this.root = parent.root;
     } else {
       this.root = Object.create(null);
 
-      const sym = Symbol(TOP);
-      this.global[sym] = this.root;
+      const sym = new GlobalSymbol(TOP);
+      this.globalMap.set(sym, this.root);
       this.root[TOP] = sym;
     }
     const par = parent?.locals || this.root;
@@ -59,9 +59,9 @@ export class Vocabulary {
     this.locals = Object.create(this.scope);
   }
 
-  get(key: string | symbol): VocabValue {
+  get(key: string | GlobalSymbol): VocabValue {
     const s = this.findSymbol(key);
-    return is.symbol(s) ? this.global[s] : s;
+    return GlobalSymbol.is(s) ? this.globalMap.get(s) : s;
   }
 
   set(_key: string, value: VocabValue): void {
@@ -86,10 +86,10 @@ export class Vocabulary {
       throw new Error(`invalid key: "${_key}"`);
     }
 
-    let sym = Symbol(key);
+    let sym = new GlobalSymbol(key);
     if (hasOwnProperty.call(scope, key)) {
       const w = scope[key];
-      if (is.symbol(w) && is.undefined(this.global[w])) {
+      if (GlobalSymbol.is(w) && is.undefined(this.globalMap.get(w))) {
         // allow defintion to words that have been declared but not defined
         sym = w;
       } else {
@@ -97,7 +97,7 @@ export class Vocabulary {
       }
     }
 
-    this.global[sym] = value;
+    this.globalMap.set(sym, value);
     scope[key] = sym;
   }
 
@@ -124,10 +124,10 @@ export class Vocabulary {
   useVocab(dict: ScopeModule) {
     Object.keys(dict).forEach(key => {
       const value = dict[key];
-      if (typeof value !== 'symbol') {
+      if (!GlobalSymbol.is(value)) {
         throw new Error(`'use' invalid vocabulary. Vocabulary should be a map of global symbols`); // make FFlatError
       }
-      if (!this.global[value]) {
+      if (!this.globalMap.has(value)) {
         throw new Error(`'use' invalid vocabulary. Symbol is undefined: ${value.description}`); // make FFlatError
       }
       this.scope[key] = value;
@@ -153,7 +153,7 @@ export class Vocabulary {
     const symbolStack = [];
 
     const _bind = (v: any) => {
-      if (v instanceof Alias) {
+      if (GlobalSymbol.is(v)) {
         return v;
       }
 
@@ -163,16 +163,16 @@ export class Vocabulary {
           if (is.undefined(sym)) {
             throw new Error(`Word is not defined: "${v.value}"`);
           }
-          if (symbolStack.includes(sym)) return new Alias(sym, v.toString());
-          const value = this.global[sym];
+          if (symbolStack.includes(sym)) return sym;
+          const value = this.globalMap.get(sym);
           const type = typeof value;
           if (type === 'undefined') {
-            if (!(sym in this.global)) {
+            if (!(this.globalMap.has(sym))) {
               throw new Error(`Word is not defined: "${v.value}"`);
             }
-            return new Alias(sym, v.toString());  // defered
+            return sym;  // defered
           }
-          if (type === 'function') return new Alias(sym, v.toString());
+          if (type === 'function') return sym;
           symbolStack.push(sym);
           const r = _bind(value); // Should be a Sentence at this point
           symbolStack.pop();
@@ -207,8 +207,12 @@ export class Vocabulary {
     return _bind(_action);
   }
 
-  private findSymbol(key: string | symbol): symbol {
-    if (is.symbol(key)) return key;
+  /**
+   * Lookup `key` until a GlobalSymbol is found
+   * @param key
+   */
+  private findSymbol(key: string | GlobalSymbol): GlobalSymbol {
+    if (GlobalSymbol.is(key)) return key;
 
     if ([TOP].includes(key)) {
       throw new Error(`invalid key: "${key}"`);
@@ -222,8 +226,8 @@ export class Vocabulary {
       const k = path.shift() as string;
       value = scope ? scope[k] : undefined;
       if (is.undefined(value)) return;
-      if (is.symbol(value)) {
-        scope = this.global[value];
+      if (GlobalSymbol.is(value)) {
+        scope = this.globalMap.get(value) as any;
       }
     }
 

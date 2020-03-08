@@ -5,19 +5,18 @@ import * as MiniSignal from 'mini-signals';
 import { freeze, splice } from 'icepick';
 import is from '@sindresorhus/is';
 
+import { dynamo } from '../types/dynamo';
+
+import { Word, Sentence } from '../types/words';
+import { Future } from '../types/future';
+import { StackValue } from '../types/stack-values';
+import { ReturnValues } from '../types/return-values';
+import { GlobalSymbol } from '../types/vocabulary-values';
+
 import { lexer } from '../parser';
 import { FFlatError, encode } from '../utils';
 import { Vocabulary } from './vocabulary';
 
-import {
-  dynamo,
-  ReturnValues,
-  StackValue,
-  Future,
-  Word,
-  Alias,
-  Sentence
-} from '../types';
 import {
   MAXSTACK,
   MAXRUN,
@@ -69,13 +68,12 @@ export class StackEnv {
   depth = 0;
 
   // system properties
-  autoundo = true;
   silent = true;
 
   lastFnDispatch: any;
   currentAction: StackValue;
 
-  prevState: Partial<StackEnv> = null;
+  // prevState: Partial<StackEnv> = null;
   trace: Array<Partial<StackEnv>> = [];
 
   before = new MiniSignal();
@@ -163,10 +161,14 @@ export class StackEnv {
     });
   }
 
-  undo(): StackEnv {
-    const prevState = this.prevState || {};
-    prevState.queue = [];
-    return Object.assign(this, prevState);
+  stateSnapshot(): Partial<StackEnv> {
+    return {
+      currentAction: this.currentAction,
+      depth: this.depth,
+      // prevState: this.prevState,
+      stack: this.stack,
+      queue: this.queue.slice()
+    };
   }
 
   private run(s?: StackValue): StackEnv {
@@ -177,9 +179,6 @@ export class StackEnv {
     }
 
     this.status = DISPATCHING;
-
-    this.prevState = this.stateSnapshot();
-
     let loopCount = 0;
 
     this.currentAction = undefined;
@@ -234,9 +233,9 @@ export class StackEnv {
   }
 
   private onError(err: Error): void {
-    if (this.autoundo) {
-      this.undo();
-    }
+    // if (this.autoundo) {
+    //   this.undo();
+    // }
     if (err instanceof TypeError) {
       err = new FFlatError(err.message, this);
     }
@@ -250,7 +249,7 @@ export class StackEnv {
     this.stack = freeze([...this.stack, ...a]);
   }
 
-  private isImmediate(c: Word | Alias): boolean {
+  private isImmediate(c: Word): boolean {
     if (this.depth < 1) return true; // in immediate state
     if (!is.string(c.value)) return false;
     if (c.value.length === 1 && '[]{}:'.indexOf(c.value) > -1) return true; // these words are always immediate
@@ -277,27 +276,26 @@ export class StackEnv {
     }
 
     if (token instanceof Word && this.isImmediate(token)) {
-      return this.dispatchWord(token);
+      return this.dispatchLookup(token.value);
     }
 
-    if (token instanceof Alias) {
-      return this.dispatchWord(token); // TODO: optomize for Alias which is always a global symbol
+    if (GlobalSymbol.is(token)) {
+      return this.dispatchLookup(token);
     }
 
     return this.push(token);
   }
 
-  private dispatchWord(token: Word | Alias) {
-    let tokenValue = token.value;
-
+  private dispatchLookup(tokenValue: string | GlobalSymbol) {
     if (is.string(tokenValue) && tokenValue.length > 1 && tokenValue.startsWith(IIF)) {
       tokenValue = tokenValue.slice(1);
     }
 
     const lookup = this.dict.get(tokenValue);
-    const name = typeof tokenValue === 'symbol' ? tokenValue.description : String(tokenValue);
+    const name = GlobalSymbol.is(tokenValue) ? tokenValue.description : tokenValue;
+
     if (is.undefined(lookup)) {
-      throw new FFlatError(`Word is not defined: "${name}"`, this);
+      throw new FFlatError(`Word is not defined: "${tokenValue}"`, this);
     }
 
     if (lookup instanceof Sentence) {
@@ -367,15 +365,5 @@ export class StackEnv {
       this.dispatchValue(value);
       return;
     }
-  }
-
-  private stateSnapshot(): Partial<StackEnv> {
-    return {
-      currentAction: this.currentAction,
-      depth: this.depth,
-      prevState: this.prevState,
-      stack: this.stack,
-      queue: this.queue.slice()
-    };
   }
 }

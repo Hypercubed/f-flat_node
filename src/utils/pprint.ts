@@ -113,6 +113,7 @@ const COLORS = {
   ...COLORIZE_OPTIONS,
   Word: 'green',
   Key: 'bold.yellow',
+  GlobalSymbol: 'bold.green',
   Decimal: COLORIZE_OPTIONS.number,
   Complex: COLORIZE_OPTIONS.number,
   ComplexInfinity: COLORIZE_OPTIONS.number,

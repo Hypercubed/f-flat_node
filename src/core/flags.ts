@@ -23,9 +23,6 @@ export const flags = {
    */
   'set-system-property'(this: StackEnv, p: string, v: any): void {
     switch (p) {
-      case 'auto-undo':
-        this.autoundo = Boolean(v);
-        break;
       case 'log-level':
         log.level = String(v);
         break;
@@ -52,8 +49,6 @@ export const flags = {
    */
   'get-system-property'(this: StackEnv, p: string) {
     switch (p) {
-      case 'auto-undo':
-        return this.autoundo;
       case 'log-level':
         return (log.level = log.level);
       case 'decimal-precision':

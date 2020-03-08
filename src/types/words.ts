@@ -10,9 +10,12 @@ function toString(x: any) {
 }
 
 abstract class Action {
-  constructor(public value: any, public displayString?: string) {
+  constructor(public readonly value: any, public readonly displayString?: string) {
     if (!displayString) {
       this.displayString = toString(value);
+    }
+    if (new.target === Action) {
+      Object.freeze(this);
     }
   }
 
@@ -63,9 +66,12 @@ export class Word extends Action {
     return x instanceof Word;
   }
 
-  constructor(public value: string, public displayString?: string) {
+  constructor(public readonly value: string, public readonly displayString?: string) {
     // value s/b PropertyKey?
     super(value, displayString);
+    if (new.target === Word) {
+      Object.freeze(this);
+    }
   }
 }
 
@@ -75,22 +81,14 @@ export class Key extends Action {
     return x instanceof Key;
   }
 
-  constructor(public value: string, public displayString?: string) {
+  constructor(public readonly value: string, public readonly displayString?: string) {
     super(value, displayString);
     if (!displayString) {
       this.displayString = toString(value) + ':';
     }
-  }
-}
-
-export class Alias extends Action { // global word
-  @guard()
-  static isAlias(x: unknown): x is Alias {
-    return x instanceof Alias;
-  }
-
-  constructor(public value: symbol, public displayString?: string) {
-    super(value, displayString);
+    if (new.target === Key) {
+      Object.freeze(this);
+    }
   }
 }
 
@@ -100,7 +98,10 @@ export class Sentence extends Action {
     return x instanceof Sentence;
   }
 
-  constructor(value: StackValue[], displayString?: string) {
+  constructor(public readonly value: StackValue[], public readonly displayString?: string) {
     super(value, displayString);
+    if (new.target === Sentence) {
+      Object.freeze(this);
+    }
   }
 }

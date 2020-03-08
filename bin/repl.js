@@ -1,41 +1,55 @@
 #!/usr/bin/env node
 
-/* global process */
-
-const repl = require('repl');
 const readline = require('readline');
 const program = require('commander');
 const gradient = require('gradient-string');
 const memoize = require('memoizee');
+const process = require('process');
+const chalk = require('chalk');
 
 const { createStack, createRootEnv } = require('../dist/stack');
-const { log, type, bar, ffPrettyPrint } = require('../dist/utils');
+const { log, bar, ffPrettyPrint } = require('../dist/utils');
 
 const pkg = require('../package.json');
 
-const welcome = gradient.rainbow(`
+const WELCOME = gradient.rainbow(`
 
-          []]
-          []]
-[]]]]]]]] []] []]]      F♭ Version ${pkg.version}
-[]]       []]]   []]    Copyright (c) 2000-2020 by Jayson Harshbarger
-[]]       []]   []]     Documentation: http://hypercubed.github.io/f-flat_node/
-[]]]]]]   []]  []]
-[]]       []][]]        Type '.exit' to exit the repl
-[]]                     Type '.clear' to reset
+          []]           F♭ Version ${pkg.version}
+          []]           Copyright (c) 2000-2020 by Jayson Harshbarger
+[]]]]]]]] []] []]]      Documentation: http://hypercubed.github.io/f-flat_node/
+[]]       []]]   []]
+[]]       []]   []]     
+[]]]]]]   []]  []]      Type '.exit' to exit the repl
+[]]       []][]]        Type '.clear' to clear the stack and the undo buffer
+[]]                     Type '.reset' to reset the environment
 []]                     Type '.help' for more help
 `);
 
+const PRESS = chalk.dim(' › Press ');
+
+const CONTINUE = `Continue
+${PRESS}u${chalk.dim(' to undo the stack')}
+${PRESS}c${chalk.dim(' to continue')}
+${PRESS}a${chalk.dim(' to always restore the stack')}
+${PRESS}n${chalk.dim(' to never restore the stack')}`;
+
+const HELP = `.clear    Clear the stack and the undo buffer
+.reset    Reset the environment
+.exit     Exit the repl
+.help     Print this help message
+`;
+
 const initialPrompt = 'F♭> ';
-// const altPrompt = 'F♭| ';
 
 const bindings = [];
 
 let arg = '';
 let buffer = '';
 let timeout = null;
-let silent = false;
-let stackRepl = null;
+let rl = null;
+
+let undoStack = [];
+let autoundo = undefined;
 
 const writers = {
   pretty: (_) => ffPrettyPrint.color(_.stack) + '\n',
@@ -43,7 +57,7 @@ const writers = {
   silent: (_) => '',
 };
 
-let _writer = writers.pretty;
+let currentWriter = writers.pretty;
 
 program
   .version(pkg.version)
@@ -60,7 +74,7 @@ program
 program.parse(process.argv);
 
 if (typeof program.interactive === 'undefined') {
-  program.interactive = !program.file && arg === '' && process && process.stdin.isTTY;
+  program.interactive = !program.file && arg === '' && process && process.stdin && process.stdin.isTTY;
 }
 
 if (program.logLevel) {
@@ -103,74 +117,28 @@ function exitOrStartREPL() {
 }
 
 function startREPL() {
-  const r = repl.start({
+  rl = readline.createInterface({
     prompt: initialPrompt,
-    eval: fEval,
-    writer: (_) => (_ instanceof Error) ? _.stack : _writer(_),
-    ignoreUndefined: true,
-    useColors: true,
-    useGlobal: false,
+    input: process.stdin,
+    output: process.stdout,
     completer: memoize(completer, { maxAge: 10000 })
   });
 
-  r.on('reset', () => {
-    f = newStack();
-    stackRepl.setPrompt(initialPrompt);
-  });
+  rl.prompt();
 
-  r.defineCommand('echo', {
-    help: 'Toggle echo mode',
-    action() {
-      const entries = Object.entries(writers);
-      const i = entries.findIndex(([_, v]) => v === _writer);
-      const n = (i + 1) % entries.length;
-      console.log(`Switched to ${entries[n][0]} mode\n`);
-      _writer = entries[n][1];
-      this.displayPrompt();
+  rl.on('line', (line) => {
+    if (!processReplCommand(line)) {
+      fEval(line);
     }
+  }).on('close', () => {
+    process.exit(0);
   });
-
-  const objectId = getUniqueObjectCounter();
-
-  r.defineCommand('s', {
-    // todo: move to core?
-    help: 'Print the stack',
-    action() {
-      f.stack.forEach((d, i) => {
-        const id = objectId(d).toString(16);
-        console.log(
-          `${f.stack.length - i}: ${ffPrettyPrint.color(d)} [${type(
-            d
-          )}] (${id})`
-        );
-      });
-      this.displayPrompt();
-    }
-  });
-
-  r.defineCommand('j', {
-    help: 'Print the stack as JSON',
-    action() {
-      console.log(f.toJSON());
-      this.displayPrompt();
-    }
-  });
-
-  r.context = Object.create(null);
-
-  return r;
 }
 
 function newStack() {
   log.level = program.logLevel || 'warn';
 
   const newParent = createStack('', createRootEnv());
-
-  const rl =
-    stackRepl ||
-    readline.createInterface({
-      input: process.stdin
-    });
 
   newParent.defineAction('prompt', () => {
     return new Promise(resolve => {
@@ -179,7 +147,7 @@ function newStack() {
   });
 
   if (!program.quiet) {
-    console.log(welcome);
+    console.log(WELCOME);
   }
 
   const child = newParent.createChild(undefined);
@@ -188,11 +156,7 @@ function newStack() {
   return child;
 }
 
-function fEval(code, _, __, cb) {
-  if (code.slice(0, 2) === '({' && code.slice(-2) === '})') {
-    code = code.slice(1, -1); // remove "(" and ")" added by node repl
-  }
-
+function fEval(code) {
   buffer += `${code}\n`;
   global.clearTimeout(timeout);
   timeout = global.setTimeout(run, 60);
@@ -207,33 +171,29 @@ function fEval(code, _, __, cb) {
     addBefore();
 
     log.profile('dispatch');
+    undoStack.push(f.stateSnapshot());
     f.next(buffer)
-      .then(result => {
-        fin();
-        cb(null, result);
-      })
       .catch(err => {
-        fin();
-        cb(err);
-      });
+        console.error(err);
+        if (!program.interactive) {
+          process.exit(1);
+        }
+        if (autoundo === true) {
+          undo();
+        } else if (autoundo !== false) {
+          return errorPrompt();
+        }
+      })
+      .then(fin, fin);  // finally
 
     buffer = '';
 
     function fin() {
       log.profile('dispatch');
-      stackRepl.setPrompt(f.depth < 1 ? initialPrompt : `F♭${' '.repeat(f.depth)}| `);
+      rl.setPrompt(f.depth < 1 ? initialPrompt : `F♭${' '.repeat(f.depth)}| `);
+      prompt(f);
     }
   }
-}
-
-function getUniqueObjectCounter() {
-  const objIdMap = new WeakMap();
-  let objectCount = 0;
-  function objectId(o) {
-    if (!objIdMap.has(o)) objIdMap.set(o, ++objectCount);
-    return objIdMap.get(o);
-  }
-  return objectId;
 }
 
 function completer(line) {
@@ -298,4 +258,77 @@ function addBefore() {
       lastAction: ffPrettyPrint.trace(f.currentAction)
     });
   }
+}
+
+function prompt() {
+  console.log(currentWriter(f));
+  rl.prompt();
+}
+
+function undo() {
+  const state = undoStack.pop();
+  Object.assign(f, state);
+}
+
+function errorPrompt() {
+  return new Promise(resolve => {
+    console.log(CONTINUE);
+    process.stdin.setRawMode(true);
+    process.stdin.once('keypress', data => {
+      process.stdout.clearLine();
+      process.stdout.cursorTo(0);
+      rl.clearLine();
+
+      data = data ? String(data).toLowerCase() : 'u';
+  
+      switch (data) {
+        case 'u':
+          undo();
+          break;
+        case 'a':
+          autoundo = true;
+          undo();
+          break;
+        case 'n':
+          autoundo = false;
+          undo();
+          break;
+      }
+      resolve(data);
+    })
+    .resume();
+  });
+}
+
+function processReplCommand(command) {
+  if (!command.startsWith('.')) return false;
+  command = command.replace(/^\./, '');
+
+  switch (command) {
+    case 'clear':
+      console.log('Clearing stack and undo buffer...\n');
+      f.clear();
+      undoStack = [];
+      rl.setPrompt(initialPrompt);
+      prompt();
+      return true;
+    case 'reset':
+      console.log('Resetting the environment...\n');
+      autoundo = undefined;
+      undoStack = [];
+      f = newStack();
+      rl.setPrompt(initialPrompt);
+      prompt();
+      return true;
+    case 'help':
+      console.log(HELP);
+      prompt();
+      return true;
+    case 'undo':
+      undo();
+      rl.setPrompt(initialPrompt);
+      prompt();
+      return true;
+  }
+  return false;
 }

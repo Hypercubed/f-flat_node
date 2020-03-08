@@ -18,6 +18,16 @@ test('should create objects object', async () => {
   ).toEqual(`[ { name: [ { first: 'Manfred' } { last: 'von Thun' } ] } ]`);
 });
 
+test('should create objects object with cased keys', async () => {
+  expect(await ƒ('[ "First" "Manfred" "Last" "von Thun" ] object')).toEqual(
+    `[ { First: 'Manfred', Last: 'von Thun' } ]`
+  );
+
+  expect(await ƒ('{ First: "Manfred" Last: "von Thun" }')).toEqual(
+    `[ { First: 'Manfred', Last: 'von Thun' } ]`
+  );
+});
+
 test('should create objects object, cont', async () => {
   // t.deepEqual(await ƒ('{ name: [ { first: "Manfred" } { last: "von" " Thun" + } ] }'), [{ name: [{first: 'Manfred'}, {last: 'von Thun'}] }]);
   expect(await ƒ('{ first: "Manfred", last: "von Thun" }')).toEqual(

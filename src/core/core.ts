@@ -634,15 +634,6 @@ export const core = {
   },
 
   /**
-   * ## `undo`
-   *
-   * restores the stack to state before previous eval
-   */
-  undo(this: StackEnv): void {
-    this.undo().undo();
-  },
-
-  /**
    * ## `match
    *
    * `str a -> bool`

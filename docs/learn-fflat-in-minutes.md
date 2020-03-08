@@ -11,7 +11,7 @@ Hello World                       // text printed to the console
 [ 5 ]                             // the current stack
 ```
 
-For most examples it is assumed that the current stack is clear. The stack can be cleared between examples by typing `clr`.  `.clear` will reset the entire environment.
+For most examples it is assumed that the current stack is clear. The stack can be cleared between examples by typing `clr`.  `.reset` will reset the entire environment including defined words.  Use `.undo` to undo the last user input.
 
 ## Syntax
 
@@ -105,9 +105,6 @@ F♭> thing:        // this is a key, it is not execuated unless explicitly eval
 
 F♭> :thing        // a word that is executed immediatly even if it is enclosed in an lazy array
 [ :thing ]
-
-F♭> #thing        // a unique symbol
-[ #thing ]
 ```
 
 ### Non-Literal Types
@@ -413,12 +410,6 @@ F♭> 1 1 =              // Equality defined as `=`
 [ true ]
 
 F♭> 2 1 !=             //  and inequality defined `!=`
-[ true ]
-
-F♭> #x #x =            // symbols are never equal
-[ false ]
-
-F♭> #x dup =           // unless they are the same
 [ true ]
 
 F♭> [ 1 2 ] [ 1 2 ] =  // arrays are checked by element

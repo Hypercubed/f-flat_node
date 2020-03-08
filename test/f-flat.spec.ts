@@ -1,6 +1,6 @@
 import { F, Decimal, ƒ, τ } from './helpers/setup';
 
-test('setup', async () => {
+test.only('setup', async () => {
   expect(F().eval).toBeDefined();
   expect(F().promise).toBeDefined();
   expect(F().depth).toBeDefined();

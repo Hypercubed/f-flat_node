@@ -1,26 +1,12 @@
-import memoize from 'memoizee';
-import { writeFileSync } from 'fs';
-import { signature } from '@hypercubed/dynamo';
-
 import { stringifyStrict } from '../utils/json';
 
 import {
-  dynamo,
-  Word,
-  Sentence,
   Future,
   ReturnValues,
   StackValue,
   Decimal
 } from '../types';
 import { StackEnv } from '../engine/env';
-
-// class Apply {
-//   @signature()
-//   app(a: any[], b: Function) {
-//     return Reflect.apply(b, null, a);
-//   }
-// }
 
 /**
  * # Internal Experimental Words
@@ -42,7 +28,7 @@ export const experimental = {
    *
    * `[A] -> future`
    */
-  spawn(this: StackEnv, a: Word | Sentence): Future {
+  spawn(this: StackEnv, a: any): Future {
     return new Future(a, this.createChildPromise(a));
   },
 

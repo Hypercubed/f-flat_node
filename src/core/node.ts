@@ -216,5 +216,9 @@ export const node = {
     return null;
   },
 
-  os: arch
+  os: arch,
+
+  memory() {
+    return process.memoryUsage();
+  }
 };

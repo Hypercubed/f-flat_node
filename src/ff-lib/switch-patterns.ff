@@ -7,13 +7,21 @@ p-case: [ [ =~ ] >> case ] ;
 ->: [ case ] ;
 ~>: [ p-case ] ;
 
+guard: [
+  dup
+  [ case ] dip
+  string
+  [ ' guard violation' + throw ] >>
+  unless
+] ;
+
 /**
  * Calls the quotation in the first quotation whose first values yields a truthy value.
  */
 switch: [
   dup empty?
   [
-    uncons slip // pop and evaluate first item in list
+    uncons slip        // pop and evaluate first item in list
     [ switch ] >>      // switch rest
     branch
   ] unless

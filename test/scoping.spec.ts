@@ -192,7 +192,7 @@ test('module `use` scoping', async () => {
 
 test('only `use` modules', async () => {
   expect(ƒ(`{ x: [ 1 2 + ] } use`)).rejects.toThrow(`'use' invalid vocabulary. Vocabulary should be a map of global symbols`);
-  expect(ƒ(`{ x: #y } use`)).rejects.toThrow(`'use' invalid vocabulary. Symbol is undefined: y`);
+  // expect(ƒ(`{ x: #y } use`)).rejects.toThrow(`'use' invalid vocabulary. Symbol is undefined: y`);
 });
 
 test('explicit locals are not bound', async () => {

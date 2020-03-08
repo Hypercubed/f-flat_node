@@ -1,13 +1,23 @@
 import { signature, Any } from '@hypercubed/dynamo';
 
-import { ffPrettyPrint, FFlatError, rewrite } from '../utils';
-import { dynamo, Sentence, Key, StackValue, ScopeModule } from '../types';
+import { dynamo } from '../types/dynamo';
+import { Key, Sentence } from '../types/words';
+import { StackValue } from '../types/stack-values';
+import { GlobalSymbol, ScopeModule } from '../types/vocabulary-values';
+
+import { ffPrettyPrint, rewrite } from '../utils';
+
 import { StackEnv } from '../engine/env';
 
 /**
  * Converts a stack item to a "function" definition
  */
 class CreateAction {
+  @signature(GlobalSymbol)
+  global(x: GlobalSymbol): GlobalSymbol {
+    return x;
+  }
+
   // arrays are converted to sentences
   @signature()
   array(x: any[]): Sentence {
@@ -16,7 +26,7 @@ class CreateAction {
 
   // objects are converted to and object of actions
   @signature()
-  plainObject(obj: Object) {
+  plainObject(obj: Object): Object {
     return Object.keys(obj).reduce((p, key) => {
       p[key] = createAction(obj[key]);
       return p;
@@ -25,13 +35,13 @@ class CreateAction {
 
   // symbols are symbols
   @signature(Symbol)
-  symbol(x: any): any {
+  symbol(x: symbol): symbol {
     return x;
   }
 
   // everything else is converetd to a sentence containing the single item
   @signature(Any)
-  any(x: any): any {
+  any(x: any): Sentence {
     return new Sentence([x]);
   }
 }
@@ -95,7 +105,7 @@ export const dict = {
    * ```
    */
   use(this: StackEnv, dict: ScopeModule) {
-    this.dict.useVocab(createAction(dict));
+    this.dict.useVocab(dict);
   },
 
   /**
