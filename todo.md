@@ -18,7 +18,7 @@
 - [ ] contracts/guards
   - [?] guard
   - [ ] stack case guard
-- [ ] Replace `.x` syntax?
+- [ ] Replace `.x` syntax?  `/x`, `:x:`, `::x`, `/x/`, `~x`
 - [ ] repl
   - [?] move repl to `src`...  use TS
   - [ ] `.editor` in repl
@@ -28,11 +28,15 @@
   - [ ] Interactive errors
   - [x] Prompt to undo?
 - [ ] Unicode words and LaTeX-like abbreviations (https://docs.julialang.org/en/v1/manual/unicode-input/)
+  - [ ] `\flat`?
+  - [ ] `&flat;`?
+  - [ ] `\u266D`  (same as `"\u266D" :`)
 
 ## Bugs
 - [ ] `'x' exit` should be type error?
 - [ ] `_ 3 =~`?
 - [ ] `print` gets swallowed by stack
+- [ ] pprint cuts off bottom of stack, should be top
 
 ## Testing
 - [ ] test the repl
