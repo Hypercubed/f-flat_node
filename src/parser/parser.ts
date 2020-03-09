@@ -1,7 +1,7 @@
 import { tokenize } from './tokenizer';
+import { unicodeDecode } from '../utils/stringConversion';
 
 import { Word, Key, Decimal, StackValue, I } from '../types';
-import { unescapeString } from '../utils/stringConversion';
 
 const templateAction = new Word(':template');
 
@@ -27,9 +27,9 @@ function processParserTokens(node: any): StackValue | undefined {
     case 'doubleQuotedString':
       return doubleQuotedString(node.allText);
     case 'key': {
-      const id = node.allText
+      const id = unicodeDecode(node.allText
         .trim()
-        .slice(0, -1);
+        .slice(0, -1));
       return new Key(id);
     }
     case 'number': {
@@ -39,7 +39,7 @@ function processParserTokens(node: any): StackValue | undefined {
       } // else fall through
     }
     case 'word': {
-      const id = node.allText.toLowerCase().trim();
+      const id = unicodeDecode(node.allText.toLowerCase().trim());
       if (id.length <= 0) return undefined;
       return new Word(id);
     }
@@ -81,8 +81,8 @@ function templateString(val: string) {
 }
 
 function doubleQuotedString(val: string): string {
-  const v = val.slice(1, -1);
-  return unescapeString(v); // todo-move to parser
+  // tslint:disable-next-line: no-eval
+  return eval(val);  // converts to a string using js unicode decoding
 }
 
 function singleQuotedString(val: string): string {

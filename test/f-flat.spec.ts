@@ -1,6 +1,6 @@
 import { F, Decimal, ƒ, τ } from './helpers/setup';
 
-test.only('setup', async () => {
+test('setup', async () => {
   expect(F().eval).toBeDefined();
   expect(F().promise).toBeDefined();
   expect(F().depth).toBeDefined();
@@ -41,67 +41,10 @@ test('should push binary numeric values', async () => {
   expect(await ƒ('0b1p+1 0b11p-2')).toEqual(τ([2, 3 * Math.pow(2, -2)]));
 });
 
-test('should undo on error', async () => {
-  const f = F('1 2').eval();
-  expect(f.stack).toEqual([1, 2].map(x => new Decimal(x)));
-
-  expect(() => f.eval('+ whatwhat')).toThrow('Word is not defined: "whatwhat"');
-  expect(f.stack).toEqual([1, 2].map(x => new Decimal(x)));
-});
-
-test('should undo', async () => {
-  const f = F('1').eval();
-
-  f.eval('2');
-  expect(f.stack).toEqual([1, 2].map(x => new Decimal(x)));
-
-  f.eval('+');
-  expect(f.stack).toEqual([3].map(x => new Decimal(x)));
-
-  f.eval('undo');
-  expect(f.stack).toEqual([1, 2].map(x => new Decimal(x)));
-
-  f.eval('undo');
-  expect(f.stack).toEqual([1].map(x => new Decimal(x)));
-});
-
-/* test('apply', async t => {
-  t.deepEqual(await fValues('10 [ 9 4 ] max: rcl ||>'), [10, 9]);
-  t.deepEqual(await fValues('10 [ 9 4 ] min: rcl ||>'), [10, 3]);
-}); */
-
-/* test('apply', async t => {
-  t.plan(2);
-  t.deepEqual(await fJSON('10 [ 9 4 3 ] \\max rcl ||>', [10, 9]);
-  t.deepEqual(await fJSON('10 [ 9 4 3 ] \\min rcl ||>', [10, 3]);
-}); */
-
 test('empty', async () => {  // base
   expect(await ƒ('"abc" empty')).toEqual(`[ '' ]`);
   expect(await ƒ('123 empty')).toEqual(`[ 0 ]`);
 });
-
-/* test('operations with null', async t => {
-  t.deepEqual(await fJSON('null 5 +'), [5], 'add');
-  t.deepEqual(await fJSON('5 null +'), [5], 'add');
-  t.deepEqual(await fJSON('null 5 -'), [-5], 'sub');
-  t.deepEqual(await fJSON('5 null -'), [5], 'sub');
-});
-
-test('operations with null, cont', async t => {
-  t.deepEqual(await fJSON('null 5 *'), [0]);
-  t.deepEqual(await fJSON('5 null *'), [0]);
-  t.deepEqual(await fJSON('null 5 /'), [0]);
-  t.deepEqual(await fJSON('5 null /'), [null]); // should be infinity, bad JSON conversion
-});
-
-test('operations with null, cont2', async t => {
-  t.deepEqual(await fJSON('null 5 <<'), [0]);
-  t.deepEqual(await fJSON('5 null <<'), [5]);
-  t.deepEqual(await fJSON('null 5 >>'), [0]);
-  t.deepEqual(await fJSON('5 null >>'), [5]);
-  t.deepEqual(await fJSON('null in'), [[null]]);
-}); */
 
 describe('errors on unknown command', () => {
   test('sync', () => {
@@ -353,5 +296,12 @@ test('lambdas', async () => {  // lambdas-ff
   expect(
     await ƒ('d: [ [ a: b: ] => [ .a .b - abs .a / ] ] lambda ; 10 5 d')
   ).toEqual(`[ 0.5 ]`);
+});
+
+test('unicode words', async () => {
+  expect(await ƒ('[ F\\u266D ]')).toEqual(`[ [ f♭ ] ]`);
+  expect(await ƒ('F\\u266D:')).toEqual(`[ F♭: ]`);
+  expect(ƒ('F\\u266D')).rejects.toThrow(`Word is not defined: "f♭"`);
+  expect(await ƒ('F\\u266D: [ 1 2 + ] ; F\\u266D')).toEqual(`[ 3 ]`);
 });
 

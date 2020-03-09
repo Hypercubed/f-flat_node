@@ -610,7 +610,7 @@ export const core = {
     return template(this, str, action);
   },
 
-  'template-parts'(this: StackEnv, str: string): string {
+  'template-parts'(this: StackEnv, str: string) {
     return templateParts(this, str);
   },
 

@@ -30,7 +30,7 @@
 - [ ] Unicode words and LaTeX-like abbreviations (https://docs.julialang.org/en/v1/manual/unicode-input/)
   - [ ] `\flat`?
   - [ ] `&flat;`?
-  - [ ] `\u266D`  (same as `"\u266D" :`)
+  - [x] `\u266D`  (same as `"\u266D" :`)
 
 ## Bugs
 - [ ] `'x' exit` should be type error?
