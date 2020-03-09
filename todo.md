@@ -15,26 +15,24 @@
 - [ ] Running in browser
 
 ## TODO Now
-- [ ] Use-case for symbols? Remove symbols from parser and vocab words?
 - [ ] contracts/guards
   - [?] guard
   - [ ] stack case guard
-- [?] Replace `.x` syntax?
-- [?] Move undo to repl (`.undo`)
-  - [?] move undo stack to repl
-  - [?] docs
+- [ ] Replace `.x` syntax?
+- [ ] repl
+  - [?] move repl to `src`...  use TS
+  - [ ] `.editor` in repl
+  - [x] move undo to repl
+  - [x] docs
   - [ ] redo
   - [ ] Interactive errors
-  - [?] Prompt to undo?
-- [ ] move repl to `src`...  use TS
+  - [x] Prompt to undo?
+- [ ] Unicode words and LaTeX-like abbreviations (https://docs.julialang.org/en/v1/manual/unicode-input/)
 
 ## Bugs
-- [ ] REPL should require ^C twice
-- [x] Uppercase leters in object keys
+- [ ] `'x' exit` should be type error?
 - [ ] `_ 3 =~`?
-- [ ] blessed gui broken
 - [ ] `print` gets swallowed by stack
-- [?] `'math' see` -> `[module]`?
 
 ## Testing
 - [ ] test the repl
@@ -56,9 +54,16 @@
 - [ ] pick for module? `math [ '!' ] pluck use`
 
 ## TODOs
+- [ ] shell commands
+- [ ] sigils (`+x`, `~x`, `@x`, `^x`, `#x`, `%x`, `?x`, `!x`, `=x`)
+  - [?] User defined sigils?  (https://medium.com/blackode/write-your-own-sigils-elixir-ce648f531211)
+    - [ ] `~regex/abc/u`, `/abc/u :regex` -> `'/.../u' :regex`
+    - [ ] `~complex/3+2i/`, `/3+2i/ :complex`
+  - [ ] get (`.x`, `@x`)?
+  - [ ] lazy word (`.x`, `?x`, `#x`)?
+  - [ ] repl commands (`.x`)?
 - [ ] Move `silent` flag to system properties
   - [?] Progress bar flag?
-- [?] User defined sigils?
 - [ ] `resolve` to allow missing file extension?
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [?] `@` from complex value?
@@ -73,13 +78,12 @@
   - [?] regex
   - [?] dates
   - [?] special numbers (`complexinfinity`, etc)
-  - [ ] symbols?
+  - [-] symbols?
 - [ ] More stats on trace (max stack size, max queue size, time, etc)
 - [?] Decimal shift/unshift
 - [ ] More complexInfinity/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
 - [?] immutable imports (https://github.com/moonad/Formality/blob/master/DOCUMENTATION.md#import)
 - [ ] flags for pprinting (*maxDepth*, etc)
-- [?] Store using symbols as keys `#aword [ dup 123 ] ;`? always global and collision free?
 - [ ] os/platform specific bootloading?
 - [?] all internal words are loaded at runtime (`js-import`?)
 - [x] different pprint for bound words?
@@ -96,9 +100,6 @@
 - [ ] complex, `i`
 - [?] `+/-infinity`
 - [-] Dates (local dates, times, timestaps...) (could dates be user defined classes?)
-- [ ] Symbols `(`, `_`
-  - [?] Use `#:`? as symbol prefix?  Symbols with whitespace (`#:'foo'`)?
-  - [ ] well known symbols?
 
 ## Testing words
 - [?] `try` `[ T ] [ C ] [ F ]`
@@ -144,7 +145,7 @@
   - [ ] precision in complex calculations (on print)
   - [ ] Pretty printing complex values: `5e-20+2i` -> `2i`?
 - [ ] JSON
-  - [ ] to simplified JSON (Decimal -> number, regex, symbols, etc)
+  - [ ] to simplified JSON (Decimal -> number, regex, etc)
   - [ ] Decimal/Complex .fromJSON + Tests
 - [ ] rewrite reduction rules?  user-defined?
   - [ ] `dup drop` -> ``

@@ -23,11 +23,8 @@ export class GlobalSymbol {
 
 export type ScopeModule = { [k in string]: GlobalSymbol };
 
-// TODO: only Sentence and ScopeModule
 export type VocabValue =
-  | Word
   | Sentence
   | ScopeModule
   | { [key: string]: VocabValue }
-  | Function
-  | symbol;
+  | Function;

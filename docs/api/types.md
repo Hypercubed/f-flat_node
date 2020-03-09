@@ -103,14 +103,6 @@ converts a string to a key
 
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L246">[src]</a></div>
 
-## `#` (symbol)
-
-`a -> #a`
-
-converts a string to a unique symbol
-
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L264">[src]</a></div>
-
 ## `array`
 
 `a -> [A]`

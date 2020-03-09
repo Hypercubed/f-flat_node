@@ -20,9 +20,8 @@ Type signatures are written in parentheses, with the input and output types to t
 
 `seq`  - a seqence (string or list)
 
-`#a, #b, #c` - a symbol
-
 `*` - Zero or more. (i.e. `a*` indicates zero or more of any value)
+
 `'` - Value after evaluation (i.e. if `x'` and `x'` are used together `x'` signifies the value of `x` after some operation)
 
 

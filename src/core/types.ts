@@ -234,16 +234,6 @@ export const types = {
   },
 
   /**
-   * ## `#` (symbol)
-   *
-   * `a -> #a`
-   *
-   * converts a string to a unique symbol
-   *
-   */
-  '#': (x: any) => Symbol(x),
-
-  /**
    * ## `array`
    *
    * `a -> [A]`

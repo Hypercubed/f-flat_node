@@ -5,12 +5,12 @@ import { unescapeString } from '../utils/stringConversion';
 
 const templateAction = new Word(':template');
 
-export function lexer(a: unknown) {
+export function lexer(a: any) {
   if (Array.isArray(a)) {
     return a;
   }
   if (typeof a === 'string') {
-    a = a.trim(); // fix this in parser
+    a = a.trim(); // TODO: fix this in parser
     const nodes = tokenize(a).map(processParserTokens);
     return Array.prototype.concat.apply([], nodes); // flatmap
   }
@@ -26,8 +26,6 @@ function processParserTokens(node: any): StackValue | undefined {
       return singleQuotedString(node.allText);
     case 'doubleQuotedString':
       return doubleQuotedString(node.allText);
-    case 'symbol':
-      return Symbol(node.allText.slice(1));
     case 'key': {
       const id = node.allText
         .trim()

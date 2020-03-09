@@ -1,18 +1,17 @@
 // types
-types: [
-    'number'
-    'string'
-    'boolean'
-    'array'
-    'date'
-    'object'
-    'null'
-    'undefined'
-    'symbol'
-    'complex'
-    'action'
-    'future' ] ;
-
+types: [ [
+  'number'
+  'string'
+  'boolean'
+  'array'
+  'date'
+  'object'
+  'null'
+  'undefined'
+  'complex'
+  'action'
+  'future'
+] ] ;
 
 null?: [ null = ] ;
 nan?: [ nan = ] ;

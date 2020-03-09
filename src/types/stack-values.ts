@@ -8,7 +8,7 @@ export type StackValue =
   | number // TODO: remove this, should only be Decimal?
   | string
   | boolean
-  | Symbol
+  | Symbol  // for now, well known symbols `(` and `_`
   | Key
   | Future
   | undefined
@@ -16,7 +16,6 @@ export type StackValue =
   | Complex
   | Decimal
   | ScopeModule
-  | GlobalSymbol
   | { [s: string]: StackValue }
   | StackValue[];
 

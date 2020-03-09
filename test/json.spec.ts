@@ -190,5 +190,4 @@ test('generate json for other values', async () => {
     $regex: 'a.',
     $options: 'i'
   });
-  expect((await μ('#word'))[0]).toEqual({ $symbol: 'word' });
 });

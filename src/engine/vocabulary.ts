@@ -150,7 +150,7 @@ export class Vocabulary {
    * Inlines local and scoped defintions
    */
   inline(_action: Array<StackValue>) {  // TODO: Dynamo?
-    const symbolStack = [];
+    const symbolStack: GlobalSymbol[] = [];
 
     const _bind = (v: any) => {
       if (GlobalSymbol.is(v)) {

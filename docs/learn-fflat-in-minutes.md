@@ -626,13 +626,13 @@ F♭> 'World' hello                                    // without inpacting defi
 
 ```
 F♭> vocab                                         // `vocab` will return a dictionary of words defined in the current context (key-symbol pairs)
-[ { hello: #hello } ]
+[ { hello: @@hello } ]
 
 F♭> [ hi: [ 'Hi ' swap + ] ; vocab ] in           // in a child
-[ [ { hi: #hi } ] ]
+[ [ { hi: @@hi } ] ]
 
 F♭> 'example.ff' import                           // `import` will read a file, evaluate the string, and return the vocabulary (see `loader.ff`)
-[ { hi: #hi } ]
+[ { hi: @@hi } ]
 
 F♭> 'example.ff' import use                       // `use` will bring the definitions into the current scope (not current context)
 [ ]

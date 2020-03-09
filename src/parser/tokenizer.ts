@@ -74,9 +74,6 @@ g.comment = g.fullComment.or(g.lineComment);
 g.delimiter = Myna.char(DELIMITER).oneOrMore;
 g.ws = g.delimiter.or(Myna.atWs.then(Myna.advance)).zeroOrMore;
 
-// symbol
-g.symbol = Myna.seq(Myna.char('#'), g.identifier).ast;
-
 // literals
 g.bool = Myna.choice(
   Myna.keywordAnyCase('true'),
@@ -110,7 +107,6 @@ g.string = Myna.choice(
 g.value = Myna.choice(
   g.comment,
   g.number,
-  g.symbol,
   g.literal,
   g.key,
   g.word,
@@ -125,11 +121,11 @@ Myna.registerGrammar('fflat', g, g.value);
 exports.fflatGrammar = Myna.grammars['fflat'];
 
 // Get the parser
-export const parser = function(text) {
+export const parser = function(text: string) {
   return Myna.parse(g.sequence, text);
 };
 
-export const tokenize = function(text) {
+export const tokenize = function(text: string) {
   const result = Myna.parse(g.sequence, text);
   return result ? result.children : [];
 };
