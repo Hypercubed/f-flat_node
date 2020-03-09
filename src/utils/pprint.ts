@@ -1,7 +1,5 @@
 import is from '@sindresorhus/is';
-import stripAnsi from 'strip-ansi';
 import * as fixedWidthString from 'fixed-width-string';
-
 import { Sentence, Complex, Decimal } from '../types';
 
 import {
@@ -16,6 +14,8 @@ import {
   indent,
   COLORIZE_OPTIONS
 } from '@hypercubed/milton';
+
+const stripAnsi = require('strip-ansi');
 
 function getDefaultWidth() {
   if (process && process.stdout && process.env.NODE_ENV !== 'test') {

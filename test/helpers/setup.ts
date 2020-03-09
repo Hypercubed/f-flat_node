@@ -1,11 +1,12 @@
 import { join } from 'path';
-import stripAnsi from 'strip-ansi';
 
 import { createStack } from '../../src/stack';
 import { log } from '../../src/utils/logger';
 import { ffPrettyPrint } from '../../src/utils/pprint';
 
 const { trace, stringify } = ffPrettyPrint;
+
+const stripAnsi = require('strip-ansi');
 
 export * from '../../src/types';
 

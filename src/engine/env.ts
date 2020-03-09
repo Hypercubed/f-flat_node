@@ -1,7 +1,6 @@
 /* global window, global, process */
 import { functionLength, functionName } from 'fantasy-helpers/src/functions';
 import { signature, Any } from '@hypercubed/dynamo';
-import * as MiniSignal from 'mini-signals';
 import { freeze, splice } from 'icepick';
 import is from '@sindresorhus/is';
 
@@ -26,6 +25,8 @@ import {
   ERR,
   IIF
 } from '../constants';
+
+import MiniSignal = require('mini-signals');
 
 function createDefineAction(self: StackEnv) {
   class DefinedAction {

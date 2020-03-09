@@ -3,12 +3,13 @@ import { readFileSync, existsSync } from 'fs';
 import { arch } from 'os';
 import { dirname, join } from 'path';
 import * as fetch from 'isomorphic-fetch';
-import * as normalizeUrl from 'normalize-url';
 import { URL } from 'url';
 import { signature } from '@hypercubed/dynamo';
 
 import { bar } from '../utils';
 import { dynamo } from '../types';
+
+import normalizeUrl = require('normalize-url');
 
 // const stdin = process.stdin;
 const stdout = <any>process.stdout;
