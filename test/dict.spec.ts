@@ -112,26 +112,6 @@ describe('defer', () => {
   });
 });
 
-describe('rewrite', () => {
-  test('rewrite words', async () => {
-    expect(await ƒ(`[ x y y z ] { x: 1, y: 2 } rewrite`)).toEqual(
-      `[ [ 1 2 2 z ] ]`
-    );
-  });
-
-  test('rewrite qualified words', async () => {
-    expect(await ƒ(`[ .x .y .y .z ] { x: 1, y: 2 } rewrite`)).toEqual(
-      `[ [ 1 2 2 .z ] ]`
-    );
-  });
-
-  test('should not rewrite keys', async () => {
-    expect(await ƒ(`[ x y y: z ] { x: 1, y: 2 } rewrite`)).toEqual(
-      `[ [ 1 2 y: z ] ]`
-    );
-  });
-});
-
 describe('binding', () => {
   test('internal words are bound', async () => {
     expect(await ƒ(`eval: [ 'junk' ] ; x: [ dip ] ; 'x' see`)).toEqual(

@@ -33,7 +33,7 @@
   - [x] `\u266D`  (same as `"\u266D" :`)
 
 ## Bugs
-- [ ] repl completer
+- [x] repl completer
 - [ ] `'x' exit` should be type error?
 - [ ] `_ 3 =~`?
 - [ ] `print` gets swallowed by stack

@@ -89,8 +89,11 @@ export class CLI {
       prompt: initialPrompt,
       input: process.stdin,
       output: process.stdout,
-      completer: memoize((line: string) => this.completer(line), { maxAge: 10000 })
+      completer: this.completer.bind(this)
     });
+
+    readline.emitKeypressEvents(process.stdin);
+    process.stdin.setRawMode(true);
   }
 
   start(f: StackEnv) {
@@ -137,6 +140,14 @@ export class CLI {
         console.log(`\nTo exit, press ^C again or ^D or type .exit`);
         this.prompt();
         this.watchCtrlC = true;
+      }
+    });
+
+    process.stdin.on('keypress', (s, key) => {
+      // console.log({ s, key });
+      switch (key.name) {
+        case 'enter':
+          this.buffer += ']\n'.repeat(this.f.depth);
       }
     });
   }
@@ -335,12 +346,9 @@ export class CLI {
   }
 
   private completer(line: string) {
-    const keys = [];
-    for (const prop in this.f.dict.localWords()) {
-      keys.push(prop);
-    }
+    const keys = [...this.f.dict.words(), ...COMMANDS.map(c => c[0])];
     const hits = keys.filter(c => c.startsWith(line));
-    return [hits.length ? hits : keys, line];
+    return [hits, line];
   }
 }
 

@@ -207,17 +207,5 @@ export const dict = {
    */
   scoped(this: StackEnv): string[] {
     return this.dict.scopedWords();
-  },
-
-  /**
-   * ## `rewrite`
-   *
-   * `{A} [B] -> [C]`
-   *
-   * rewrites an expression using a set of rewrite rules
-   *
-   */
-  rewrite(this: StackEnv, rules: Object, a: StackValue) {
-    return rewrite(a, rules);
   }
 };
