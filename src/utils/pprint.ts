@@ -7,7 +7,6 @@ import {
   trimStrings,
   maxDepth,
   ansiColors,
-  arrayDecender,
   objectDecender,
   jsValues,
   jsonValues,
@@ -92,6 +91,60 @@ const functions = () => {
 
 export const oneline = () => (s: any) =>
   typeof s === 'string' ? s.replace(/\n\s*/g, ' ') : s;
+
+  const ARRAY_DECENDER_OPTIONS = {
+    comma: true,
+    brackets: '[]',
+    maxLength: Infinity,
+    sparse: false
+  };
+  
+  export const arrayDecender = (
+    _options: Partial<typeof ARRAY_DECENDER_OPTIONS>,
+    _root: any,
+    get: any
+  ) => {
+    const options = { ...ARRAY_DECENDER_OPTIONS, ..._options };
+    const pre = options.brackets[0] + '\n';
+    const post = '\n' + options.brackets[1];
+    const seperator = options.comma ? ',\n' : '\n';
+  
+    const seen: any[] = [];
+    return (s: any, path: any) => {
+      const type = toString.call(s);
+      if (type === '[object Array]') {
+        if (seen.includes(s)) {
+          throw new TypeError('Converting circular structure to JSON');
+        }
+        seen.push(s);
+  
+        const acc = [];
+        const truncateFront = path.length === 0;
+        let N = 0;
+
+        if (truncateFront && s.length > options.maxLength) {
+          acc.push('...');
+          N = Math.max(0, s.length - options.maxLength);
+        }
+        
+        for (let i = N; i < s.length; i++) {
+          if (!truncateFront && i > options.maxLength - 1) {
+            acc.push('...');
+            break;
+          }
+          if (i in s) { // not a hole
+            const v = get(s[i], path.concat([i]));
+            if (v) acc.push(v);    
+          } else {
+            acc.push(options.sparse ? '' : 'null');
+          }
+        }
+        seen.pop();
+        return pre + acc.join(seperator) + post;
+      }
+      return s;
+    };
+  };
 
 function base(_: Milton) {
   _.add(jsValues);

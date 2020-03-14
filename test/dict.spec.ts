@@ -49,11 +49,11 @@ test('create keys', async () => {
 
 describe('inline on def', () => {
   test('should inline internal actions', async () => {
-    expect(await ƒ(`x: [ eval ] ; 'x' see`)).toEqual(`[ '[ @@eval ]' ]`);
+    expect(await ƒ(`x: [ eval ] ; 'x' see`)).toEqual(`[ '[ eval ]' ]`);
   });
 
   test('should inline defined actions', async () => {
-    expect(await ƒ(`x: [ slip ] ; 'x' see`)).toEqual(`[ '[ @@<< @@eval ]' ]`);
+    expect(await ƒ(`x: [ slip ] ; 'x' see`)).toEqual(`[ '[ << eval ]' ]`);
   });
 
   test('should not inline local qualified words', async () => {
@@ -66,7 +66,7 @@ describe('inline on def', () => {
   });
 
   test('should inline deeply', async () => {
-    expect(await ƒ(`x: [ sip ] ; 'x' see`)).toEqual(`[ '[ @@q< @@dup @@q> @@swap @@<< @@eval ]' ]`);
+    expect(await ƒ(`x: [ sip ] ; 'x' see`)).toEqual(`[ '[ q< dup q> swap << eval ]' ]`);
   });
 });
 
@@ -135,13 +135,13 @@ describe('rewrite', () => {
 describe('binding', () => {
   test('internal words are bound', async () => {
     expect(await ƒ(`eval: [ 'junk' ] ; x: [ dip ] ; 'x' see`)).toEqual(
-      `[ '[ @@swap @@<< @@eval ]' ]`
+      `[ '[ swap << eval ]' ]`
     );
   });
 
   test('defined words are bound', async () => {
     expect(await ƒ(`slip: [ 'junk' ] ; x: [ dip ] ; 'x' see`)).toEqual(
-      `[ '[ @@swap @@<< @@eval ]' ]`
+      `[ '[ swap << eval ]' ]`
     );
   });
 });
@@ -187,8 +187,8 @@ describe('invalid words', () => {
 });
 
 test('see', async () => {
-  expect(await ƒ(`'slip' see`)).toEqual(`[ '[ @@<< @@eval ]' ]`);
+  expect(await ƒ(`'slip' see`)).toEqual(`[ '[ << eval ]' ]`);
   expect(await ƒ(`'swap' see`)).toEqual(`[ '[function swap]' ]`);
   // expect(await ƒ(`'math' see`)).toEqual(`[ '[function swap]' ]`);
-  expect(ƒ(`'%top' see`)).rejects.toThrow(`'see' invalid key: "%top"`);  // ???
+  expect(ƒ(`'_top' see`)).rejects.toThrow(`'see' invalid key: "_top"`);  // ???
 });

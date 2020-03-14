@@ -137,7 +137,7 @@ test(`defined?`, async () => {
   expect(await ƒ(`'swap' defined?`)).toEqual(`[ true ]`);
   expect(await ƒ(`'slip' defined?`)).toEqual(`[ true ]`);
   expect(await ƒ(`'junk' defined?`)).toEqual(`[ false ]`);
-  expect(ƒ(`'%top' defined?`)).rejects.toThrow(`'defined?' invalid key: "%top"`);  // ????
+  expect(ƒ(`'_top' defined?`)).rejects.toThrow(`'defined?' invalid key: "_top"`);  // ????
 });
 
 test('hides private', async () => {

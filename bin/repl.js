@@ -4,7 +4,7 @@ const program = require('commander');
 const process = require('process');
 
 const { log } = require('../dist/utils');
-const { newStack, startREPL } = require('../dist/engine/interactive');
+const { CLI, newStack } = require('../dist/engine/interactive');
 
 let arg = '';
 
@@ -55,6 +55,7 @@ function exitOrStartREPL() {
   if (!program.interactive) {
     process.exit();
   } else {
-    startREPL(f);
+    const cli = new CLI();
+    cli.start(f);
   }
 }

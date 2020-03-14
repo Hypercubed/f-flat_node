@@ -6,9 +6,10 @@ import * as gradient from 'gradient-string';
 import * as memoize from 'memoizee';
 import * as process from 'process';
 import * as chalk from 'chalk';
+import * as fixedWidthString from 'fixed-width-string';
 
 import { createRootEnv } from '../stack';
-import { log, bar, ffPrettyPrint } from '../utils';
+import { log, bar, ffPrettyPrint, type } from '../utils';
 
 import { StackEnv } from './env';
 
@@ -33,22 +34,20 @@ ${PRESS}{esc}${chalk.dim(' to continue')}
 ${PRESS}a${chalk.dim(' to always restore the stack')}
 ${PRESS}n${chalk.dim(' to never restore the stack')}`;
 
-const HELP = `.clear    Clear the stack and the undo buffer
-.reset    Reset the environment
-.exit     Exit the repl
-.help     Print this help message
-`;
+const COMMANDS = [
+  ['.clear', 'Clear the stack and the undo buffer'],
+  ['.reset', 'Reset the environment'],
+  ['.editor', 'Enter editor mode'],
+  ['.echo', 'Change the stack echo mode'],
+  ['.exit', 'Exit the repl'],
+  ['.help', 'Print this help message'],
+];
+
+const HELP = COMMANDS.map(c => {
+  return `${chalk.gray(fixedWidthString(c[0], 10))} ${c[1]}`;
+}).join('\n');
 
 const initialPrompt = 'F♭> ';
-
-const bindings = [];
-
-let buffer = '';
-let timeout = null;
-let rl = null;
-
-let undoStack = [];
-let autoundo = undefined;
 
 // Writers, use `.echo` to cycle through writers
 const writers = {
@@ -57,64 +56,10 @@ const writers = {
   silent: (_: StackEnv) => '',
 };
 
-let currentWriter = writers.pretty;
-
-let f: StackEnv;
-
-export async function startREPL(_f: StackEnv) {
-  f = _f;
-  let isPaused = false;
-  let watchCtrlC = false;
-
-  rl = readline.createInterface({
-    prompt: initialPrompt,
-    input: process.stdin,
-    output: process.stdout,
-    completer: memoize(completer, { maxAge: 10000 })
-  });
-
-  rl.prompt();
-
-  rl.on('pause', () => {
-    isPaused = true;
-  });
-
-  rl.on('resume', () => {
-    isPaused = false;
-  });
-
-  rl.on('line', (line: string) => {
-    if (!isPaused && !processReplCommand(line)) {
-      fEval(line);
-    }
-    watchCtrlC = false;
-  });
-
-  rl.on('close', () => {
-    process.exit(0);
-  });
-
-  rl.on('SIGINT', () => {
-    if (watchCtrlC) {
-      rl.pause();
-    } else {
-      console.log(`\nTo exit, press ^C again or ^D or type .exit`);
-      prompt();
-      watchCtrlC = true;
-    }
-  });
-}
-
 export function newStack(): StackEnv {
   log.level = program.logLevel || 'warn';
 
   const newParent = createRootEnv();
-
-  newParent.defineAction('prompt', () => {
-    return new Promise(resolve => {
-      rl.question('', resolve);
-    });
-  });
 
   if (!program.quiet) {
     console.log(WELCOME);
@@ -126,186 +71,276 @@ export function newStack(): StackEnv {
   return child;
 }
 
-// buffer input and evaluate in the stack env
-function fEval(code: string) {
-  buffer += `${code}\n`;
-  global.clearTimeout(timeout);
-  timeout = global.setTimeout(run, 60);
+export class CLI {
+  private readonly readline: readline.ReadLine;
+  private isPaused = false;
+  private watchCtrlC = false;
+  private f = null;
+  private editorMode = false;
+  private buffer = '';
+  private timeout = null;
+  private undoStack = [];
+  private autoundo = undefined;
+  private currentWriter = writers.pretty;
+  private bindings = [];
 
-  function run() {
-    global.clearTimeout(timeout);
+  constructor() {
+    this.readline = readline.createInterface({
+      prompt: initialPrompt,
+      input: process.stdin,
+      output: process.stdout,
+      completer: memoize((line: string) => this.completer(line), { maxAge: 10000 })
+    });
+  }
 
-    if (!buffer.length) {
+  start(f: StackEnv) {
+    this.f = f || newStack();
+
+    this.f.defineAction('prompt', () => {
+      return new Promise(resolve => {
+        this.readline.question('', resolve);
+      });
+    });
+
+    this.readline.prompt();
+
+    this.readline.on('pause', () => {
+      this.isPaused = true;
+    });
+  
+    this.readline.on('resume', () => {
+      this.isPaused = false;
+    });
+  
+    this.readline.on('line', (line: string) => {
+      if (!this.isPaused && !this.processReplCommand(line)) {
+        this.fEval(line);
+      }
+      this.watchCtrlC = false;
+    });
+  
+    this.readline.on('close', () => {
+      process.exit(0);
+    });
+  
+    this.readline.on('SIGTSTP', () => {
+      this.turnOffEditorMode();
+    });
+  
+    this.readline.on('SIGINT', () => {
+      if (this.editorMode) {
+        this.buffer = '';
+        this.turnOffEditorMode();
+      } else if (this.watchCtrlC) {
+        this.readline.pause();
+      } else {
+        console.log(`\nTo exit, press ^C again or ^D or type .exit`);
+        this.prompt();
+        this.watchCtrlC = true;
+      }
+    });
+  }
+
+  private fEval(code: string) {
+    this.buffer += `${code}\n`;
+    global.clearTimeout(this.timeout);
+  
+    if (!this.editorMode) {
+      this.timeout = global.setTimeout(() => this.run(), 60);
+    }
+  }
+
+  private run() {
+    global.clearTimeout(this.timeout);
+
+    if (!this.buffer.length) {
       return;
     }
 
-    addBeforeHooks();
+    this.addBeforeHooks();
+
+    const fin = () => {
+      this.readline.resume();
+      log.profile('dispatch');
+      this.prompt();
+    }
 
     log.profile('dispatch');
-    undoStack.push(f.stateSnapshot());
-    rl.pause();
-    f.next(buffer)
+    this.undoStack.push(this.f.stateSnapshot());
+    this.readline.pause();
+    this.f.next(this.buffer)
       .catch(err => {
         console.error(err);
-        if (!program.interactive) {
-          process.exit(1);
-        }
-        if (autoundo === true) {
-          undo();
-        } else if (autoundo !== false) {
-          return errorPrompt();
+        if (this.autoundo === true) {
+          this.undo();
+        } else if (this.autoundo !== false) {
+          return this.errorPrompt();
         }
       })
       .then(fin, fin);  // finally
 
-    buffer = '';
+    this.buffer = '';
+  }
 
-    function fin() {
-      rl.resume();
-      log.profile('dispatch');
-      rl.setPrompt(f.depth < 1 ? initialPrompt : `F♭${' '.repeat(f.depth)}| `);
-      prompt();
+  private processReplCommand(command: string) {
+    if (!command.startsWith('.')) return false;
+    command = command.replace(/^\./, '');
+  
+    switch (command) {
+      case 'clear':
+        console.log('Clearing stack and undo buffer...\n');
+        this.f.clear();
+        this.undoStack = [];
+        this.prompt();
+        return true;
+      case 'reset':
+        console.log('Resetting the environment...\n');
+        this.autoundo = undefined;
+        this.undoStack = [];
+        this.f = newStack();
+        this.prompt();
+        return true;
+      case 'help':
+        console.log(HELP);
+        this.prompt();
+        return true;
+      case 'undo':
+        this.undo();
+        this.prompt();
+        return true;
+      case 'echo':
+        const entries = Object.entries(writers);
+        const i = entries.findIndex(([_, v]) => v === this.currentWriter);
+        const n = (i + 1) % entries.length;
+        console.log(`Switched to ${entries[n][0]} mode\n`);
+        this.currentWriter = entries[n][1];
+        this.prompt();
+        return true;
+      case 'exit':
+        process.exit();
+        return true;
+      case 'editor':
+        this.turnOnEditorMode();
+        return true;
+      case 's': {
+        const N = Math.max(0, this.f.stack.length - 20);
+        for (let i = N; i < this.f.stack.length; i++) {
+          const v = this.f.stack[i];
+          const n = fixedWidthString(this.f.stack.length - i, 4, { align: 'right' });
+          console.log(`${n}: ${ffPrettyPrint.color(v)} [${type(v)}]`);
+        }
+        this.prompt(false);
+        return true;        
+      }
+    }
+    return false;
+  }
+
+  private turnOnEditorMode() {
+    console.log('Entering editor mode (^Z to finish, ^C to cancel)');
+    this.editorMode = true;
+    this.readline.setPrompt(initialPrompt);
+  }
+  
+  private turnOffEditorMode() {
+    this.editorMode = false;
+    this.fEval('');
+  }
+
+  private prompt(print = true) {
+    print && console.log(this.currentWriter(this.f));
+    this.readline.setPrompt(this.f.depth < 1 ? initialPrompt : `F♭${' '.repeat(this.f.depth - 1)}| `);
+    this.readline.prompt();
+  }
+
+  private async errorPrompt() {
+    console.log(CONTINUE);
+    let data = await this.getKeypress();
+    data = data ? String(data).toLowerCase() : 'u';
+  
+    switch (data) {
+      case 'n':
+        this.autoundo = false;
+      case 'c':
+      case '\u001b':
+        break;
+      case 'a':
+        this.autoundo = true;
+      case 'u':
+      default:
+        this.undo();
+        break;
+    }
+    return data;
+  }
+
+  private undo() {
+    const state = this.undoStack.pop();
+    Object.assign(this.f, state);
+  }
+
+  private addBeforeHooks() {
+    while (this.bindings.length > 0) {
+      const b = this.bindings.pop();
+      b.detach();
+    }
+  
+    let qMax = this.f.stack.length + this.f.queue.length;
+
+    const trace = () => console.log(ffPrettyPrint.formatTrace(this.f));
+
+    const updateBar = () => {
+      const q = this.f.stack.length + this.f.queue.length;
+      if (q > qMax) qMax = q;
+  
+      bar.update(this.f.stack.length / qMax, {
+        stack: this.f.stack.length,
+        queue: this.f.queue.length,
+        depth: this.f.depth,
+        lastAction: ffPrettyPrint.trace(this.f.currentAction)
+      });
+    };
+  
+    // move these be part of winston logger?
+    switch (log.level.toString()) {
+      case 'trace':
+        this.bindings.push(this.f.before.add(trace));
+        this.bindings.push(this.f.beforeEach.add(trace));
+        this.bindings.push(this.f.idle.add(trace));
+        break;
+      case 'warn': {
+        if (this.f.silent) return;
+        this.bindings.push(this.f.before.add(updateBar));
+        this.bindings.push(this.f.beforeEach.add(updateBar));
+        this.bindings.push(this.f.idle.add(() => bar.terminate()));
+      }
     }
   }
-}
 
-function completer(line: string) {
-  const keys = [];
-  for (const prop in f.dict.localWords()) {
-    keys.push(prop);
+  private getKeypress() {
+    process.stdin.setRawMode(true);
+    this.readline.pause();
+  
+    return new Promise(resolve => {
+      process.stdin.once('data', data => {
+        process.stdout.clearLine(0);
+        process.stdout.cursorTo(0);
+        // this.readline.clearLine();
+        this.readline.resume();
+  
+        resolve(String(data));
+      });
+      process.stdin.resume();
+    });
   }
-  const hits = keys.filter(c => c.startsWith(line));
-  return [hits.length ? hits : keys, line];
-}
 
-function addBeforeHooks() {
-  while (bindings.length > 0) {
-    const b = bindings.pop();
-    b.detach();
-  }
-
-  let qMax = f.stack.length + f.queue.length;
-
-  // move these be part of winston logger?
-  switch (log.level.toString()) {
-    case 'trace':
-      bindings.push(f.before.add(trace));
-      bindings.push(f.beforeEach.add(trace));
-      bindings.push(f.idle.add(trace));
-      break;
-    case 'warn': {
-      if (f.silent) return;
-      bindings.push(f.before.add(updateBar));
-      bindings.push(f.beforeEach.add(updateBar));
-      bindings.push(f.idle.add(() => bar.terminate()));
+  private completer(line: string) {
+    const keys = [];
+    for (const prop in this.f.dict.localWords()) {
+      keys.push(prop);
     }
-  }
-
-  function trace() {
-    console.log(ffPrettyPrint.formatTrace(f));
-  }
-
-  function updateBar() {
-    const q = f.stack.length + f.queue.length;
-    if (q > qMax) qMax = q;
-
-    bar.update(f.stack.length / qMax, {
-      stack: f.stack.length,
-      queue: f.queue.length,
-      depth: f.depth,
-      lastAction: ffPrettyPrint.trace(f.currentAction)
-    });
+    const hits = keys.filter(c => c.startsWith(line));
+    return [hits.length ? hits : keys, line];
   }
 }
 
-function prompt() {
-  console.log(currentWriter(f));
-  rl.prompt();
-}
-
-function undo() {
-  const state = undoStack.pop();
-  Object.assign(f, state);
-}
-
-function getKeypress() {
-  process.stdin.setRawMode(true);
-  rl.pause();
-
-  return new Promise(resolve => {
-    process.stdin.once('data', data => {
-      process.stdout.clearLine(0);
-      process.stdout.cursorTo(0);
-      rl.clearLine();
-      rl.resume();
-
-      resolve(String(data));
-    });
-    process.stdin.resume();
-  });
-}
-
-async function errorPrompt() {
-  console.log(CONTINUE);
-  let data = await getKeypress();
-  data = data ? String(data).toLowerCase() : 'u';
-
-  switch (data) {
-    case 'n':
-      autoundo = false;
-    case 'c':
-    case '\u001b':
-      break;
-    case 'a':
-      autoundo = true;
-    case 'u':
-    default:
-      undo();
-      break;
-  }
-  return data;
-}
-
-function processReplCommand(command: string) {
-  if (!command.startsWith('.')) return false;
-  command = command.replace(/^\./, '');
-
-  switch (command) {
-    case 'clear':
-      console.log('Clearing stack and undo buffer...\n');
-      f.clear();
-      undoStack = [];
-      rl.setPrompt(initialPrompt);
-      prompt();
-      return true;
-    case 'reset':
-      console.log('Resetting the environment...\n');
-      autoundo = undefined;
-      undoStack = [];
-      f = newStack();
-      rl.setPrompt(initialPrompt);
-      prompt();
-      return true;
-    case 'help':
-      console.log(HELP);
-      prompt();
-      return true;
-    case 'undo':
-      undo();
-      rl.setPrompt(initialPrompt);
-      prompt();
-      return true;
-    case 'echo':
-      const entries = Object.entries(writers);
-      const i = entries.findIndex(([_, v]) => v === currentWriter);
-      const n = (i + 1) % entries.length;
-      console.log(`Switched to ${entries[n][0]} mode\n`);
-      currentWriter = entries[n][1];
-      prompt();
-      return true;
-    case 'exit':
-      process.exit();
-      return true;
-  }
-  return false;
-}

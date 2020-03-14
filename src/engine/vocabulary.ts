@@ -10,7 +10,7 @@ import { SEP } from '../constants';
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 // constants
-const TOP = '%top';
+const TOP = '_top';
 const LOCAL = '.';
 
 const INVALID_WORDS = [
@@ -73,7 +73,7 @@ export class Vocabulary {
     key = path.shift();
 
     if (key === TOP) {
-      // special case... can write to %top object which is root
+      // special case... can write to _top object which is root
       key = path.shift();
       scope = this.root;
     }

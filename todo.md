@@ -33,17 +33,19 @@
   - [x] `\u266D`  (same as `"\u266D" :`)
 
 ## Bugs
+- [ ] repl completer
 - [ ] `'x' exit` should be type error?
 - [ ] `_ 3 =~`?
 - [ ] `print` gets swallowed by stack
-- [ ] pprint cuts off bottom of stack, should be top
+- [x] pprint cuts off bottom of stack, should be top
 
 ## Testing
+- [ ] Nested lambdas
 - [ ] test the repl
 - [ ] `base` (`Deciaml.toBinary`) precision.
 - [ ] Test unbound defs (macro-like expansion)
 - [?] test for invalid word definitions
-- [ ] Test for `%top`
+- [ ] Test for `_top`
 - [?] Tests for `vocab`, `use`, etc.
 - [ ] Test all internal words
   - [ ] Basis
@@ -58,6 +60,7 @@
 - [ ] pick for module? `math [ '!' ] pluck use`
 
 ## TODOs
+- [ ] recursive lambdas?
 - [ ] shell commands
 - [ ] sigils (`+x`, `~x`, `@x`, `^x`, `#x`, `%x`, `?x`, `!x`, `=x`)
   - [?] User defined sigils?  (https://medium.com/blackode/write-your-own-sigils-elixir-ce648f531211)
@@ -157,7 +160,7 @@
 - [ ] Ensure predictable `<=>` with `null` and `nan`
 
 ## Words
-- [ ] `%top` vs `root`?  add `parent`, `local`?
+- [ ] `_top` vs `root`?  add `parent`, `local`?
 - [ ] `linrec` - 
 - [?] `publish` add a word to a dict? `math: my-math-func: publish`, `math.my-func: [ ] ;`?
 - [ ] `exists?` file exists?  `fstat`?
