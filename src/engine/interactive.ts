@@ -126,10 +126,6 @@ export class CLI {
       process.exit(0);
     });
   
-    this.readline.on('SIGTSTP', () => {
-      this.turnOffEditorMode();
-    });
-  
     this.readline.on('SIGINT', () => {
       if (this.editorMode) {
         this.buffer = '';
@@ -143,11 +139,23 @@ export class CLI {
       }
     });
 
+    this.readline.on('SIGCONT', () => {
+      this.prompt();
+    });
+
     process.stdin.on('keypress', (s, key) => {
       // console.log({ s, key });
       switch (key.name) {
         case 'enter':
           this.buffer += ']\n'.repeat(this.f.depth);
+        case 'e':
+          if (key.ctrl) {
+            if (this.editorMode) {
+              this.turnOffEditorMode();
+            } else {
+              this.turnOnEditorMode();
+            }
+          }
       }
     });
   }
@@ -248,7 +256,7 @@ export class CLI {
   }
 
   private turnOnEditorMode() {
-    console.log('Entering editor mode (^Z to finish, ^C to cancel)');
+    console.log('Entering editor mode (^E to finish, ^C to cancel)');
     this.editorMode = true;
     this.readline.setPrompt(initialPrompt);
   }
@@ -346,9 +354,10 @@ export class CLI {
   }
 
   private completer(line: string) {
-    const keys = [...this.f.dict.words(), ...COMMANDS.map(c => c[0])];
-    const hits = keys.filter(c => c.startsWith(line));
-    return [hits, line];
+    const token = line.split(/[\s]+/).pop();
+    const completions = [...this.f.dict.words(), ...COMMANDS.map(c => c[0])];
+    const hits = completions.filter(c => c.startsWith(token));
+    return [hits.length ? hits : completions, line];
   }
 }
 

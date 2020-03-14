@@ -15,10 +15,11 @@
 - [ ] Running in browser
 
 ## TODO Now
+- [ ] Move trace to repl?
 - [ ] contracts/guards
   - [?] guard
   - [ ] stack case guard
-- [ ] Replace `.x` syntax?  `/x`, `:x:`, `::x`, `/x/`, `~x`
+- [ ] Replace `.x` syntax?  `/x`, `:x:`, `::x`, `/x/`, `~x`, `$x`
 - [ ] repl
   - [?] move repl to `src`...  use TS
   - [ ] `.editor` in repl
@@ -33,11 +34,9 @@
   - [x] `\u266D`  (same as `"\u266D" :`)
 
 ## Bugs
-- [x] repl completer
 - [ ] `'x' exit` should be type error?
 - [ ] `_ 3 =~`?
 - [ ] `print` gets swallowed by stack
-- [x] pprint cuts off bottom of stack, should be top
 
 ## Testing
 - [ ] Nested lambdas
@@ -60,6 +59,7 @@
 - [ ] pick for module? `math [ '!' ] pluck use`
 
 ## TODOs
+- [ ] highlight as you type?
 - [ ] recursive lambdas?
 - [ ] shell commands
 - [ ] sigils (`+x`, `~x`, `@x`, `^x`, `#x`, `%x`, `?x`, `!x`, `=x`)
