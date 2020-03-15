@@ -3,10 +3,11 @@
 import * as readline from 'readline';
 import * as program from 'commander';
 import * as gradient from 'gradient-string';
-import * as memoize from 'memoizee';
+// import * as memoize from 'memoizee';
 import * as process from 'process';
 import * as chalk from 'chalk';
 import * as fixedWidthString from 'fixed-width-string';
+import * as MuteStream from 'mute-stream';
 
 import { createRootEnv } from '../stack';
 import { log, bar, ffPrettyPrint, type } from '../utils';
@@ -50,19 +51,29 @@ const HELP = COMMANDS.map(c => {
 const PROMPT = 'F♭';
 
 // Writers, use `.echo` to cycle through writers
-const writers = {
+const WRITERS = {
   pretty: (_: StackEnv) => ffPrettyPrint.color(_.stack) + '\n',
   literal: (_: StackEnv) => ffPrettyPrint.literal(_.stack) + '\n',
   silent: (_: StackEnv) => '',
 };
 
-export function newStack(): StackEnv {
+const MAX_UNDO = 20;
+
+export function newStack(rl?: readline.ReadLine): StackEnv {
   log.level = program.logLevel || 'warn';
 
   const newParent = createRootEnv();
 
   if (!program.quiet) {
     console.log(WELCOME);
+  }
+
+  if (rl) {
+    this.f.defineAction('prompt', () => {
+      return new Promise(resolve => {
+        rl.question('', resolve);
+      });
+    });
   }
 
   const child = newParent.createChild(undefined);
@@ -80,30 +91,43 @@ export class CLI {
   private buffer = '';
   private timeout = null;
   private undoStack = [];
+  private redoStack = [];
   private autoundo = undefined;
-  private currentWriter = writers.pretty;
+  private currentWriter = WRITERS.pretty;
   private bindings = [];
+  private tracing = false;
+  private started = false;
+  private mutableStdin: MuteStream;
+  private mutableStdout: MuteStream;
 
   constructor() {
+    this.mutableStdin = new MuteStream();
+    this.mutableStdout = new MuteStream();
+
+    const terminal = !!process.stdin.setRawMode;
+
     this.readline = readline.createInterface({
       prompt: '',
-      input: process.stdin,
-      output: process.stdout,
+      input: this.mutableStdin,
+      output: this.mutableStdout,
+      terminal,
       completer: this.completer.bind(this)
     });
-
-    readline.emitKeypressEvents(process.stdin);
-    process.stdin.setRawMode(true);
   }
 
   start(f: StackEnv) {
-    this.f = f || newStack();
+    if (this.started) {
+      throw new Error('Instance already started');
+    }
+    this.f = f || newStack(this.readline);
 
-    this.f.defineAction('prompt', () => {
-      return new Promise(resolve => {
-        this.readline.question('', resolve);
-      });
-    });
+    if (process.stdin.setRawMode) {
+      readline.emitKeypressEvents(process.stdin);
+      process.stdin.setRawMode(true);
+    }
+    process.stdin.resume();
+    process.stdin.pipe(this.mutableStdin);
+    this.mutableStdout.pipe(process.stdout);
 
     this.prompt();
 
@@ -159,6 +183,20 @@ export class CLI {
     });
   }
 
+  suspend() {
+    this.mutableStdin.mute();
+    this.mutableStdout.mute();
+    process.stdin.unpipe(this.mutableStdin);
+  }
+
+  resume() {
+    this.mutableStdin.unmute();
+    this.mutableStdout.unmute();
+
+    process.stdin.pipe(this.mutableStdin);
+    process.stdout.write('\r\n');
+  }
+
   private fEval(code: string) {
     this.buffer += `${code}\n`;
     global.clearTimeout(this.timeout);
@@ -184,10 +222,13 @@ export class CLI {
     }
 
     log.profile('dispatch');
-    this.undoStack.push(this.f.stateSnapshot());
+
+    this.undoStack = [...this.undoStack.slice(-MAX_UNDO + 1), this.f.stateSnapshot()];
+    this.redoStack = [];
+
     this.readline.pause();
     this.f.next(this.buffer)
-      .catch(err => {
+      .catch((err: Error) => {
         console.error(err);
         if (this.autoundo === true) {
           this.undo();
@@ -215,7 +256,7 @@ export class CLI {
         console.log('Resetting the environment...\n');
         this.autoundo = undefined;
         this.undoStack = [];
-        this.f = newStack();
+        this.f = newStack(this.readline);
         this.prompt();
         return true;
       case 'help':
@@ -226,8 +267,12 @@ export class CLI {
         this.undo();
         this.prompt();
         return true;
+      case 'redo':
+        this.redo();
+        this.prompt();
+        return true;
       case 'echo':
-        const entries = Object.entries(writers);
+        const entries = Object.entries(WRITERS);
         const i = entries.findIndex(([_, v]) => v === this.currentWriter);
         const n = (i + 1) % entries.length;
         console.log(`Switched to ${entries[n][0]} mode\n`);
@@ -248,8 +293,13 @@ export class CLI {
           console.log(`${n}: ${ffPrettyPrint.color(v)} [${type(v)}]`);
         }
         this.prompt(false);
-        return true;        
+        return true;      
       }
+      case 'trace':
+        this.tracing = !this.tracing;
+        console.log(`Tracing ${this.tracing ? 'on' : 'off'}...\n`);
+        this.prompt();
+        return true;
     }
     return false;
   }
@@ -279,6 +329,8 @@ export class CLI {
   }
 
   private async errorPrompt() {
+    this.suspend();
+
     console.log(CONTINUE);
     let data = await this.getKeypress();
     data = data ? String(data).toLowerCase() : 'u';
@@ -296,49 +348,52 @@ export class CLI {
         this.undo();
         break;
     }
+
+    this.resume();
     return data;
   }
 
   private undo() {
     const state = this.undoStack.pop();
+    this.redoStack.push(this.f.stateSnapshot());
+    Object.assign(this.f, state);
+  }
+
+  private redo() {
+    const state = this.redoStack.pop();
+    this.undoStack.push(this.f.stateSnapshot());
     Object.assign(this.f, state);
   }
 
   private addBeforeHooks() {
     while (this.bindings.length > 0) {
-      const b = this.bindings.pop();
-      b.detach();
+      this.bindings.pop().detach();
     }
   
     let qMax = this.f.stack.length + this.f.queue.length;
 
-    const trace = () => console.log(ffPrettyPrint.formatTrace(this.f));
+    if (this.tracing) {
+      const trace = () => console.log(ffPrettyPrint.formatTrace(this.f));
 
-    const updateBar = () => {
-      const q = this.f.stack.length + this.f.queue.length;
-      if (q > qMax) qMax = q;
-  
-      bar.update(this.f.stack.length / qMax, {
-        stack: this.f.stack.length,
-        queue: this.f.queue.length,
-        depth: this.f.depth,
-        lastAction: ffPrettyPrint.trace(this.f.currentAction)
-      });
-    };
-  
-    // move these be part of winston logger?
-    switch (log.level.toString()) {
-      case 'trace':
-        this.bindings.push(this.f.before.add(trace));
-        this.bindings.push(this.f.beforeEach.add(trace));
-        this.bindings.push(this.f.idle.add(trace));
-        break;
-      case 'warn': {
-        if (this.f.silent) return;
-        this.bindings.push(this.f.before.add(updateBar));
-        this.bindings.push(this.f.beforeEach.add(updateBar));
-        this.bindings.push(this.f.idle.add(() => bar.terminate()));
-      }
+      this.bindings.push(this.f.before.add(trace));
+      this.bindings.push(this.f.beforeEach.add(trace));
+      this.bindings.push(this.f.idle.add(trace));
+    } else if (!this.f.silent) {
+      const updateBar = () => {
+        const q = this.f.stack.length + this.f.queue.length;
+        if (q > qMax) qMax = q;
+    
+        bar.update(this.f.stack.length / qMax, {
+          stack: this.f.stack.length,
+          queue: this.f.queue.length,
+          depth: this.f.depth,
+          lastAction: ffPrettyPrint.trace(this.f.currentAction)
+        });
+      };
+
+      this.bindings.push(this.f.before.add(updateBar));
+      this.bindings.push(this.f.beforeEach.add(updateBar));
+      this.bindings.push(this.f.idle.add(() => bar.terminate()));
     }
   }
 

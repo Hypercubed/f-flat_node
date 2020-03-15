@@ -40,6 +40,7 @@
     "isomorphic-fetch": "^2.2.1",
     "memoizee": "^0.4.14",
     "mini-signals": "^1.1.1",
+    "mute-stream": "0.0.8",
     "myna-parser": "^2.5.1",
     "normalize-url": "^5.0.0",
     "progress": "^2.0.3",

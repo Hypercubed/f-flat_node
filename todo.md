@@ -13,27 +13,33 @@
   - [ ] Continuations
   - [ ] switch on error type
 - [ ] Running in browser
+  - [ ] Move node specific code to repl
+  - [ ] Online UI
 
 ## TODO Now
-- [ ] Move trace to repl?
+- [x] Move trace to repl?
 - [ ] contracts/guards
   - [?] guard
   - [ ] stack case guard
 - [ ] Replace `.x` syntax?  `/x`, `:x:`, `::x`, `/x/`, `~x`, `$x`
 - [ ] repl
-  - [?] move repl to `src`...  use TS
-  - [ ] `.editor` in repl
+  - [x] move repl to `src`...  use TS
+  - [x] `.editor` in repl
   - [x] move undo to repl
   - [x] docs
-  - [ ] redo
+  - [x] redo
+  - [x] max redo/undo
   - [ ] Interactive errors
-  - [x] Prompt to undo?
-- [ ] Unicode words and LaTeX-like abbreviations (https://docs.julialang.org/en/v1/manual/unicode-input/)
-  - [ ] `\flat`?
-  - [ ] `&flat;`?
+  - [x] Prompt to undo on error?
+- [ ] Better unicode (lugaru.com/man/Character.Constants.html)
+  - [ ] unescape without eval? (https://github.com/iamakulov/unescape-js#readme)
+  - [ ] `\u[flat]`? (https://github.com/wooorm/character-entities) (https://docs.julialang.org/en/v1/manual/unicode-input/)
+  - [-] `&flat;`?
   - [x] `\u266D`  (same as `"\u266D" :`)
+  - [ ] regex unicode property aliases?  (https://github.com/tc39/proposal-regexp-unicode-property-escapes)
 
 ## Bugs
+- [ ] `"123\"456"` parse eeror
 - [ ] `'x' exit` should be type error?
 - [ ] `_ 3 =~`?
 - [ ] `print` gets swallowed by stack
@@ -59,7 +65,8 @@
 - [ ] pick for module? `math [ '!' ] pluck use`
 
 ## TODOs
-- [ ] highlight as you type?
+- [ ] Bash-like brace expansion (https://github.com/micromatch/braces) `'{0..5}' :braces` -> `['1', '2', '3', '4', '5']`
+- [?] highlight as you type? (would need to parse as you type!)
 - [ ] recursive lambdas?
 - [ ] shell commands
 - [ ] sigils (`+x`, `~x`, `@x`, `^x`, `#x`, `%x`, `?x`, `!x`, `=x`)
