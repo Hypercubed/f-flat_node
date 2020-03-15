@@ -47,7 +47,7 @@ const HELP = COMMANDS.map(c => {
   return `${chalk.gray(fixedWidthString(c[0], 10))} ${c[1]}`;
 }).join('\n');
 
-const initialPrompt = 'F♭> ';
+const PROMPT = 'F♭';
 
 // Writers, use `.echo` to cycle through writers
 const writers = {
@@ -86,7 +86,7 @@ export class CLI {
 
   constructor() {
     this.readline = readline.createInterface({
-      prompt: initialPrompt,
+      prompt: '',
       input: process.stdin,
       output: process.stdout,
       completer: this.completer.bind(this)
@@ -105,7 +105,7 @@ export class CLI {
       });
     });
 
-    this.readline.prompt();
+    this.prompt();
 
     this.readline.on('pause', () => {
       this.isPaused = true;
@@ -145,17 +145,16 @@ export class CLI {
 
     process.stdin.on('keypress', (s, key) => {
       // console.log({ s, key });
-      switch (key.name) {
-        case 'enter':
-          this.buffer += ']\n'.repeat(this.f.depth);
-        case 'e':
-          if (key.ctrl) {
+      if (key.ctrl) {
+        switch (key.name) {
+          case 'e':
             if (this.editorMode) {
               this.turnOffEditorMode();
             } else {
               this.turnOnEditorMode();
             }
-          }
+            return;
+        }
       }
     });
   }
@@ -256,19 +255,26 @@ export class CLI {
   }
 
   private turnOnEditorMode() {
-    console.log('Entering editor mode (^E to finish, ^C to cancel)');
     this.editorMode = true;
-    this.readline.setPrompt(initialPrompt);
+    this.readline.setPrompt('');
+    this.readline.write('\n');
+    console.log('Entering editor mode (^E to finish, ^C to cancel)');
   }
   
   private turnOffEditorMode() {
     this.editorMode = false;
-    this.fEval('');
+    this.readline.write('\n');
   }
 
   private prompt(print = true) {
     print && console.log(this.currentWriter(this.f));
-    this.readline.setPrompt(this.f.depth < 1 ? initialPrompt : `F♭${' '.repeat(this.f.depth - 1)}| `);
+    if (this.editorMode) {
+      this.readline.setPrompt('');
+    } else {
+      let prompt = PROMPT;
+      prompt += this.f.depth < 1 ? '> ' : `${' '.repeat(this.f.depth - 1)}| `;
+      this.readline.setPrompt(prompt);
+    }
     this.readline.prompt();
   }
 
@@ -355,9 +361,9 @@ export class CLI {
 
   private completer(line: string) {
     const token = line.split(/[\s]+/).pop();
-    const completions = [...this.f.dict.words(), ...COMMANDS.map(c => c[0])];
+    const completions = [...COMMANDS.map(c => c[0]), ...this.f.dict.words()];
     const hits = completions.filter(c => c.startsWith(token));
-    return [hits.length ? hits : completions, line];
+    return [hits.length ? hits : completions, token];
   }
 }
 
