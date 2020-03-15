@@ -46,6 +46,7 @@
     "progress": "^2.0.3",
     "smykowski": "^1.3.4",
     "strip-ansi": "^6.0.0",
+    "unescape-js": "^1.1.4",
     "winston": "^2.4.4"
   },
   "devDependencies": {

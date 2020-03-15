@@ -298,10 +298,67 @@ test('lambdas', async () => {  // lambdas-ff
   ).toEqual(`[ 0.5 ]`);
 });
 
-test('unicode words', async () => {
-  expect(await ƒ('[ F\\u266D ]')).toEqual(`[ [ f♭ ] ]`);
-  expect(await ƒ('F\\u266D:')).toEqual(`[ F♭: ]`);
-  expect(ƒ('F\\u266D')).rejects.toThrow(`Word is not defined: "f♭"`);
-  expect(await ƒ('F\\u266D: [ 1 2 + ] ; F\\u266D')).toEqual(`[ 3 ]`);
+describe('unicode', () => {
+  describe('character with ASCII code yyy octal', () => {
+    test('double quotes strings', async () => {
+      expect(await ƒ('"Fb\\251"')).toEqual(`[ 'Fb©' ]`);
+    });
+  });
+
+  describe('character with ASCII code hh hexadecimal', () => {
+    test('double quotes strings', async () => {
+      expect(await ƒ('"F\\x62\\xA9"')).toEqual(`[ 'Fb©' ]`);
+    });
+
+    test('words', async () => {
+      expect(await ƒ('[ F\\x62 ]')).toEqual(`[ [ fb ] ]`);
+      expect(await ƒ('F\\x62:')).toEqual(`[ Fb: ]`);
+      expect(ƒ('F\\x62')).rejects.toThrow(`Word is not defined: "fb"`);
+      expect(await ƒ('F\\x62: [ 1 2 + ] ; F\\x62')).toEqual(`[ 3 ]`);
+    });  
+  });
+
+  describe('character with code hhhh hexadecimal', () => {
+    test('double quotes strings', async () => {
+      expect(await ƒ('"F\\u266D\\u00A9"')).toEqual(`[ 'F♭©' ]`);
+    });
+
+    test('words', async () => {
+      expect(await ƒ('[ F\\u266D ]')).toEqual(`[ [ f♭ ] ]`);
+      expect(await ƒ('F\\u266D:')).toEqual(`[ F♭: ]`);
+      expect(ƒ('F\\u266D')).rejects.toThrow(`Word is not defined: "f♭"`);
+      expect(await ƒ('F\\u266D: [ 1 2 + ] ; F\\u266D')).toEqual(`[ 3 ]`);
+    });    
+  });
+
+  describe('character with code h hexadecimal', () => {
+    test('double quotes strings', async () => {
+      expect(await ƒ('"F\\u{266D}\\u{00A9}"')).toEqual(`[ 'F♭©' ]`);
+    });
+
+    // Parser adds whitespace to brackets
+    // test('words', async () => {
+    //   expect(await ƒ('[ F\\u{266D} ]')).toEqual(`[ [ f♭ ] ]`);
+    //   expect(await ƒ('F\\u{266D}:')).toEqual(`[ F♭: ]`);
+    //   expect(ƒ('F\\u{266D}')).rejects.toThrow(`Word is not defined: "f♭"`);
+    //   expect(await ƒ('F\\u{266D}: [ 1 2 + ] ; F\\u266D')).toEqual(`[ 3 ]`);
+    // });    
+  });
+
+  // todo
+  // describe('character with given Unicode name', () => {
+  //   test('double quotes strings', async () => {
+  //     expect(await ƒ('"F\\u[flat]"')).toEqual(`[ 'F♭' ]`);
+  //   });
+
+  //   test('words', async () => {
+  //     expect(await ƒ('[ F\\u{266D} ]')).toEqual(`[ [ f♭ ] ]`);
+  //     expect(await ƒ('F\\u{266D}:')).toEqual(`[ F♭: ]`);
+  //     expect(ƒ('F\\u{266D}')).rejects.toThrow(`Word is not defined: "f♭"`);
+  //     expect(await ƒ('F\\u{266D}: [ 1 2 + ] ; F\\u266D')).toEqual(`[ 3 ]`);
+  //   });
+  // });
 });
+
+
 

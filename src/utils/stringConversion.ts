@@ -1,3 +1,5 @@
+import * as unescapeJs from 'unescape-js';
+
 import { StackEnv } from '../engine/env';
 
 const CAP = '${expression-hole}';
@@ -51,11 +53,12 @@ export function template(stack: StackEnv, template: string, sen?: any): string {
  * Decodes a unicode encoded string
  */
 export function unicodeDecode(x: string): string {
-  try {
-    const s = `"${x}"`;
-    // tslint:disable-next-line: no-eval
-    return eval(s);
-  } catch {
-    return x;
-  }
+  return unescapeJs(x);
+  // try {
+  //   const s = `"${x}"`;
+  //   // tslint:disable-next-line: no-eval
+  //   return eval(s);
+  // } catch {
+  //   return x;
+  // }
 }

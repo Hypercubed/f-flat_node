@@ -82,7 +82,7 @@ function templateString(val: string) {
 
 function doubleQuotedString(val: string): string {
   // tslint:disable-next-line: no-eval
-  return eval(val);  // converts to a string using js unicode decoding
+  return unicodeDecode(val.slice(1, -1));  // converts to a string using js unicode decoding
 }
 
 function singleQuotedString(val: string): string {
