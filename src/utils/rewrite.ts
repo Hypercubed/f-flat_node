@@ -4,13 +4,7 @@ import { getIn } from 'icepick';
 
 import { Vocabulary } from '../engine/vocabulary';
 
-import {
-  dynamo,
-  StackValue,
-  Sentence,
-  Word,
-  ReturnValues,
-} from '../types';
+import { dynamo, StackValue, Sentence, Word, ReturnValues } from '../types';
 
 import { IIF } from '../constants';
 

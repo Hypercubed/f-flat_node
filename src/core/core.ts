@@ -9,9 +9,15 @@ import {
   Sentence,
   Word,
   Key,
-  Decimal,
+  Decimal
 } from '../types';
-import { deepEquals, template, templateParts, toObject, FFlatError } from '../utils';
+import {
+  deepEquals,
+  template,
+  templateParts,
+  toObject,
+  FFlatError
+} from '../utils';
 import { patternMatch } from '../utils/pattern';
 import { StackEnv } from '../engine/env';
 

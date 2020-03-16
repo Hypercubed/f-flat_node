@@ -68,7 +68,8 @@ test('should uncons', async () => {
   expect(await ƒ('(5 4 3) uncons')).toEqual(`[ 5 [ 4 3 ] ]`);
 });
 
-test('nop', async () => {  // core-ff
+test('nop', async () => {
+  // core-ff
   expect(await ƒ('"abc" nop')).toEqual(`[ 'abc' ]`);
   // t.deepEqual(await fJSON('"abc" id'), ['abc']);
 });

@@ -23,7 +23,12 @@ program
 program.parse(process.argv);
 
 if (typeof program.interactive === 'undefined') {
-  program.interactive = !program.file && arg === '' && process && process.stdin && process.stdin.isTTY;
+  program.interactive =
+    !program.file &&
+    arg === '' &&
+    process &&
+    process.stdin &&
+    process.stdin.isTTY;
 }
 
 if (program.logLevel) {

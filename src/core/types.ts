@@ -190,7 +190,7 @@ export const types = {
    * creates a hexidecimal hash from a String
    *
    */
-  'hex-hash': (x: string): string => hashCode(x).toString(16),  // move to defined words?
+  'hex-hash': (x: string): string => hashCode(x).toString(16), // move to defined words?
 
   /**
    * ## `base`

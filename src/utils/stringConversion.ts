@@ -54,11 +54,4 @@ export function template(stack: StackEnv, template: string, sen?: any): string {
  */
 export function unicodeDecode(x: string): string {
   return unescapeJs(x);
-  // try {
-  //   const s = `"${x}"`;
-  //   // tslint:disable-next-line: no-eval
-  //   return eval(s);
-  // } catch {
-  //   return x;
-  // }
 }

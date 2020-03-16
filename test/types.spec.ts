@@ -8,7 +8,9 @@ test('type', async () => {
 test('number', async () => {
   expect(await ƒ('123 number')).toEqual(`[ 123 ]`);
   expect(await ƒ('"123" number')).toEqual(`[ 123 ]`);
-  expect(ƒ('"abc" number')).rejects.toThrow(`'number' [DecimalError] Invalid argument: abc`);  // nan?
+  expect(ƒ('"abc" number')).rejects.toThrow(
+    `'number' [DecimalError] Invalid argument: abc`
+  ); // nan?
 });
 
 test('string', async () => {
@@ -134,5 +136,3 @@ test('nothing?', async () => {
   expect(await ƒ('"abc" nothing?')).toEqual(`[ false ]`);
   expect(await ƒ('null nothing?')).toEqual(`[ true ]`);
 });
-
-

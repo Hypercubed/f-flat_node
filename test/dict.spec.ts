@@ -25,7 +25,9 @@ test('should shadow definitions in an in', async () => {
     await ƒ('"a" [ "outsite-a" ] ; a [ "a" [ "in-fork-a" ] ; a ] in a')
   ).toEqual(`[ 'outsite-a' [ 'in-fork-a' ] 'outsite-a' ]`);
   expect(
-    await ƒ('"a" [ "outsite-a" ] ; a [ "b" [ "in-in-b" ] ; a b ] in a b: defined?')
+    await ƒ(
+      '"a" [ "outsite-a" ] ; a [ "b" [ "in-in-b" ] ; a b ] in a b: defined?'
+    )
   ).toEqual(`[ 'outsite-a' [ 'outsite-a' 'in-in-b' ] 'outsite-a' false ]`);
 });
 
@@ -66,7 +68,9 @@ describe('inline on def', () => {
   });
 
   test('should inline deeply', async () => {
-    expect(await ƒ(`x: [ sip ] ; 'x' see`)).toEqual(`[ '[ q< dup q> swap << eval ]' ]`);
+    expect(await ƒ(`x: [ sip ] ; 'x' see`)).toEqual(
+      `[ '[ q< dup q> swap << eval ]' ]`
+    );
   });
 });
 
@@ -84,7 +88,9 @@ describe('defer', () => {
   });
 
   test(`can't defer after defining`, async () => {
-    expect(ƒ('x: [ 1 ] ; x: defer')).rejects.toThrow(`'defer' cannot overwrite definition: "x"`);
+    expect(ƒ('x: [ 1 ] ; x: defer')).rejects.toThrow(
+      `'defer' cannot overwrite definition: "x"`
+    );
   });
 
   test('mutually recursive', async () => {
@@ -136,30 +142,18 @@ describe('undefined words', () => {
 
 describe('invalid words', () => {
   test('invalid keys', async () => {
-    await expect(ƒ(`'x:y' [456] ;`)).rejects.toThrow(
-      `';' invalid key: "x:y"`
-    );
-    await expect(ƒ(`'x y' [456] ;`)).rejects.toThrow(
-      `';' invalid key: "x y"`
-    );
-    await expect(ƒ(`'x[y' [456] ;`)).rejects.toThrow(
-      `';' invalid key: "x[y"`
-    );
+    await expect(ƒ(`'x:y' [456] ;`)).rejects.toThrow(`';' invalid key: "x:y"`);
+    await expect(ƒ(`'x y' [456] ;`)).rejects.toThrow(`';' invalid key: "x y"`);
+    await expect(ƒ(`'x[y' [456] ;`)).rejects.toThrow(`';' invalid key: "x[y"`);
     await expect(ƒ(`'x_%y' [456] ;`)).rejects.toThrow(
       `';' invalid key: "x_%y"`
     );
-    await expect(ƒ(`'x,y' [456] ;`)).rejects.toThrow(
-      `';' invalid key: "x,y"`
-    );
-    await expect(ƒ(`'x"y' [456] ;`)).rejects.toThrow(
-      `';' invalid key: "x"y"`
-    );
+    await expect(ƒ(`'x,y' [456] ;`)).rejects.toThrow(`';' invalid key: "x,y"`);
+    await expect(ƒ(`'x"y' [456] ;`)).rejects.toThrow(`';' invalid key: "x"y"`);
     await expect(ƒ(`"x\ty" [456] ;`)).rejects.toThrow(
       `';' invalid key: "x\ty"`
     );
-    await expect(ƒ(`"123" [456] ;`)).rejects.toThrow(
-      `';' invalid key: "123"`
-    );
+    await expect(ƒ(`"123" [456] ;`)).rejects.toThrow(`';' invalid key: "123"`);
     await expect(ƒ(`"1.23" [456] ;`)).rejects.toThrow(
       `';' invalid key: "1.23"`
     );
@@ -170,5 +164,5 @@ test('see', async () => {
   expect(await ƒ(`'slip' see`)).toEqual(`[ '[ << eval ]' ]`);
   expect(await ƒ(`'swap' see`)).toEqual(`[ '[function swap]' ]`);
   // expect(await ƒ(`'math' see`)).toEqual(`[ '[function swap]' ]`);
-  expect(ƒ(`'_top' see`)).rejects.toThrow(`'see' invalid key: "_top"`);  // ???
+  expect(ƒ(`'_top' see`)).rejects.toThrow(`'see' invalid key: "_top"`); // ???
 });

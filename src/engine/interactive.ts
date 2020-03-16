@@ -41,7 +41,7 @@ const COMMANDS = [
   ['.editor', 'Enter editor mode'],
   ['.echo', 'Change the stack echo mode'],
   ['.exit', 'Exit the repl'],
-  ['.help', 'Print this help message'],
+  ['.help', 'Print this help message']
 ];
 
 const HELP = COMMANDS.map(c => {
@@ -54,7 +54,7 @@ const PROMPT = 'F♭';
 const WRITERS = {
   pretty: (_: StackEnv) => ffPrettyPrint.color(_.stack) + '\n',
   literal: (_: StackEnv) => ffPrettyPrint.literal(_.stack) + '\n',
-  silent: (_: StackEnv) => '',
+  silent: (_: StackEnv) => ''
 };
 
 const MAX_UNDO = 20;
@@ -134,22 +134,22 @@ export class CLI {
     this.readline.on('pause', () => {
       this.isPaused = true;
     });
-  
+
     this.readline.on('resume', () => {
       this.isPaused = false;
     });
-  
+
     this.readline.on('line', (line: string) => {
       if (!this.isPaused && !this.processReplCommand(line)) {
         this.fEval(line);
       }
       this.watchCtrlC = false;
     });
-  
+
     this.readline.on('close', () => {
       process.exit(0);
     });
-  
+
     this.readline.on('SIGINT', () => {
       if (this.editorMode) {
         this.buffer = '';
@@ -200,7 +200,7 @@ export class CLI {
   private fEval(code: string) {
     this.buffer += `${code}\n`;
     global.clearTimeout(this.timeout);
-  
+
     if (!this.editorMode) {
       this.timeout = global.setTimeout(() => this.run(), 60);
     }
@@ -219,15 +219,19 @@ export class CLI {
       this.readline.resume();
       log.profile('dispatch');
       this.prompt();
-    }
+    };
 
     log.profile('dispatch');
 
-    this.undoStack = [...this.undoStack.slice(-MAX_UNDO + 1), this.f.stateSnapshot()];
+    this.undoStack = [
+      ...this.undoStack.slice(-MAX_UNDO + 1),
+      this.f.stateSnapshot()
+    ];
     this.redoStack = [];
 
     this.readline.pause();
-    this.f.next(this.buffer)
+    this.f
+      .next(this.buffer)
       .catch((err: Error) => {
         console.error(err);
         if (this.autoundo === true) {
@@ -236,7 +240,7 @@ export class CLI {
           return this.errorPrompt();
         }
       })
-      .then(fin, fin);  // finally
+      .then(fin, fin); // finally
 
     this.buffer = '';
   }
@@ -244,7 +248,7 @@ export class CLI {
   private processReplCommand(command: string) {
     if (!command.startsWith('.')) return false;
     command = command.replace(/^\./, '');
-  
+
     switch (command) {
       case 'clear':
         console.log('Clearing stack and undo buffer...\n');
@@ -289,11 +293,13 @@ export class CLI {
         const N = Math.max(0, this.f.stack.length - 20);
         for (let i = N; i < this.f.stack.length; i++) {
           const v = this.f.stack[i];
-          const n = fixedWidthString(this.f.stack.length - i, 4, { align: 'right' });
+          const n = fixedWidthString(this.f.stack.length - i, 4, {
+            align: 'right'
+          });
           console.log(`${n}: ${ffPrettyPrint.color(v)} [${type(v)}]`);
         }
         this.prompt(false);
-        return true;      
+        return true;
       }
       case 'trace':
         this.tracing = !this.tracing;
@@ -310,7 +316,7 @@ export class CLI {
     this.readline.write('\n');
     console.log('Entering editor mode (^E to finish, ^C to cancel)');
   }
-  
+
   private turnOffEditorMode() {
     this.editorMode = false;
     this.readline.write('\n');
@@ -334,7 +340,7 @@ export class CLI {
     console.log(CONTINUE);
     let data = await this.getKeypress();
     data = data ? String(data).toLowerCase() : 'u';
-  
+
     switch (data) {
       case 'n':
         this.autoundo = false;
@@ -369,7 +375,7 @@ export class CLI {
     while (this.bindings.length > 0) {
       this.bindings.pop().detach();
     }
-  
+
     let qMax = this.f.stack.length + this.f.queue.length;
 
     if (this.tracing) {
@@ -382,7 +388,7 @@ export class CLI {
       const updateBar = () => {
         const q = this.f.stack.length + this.f.queue.length;
         if (q > qMax) qMax = q;
-    
+
         bar.update(this.f.stack.length / qMax, {
           stack: this.f.stack.length,
           queue: this.f.queue.length,
@@ -400,14 +406,14 @@ export class CLI {
   private getKeypress() {
     process.stdin.setRawMode(true);
     this.readline.pause();
-  
+
     return new Promise(resolve => {
       process.stdin.once('data', data => {
         process.stdout.clearLine(0);
         process.stdout.cursorTo(0);
         // this.readline.clearLine();
         this.readline.resume();
-  
+
         resolve(String(data));
       });
       process.stdin.resume();
@@ -421,4 +427,3 @@ export class CLI {
     return [hits.length ? hits : completions, token];
   }
 }
-

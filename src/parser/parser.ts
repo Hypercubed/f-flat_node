@@ -27,9 +27,7 @@ function processParserTokens(node: any): StackValue | undefined {
     case 'doubleQuotedString':
       return doubleQuotedString(node.allText);
     case 'key': {
-      const id = unicodeDecode(node.allText
-        .trim()
-        .slice(0, -1));
+      const id = unicodeDecode(node.allText.trim().slice(0, -1));
       return new Key(id);
     }
     case 'number': {
@@ -39,7 +37,7 @@ function processParserTokens(node: any): StackValue | undefined {
       } // else fall through
     }
     case 'word': {
-      const id = unicodeDecode(node.allText.toLowerCase().trim());
+      const id = unicodeDecode(node.allText.trim()).toLowerCase();
       if (id.length <= 0) return undefined;
       return new Word(id);
     }
@@ -82,18 +80,9 @@ function templateString(val: string) {
 
 function doubleQuotedString(val: string): string {
   // tslint:disable-next-line: no-eval
-  return unicodeDecode(val.slice(1, -1));  // converts to a string using js unicode decoding
+  return unicodeDecode(val.slice(1, -1)); // converts to a string using js unicode decoding
 }
 
 function singleQuotedString(val: string): string {
   return val.slice(1, -1);
 }
-
-// function convertWord(value: string) {
-//   return new Word(value);
-// }
-
-// function convertLiteral(value: string): StackValue | undefined {
-//   // move these to parser
-//   return new Word(value);
-// }

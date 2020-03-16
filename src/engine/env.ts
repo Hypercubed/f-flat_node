@@ -209,7 +209,10 @@ export class StackEnv {
     // Used to detect MAXSTACK and MAXRUN errors
     function checkMaxErrors(self: StackEnv) {
       if (self.stack.length > MAXSTACK || self.queue.length > MAXSTACK) {
-        throw new FFlatError(`Maximum stack size of ${MAXSTACK} exceeded`, self);
+        throw new FFlatError(
+          `Maximum stack size of ${MAXSTACK} exceeded`,
+          self
+        );
       }
       if (loopCount++ > MAXRUN) {
         throw new FFlatError(`Maximum loop count of ${MAXRUN} exceeded`, self);
@@ -288,12 +291,18 @@ export class StackEnv {
   }
 
   private dispatchLookup(tokenValue: string | GlobalSymbol) {
-    if (is.string(tokenValue) && tokenValue.length > 1 && tokenValue.startsWith(IIF)) {
+    if (
+      is.string(tokenValue) &&
+      tokenValue.length > 1 &&
+      tokenValue.startsWith(IIF)
+    ) {
       tokenValue = tokenValue.slice(1);
     }
 
     const lookup = this.dict.get(tokenValue);
-    const name = GlobalSymbol.is(tokenValue) ? tokenValue.description : tokenValue;
+    const name = GlobalSymbol.is(tokenValue)
+      ? tokenValue.description
+      : tokenValue;
 
     if (is.undefined(lookup)) {
       throw new FFlatError(`Word is not defined: "${tokenValue}"`, this);
@@ -308,7 +317,7 @@ export class StackEnv {
       return this.dispatchFn(lookup, functionLength(lookup), name);
     }
 
-    return this.push(lookup as StackValue);  // likely a ScopeModule
+    return this.push(lookup as StackValue); // likely a ScopeModule
   }
 
   private dispatchFn(fn: Function, args?: number, name?: string): void {
@@ -317,7 +326,10 @@ export class StackEnv {
     const len = this.stack.length;
 
     if (args > len) {
-      throw new FFlatError(`'${name}' stack underflow. Too few values in the stack. Requires ${args} values, ${len} found.`, this);
+      throw new FFlatError(
+        `'${name}' stack underflow. Too few values in the stack. Requires ${args} values, ${len} found.`,
+        this
+      );
     }
 
     let argArray: StackValue[] = [];

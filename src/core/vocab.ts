@@ -155,7 +155,7 @@ export const dict = {
    */
   see(this: StackEnv, a: string | Key) {
     const r = this.dict.get(String(a));
-    return (typeof r === 'undefined') ?  null : ffPrettyPrint.stringify(r);
+    return typeof r === 'undefined' ? null : ffPrettyPrint.stringify(r);
   },
 
   /**

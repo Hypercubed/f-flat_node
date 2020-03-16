@@ -156,7 +156,7 @@ test('should calculate exact powers', async () => {
 
 test('should calculate inexact powers', async () => {
   expect(await ƒ('2 1024 ^')).toEqual(`[ 1.7976931348623159077e+308 ]`);
-                                      // 1.7976931348623159077293051907890247336179769789423065 × 10^308
+  // 1.7976931348623159077293051907890247336179769789423065 × 10^308
 });
 
 test(`should do Knuth's up-arrow notation`, async () => {

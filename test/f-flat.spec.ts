@@ -22,7 +22,9 @@ test('should push numeric values', async () => {
   expect(await ƒ('10_000 1_00')).toEqual(τ([10000, 100]));
   expect(await ƒ('9007199254740993')).toEqual(`[ 9007199254740993 ]`);
   expect(await ƒ('-9007199254740993')).toEqual(`[ -9007199254740993 ]`);
-  expect(await ƒ('1.7976931348623159077e+308')).toEqual(`[ 1.7976931348623159077e+308 ]`);
+  expect(await ƒ('1.7976931348623159077e+308')).toEqual(
+    `[ 1.7976931348623159077e+308 ]`
+  );
 });
 
 test('should push hexidecimal numeric values', async () => {
@@ -41,7 +43,8 @@ test('should push binary numeric values', async () => {
   expect(await ƒ('0b1p+1 0b11p-2')).toEqual(τ([2, 3 * Math.pow(2, -2)]));
 });
 
-test('empty', async () => {  // base
+test('empty', async () => {
+  // base
   expect(await ƒ('"abc" empty')).toEqual(`[ '' ]`);
   expect(await ƒ('123 empty')).toEqual(`[ 0 ]`);
 });
@@ -87,7 +90,8 @@ test('keys', async () => {
   expect(await ƒ('eval: :')).toEqual(`[ eval: ]`);
 });
 
-test('=', async () => {   // base
+test('=', async () => {
+  // base
   expect(await ƒ('1 1 =')).toEqual(`[ true ]`);
   expect(await ƒ('1 i * 1 i * =')).toEqual(`[ true ]`);
   expect(await ƒ('null null =')).toEqual(`[ true ]`);
@@ -168,11 +172,13 @@ test('prefix "macros"', async () => {
   expect(await ƒ('[i *] (10) sap')).toEqual(`[ 0+10i ]`);
 });
 
-test('length', async () => {  // base
+test('length', async () => {
+  // base
   expect(await ƒ('null ln')).toEqual(`[ 0 ]`);
 });
 
-test('hex, bin', async () => {  // types-ff
+test('hex, bin', async () => {
+  // types-ff
   expect(await ƒ('18446744073709551615 hex')).toEqual(
     `[ '0xFFFFFFFFFFFFFFFF' ]`
   );
@@ -205,7 +211,8 @@ test('hex, bin', async () => {  // types-ff
   t.deepEqual(await fValues('-Infinity null <=>'), [1]);
 }); */
 
-test('should div rem', async () => {  // math.ff
+test('should div rem', async () => {
+  // math.ff
   expect(await ƒ('5 2 divrem')).toEqual(`[ 2 1 ]`);
 });
 
@@ -258,7 +265,8 @@ test('underscore seperators hexadecimal integer formats', async () => {
   expect(await ƒ('0xDE_AD_BE_EF')).toEqual(τ([0xdeadbeef]));
 });
 
-test('should resolve', async () => {  // node
+test('should resolve', async () => {
+  // node
   expect(await ƒ('"core" resolve')).toMatch(/^\[ 'file:.*core' \]$/);
   expect(await ƒ('"core.ff" resolve')).toMatch(/^\[ 'file:.*core.ff' \]$/);
   expect(await ƒ('"/home/core.ff" resolve')).toMatch(
@@ -285,11 +293,16 @@ test('type errors', async () => {
 });
 
 test('stack underflow', async () => {
-  expect(ƒ('4 *')).rejects.toThrow(`'*' stack underflow. Too few values in the stack. Requires 2 values, 1 found.`);
-  expect(ƒ('4 slip')).rejects.toThrow(`'<<' stack underflow. Too few values in the stack. Requires 2 values, 1 found.`);
+  expect(ƒ('4 *')).rejects.toThrow(
+    `'*' stack underflow. Too few values in the stack. Requires 2 values, 1 found.`
+  );
+  expect(ƒ('4 slip')).rejects.toThrow(
+    `'<<' stack underflow. Too few values in the stack. Requires 2 values, 1 found.`
+  );
 });
 
-test('lambdas', async () => {  // lambdas-ff
+test('lambdas', async () => {
+  // lambdas-ff
   expect(
     await ƒ('l: [ [ a: b: c: ] => [ .b .c .c .a ] lambda ] ; 1 2 3 l')
   ).toEqual(`[ 2 3 3 1 ]`);
@@ -298,67 +311,47 @@ test('lambdas', async () => {  // lambdas-ff
   ).toEqual(`[ 0.5 ]`);
 });
 
-describe('unicode', () => {
-  describe('character with ASCII code yyy octal', () => {
-    test('double quotes strings', async () => {
-      expect(await ƒ('"Fb\\251"')).toEqual(`[ 'Fb©' ]`);
-    });
+describe('unicode words', () => {
+  test('character with ASCII code \\yyy octa', async () => {
+    expect(await ƒ('[ Fb\\251 ]')).toEqual(`[ [ fb© ] ]`);
+    expect(await ƒ('Fb\\251:')).toEqual(`[ Fb©: ]`);
+    expect(ƒ('Fb\\251')).rejects.toThrow(`Word is not defined: "fb©"`);
+    expect(await ƒ('Fb\\251: [ 1 2 + ] ; Fb\\251')).toEqual(`[ 3 ]`);
   });
 
-  describe('character with ASCII code hh hexadecimal', () => {
-    test('double quotes strings', async () => {
-      expect(await ƒ('"F\\x62\\xA9"')).toEqual(`[ 'Fb©' ]`);
-    });
-
-    test('words', async () => {
-      expect(await ƒ('[ F\\x62 ]')).toEqual(`[ [ fb ] ]`);
-      expect(await ƒ('F\\x62:')).toEqual(`[ Fb: ]`);
-      expect(ƒ('F\\x62')).rejects.toThrow(`Word is not defined: "fb"`);
-      expect(await ƒ('F\\x62: [ 1 2 + ] ; F\\x62')).toEqual(`[ 3 ]`);
-    });  
+  test('character with ASCII code \\xhh hexadecimal', async () => {
+    expect(await ƒ('[ F\\x62 ]')).toEqual(`[ [ fb ] ]`);
+    expect(await ƒ('F\\x62:')).toEqual(`[ Fb: ]`);
+    expect(ƒ('F\\x62')).rejects.toThrow(`Word is not defined: "fb"`);
+    expect(await ƒ('F\\x62: [ 1 2 + ] ; F\\x62')).toEqual(`[ 3 ]`);
   });
 
-  describe('character with code hhhh hexadecimal', () => {
-    test('double quotes strings', async () => {
-      expect(await ƒ('"F\\u266D\\u00A9"')).toEqual(`[ 'F♭©' ]`);
-    });
-
-    test('words', async () => {
-      expect(await ƒ('[ F\\u266D ]')).toEqual(`[ [ f♭ ] ]`);
-      expect(await ƒ('F\\u266D:')).toEqual(`[ F♭: ]`);
-      expect(ƒ('F\\u266D')).rejects.toThrow(`Word is not defined: "f♭"`);
-      expect(await ƒ('F\\u266D: [ 1 2 + ] ; F\\u266D')).toEqual(`[ 3 ]`);
-    });    
+  test('character with code \\uhhhh hexadecimal', async () => {
+    expect(await ƒ('[ F\\u266D ]')).toEqual(`[ [ f♭ ] ]`);
+    expect(await ƒ('F\\u266D:')).toEqual(`[ F♭: ]`);
+    expect(ƒ('F\\u266D')).rejects.toThrow(`Word is not defined: "f♭"`);
+    expect(await ƒ('F\\u266D: [ 1 2 + ] ; F\\u266D')).toEqual(`[ 3 ]`);
   });
 
-  describe('character with code h hexadecimal', () => {
-    test('double quotes strings', async () => {
-      expect(await ƒ('"F\\u{266D}\\u{00A9}"')).toEqual(`[ 'F♭©' ]`);
-    });
+  test('character with code \\u{h} hexadecimal', async () => {
+    expect(await ƒ('[ F\\u{266D} ]')).toEqual(`[ [ f♭ ] ]`);
+    expect(await ƒ('F\\u{266D}:')).toEqual(`[ F♭: ]`);
+    expect(ƒ('F\\u{266D}')).rejects.toThrow(`Word is not defined: "f♭"`);
+    expect(await ƒ('F\\u{266D}: [ 1 2 + ] ; F\\u266D')).toEqual(`[ 3 ]`);
+  });
 
-    // Parser adds whitespace to brackets
-    // test('words', async () => {
-    //   expect(await ƒ('[ F\\u{266D} ]')).toEqual(`[ [ f♭ ] ]`);
-    //   expect(await ƒ('F\\u{266D}:')).toEqual(`[ F♭: ]`);
-    //   expect(ƒ('F\\u{266D}')).rejects.toThrow(`Word is not defined: "f♭"`);
-    //   expect(await ƒ('F\\u{266D}: [ 1 2 + ] ; F\\u266D')).toEqual(`[ 3 ]`);
-    // });    
+  test('character with code \\Uhhhhhhhh hexadecimal', async () => {
+    expect(await ƒ('[ \\U0001F4A9 ]')).toEqual(`[ [ 💩 ] ]`);
+    expect(await ƒ('\\U0001F4A9:')).toEqual(`[ 💩: ]`);
+    expect(ƒ('\\U0001F4A9')).rejects.toThrow(`Word is not defined: "💩"`);
+    expect(await ƒ('\\U0001F4A9: [ 1 2 + ] ; \\U0001F4A9')).toEqual(`[ 3 ]`);
   });
 
   // todo
-  // describe('character with given Unicode name', () => {
-  //   test('double quotes strings', async () => {
-  //     expect(await ƒ('"F\\u[flat]"')).toEqual(`[ 'F♭' ]`);
-  //   });
-
-  //   test('words', async () => {
-  //     expect(await ƒ('[ F\\u{266D} ]')).toEqual(`[ [ f♭ ] ]`);
-  //     expect(await ƒ('F\\u{266D}:')).toEqual(`[ F♭: ]`);
-  //     expect(ƒ('F\\u{266D}')).rejects.toThrow(`Word is not defined: "f♭"`);
-  //     expect(await ƒ('F\\u{266D}: [ 1 2 + ] ; F\\u266D')).toEqual(`[ 3 ]`);
-  //   });
+  // test('character with given Unicode name', async () => {
+  //   expect(await ƒ('[ F\\u[flat] ]')).toEqual(`[ [ f♭ ] ]`);
+  //   expect(await ƒ('F\\u[flat]:')).toEqual(`[ F♭: ]`);
+  //   expect(ƒ('F\\u[flat]')).rejects.toThrow(`Word is not defined: "f♭"`);
+  //   expect(await ƒ('F\\u[flat]: [ 1 2 + ] ; F\\u[flat]')).toEqual(`[ 3 ]`);
   // });
 });
-
-
-

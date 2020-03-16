@@ -28,6 +28,48 @@ test('should decode double quote', async () => {
 test('should push strings with nested quotes', async () => {
   expect(await ƒ(`"ab 'de' fg"`)).toEqual(`[ 'ab \\'de\\' fg' ]`);
   expect(await ƒ(`'ab "de" fg'`)).toEqual(`[ 'ab \\"de\\" fg' ]`);
+  expect(await ƒ('`ab "de\' fg`')).toEqual(`[ 'ab \\"de\\' fg' ]`);
+});
+
+test('should push strings with escaped quotes', async () => {
+  expect(await ƒ('"ab \\"de\\" fg"')).toEqual(`[ 'ab \\"de\\" fg' ]`);
+  expect(await ƒ('`ab \\`de\\` fg`')).toEqual('[ \'ab \\\\`de\\\\` fg\' ]'); // not right
+});
+
+describe('unicode in strings', () => {
+  test('character with ASCII code \\yyy octal', async () => {
+    expect(await ƒ(`'Fb\\251'`)).toEqual(`[ 'Fb\\\\251' ]`);
+    expect(await ƒ('"Fb\\251"')).toEqual(`[ 'Fb©' ]`);
+    expect(await ƒ('`Fb\\251`')).toEqual(`[ 'Fb©' ]`);
+  });
+
+  test('character with ASCII code \\xhh hexadecimal', async () => {
+    expect(await ƒ(`'F\\x62\\xA9'`)).toEqual(`[ 'F\\\\x62\\\\xA9' ]`);
+    expect(await ƒ('"F\\x62\\xA9"')).toEqual(`[ 'Fb©' ]`);
+    expect(await ƒ('`F\\x62\\xA9`')).toEqual(`[ 'Fb©' ]`);
+  });
+
+  test('character with code \\uhhhh hexadecimal', async () => {
+    expect(await ƒ(`'F\\u266D\\u00A9'`)).toEqual(`[ 'F\\\\u266D\\\\u00A9' ]`);
+    expect(await ƒ('"F\\u266D\\u00A9"')).toEqual(`[ 'F♭©' ]`);
+    expect(await ƒ('`F\\u266D\\u00A9`')).toEqual(`[ 'F♭©' ]`);
+  });
+
+  test('character with code \\u{h} hexadecimal', async () => {
+    expect(await ƒ(`'\\u{1F4A9}'`)).toEqual(`[ '\\\\u{1F4A9}' ]`);
+    expect(await ƒ('"\\u{1F4A9}"')).toEqual(`[ '💩' ]`);
+    expect(await ƒ('`\\u{1F4A9}`')).toEqual(`[ '💩' ]`);
+  });
+
+  test('character with code \\Uhhhhhhhh hexadecimal', async () => {
+    expect(await ƒ(`'\\U0001F4A9'`)).toEqual(`[ '\\\\U0001F4A9' ]`);
+    expect(await ƒ('"\\U0001F4A9"')).toEqual(`[ '💩' ]`);
+    expect(await ƒ('`\\U0001F4A9`')).toEqual(`[ '💩' ]`);
+  });
+
+  // test('character with given Unicode name', async () => {
+  //   expect(await ƒ('"F\\u[flat]"')).toEqual(`[ 'F♭' ]`);
+  // });
 });
 
 test('should add', async () => {

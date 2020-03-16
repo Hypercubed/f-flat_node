@@ -1,11 +1,6 @@
 import { stringifyStrict } from '../utils/json';
 
-import {
-  Future,
-  ReturnValues,
-  StackValue,
-  Decimal
-} from '../types';
+import { Future, ReturnValues, StackValue, Decimal } from '../types';
 import { StackEnv } from '../engine/env';
 
 /**

@@ -175,7 +175,7 @@ test('convert falsy values', async () => {
   expect(await ƒ('0 boolean')).toBe(`[ false ]`);
   expect(await ƒ('-0 boolean')).toBe(`[ false ]`);
   expect(await ƒ('"" boolean')).toBe(`[ false ]`);
-  expect(await ƒ('nan boolean')).toBe(`[ false ]`);  /// ?
+  expect(await ƒ('nan boolean')).toBe(`[ false ]`); /// ?
 });
 
 test('convert truthiness values', async () => {
@@ -188,7 +188,7 @@ test('convert truthiness values', async () => {
   expect(await ƒ('{} boolean')).toBe(`[ true ]`);
   expect(await ƒ('infinity boolean')).toBe(`[ true ]`);
   expect(await ƒ('"1/1/1990" date boolean')).toBe(`[ true ]`);
-  expect(await ƒ('1 0 / boolean')).toBe(`[ true ]`);  /// ?
+  expect(await ƒ('1 0 / boolean')).toBe(`[ true ]`); /// ?
   expect(await ƒ('i boolean')).toBe(`[ true ]`);
 });
 

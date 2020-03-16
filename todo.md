@@ -45,6 +45,7 @@
 - [ ] `print` gets swallowed by stack
 
 ## Testing
+- [ ] test tokenizer/parser
 - [ ] Nested lambdas
 - [ ] test the repl
 - [ ] `base` (`Deciaml.toBinary`) precision.

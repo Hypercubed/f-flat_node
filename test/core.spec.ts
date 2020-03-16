@@ -9,7 +9,7 @@ describe('@', () => {
   test('pick', async () => {
     expect(await ƒ('{a: 1} a: @')).toEqual(`[ 1 ]`);
     expect(await ƒ('{a: 2} "a" @')).toEqual(`[ 2 ]`);
-    expect(await ƒ('{a: 3} b: @')).toEqual(`[ null ]`);   // s/b undefined?
+    expect(await ƒ('{a: 3} b: @')).toEqual(`[ null ]`); // s/b undefined?
     expect(await ƒ('{a: {b: 5}} "a.b" @')).toEqual(`[ 5 ]`);
     expect(await ƒ('{a: {b: 5}} a.b: @')).toEqual(`[ 5 ]`);
     expect(await ƒ('{a: 7} "A" lcase @')).toEqual(`[ 7 ]`);
@@ -133,10 +133,10 @@ test('zip', async () => {
 });
 
 test('zipinto', async () => {
-  expect(await ƒ('[ 1 2 3 ] [ 4 5 6 ] [ 7 8 9 ] zipinto')).toEqual(`[ [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] ]`);
+  expect(await ƒ('[ 1 2 3 ] [ 4 5 6 ] [ 7 8 9 ] zipinto')).toEqual(
+    `[ [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] ]`
+  );
 });
 
 // template
 // sleep
-
-

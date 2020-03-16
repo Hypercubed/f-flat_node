@@ -132,7 +132,8 @@ test('switch', async () => {
       [ dup 1 = [drop 'one apple']]
       [ true    [string ' apples' +]]
     ] switch
-    `)).toEqual(`[ 'no apples' ]`);
+    `)
+  ).toEqual(`[ 'no apples' ]`);
   expect(
     await ƒ(`
     1
@@ -141,7 +142,8 @@ test('switch', async () => {
       [ dup 1 = [drop 'one apple']]
       [ true    [string ' apples' +]]
     ] switch
-    `)).toEqual(`[ 'one apple' ]`);
+    `)
+  ).toEqual(`[ 'one apple' ]`);
   expect(
     await ƒ(`
     2
@@ -150,7 +152,8 @@ test('switch', async () => {
       [ dup 1 = [drop 'one apple']]
       [ true    [string ' apples' +]]
     ] switch
-    `)).toEqual(`[ '2 apples' ]`);
+    `)
+  ).toEqual(`[ '2 apples' ]`);
 });
 
 test('switch -> (case)', async () => {
@@ -162,7 +165,8 @@ test('switch -> (case)', async () => {
       [[ 1 = ] ->  [drop 'one apple']]
       [[ true ] -> [string ' apples' +]]
     ] switch
-    `)).toEqual(`[ 'no apples' ]`);
+    `)
+  ).toEqual(`[ 'no apples' ]`);
 
   expect(
     await ƒ(`
@@ -172,7 +176,8 @@ test('switch -> (case)', async () => {
       [[ 1 = ] ->  [drop 'one apple']]
       [[ true ] -> [string ' apples' +]]
     ] switch
-    `)).toEqual(`[ 'one apple' ]`);
+    `)
+  ).toEqual(`[ 'one apple' ]`);
 
   expect(
     await ƒ(`
@@ -182,7 +187,8 @@ test('switch -> (case)', async () => {
       [[ 1 = ] ->  [drop 'one apple']]
       [[ true ] -> [string ' apples' +]]
     ] switch
-    `)).toEqual(`[ '3 apples' ]`);
+    `)
+  ).toEqual(`[ '3 apples' ]`);
 });
 
 test('switch ~> (pattern case)', async () => {

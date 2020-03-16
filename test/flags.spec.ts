@@ -11,5 +11,7 @@ test('get-system-property', async () => {
 
 test('set-system-property', async () => {
   expect(await ƒ(`'decimal-precision' 20 set-system-property`)).toEqual(`[ ]`);
-  expect(ƒ(`'unknown-prop' true set-system-property`)).rejects.toThrow(`'set-system-property' value is not a valid flag: "unknown-prop"`);
+  expect(ƒ(`'unknown-prop' true set-system-property`)).rejects.toThrow(
+    `'set-system-property' value is not a valid flag: "unknown-prop"`
+  );
 });

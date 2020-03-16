@@ -8,7 +8,7 @@ export type StackValue =
   | number // TODO: remove this, should only be Decimal?
   | string
   | boolean
-  | Symbol  // for now, well known symbols `(` and `_`
+  | Symbol // for now, well known symbols `(` and `_`
   | Key
   | Future
   | undefined
@@ -19,7 +19,4 @@ export type StackValue =
   | { [s: string]: StackValue }
   | StackValue[];
 
-export type QueueValue =
-  | StackValue
-  | GlobalSymbol
-  | Word;
+export type QueueValue = StackValue | GlobalSymbol | Word;
