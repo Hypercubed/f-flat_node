@@ -313,31 +313,31 @@ test('lambdas', async () => {
 
 describe('unicode words', () => {
   test('character with ASCII code \\yyy octa', async () => {
-    expect(await ƒ('[ Fb\\251 ]')).toEqual(`[ [ fb© ] ]`);
-    expect(await ƒ('Fb\\251:')).toEqual(`[ Fb©: ]`);
-    expect(ƒ('Fb\\251')).rejects.toThrow(`Word is not defined: "fb©"`);
-    expect(await ƒ('Fb\\251: [ 1 2 + ] ; Fb\\251')).toEqual(`[ 3 ]`);
+    expect(await ƒ('[ \\251 ]')).toEqual(`[ [ © ] ]`);
+    expect(await ƒ('\\251:')).toEqual(`[ ©: ]`);
+    expect(ƒ('\\251')).rejects.toThrow(`Word is not defined: "©"`);
+    expect(await ƒ('\\251: [ 1 2 + ] ; \\251')).toEqual(`[ 3 ]`);
   });
 
   test('character with ASCII code \\xhh hexadecimal', async () => {
-    expect(await ƒ('[ F\\x62 ]')).toEqual(`[ [ fb ] ]`);
-    expect(await ƒ('F\\x62:')).toEqual(`[ Fb: ]`);
-    expect(ƒ('F\\x62')).rejects.toThrow(`Word is not defined: "fb"`);
-    expect(await ƒ('F\\x62: [ 1 2 + ] ; F\\x62')).toEqual(`[ 3 ]`);
+    expect(await ƒ('[ \\x62 ]')).toEqual(`[ [ b ] ]`);
+    expect(await ƒ('\\x62:')).toEqual(`[ b: ]`);
+    expect(ƒ('\\x62')).rejects.toThrow(`Word is not defined: "b"`);
+    expect(await ƒ('\\x62: [ 1 2 + ] ; \\x62')).toEqual(`[ 3 ]`);
   });
 
   test('character with code \\uhhhh hexadecimal', async () => {
-    expect(await ƒ('[ F\\u266D ]')).toEqual(`[ [ f♭ ] ]`);
-    expect(await ƒ('F\\u266D:')).toEqual(`[ F♭: ]`);
-    expect(ƒ('F\\u266D')).rejects.toThrow(`Word is not defined: "f♭"`);
-    expect(await ƒ('F\\u266D: [ 1 2 + ] ; F\\u266D')).toEqual(`[ 3 ]`);
+    expect(await ƒ('[ \\u266D ]')).toEqual(`[ [ ♭ ] ]`);
+    expect(await ƒ('\\u266D:')).toEqual(`[ ♭: ]`);
+    expect(ƒ('\\u266D')).rejects.toThrow(`Word is not defined: "♭"`);
+    expect(await ƒ('\\u266D: [ 1 2 + ] ; \\u266D')).toEqual(`[ 3 ]`);
   });
 
   test('character with code \\u{h} hexadecimal', async () => {
-    expect(await ƒ('[ F\\u{266D} ]')).toEqual(`[ [ f♭ ] ]`);
-    expect(await ƒ('F\\u{266D}:')).toEqual(`[ F♭: ]`);
-    expect(ƒ('F\\u{266D}')).rejects.toThrow(`Word is not defined: "f♭"`);
-    expect(await ƒ('F\\u{266D}: [ 1 2 + ] ; F\\u266D')).toEqual(`[ 3 ]`);
+    expect(await ƒ('[ \\u{266D} ]')).toEqual(`[ [ ♭ ] ]`);
+    expect(await ƒ('\\u{266D}:')).toEqual(`[ ♭: ]`);
+    expect(ƒ('\\u{266D}')).rejects.toThrow(`Word is not defined: "♭"`);
+    expect(await ƒ('\\u{266D}: [ 1 2 + ] ; \\u266D')).toEqual(`[ 3 ]`);
   });
 
   test('character with code \\Uhhhhhhhh hexadecimal', async () => {
@@ -349,9 +349,9 @@ describe('unicode words', () => {
 
   // todo
   // test('character with given Unicode name', async () => {
-  //   expect(await ƒ('[ F\\u[flat] ]')).toEqual(`[ [ f♭ ] ]`);
-  //   expect(await ƒ('F\\u[flat]:')).toEqual(`[ F♭: ]`);
-  //   expect(ƒ('F\\u[flat]')).rejects.toThrow(`Word is not defined: "f♭"`);
-  //   expect(await ƒ('F\\u[flat]: [ 1 2 + ] ; F\\u[flat]')).toEqual(`[ 3 ]`);
+  //   expect(await ƒ('[ \\u[flat] ]')).toEqual(`[ [ ♭ ] ]`);
+  //   expect(await ƒ('\\u[flat]:')).toEqual(`[ ♭: ]`);
+  //   expect(ƒ('\\u[flat]')).rejects.toThrow(`Word is not defined: "♭"`);
+  //   expect(await ƒ('\\u[flat]: [ 1 2 + ] ; \\u[flat]')).toEqual(`[ 3 ]`);
   // });
 });
