@@ -32,8 +32,9 @@
   - [ ] Interactive errors
   - [x] Prompt to undo on error?
 - [ ] Better unicode (lugaru.com/man/Character.Constants.html)
-  - [ ] unescape without eval? (https://github.com/iamakulov/unescape-js#readme)
-  - [ ] `\u[flat]`? (https://github.com/wooorm/character-entities) (https://docs.julialang.org/en/v1/manual/unicode-input/)
+  - [x] unescape without eval? (https://github.com/iamakulov/unescape-js#readme)
+  - [ ] `\flat`? (https://docs.julialang.org/en/v1/manual/unicode-input/) (https://github.com/coq/coq/blob/master/ide/default_bindings_src.ml)
+  - [ ] `\u[flat]`? (https://github.com/wooorm/character-entities) 
   - [-] `&flat;`?
   - [x] `\u266D`  (same as `"\u266D" :`)
   - [ ] regex unicode property aliases?  (https://github.com/tc39/proposal-regexp-unicode-property-escapes)
