@@ -40,10 +40,10 @@
   - [ ] regex unicode property aliases?  (https://github.com/tc39/proposal-regexp-unicode-property-escapes)
 
 ## Bugs
-- [ ] `"123\"456"` parse eeror
+- [x] `"123\"456"` parse error
 - [ ] `'x' exit` should be type error?
 - [ ] `_ 3 =~`?
-- [ ] `print` gets swallowed by stack
+- [ ] `print` gets swallowed by stack printing
 
 ## Testing
 - [ ] test tokenizer/parser
