@@ -160,9 +160,6 @@ export class Vocabulary {
    * Inlines local and scoped defintions
    */
   inline(_action: Array<StackValue>) {
-    // TODO: Dynamo?
-    const symbolStack: GlobalSymbol[] = [];
-
     const _bind = (v: any) => {
       if (GlobalSymbol.is(v)) {
         return v;
@@ -174,27 +171,9 @@ export class Vocabulary {
           if (is.undefined(sym)) {
             throw new Error(`Word is not defined: "${v.value}"`);
           }
-          if (symbolStack.includes(sym)) return sym;
-          const value = this.globalMap.get(sym);
-          const type = typeof value;
-          if (type === 'undefined') {
-            if (!this.globalMap.has(sym)) {
-              throw new Error(`Word is not defined: "${v.value}"`);
-            }
-            return sym; // defered
-          }
-          if (type === 'function') return sym;
-          symbolStack.push(sym);
-          const r = _bind(value); // Should be a Sentence at this point
-          symbolStack.pop();
-          return r;
+          return sym;
         }
         return v;
-      }
-
-      if (v instanceof Sentence) {
-        const value = _bind(v.value);
-        return new ReturnValues(value);
       }
 
       if (Array.isArray(v)) {

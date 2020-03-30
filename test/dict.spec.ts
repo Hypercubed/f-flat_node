@@ -49,31 +49,6 @@ test('create keys', async () => {
   expect(await ƒ('"eval" :')).toEqual(`[ eval: ]`); // ??
 });
 
-describe('inline on def', () => {
-  test('should inline internal actions', async () => {
-    expect(await ƒ(`x: [ eval ] ; 'x' see`)).toEqual(`[ '[ eval ]' ]`);
-  });
-
-  test('should inline defined actions', async () => {
-    expect(await ƒ(`x: [ slip ] ; 'x' see`)).toEqual(`[ '[ << eval ]' ]`);
-  });
-
-  test('should not inline local qualified words', async () => {
-    expect(await ƒ(`x: [ .slip ] ; 'x' see`)).toEqual(`[ '[ .slip ]' ]`);
-  });
-
-  test('should not inline keys', async () => {
-    expect(await ƒ(`x: [ eval: ] ; 'x' see`)).toEqual(`[ '[ eval: ]' ]`);
-    expect(await ƒ(`x: [ slip: ] ; 'x' see`)).toEqual(`[ '[ slip: ]' ]`);
-  });
-
-  test('should inline deeply', async () => {
-    expect(await ƒ(`x: [ sip ] ; 'x' see`)).toEqual(
-      `[ '[ q< dup q> swap << eval ]' ]`
-    );
-  });
-});
-
 describe('defer', () => {
   test('can defer, but not use', async () => {
     expect(ƒ('x: defer x')).rejects.toThrow('Word is not defined: "x"');
@@ -118,20 +93,6 @@ describe('defer', () => {
   });
 });
 
-describe('binding', () => {
-  test('internal words are bound', async () => {
-    expect(await ƒ(`eval: [ 'junk' ] ; x: [ dip ] ; 'x' see`)).toEqual(
-      `[ '[ swap << eval ]' ]`
-    );
-  });
-
-  test('defined words are bound', async () => {
-    expect(await ƒ(`slip: [ 'junk' ] ; x: [ dip ] ; 'x' see`)).toEqual(
-      `[ '[ swap << eval ]' ]`
-    );
-  });
-});
-
 describe('undefined words', () => {
   test('defined words are bound', async () => {
     expect(ƒ(`x: [ junk ] ;`)).rejects.toThrow(
@@ -165,4 +126,9 @@ test('see', async () => {
   expect(await ƒ(`'swap' see`)).toEqual(`[ '[function swap]' ]`);
   // expect(await ƒ(`'math' see`)).toEqual(`[ '[function swap]' ]`);
   expect(ƒ(`'_top' see`)).rejects.toThrow(`'see' invalid key: "_top"`); // ???
+});
+
+test(`inlining doesn't change ln`, async () => {
+  expect(await ƒ(`x: [ [ 5 ! ] ln ] ; x`)).toEqual(`[ 2 ]`);
+  expect(await ƒ(`x: [ [ 5 ! ] [ * ] * ] ; x`)).toEqual(`[ [ 5 * ! * ] ]`);
 });

@@ -54,6 +54,9 @@ dip2: [ swap dipd ] ;         // [C*] [B*] [A*] -> a* [C*] [B*]
 
 bi: [ sipd eval ] ;           // c [B*] [A*] -> c b* c a*
 
+    [ 5 [ 2 = ] [ 5 = ] bi + true assert_equal ] 'bi' test
+    [ 2 [ 2 = ] [ 5 = ] bi + true assert_equal ] 'bi' test
+    [ 6 [ 2 = ] [ 5 = ] bi + false assert_equal ] 'bi' test
     [ 5 [ 2 * ] [ 2 + ] bi stack [ 10 7 ] assert_equal ] 'bi' test
 
 bi2: [ q< keep2 q> eval ] ;     // d c [B*] [A*] -> d c b* d c a*

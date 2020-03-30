@@ -64,9 +64,16 @@
 - [ ] circular imports?
 - [ ] test pprint?
 - [ ] test `read` and `resolve`
-- [ ] pick for module? `math [ '!' ] pluck use`
+- [?] pick for module? `math [ '!' ] pluck use`
 
 ## TODOs
+- [ ] Function defintion primitives?  (`;: [ [ inter ] dip bind define ] define`)
+  - [ ] `inter`, create an return an undefined global symbol
+      `x: inter` -> `x:` (symbol)
+  - [ ] `bind`, convert keys to global symbol
+      `[ x ] bind` -> `[ x ]` (symbols)
+  - [ ] `#`, convert a key or string to a symbol
+      `'x' #` -> 'x' (symbol.)
 - [ ] Bash-like brace expansion (https://github.com/micromatch/braces) `'{0..5}' :braces` -> `['1', '2', '3', '4', '5']`
 - [?] highlight as you type? (would need to parse as you type!)
 - [ ] recursive lambdas?
@@ -84,10 +91,10 @@
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [?] `@` from complex value?
 - [ ] pprint `Infinity`, `ComplexInfinity`, `NaN` etc.
-- [ ] Move vscode extension
+- [ ] Move vscode extension?
 - [ ] pattern + lambdas `[ 1 2 a: ] ~> [ .a .a * ]`
 - [ ] stack matcher `[ 1 2 3 [ _ 3 ] stack-case ]` -> `[ 1 2 3 true ]`
-- [ ] fried defintions `[ .x 2 ^ .y 2 ^ + .y abs - ] fry` -> `[[ x: y: ] => [ .x 2 ^ .y 2 ^ + .y abs - ]] lambda`
+- [?] fried defintions `[ .x 2 ^ .y 2 ^ + .y abs - ] fry` -> `[[ x: y: ] => [ .x 2 ^ .y 2 ^ + .y abs - ]] lambda`
 - [ ] ability to define words as immediate (without prefix)?
 - [?] ensure defining a module (`x: 'xx.ff' import ;`) doesn't create extra globals
 - [?] all pprint values should be copy-pasteable in literal?

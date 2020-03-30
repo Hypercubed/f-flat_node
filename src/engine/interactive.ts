@@ -68,17 +68,18 @@ export function newStack(rl?: readline.ReadLine): StackEnv {
     console.log(WELCOME);
   }
 
+  const child = newParent.createChild(undefined);
+  child.silent = !program.interactive;
+  child.idle.add(() => bar.terminate());
+
   if (rl) {
-    this.f.defineAction('prompt', () => {
+    child.defineAction('prompt', () => {
       return new Promise(resolve => {
         rl.question('', resolve);
       });
     });
   }
 
-  const child = newParent.createChild(undefined);
-  child.silent = !program.interactive;
-  child.idle.add(() => bar.terminate());
   return child;
 }
 
