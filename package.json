@@ -44,6 +44,7 @@
     "myna-parser": "^2.5.1",
     "normalize-url": "^5.0.0",
     "progress": "^2.0.3",
+    "short-uuid": "^3.1.1",
     "smykowski": "^1.3.4",
     "strip-ansi": "^6.0.0",
     "unescape-js": "^1.1.4",

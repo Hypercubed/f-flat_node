@@ -8,6 +8,7 @@ import * as process from 'process';
 import * as chalk from 'chalk';
 import * as fixedWidthString from 'fixed-width-string';
 import * as MuteStream from 'mute-stream';
+import * as short from 'short-uuid';
 
 import { createRootEnv } from '../stack';
 import { log, bar, ffPrettyPrint, type } from '../utils';
@@ -82,6 +83,19 @@ export function newStack(rl?: readline.ReadLine): StackEnv {
 
   return child;
 }
+
+const objectId = (function getUniqueObjectCounter() {
+  const objIdMap = new WeakMap();
+  function objectId(o: any) {
+    try {
+      if (!objIdMap.has(o)) objIdMap.set(o, short.generate());
+      return objIdMap.get(o);      
+    } catch(err) {
+      return null;
+    }
+  }
+  return objectId;
+})();
 
 export class CLI {
   private readonly readline: readline.ReadLine;
@@ -297,7 +311,8 @@ export class CLI {
           const n = fixedWidthString(this.f.stack.length - i, 4, {
             align: 'right'
           });
-          console.log(`${n}: ${ffPrettyPrint.color(v)} [${type(v)}]`);
+          const id = objectId(v);
+          console.log(`${n}: ${ffPrettyPrint.color(v)} [${type(v)}] ${id ? `(${id})` : ''}`);
         }
         this.prompt(false);
         return true;
