@@ -97,6 +97,10 @@ export const node = {
   },
 
   table(a: any) {
+    try {
+      stdout.clearLine();
+      stdout.cursorTo(0);
+    } catch (e) {}
     console.table(a);
     bar.interrupt('');
   },
@@ -220,13 +224,15 @@ export const node = {
 
   os: arch,
 
-  memory() {
+  mem() {
     return process.memoryUsage();
   },
 
   exec(x: string) {
-    stdout.clearLine();
-    stdout.cursorTo(0);
+    try {
+      stdout.clearLine();
+      stdout.cursorTo(0);
+    } catch (e) {}
     spawnSync(x, { shell: false, stdio: 'inherit' });
     bar.interrupt('');
   }

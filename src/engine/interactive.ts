@@ -171,7 +171,7 @@ export class CLI {
       this.prompt();
     });
 
-    process.stdin.on('keypress', (s, key) => {
+    process.stdin.on('keypress', (_s, key) => {
       if (key.ctrl) {
         switch (key.name) {
           case 'e':
