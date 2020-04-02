@@ -3,11 +3,9 @@
 import * as readline from 'readline';
 import * as program from 'commander';
 import * as gradient from 'gradient-string';
-// import * as memoize from 'memoizee';
 import * as process from 'process';
 import * as chalk from 'chalk';
 import * as fixedWidthString from 'fixed-width-string';
-import * as MuteStream from 'mute-stream';
 import * as short from 'short-uuid';
 
 import { createRootEnv } from '../stack';
@@ -73,14 +71,6 @@ export function newStack(rl?: readline.ReadLine): StackEnv {
   child.silent = !program.interactive;
   child.idle.add(() => bar.terminate());
 
-  if (rl) {
-    child.defineAction('prompt', () => {
-      return new Promise(resolve => {
-        rl.question('', resolve);
-      });
-    });
-  }
-
   return child;
 }
 
@@ -112,19 +102,14 @@ export class CLI {
   private bindings = [];
   private tracing = false;
   private started = false;
-  private mutableStdin: MuteStream;
-  private mutableStdout: MuteStream;
 
   constructor() {
-    this.mutableStdin = new MuteStream();
-    this.mutableStdout = new MuteStream();
-
     const terminal = !!process.stdin.setRawMode;
 
     this.readline = readline.createInterface({
       prompt: '',
-      input: this.mutableStdin,
-      output: this.mutableStdout,
+      input: process.stdin,
+      output: process.stdout,
       terminal,
       completer: this.completer.bind(this)
     });
@@ -136,13 +121,17 @@ export class CLI {
     }
     this.f = f || newStack(this.readline);
 
+    this.f.defineAction('prompt', () => {
+      return new Promise(resolve => {
+        this.readline.question('', resolve);
+      });
+    });
+
     if (process.stdin.setRawMode) {
       readline.emitKeypressEvents(process.stdin);
       process.stdin.setRawMode(true);
     }
     process.stdin.resume();
-    process.stdin.pipe(this.mutableStdin);
-    this.mutableStdout.pipe(process.stdout);
 
     this.prompt();
 
@@ -183,7 +172,6 @@ export class CLI {
     });
 
     process.stdin.on('keypress', (s, key) => {
-      // console.log({ s, key });
       if (key.ctrl) {
         switch (key.name) {
           case 'e':
@@ -199,16 +187,11 @@ export class CLI {
   }
 
   suspend() {
-    this.mutableStdin.mute();
-    this.mutableStdout.mute();
-    process.stdin.unpipe(this.mutableStdin);
+    this.readline.pause();
   }
 
   resume() {
-    this.mutableStdin.unmute();
-    this.mutableStdout.unmute();
-
-    process.stdin.pipe(this.mutableStdin);
+    this.readline.resume();
     process.stdout.write('\r\n');
   }
 
@@ -276,6 +259,11 @@ export class CLI {
         this.autoundo = undefined;
         this.undoStack = [];
         this.f = newStack(this.readline);
+        this.f.defineAction('prompt', () => {
+          return new Promise(resolve => {
+            this.readline.question('', resolve);
+          });
+        });
         this.prompt();
         return true;
       case 'help':

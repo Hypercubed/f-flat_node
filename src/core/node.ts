@@ -5,6 +5,7 @@ import { dirname, join } from 'path';
 import * as fetch from 'isomorphic-fetch';
 import { URL } from 'url';
 import { signature } from '@hypercubed/dynamo';
+import { execSync, spawnSync } from 'child_process';
 
 import { bar } from '../utils';
 import { dynamo } from '../types';
@@ -221,5 +222,12 @@ export const node = {
 
   memory() {
     return process.memoryUsage();
+  },
+
+  exec(x: string) {
+    stdout.clearLine();
+    stdout.cursorTo(0);
+    spawnSync(x, { shell: false, stdio: 'inherit' });
+    bar.interrupt('');
   }
 };
