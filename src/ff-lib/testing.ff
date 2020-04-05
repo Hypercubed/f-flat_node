@@ -16,7 +16,7 @@ assert: [
   choose eval
 ] ;
 
-assert_false: [
+assert-false: [
   dup false =
   [ drop ]
   [
@@ -26,7 +26,7 @@ assert_false: [
   choose eval
 ] ;
 
-assert_equal: [
+assert-equal: [
   dup2 =
   [ drop drop ]
   [
@@ -36,7 +36,7 @@ assert_equal: [
   choose eval
 ] ;
 
-assert_zero: [
+assert-zero: [
   dup 5e-20 <=
   [ drop ]
   [
@@ -46,7 +46,7 @@ assert_zero: [
   choose eval
 ] ;
 
-assert_length: [
+assert-length: [
   dup2 [ ln ] dip =
   [ drop drop ]
   [
@@ -72,7 +72,7 @@ test: [
 ] ;
 
 // [ false assert ] 'testing assert' test
-// [ 1 2 assert_equal ] 'assert_equal' test
-// [ 1 assert_zero ] 'assert_zero' test
-// ['abc' 4 assert_length ] 'assert_zero' test
+// [ 1 2 assert-equal ] 'assert-equal' test
+// [ 1 assert-zero ] 'assert-zero' test
+// ['abc' 4 assert-length ] 'assert-zero' test
 

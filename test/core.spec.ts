@@ -129,14 +129,22 @@ test('indexof', async () => {
 });
 
 test('zip', async () => {
-  expect(await ƒ('[ 1 2 3 ] [ 4 5 6 ] zip')).toEqual(`[ [ 1 4 2 5 3 6 ] ]`);
-});
-
-test('zipinto', async () => {
-  expect(await ƒ('[ 1 2 3 ] [ 4 5 6 ] [ 7 8 9 ] zipinto')).toEqual(
-    `[ [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] ]`
+  expect(await ƒ('[ 1 2 3 ] [ 4 5 6 ] zip')).toEqual(
+    `[ [ [ 1 4 ] [ 2 5 ] [ 3 6 ] ] ]`
+  );
+  expect(await ƒ(`[ 1 ] [ 'a' 'b' ] zip`)).toEqual(
+    `[ [ [ 1 'a' ] ] ]`
   );
 });
+
+// test('zipinto', async () => {
+//   expect(await ƒ('[ 1 2 3 ] [ 4 5 6 ] [ 7 8 9 ] zipinto')).toEqual(
+//     `[ [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] ]`
+//   );
+//   expect(await ƒ('[ 1 ] [ 4 5 6 ] [ 7 8 9 ] zipinto')).toEqual(
+//     `[ [ 1 4 7 8 9 ] ]`
+//   );
+// });
 
 // template
 // sleep

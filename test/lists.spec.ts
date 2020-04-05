@@ -71,7 +71,7 @@ test('should eval lists', async () => {
   expect(await ƒ('(1 2) eval')).toEqual(`[ 1 2 ]`);
 });
 
-test('should zip lists', async () => {
+test('should "zip" lists', async () => {
   expect(await ƒ('( 1 2 3 ) ( 4 ) *')).toEqual(`[ [ 1 4 2 4 3 4 ] ]`);
 });
 

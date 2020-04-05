@@ -17,6 +17,14 @@
   - [ ] Online UI
 
 ## TODO Now
+- [ ] `switch, case` vs `case, ->`, `case, when`?
+- [ ] reintroduce
+  - [?] `bind`
+  - [ ] `inline`
+  - [?] `defn`? `;` -> `[ dup defer ] dip bind defn`
+- [ ] Standard words (haskell-ish):
+  - [?] `fst`, `snd`, `head`, `tail`, `take`, `drop`
+  - [x] `zip`, `zipwith`, `zipinto`
 - [x] Move trace to repl?
 - [ ] contracts/guards
   - [?] guard

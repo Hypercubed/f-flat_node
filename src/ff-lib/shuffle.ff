@@ -10,9 +10,9 @@ slip: [ << eval ] ;         // [B*] a -> b* a
 run: [ dup slip ] ;         // [A*] -> a* [a*]
 dip: [ swap slip ] ;        // b [A*] -> a* b
 
-    [ [ 'b' ] 'A' slip stack [ 'b' 'A' ] assert_equal ] 'slip' test
-    [ ['a'] run stack [ 'a' ['a'] ] assert_equal ] 'run' test
-    [ 'B' ['a'] dip stack [ 'a' 'B' ] assert_equal ] 'dip' test
+    [ [ 'b' ] 'A' slip stack [ 'b' 'A' ] assert-equal ] 'slip' test
+    [ ['a'] run stack [ 'a' ['a'] ] assert-equal ] 'run' test
+    [ 'B' ['a'] dip stack [ 'a' 'B' ] assert-equal ] 'dip' test
 
 // diped
 dupd: [ q< dup q> ] ;      // b a -> b b a
@@ -27,10 +27,10 @@ dup2: [ over over ] ;      // b a -> b a b a
 sap: [ dip eval ] ;        // [B*] [A*] -> a* b*
 tuck: [ swap over ] ;      // b a -> a b a
 
-  [ [ 'b' ] [ 'a' ] sap stack [ 'a' 'b' ] assert_equal ] 'sap' test
-  [ [ dup 1 - ] (5) sap stack [ 5 4 ] assert_equal ] 'sap' test
-  [ +:(4, 5) sap 9 assert_equal ] 'sap' test
-  [ +:(*:(5,6) sap *:(5,2) sap) sap 40 assert_equal ] 'sap' test
+  [ [ 'b' ] [ 'a' ] sap stack [ 'a' 'b' ] assert-equal ] 'sap' test
+  [ [ dup 1 - ] (5) sap stack [ 5 4 ] assert-equal ] 'sap' test
+  [ +:(4, 5) sap 9 assert-equal ] 'sap' test
+  [ +:(*:(5,6) sap *:(5,2) sap) sap 40 assert-equal ] 'sap' test
 
 drop2: [ drop drop ] ;        // b a -> (2drop in forth)
 
@@ -54,10 +54,10 @@ dip2: [ swap dipd ] ;         // [C*] [B*] [A*] -> a* [C*] [B*]
 
 bi: [ sipd eval ] ;           // c [B*] [A*] -> c b* c a*
 
-    [ 5 [ 2 = ] [ 5 = ] bi + true assert_equal ] 'bi' test
-    [ 2 [ 2 = ] [ 5 = ] bi + true assert_equal ] 'bi' test
-    [ 6 [ 2 = ] [ 5 = ] bi + false assert_equal ] 'bi' test
-    [ 5 [ 2 * ] [ 2 + ] bi stack [ 10 7 ] assert_equal ] 'bi' test
+    [ 5 [ 2 = ] [ 5 = ] bi + true assert-equal ] 'bi' test
+    [ 2 [ 2 = ] [ 5 = ] bi + true assert-equal ] 'bi' test
+    [ 6 [ 2 = ] [ 5 = ] bi + false assert-equal ] 'bi' test
+    [ 5 [ 2 * ] [ 2 + ] bi stack [ 10 7 ] assert-equal ] 'bi' test
 
 bi2: [ q< keep2 q> eval ] ;     // d c [B*] [A*] -> d c b* d c a*
 bi*: [ dipd eval ] ;            // d c [B*] [A*] -> d b* c a*

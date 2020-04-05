@@ -11,8 +11,8 @@ _f: [
 ] ;
 
     [ 
-      1 2 3 _f 3 assert_equal
-      5 8 13 _f 81 assert_equal
+      1 2 3 _f 3 assert-equal
+      5 8 13 _f 81 assert-equal
     ] 'the dark side' test
 
 fry: [ integers [ string '$' swap + ] map ] ;
@@ -23,6 +23,6 @@ _f2: [
 ] ;
 
     [ 
-      1 2 3 _f2 3 assert_equal
-      5 8 13 _f2 81 assert_equal
+      1 2 3 _f2 3 assert-equal
+      5 8 13 _f2 81 assert-equal
     ] 'the dark side (fried)' test

@@ -79,8 +79,8 @@ const objectId = (function getUniqueObjectCounter() {
   function objectId(o: any) {
     try {
       if (!objIdMap.has(o)) objIdMap.set(o, short.generate());
-      return objIdMap.get(o);      
-    } catch(err) {
+      return objIdMap.get(o);
+    } catch (err) {
       return null;
     }
   }

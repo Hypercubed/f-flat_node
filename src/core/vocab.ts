@@ -74,6 +74,22 @@ export const dict = {
   },
 
   /**
+   * ## `bind`
+   *
+   * recursivly convers words to global keys
+   *
+   * `[A] -> [A]`
+   *
+   * ```
+   * f♭> [ dup * ] bind
+   * [ dup * ]
+   * ```
+   */
+  bind(this: StackEnv, rhs: StackValue[]) {
+    return this.dict.bind(rhs);
+  },
+
+  /**
    * ## `;` (def)
    *
    * stores a definition in the current dictionary
@@ -87,7 +103,7 @@ export const dict = {
    */
   ';'(this: StackEnv, lhs: string | Key, rhs: StackValue[]) {
     this.dict.set(String(lhs), undefined);
-    const action = createAction(this.dict.inline(rhs));
+    const action = createAction(this.dict.bind(rhs));
     this.dict.set(String(lhs), action);
   },
 
@@ -173,6 +189,10 @@ export const dict = {
    */
   show(this: StackEnv, a: string) {
     const r = this.dict.get(String(a));
+    try {
+      process.stdout.clearLine(-1);
+      process.stdout.cursorTo(0);
+    } catch (e) {}
     return console.log(ffPrettyPrint.color(r));
   },
 

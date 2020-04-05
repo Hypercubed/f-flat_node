@@ -34,7 +34,7 @@ switch: [
       [ dup 1 = [drop 'one apple']]
       [ true    [string ' apples' +]]
     ] switch
-    'no apples' assert_equal
+    'no apples' assert-equal
   ] 'switch' test
 
   [
@@ -44,7 +44,7 @@ switch: [
       [ [1 = ] case [drop 'one apple']]
       [ true        [string ' apples' +]]
     ] switch
-    'one apple' assert_equal
+    'one apple' assert-equal
   ] 'switch case' test
 
   [
@@ -54,5 +54,5 @@ switch: [
       [ 1 p-case     [drop 'one apple']]
       [ _ p-case     [string ' apples' +]]
     ] switch
-    '3 apples' assert_equal
+    '3 apples' assert-equal
   ] 'switch p-case' test

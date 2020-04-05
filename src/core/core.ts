@@ -225,7 +225,7 @@ class Zip {
     const l = a.length < b.length ? a.length : b.length;
     const r: StackValue[][] = [];
     for (let i = 0; i < l; i++) {
-      r.push(a[i], b[i]);
+      r.push([a[i], b[i]]);
     }
     return r;
   }
@@ -510,7 +510,7 @@ export const core = {
    *
    * ```
    * f♭> [ 1 2 3 ] [ 4 5 6 ] zip
-   * [ 1 4 2 5 3 6 ]
+   * [ [ 1 4 ] [ 2 5 ] [ 3 6 ] ]
    * ```
    */
   zip: dynamo.function(Zip),
@@ -525,7 +525,7 @@ export const core = {
    * [ [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] ]
    * ```
    */
-  zipinto: dynamo.function(ZipInto),
+  // zipinto: dynamo.function(ZipInto), // aka `[] zipwith3`
 
   /**
    * ## `(` (immediate quote)
@@ -570,10 +570,10 @@ export const core = {
     return dequoteStack(this, s);
   },
 
-  '|': function(this: StackEnv, s: StackValue) {
-    const st = dequoteStack(this, s);
-    return new ReturnValues([st, Symbol.for('(')]);
-  },
+  // '|': function(this: StackEnv, s: StackValue) {
+  //   const st = dequoteStack(this, s);
+  //   return new ReturnValues([st, Symbol.for('(')]);
+  // },
 
   /**
    * ## `{` (immediate object quote)

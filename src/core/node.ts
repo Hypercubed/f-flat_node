@@ -5,15 +5,12 @@ import { dirname, join } from 'path';
 import * as fetch from 'isomorphic-fetch';
 import { URL } from 'url';
 import { signature } from '@hypercubed/dynamo';
-import { execSync, spawnSync } from 'child_process';
+import { spawnSync } from 'child_process';
 
 import { bar } from '../utils';
 import { dynamo } from '../types';
 
 import normalizeUrl = require('normalize-url');
-
-// const stdin = process.stdin;
-const stdout = <any>process.stdout;
 
 function resolve(input: string, base = getURLStringForCwd()) {
   return new URL(input, base);
@@ -90,16 +87,16 @@ export const node = {
    */
   print(a: any) {
     try {
-      stdout.clearLine();
-      stdout.cursorTo(0);
+      process.stdout.clearLine(-1);
+      process.stdout.cursorTo(0);
     } catch (e) {}
-    stdout.write(String(a));
+    process.stdout.write(String(a));
   },
 
   table(a: any) {
     try {
-      stdout.clearLine();
-      stdout.cursorTo(0);
+      process.stdout.clearLine(-1);
+      process.stdout.cursorTo(0);
     } catch (e) {}
     console.table(a);
     bar.interrupt('');
@@ -230,8 +227,8 @@ export const node = {
 
   exec(x: string) {
     try {
-      stdout.clearLine();
-      stdout.cursorTo(0);
+      process.stdout.clearLine(-1);
+      process.stdout.cursorTo(0);
     } catch (e) {}
     spawnSync(x, { shell: false, stdio: 'inherit' });
     bar.interrupt('');

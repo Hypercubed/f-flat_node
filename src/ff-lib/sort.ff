@@ -18,9 +18,9 @@ qsort: [
 ] ;
 
     [
-      [ 3 2 1 ] qsort [ 1 2 3 ] assert_equal
-      [ -3 2 1 ] qsort [ -3 1 2 ] assert_equal
-      [ -3 2 -1 ] qsort [ -3 -1 2 ] assert_equal
-      [ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] qsort [ 1 2 2 3 3 4 4 5 6 7 8 9 10 ] assert_equal
-      "the quick brown fox jumps over the lazy dog" qsort '        abcdeeefghhijklmnoooopqrrsttuuvwxyz' assert_equal
+      [ 3 2 1 ] qsort [ 1 2 3 ] assert-equal
+      [ -3 2 1 ] qsort [ -3 1 2 ] assert-equal
+      [ -3 2 -1 ] qsort [ -3 -1 2 ] assert-equal
+      [ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] qsort [ 1 2 2 3 3 4 4 5 6 7 8 9 10 ] assert-equal
+      "the quick brown fox jumps over the lazy dog" qsort '        abcdeeefghhijklmnoooopqrrsttuuvwxyz' assert-equal
     ] 'qsort' test

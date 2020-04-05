@@ -10,7 +10,8 @@
   * `dup`, `dip`, `drop`
 * Types should be nouns
   * `string`, `number`, `complex`
-* By convention words begging with underscore `_` are considered private.
+* Words begging with underscore `_` are private.
+* Prefer kabab-case to snake_case.
 
 ## Inlining Defintions
 

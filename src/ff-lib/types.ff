@@ -27,7 +27,7 @@ seq?: [
 
     [ [ 1 ] seq? assert ] 'seq?' test
     [ 'abc' seq? assert ] 'seq?' test
-    [ 3 seq? assert_false ] 'seq?' test
+    [ 3 seq? assert-false ] 'seq?' test
 
 hex: [ 16 base ] ;
 oct: [ 8 base ] ;

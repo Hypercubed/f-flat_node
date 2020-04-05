@@ -159,7 +159,7 @@ export class Vocabulary {
   /**
    * Inlines local and scoped defintions
    */
-  inline(_action: Array<StackValue>) {
+  bind(_action: Array<StackValue>) {
     const _bind = (v: any) => {
       if (GlobalSymbol.is(v)) {
         return v;

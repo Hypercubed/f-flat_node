@@ -31,7 +31,7 @@ test('should eval quotes', async () => {
   expect(await ƒ('[1 2 +] eval')).toEqual(`[ 3 ]`);
 });
 
-test('should zip quotes', async () => {
+test('should "zip" quotes', async () => {
   expect(await ƒ('[ 1 2 + ] [ 4 ] *')).toEqual(`[ [ 1 4 2 4 + 4 ] ]`);
 });
 

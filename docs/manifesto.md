@@ -6,7 +6,7 @@ The core target to F♭ is an interactive programming language.  That is F♭ is
 
 2. No surprises
 
-3. Flat concatenative work-flow like language
+3. Flat concatenative workflow like language
 
 4. Function composition instead of function application
 

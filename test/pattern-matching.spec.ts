@@ -48,6 +48,7 @@ test('regular expressions and numbers', async () => {
 });
 
 test('match arrays', async () => {
+  expect(await ƒ('[] [] =~')).toEqual(`[ true ]`);
   expect(await ƒ('[1 2] [1 3] =~')).toEqual(`[ false ]`);
   expect(await ƒ('[1 2] [1 2] =~')).toEqual(`[ true ]`);
   expect(await ƒ('[ "dead" 1 ] [ "dead" 1 ] =~')).toEqual(`[ true ]`);
