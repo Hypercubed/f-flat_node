@@ -2,6 +2,9 @@
  * # Bootstrap F-Flat
  */
 
+;: [ q< dup defer q> bind def ] bind def
+;;: [ q< dup defer q> inline def ] bind def
+
 'loader.ff'
   resolve
   read eval

@@ -83,14 +83,6 @@ quad: [
     [ 5 6 1 quad -0.2 assert-equal -1 assert-equal ] 'quadradic equation lambda' test
     [ 5 2 1 quad -0.2 0.4 i * + assert-equal -0.2 -0.4 i * + assert-equal ] 'quadradic equation lambda' test
 
-// s-test: [
-//   `
-//   Multi line string
-//   Hello
-//   World
-//   `
-// ] ;
-
 phi: ( 1 5 sqrt + 2 / ) ;  // the golden ratio
 psi: ( phi inv ~ ) ;
 
@@ -110,4 +102,12 @@ fib: [
 ls: [
   words [ show ] map 
 ] ;
+
+// guards?
+_stackn: [ [ ] swap [ >> ] swap times dup slip ] ;
+==>: [ dup ln [ _stackn ] >> dip [ eval ] zipwith true swap [ * ] each ] ;  // guard
+
+    [ 1 "2" 0 [ number? string? zero? ] ==> assert ] '==>' test
+    [ 1 0 [ number? zero? ] ==> [ 'undef' ] [ / ] branch 'undef' assert-equal ] '==>' test
+    [ 1 2 [ number? zero? ] ==> [ 'undef' ] [ / ] branch 0.5 assert-equal ] '==>' test
 

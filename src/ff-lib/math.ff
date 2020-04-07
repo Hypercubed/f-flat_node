@@ -6,28 +6,28 @@
 'testing.ff' require
 
 // incrementors
---: [ 1 - ] ;
-++: [ 1 + ] ;
-pred: [ dup -- ] ;
-succ: [ dup ++ ] ;
+--: [ 1 - ] ;;
+++: [ 1 + ] ;;
+pred: [ dup -- ] ;;
+succ: [ dup ++ ] ;;
 
 // lazy constants to match precision
-pi: [ 1 atan 4 * ] ;
-e: [ 1 exp ] ;              // Euler's number
-ln2: [ 2 ln ] ;             // natural logarithm of 2
-ln10: [ 10 ln ] ;           // natural logarithm of 10
-log2e: [ 1 ln2 / ] ;        // base 2 logarithm of E
-log10e: [ 1 ln10 / ] ;      // base 10 logarithm of E
-tau: [ pi 2 * ] ;
-phi: [ 1 5 sqrt + 2 / ] ;   // golden ratio
-sqrt2: [ 2 sqrt ] ;         // square root of 2
-sqrt1_2: [ 1 2 / sqrt ] ;   // square root of 1/2
-radians: [ pi 180 / ] ;
+pi: [ 1 atan 4 * ] ;;
+e: [ 1 exp ] ;;              // Euler's number
+ln2: [ 2 ln ] ;;             // natural logarithm of 2
+ln10: [ 10 ln ] ;;           // natural logarithm of 10
+log2e: [ 1 ln2 / ] ;;        // base 2 logarithm of E
+log10e: [ 1 ln10 / ] ;;      // base 10 logarithm of E
+tau: [ pi 2 * ] ;;
+phi: [ 1 5 sqrt + 2 / ] ;;   // golden ratio
+sqrt2: [ 2 sqrt ] ;;         // square root of 2
+sqrt1_2: [ 1 2 / sqrt ] ;;   // square root of 1/2
+radians: [ pi 180 / ] ;;
 
   [ pi 2 @ 4 assert-equal ] '4th digit of pi' test
 
 // inverse trig
-acos: [ asin 2 * pi swap - 1 2 / * ] ;
+acos: [ asin 2 * pi swap - 1 2 / * ] ;;
 
     [ 0 acos pi 2 / assert-equal ] 'calculates acos(0) = pi/2' test
     [ 1 acos assert-zero ] 'calculates acos(1) = 0' test
@@ -36,53 +36,53 @@ acos: [ asin 2 * pi swap - 1 2 / * ] ;
     // [ -1 2 / acos pi 2 * 3 / assert-equal ] 'calculates acos(-1/2) = 2pi/3' test
 
 // Log errfn
-erfc: [ 1 swap erf - ] ;
+erfc: [ 1 swap erf - ] ;;
 
     [ 0 erfc 1 assert-equal ] 'erfc(0)' test
     [ infinity erfc 0 assert-equal ] 'erfc(infinity)' test
     [ -infinity erfc 2 assert-equal ] 'erfc(-infinity)' test
 
-log: [ ln ln10 / ] ;
+log: [ ln ln10 / ] ;;
 
     [ 1e10 log 10 assert-equal ] 'calculates log(10^10) = 10' test
     [ 1 log 0 assert-equal ] 'calculates log(1) = 1' test
     [ 10 log 1 assert-equal ] 'calculates log(1) = 1' test
     [ 100 log 2 assert-equal ] 'calculates log(1) = 1' test
 
-logn: [ [ ln ] dip ln / ] ;
+logn: [ [ ln ] dip ln / ] ;;
 
     [ 1 10 logn 0 assert-equal ] 'calculates logn(1, 10) = 1' test
     [ 10 10 logn 1 assert-equal ] 'calculates logn(1, 10) = 1' test
     [ 100 10 logn 2 assert-equal ] 'calculates logn(1, 10) = 1' test
 
 // Misc
-neg: [ 0 swap - ] ;
+neg: [ 0 swap - ] ;;
 
     [ 1 neg -1 assert-equal ] 'neg' test
     [ infinity neg -infinity assert-equal ] 'neg infinity' test
 
-+-: [ [ + ] [ - ] bi2 ] ;
--+: [ [ - ] [ + ] bi2 ] ;
-inv: [ 1 swap / ] ;
++-: [ [ + ] [ - ] bi2 ] ;;
+-+: [ [ - ] [ + ] bi2 ] ;;
+inv: [ 1 swap / ] ;;
 
     [ 1 inv 1 assert-equal ] 'inv 1' test
     [ 2 inv 0.5 assert-equal ] 'inv 2 ' test
     [ 0.25 inv 4 assert-equal ] 'inv 0.25' test
 
-sq: [ dup * ] ;
+sq: [ dup * ] ;;
 
 
 // angles
-toradians: [ radians * ] ;
-todegrees: [ radians / ] ;
+toradians: [ radians * ] ;;
+todegrees: [ radians / ] ;;
 
 // hyperbolic trig
-cosh: [ exp dup inv + 2 / ] ;
-sinh: [ exp dup inv - 2 / ] ;
-tanh: [ 2 * exp pred swap ++ / ] ;
+cosh: [ exp dup inv + 2 / ] ;;
+sinh: [ exp dup inv - 2 / ] ;;
+tanh: [ 2 * exp pred swap ++ / ] ;;
 
 // inverse hyperbolic trig
-asinh: [ complex dup dup * ++ sqrt + ln ] ;
+asinh: [ complex dup dup * ++ sqrt + ln ] ;;
 
   [ 0 asinh 0 assert-equal ] 'asinh(0) = 0' test
   [ 1 asinh 2 sqrt 1 + ln assert-equal ] 'asinh(1)' test
@@ -90,7 +90,7 @@ asinh: [ complex dup dup * ++ sqrt + ln ] ;
   [ 1 2 / asinh 5 sqrt 1 + 2 / ln assert-equal ] 'asinh(1/2)' test
   // [ -1 2 / asinh 5 sqrt 1 + 2 / ln -1 * assert-equal ] 'asinh(-1/2)' test
 
-acosh: [ complex dup -- sqrt over 1 + sqrt * + ln ] ;
+acosh: [ complex dup -- sqrt over 1 + sqrt * + ln ] ;;
 
   // [ 0 acosh i pi * 2 / assert-equal ] 'acosh(0)' test
   [ 1 acosh 0 assert-equal ] 'acosh(1)' test
@@ -98,52 +98,52 @@ acosh: [ complex dup -- sqrt over 1 + sqrt * + ln ] ;
   // [ 1 2 / acosh i pi * 3 / assert-equal ] 'acosh(1/2)' test
   // [ -1 2 / acosh i pi * 3 / 2 * assert-equal ] 'acosh(-1/2)' test
 
-atanh: [ i * atan i / ] ;
+atanh: [ i * atan i / ] ;;
 
   [ 0 atanh assert-zero ] 'atanh(0)' test
   [ 1 atanh infinity assert-equal ] 'atanh(0)' test
   [ -1 atanh -infinity assert-equal ] 'atanh(0)' test
 
-max: [ dup2 q< q< > q> q> choose ] ; // aka greater-of
+max: [ dup2 q< q< > q> q> choose ] ;; // aka greater-of
 
     [ 3 2 max 3 assert-equal ] 'calculates max(3, 2) = 3' test
     [ 4 7 max 7 assert-equal ] 'calculates max(4, 7) = 7' test
 
-min: [ dup2 q< q< < q> q> choose ] ; // lesser-of
+min: [ dup2 q< q< < q> q> choose ] ;; // lesser-of
 
     [ 3 2 min 2 assert-equal ] 'calculates min(3, 2) = 2' test
     [ 4 7 min 4 assert-equal ] 'calculates min(4, 7) = 4' test
 
-maximum: [ [ max ] fold ] ;
-minimum: [ [ min ] fold ] ;
+maximum: [ [ max ] fold ] ;;
+minimum: [ [ min ] fold ] ;;
 
 // inquisitive
-integer?: [ dup [ floor = ] [ im 0 = ] bi * ] ;
-positive?: [ 0 > ] ;
-negitive?: [ 0 < ] ;
-zero?: [ 0 = ] ;
-divisor?: [ % zero? ] ;
-even?: [ 2 divisor? ] ;
-odd?: [ even? ~ ] ;
-complex?: [ im zero? ~ ] ;
+integer?: [ dup [ floor = ] [ im 0 = ] bi * ] ;;
+positive?: [ 0 > ] ;;
+negitive?: [ 0 < ] ;;
+zero?: [ 0 = ] ;;
+divisor?: [ % zero? ] ;;
+even?: [ 2 divisor? ] ;;
+odd?: [ even? ~ ] ;;
+complex?: [ im zero? ~ ] ;;
 
 // sequences
-find-next: [ [ ++ dup ] swap + [ ~ ] + loop ] ;
-next-odd: [ [ odd? ] find-next ] ;
-next-even: [ [ even? ] find-next ] ;
-countup: [ over - [ succ ] swap * eval ] ;
-countdown: [ dupd - [ pred ] swap * eval ] ;
-range*: [ over over < [ countup ] [ countdown ] branch ] ;
-range: [ [ range* ] >> appl ] ;
-count: [ 1 swap range* ] ;
+find-next: [ [ ++ dup ] swap + [ ~ ] + loop ] ;;
+next-odd: [ [ odd? ] find-next ] ;;
+next-even: [ [ even? ] find-next ] ;;
+countup: [ over - [ succ ] swap * eval ] ;;
+countdown: [ dupd - [ pred ] swap * eval ] ;;
+range*: [ over over < [ countup ] [ countdown ] branch ] ;;
+range: [ [ range* ] >> appl ] ;;
+count: [ 1 swap range* ] ;;
 
 // primes
-simple?: [ [ even? ] [ 3 divisor? ] [ 5 divisor? ] tri + + ] ;
-_prime?*: [ 2 [ dup2 2 ^ > [ dup2 % 0 > ] dip swap * ] [ ++ ] while 2 ^ < ] ;
-prime?: [ dup 7 < [ [ 2 = ] [ 3 = ] [ 5 = ] tri + + ] [ dup simple? [ drop false ] [ _prime?* ] branch ] branch ] ;
-mersenne?: [ 2 swap ^ 1 - prime? ] ;
-next-prime: [ dup 2 < [ drop 2 ] [ next-odd [ dup prime? ] [ 2 + ] until ] branch ] ;
-nth-prime: [ [ 0 [ next-prime ] ] dip times ] ;
+simple?: [ [ even? ] [ 3 divisor? ] [ 5 divisor? ] tri + + ] ;;
+_prime?*: [ 2 [ dup2 2 ^ > [ dup2 % 0 > ] dip swap * ] [ ++ ] while 2 ^ < ] ;;
+prime?: [ dup 7 < [ [ 2 = ] [ 3 = ] [ 5 = ] tri + + ] [ dup simple? [ drop false ] [ _prime?* ] branch ] branch ] ;;
+mersenne?: [ 2 swap ^ 1 - prime? ] ;;
+next-prime: [ dup 2 < [ drop 2 ] [ next-odd [ dup prime? ] [ 2 + ] until ] branch ] ;;
+nth-prime: [ [ 0 [ next-prime ] ] dip times ] ;;
 
     [ 1 prime? assert-false ] 'prime(1) = false' test
     [ 2 prime? assert ] 'prime(2) = true' test
@@ -152,13 +152,13 @@ nth-prime: [ [ 0 [ next-prime ] ] dip times ] ;
     [ 8 prime? assert-false ] 'prime(8) = false' test
 
 // Kunth
-^^: [ -- dup [ [ dup ] swap times [ ^ ] ] dip times ] ;
-^^^: [ -- dup [ [ dup ] swap times [ ^^ ] ] dip times ] ;
+^^: [ -- dup [ [ dup ] swap times [ ^ ] ] dip times ] ;;
+^^^: [ -- dup [ [ dup ] swap times [ ^^ ] ] dip times ] ;;
 
     [ 3 2 ^^^ 7625597484987 assert-equal ] 'Kunth up-arrow notation' test
 
-pow: [ -- dup [ [ dup ] swap times [ * ] ] dip times ] ;
-mul: [ -- dup [ [ dup ] swap times [ + ] ] dip times ] ;
+pow: [ -- dup [ [ dup ] swap times [ * ] ] dip times ] ;;
+mul: [ -- dup [ [ dup ] swap times [ + ] ] dip times ] ;;
 
 // Factorials
 _fact-go: [
@@ -166,58 +166,58 @@ _fact-go: [
     [ drop ]
     [ pred [ * ] dip _fact-go ]
   branch
-] ;
+] ;;
 
-_approx-fact: [ ++ gamma ] ;
-_recur-fact: [ 1 swap _fact-go ] ;
-!: [ dup integer? [_recur-fact] [_approx-fact] branch ] ;
+_approx-fact: [ ++ gamma ] ;;
+_recur-fact: [ 1 swap _fact-go ] ;;
+!: [ dup integer? [_recur-fact] [_approx-fact] branch ] ;;
 
     [ 5 ! 120 assert-equal ] 'calculates 5 !' test
     [ 20 ! 2432902008176640000 assert-equal ] 'calculates 20 !' test
     [ 100 ! 9.3326215443944152704e157 assert-equal ] 'calculates 100 !' test
 
 // Prob
-npr: [ [ [ ! ] keep ] dip - ! / ] ;
-ncr: [ [ npr ] keep ! / round ] ;
+npr: [ [ [ ! ] keep ] dip - ! / ] ;;
+ncr: [ [ npr ] keep ! / round ] ;;
 
 // reduce
-sum: [ [ + ] fold ] ;
+sum: [ [ + ] fold ] ;;
 
     [ [ 1 2 3 ] sum 6 assert-equal ] 'sum' test
     [ [ 'a' 'b' 'c' ] sum 'abc' assert-equal ] 'alpha sum' test
 
-product: [ [ * ] fold ] ;
+product: [ [ * ] fold ] ;;
 
     [ [ 1 2 3 ] product 6 assert-equal ] 'product' test
     [ [ 4 5 6 ] product 120 assert-equal ] 'product' test
 
-dot: [ [ * ] zipwith sum ] ;
+dot: [ [ * ] zipwith sum ] ;;
 
 sum-of-squares: [ 0 [ sq + ] reduce ] ;
 square-of-sum: [ sum sq ] ;
 
 // math-ish
-integers: [ [ count ] appl ] ;
+integers: [ [ count ] appl ] ;;
 
     [ 10 integers [ 1 2 3 4 5 6 7 8 9 10 ] assert-equal ] 'gets an array of integers' test
 
-factors: [ [ 2 [ dup2 2 ^ > ] [ dup2 divisor? [ tuck / over ] [ next-odd ] branch ] while drop ] appl ] ;
-next-fib: [ dup2 + ] ;
-fib: [ ( 0 1 [ next-fib ] ) dip -- times drop ] ;
-next-collatz: [ dup even? [ 2 / ] [ 3 * 1 + ] branch ] ;
-collatz: [ [ [ dup 1 > ] [ dup next-collatz ] while ] >> in ] ;
-divrem: [ [ \ ] [ % ] bi2 ] ;
-gcd: [ [ dup 0 > ] [ dup bury % ] while drop ] ;
-lcm: [ dup2 [ [ * abs ] dip ] dip gcd / ] ;
-coprime?: [ gcd 1 = ] ;
-totient: [ dup integers swap [ coprime? ] >> filter ln ] ;
+factors: [ [ 2 [ dup2 2 ^ > ] [ dup2 divisor? [ tuck / over ] [ next-odd ] branch ] while drop ] appl ] ;;
+next-fib: [ dup2 + ] ;;
+fib: [ ( 0 1 [ next-fib ] ) dip -- times drop ] ;;
+next-collatz: [ dup even? [ 2 / ] [ 3 * 1 + ] branch ] ;;
+collatz: [ [ [ dup 1 > ] [ dup next-collatz ] while ] >> in ] ;;
+divrem: [ [ \ ] [ % ] bi2 ] ;;
+gcd: [ [ dup 0 > ] [ dup bury % ] while drop ] ;;
+lcm: [ dup2 [ [ * abs ] dip ] dip gcd / ] ;;
+coprime?: [ gcd 1 = ] ;;
+totient: [ dup integers swap [ coprime? ] >> filter ln ] ;;
 
 // calculus-ish
-nd: [ dup [ over + rot bi@ - ] dip / ] ;  // first-order divided difference
-ndm: [ dup 2 * [ [ - ] [ + ] bi2 rot bi@ - ] dip / ] ;  // symmetric difference quotient.
+nd: [ dup [ over + rot bi@ - ] dip / ] ;;  // first-order divided difference
+ndm: [ dup 2 * [ [ - ] [ + ] bi2 rot bi@ - ] dip / ] ;;  // symmetric difference quotient.
 
 // bits
-on-bits: /* ( m -- n ) */ [ dup 0 <= [ drop 0 ] [ 2 swap ^ 1 - ] branch ] ;
-bits: /* ( m n -- m' ) */ [ on-bits bit-and ] ;
-random-bits: /* ( m -- n ) */ [ rand-u32 swap bits ] ;  // generate n bits (n < 32)
-random-bytes: /* ( m -- n ) */ [ 8 / random-bits ] ;  // generate n bytes (n < 8)
+on-bits: /* ( m -- n ) */ [ dup 0 <= [ drop 0 ] [ 2 swap ^ 1 - ] branch ] ;;
+bits: /* ( m n -- m' ) */ [ on-bits bit-and ] ;;
+random-bits: /* ( m -- n ) */ [ rand-u32 swap bits ] ;;  // generate n bits (n < 32)
+random-bytes: /* ( m -- n ) */ [ 8 / random-bits ] ;;  // generate n bytes (n < 8)

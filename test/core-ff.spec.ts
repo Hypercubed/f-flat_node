@@ -12,7 +12,7 @@ test('should branch on truthy and falsy', async () => {
   expect(await ƒ('5 false [ 2 + ] [ 2 * ] branch')).toEqual(τ([10]));
   expect(await ƒ('5 true [ 2 + ] [ 2 * ] branch')).toEqual(τ([7]));
   // expect(await ƒ('5 null [ 2 + ] [ 2 * ] branch')).toEqual(τ([10]));
-  expect(await ƒ('5 "this is truthy" [ 2 + ] [ 2 * ] branch')).toEqual(τ([7]));
+  expect(await ƒ('5 "this is truthy" [ 2 + ] [ 2 * ] [ boolean ] dip2 branch')).toEqual(τ([7]));
 });
 
 test('should slice', async () => {

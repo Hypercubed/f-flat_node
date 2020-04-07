@@ -19,9 +19,10 @@
 ## TODO Now
 - [ ] `switch, case` vs `case, ->`, `case, when`?
 - [ ] reintroduce
-  - [?] `bind`
-  - [ ] `inline`
-  - [?] `defn`? `;` -> `[ dup defer ] dip bind defn`
+  - [x] `bind`
+  - [x] `inline`
+  - [?] `def`? `;` -> `q< [ dup defer ] q> bind def`
+  - [?] `def`? `;;` -> `q< [ dup defer ] q> inline def`
 - [ ] Standard words (haskell-ish):
   - [?] `fst`, `snd`, `head`, `tail`, `take`, `drop`
   - [x] `zip`, `zipwith`, `zipinto`
@@ -48,6 +49,7 @@
   - [ ] regex unicode property aliases?  (https://github.com/tc39/proposal-regexp-unicode-property-escapes)
 
 ## Bugs
+- [ ] error on `.reset` crashes
 - [x] `"123\"456"` parse error
 - [ ] `'x' exit` should be type error?
 - [ ] `_ 3 =~`?

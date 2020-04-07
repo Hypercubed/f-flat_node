@@ -157,7 +157,7 @@ export class Vocabulary {
   }
 
   /**
-   * Inlines local and scoped defintions
+   * Binds word defintions
    */
   bind(_action: Array<StackValue>) {
     const _bind = (v: any) => {
@@ -174,6 +174,68 @@ export class Vocabulary {
           return sym;
         }
         return v;
+      }
+
+      if (Array.isArray(v)) {
+        return v.reduce((p, i) => {
+          const n = _bind(i);
+          n instanceof ReturnValues ? p.push(...n.value) : p.push(n);
+          return p;
+        }, []);
+      }
+
+      if (is.plainObject(v)) {
+        return Object.keys(v).reduce((p, key) => {
+          const n = _bind(v[key]);
+          p[key] = n instanceof ReturnValues ? n.value : n;
+          return p;
+        }, {});
+      }
+
+      return v;
+    };
+    return _bind(_action);
+  }
+
+  /**
+   * Inlines definitions
+   */
+  inline(_action: Array<StackValue>) {
+    const symbolStack = [];
+
+    const _bind = (v: any) => {
+      // console.log({ v });
+      if (GlobalSymbol.is(v)) {
+        if (symbolStack.includes(v)) return v;
+        const value = this.globalMap.get(v);
+        const type = typeof value;
+        if (type === 'undefined') {
+          if (!this.globalMap.has(v)) {
+            throw new Error(`Word is not defined: "${v.description}"`);
+          }
+          return v;  // defered
+        }
+        if (type === 'function') return v;
+        symbolStack.push(v);
+        const r = _bind(value); // Should be a Sentence at this point
+        symbolStack.pop();
+        return r;
+      }
+
+      if (v instanceof Word) {
+        if ((typeof v.value === 'string' && !v.value.startsWith(LOCAL))) {
+          const sym = this.findSymbol(v.value);
+          if (is.undefined(sym)) {
+            throw new Error(`Word is not defined: "${v.value}"`);
+          }
+          return _bind(sym);
+        }
+        return v;
+      }
+
+      if (v instanceof Sentence) {
+        const value = _bind(v.value);
+        return new ReturnValues(value);
       }
 
       if (Array.isArray(v)) {

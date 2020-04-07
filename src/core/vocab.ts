@@ -76,17 +76,49 @@ export const dict = {
   /**
    * ## `bind`
    *
-   * recursivly convers words to global keys
+   * recursivly converts words to global keys
    *
    * `[A] -> [A]`
    *
    * ```
    * f♭> [ dup * ] bind
-   * [ dup * ]
+   * [ [ dup * ] ]
    * ```
    */
   bind(this: StackEnv, rhs: StackValue[]) {
     return this.dict.bind(rhs);
+  },
+
+  /**
+   * ## `inline`
+   *
+   * recursivly expands words to global keys
+   *
+   * `[A] -> [A]`
+   *
+   * ```
+   * f♭> [ slip ] inline
+   * [ [  q< eval q> ] ]
+   * ```
+   */
+  inline(this: StackEnv, rhs: StackValue[]) {
+    return this.dict.inline(rhs);
+  },
+
+  /**
+   * ## `def`
+   *
+   * stores a definition in the current dictionary
+   *
+   * `a: [A] ->`
+   *
+   * ```
+   * f♭> sqr: [ dup * ] def
+   * [ ]
+   * ```
+   */
+  'def'(this: StackEnv, lhs: string | Key, rhs: StackValue[]) {
+    this.dict.set(String(lhs), createAction(rhs));
   },
 
   /**
@@ -101,11 +133,11 @@ export const dict = {
    * [ ]
    * ```
    */
-  ';'(this: StackEnv, lhs: string | Key, rhs: StackValue[]) {
-    this.dict.set(String(lhs), undefined);
-    const action = createAction(this.dict.bind(rhs));
-    this.dict.set(String(lhs), action);
-  },
+  // ';'(this: StackEnv, lhs: string | Key, rhs: StackValue[]) {
+  //   this.dict.set(String(lhs), undefined);
+  //   const action = createAction(this.dict.bind(rhs));
+  //   this.dict.set(String(lhs), action);
+  // },
 
   /**
    * ## `use`
