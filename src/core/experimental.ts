@@ -10,7 +10,7 @@ export const experimental = {
   /**
    * ## `stringify`
    *
-   * `a -> str`
+   * `a ⭢ str`
    */
   stringify(a: any) {
     return stringifyStrict(a);
@@ -21,7 +21,7 @@ export const experimental = {
    *
    * evalues the quote in a child environment, returns a future
    *
-   * `[A] -> future`
+   * `[A*] ⭢ future`
    */
   spawn(this: StackEnv, a: any): Future {
     return new Future(a, this.createChildPromise(a));
@@ -32,7 +32,7 @@ export const experimental = {
    *
    * evalues the quote in a child environment, waits for result
    *
-   * `[A] -> [a]`
+   * `[A*] ⭢ [a*]`
    */
   ['await'](this: StackEnv, a: StackValue): Promise<any> {
     // rollup complains on await
@@ -47,7 +47,7 @@ export const experimental = {
    *
    * stops execution, push queue to stack, loses other state
    *
-   * `->`
+   * `⭢`
    *
    * ```
    * f♭> [ 1 2 * suspend 3 4 *  ] in
@@ -63,7 +63,7 @@ export const experimental = {
    *
    * executes each element in a child environment
    *
-   * `[A] -> [a]`
+   * `[A*] ⭢ [a*]`
    */
   all(this: StackEnv, arr: StackValue[]): Promise<StackValue[]> {
     return Promise.all(arr.map(a => this.createChildPromise(a)));
@@ -74,7 +74,7 @@ export const experimental = {
    *
    * executes each element in a child environment, returns first to finish
    *
-   * [A] -> [b]`
+   * [A*] ⭢ [a*]`
    */
   race(this: StackEnv, arr: StackValue[]): Promise<StackValue[]> {
     return Promise.race(arr.map(a => this.createChildPromise(a)));
@@ -85,7 +85,7 @@ export const experimental = {
    *
    * evalues a string as raw javascript
    *
-   * `str -> a*`
+   * `str ⭢ a*`
    */
   'js-raw'(this: StackEnv, s: string): any {
     return new Function(`return ${s}`).call(this);

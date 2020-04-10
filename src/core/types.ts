@@ -95,7 +95,7 @@ export const types = {
   /**
    * ## `type`
    *
-   * `a -> str`
+   * `a ⭢ str`
    *
    * retruns the type of an item
    *
@@ -105,7 +105,7 @@ export const types = {
   /**
    * ## `number`
    *
-   * `a -> x`
+   * `a ⭢ x`
    *
    * converts to a number
    *
@@ -115,7 +115,7 @@ export const types = {
   /**
    * ## `complex`
    *
-   * `a -> z`
+   * `a ⭢ z`
    *
    * converts to a complex number
    *
@@ -127,6 +127,8 @@ export const types = {
   /**
    * ## `string`
    *
+   * `a ⭢ str`
+   *
    * converts to a string
    *
    */
@@ -135,7 +137,7 @@ export const types = {
   /**
    * ## `itoa`
    *
-   * `x -> str`
+   * `x ⭢ str`
    *
    * returns a string created from UTF-16 character code
    *
@@ -145,7 +147,7 @@ export const types = {
   /**
    * ## `atoi`
    *
-   * `str -> x`
+   * `str ⭢ x`
    *
    * returns an integer between 0 and 65535 representing the UTF-16 code of the first character of a string
    *
@@ -155,7 +157,7 @@ export const types = {
   /**
    * ## `atob`
    *
-   * `str -> str`
+   * `str ⭢ str'`
    *
    * decodes a string of data which has been encoded using base-64 encoding
    *
@@ -165,7 +167,7 @@ export const types = {
   /**
    * ## `btoa`
    *
-   * `str -> str`
+   * `str ⭢ str'`
    *
    * creates a base-64 encoded ASCII string from a String
    *
@@ -175,7 +177,7 @@ export const types = {
   /**
    * ## `hash`
    *
-   * `a -> x`
+   * `a ⭢ x`
    *
    * creates a numeric hash from a String
    *
@@ -185,7 +187,7 @@ export const types = {
   /**
    * ## `hex-hash`
    *
-   * `a -> str`
+   * `a ⭢ str`
    *
    * creates a hexidecimal hash from a String
    *
@@ -195,7 +197,7 @@ export const types = {
   /**
    * ## `base`
    *
-   * `x -> str`
+   * `x ⭢ str`
    *
    * Convert an integer to a string in the given base
    *
@@ -205,7 +207,7 @@ export const types = {
   /**
    * ## `boolean`
    *
-   * `a -> bool`
+   * `a ⭢ bool`
    *
    * converts a value to a boolean
    *
@@ -218,7 +220,7 @@ export const types = {
   /**
    * ## `:` (key)
    *
-   * `a -> a:`
+   * `a ⭢ a:`
    *
    * converts a string to a key
    *
@@ -236,7 +238,7 @@ export const types = {
   /**
    * ## `array`
    *
-   * `a -> [A]`
+   * `a ⭢ [A]`
    *
    * converts a value to an array
    *
@@ -246,7 +248,7 @@ export const types = {
   /**
    * ## `of`
    *
-   * `a b -> c`
+   * `a b ⭢ c`
    *
    * converts the rhs value to the type of the lhs
    *
@@ -268,7 +270,7 @@ export const types = {
   /**
    * ## `is?`
    *
-   * `a b -> bool`
+   * `a b ⭢ bool`
    *
    * returns true if to values are the same value
    *
@@ -278,7 +280,7 @@ export const types = {
   /**
    * ## `nothing?`
    *
-   * `a -> bool`
+   * `a ⭢ bool`
    *
    * returns true if the value is null or undefined
    *
@@ -288,7 +290,7 @@ export const types = {
   /**
    * ## `date`
    *
-   * `a -> date`
+   * `a ⭢ Date`
    *
    * convert a value to a date/time
    *
@@ -298,7 +300,7 @@ export const types = {
   /**
    * ## `now`
    *
-   * `-> date`
+   * `⭢ Date`
    *
    * returns the current date/time
    *
@@ -308,7 +310,7 @@ export const types = {
   /**
    * ## `clock`
    *
-   * `-> x`
+   * `⭢ x`
    *
    * returns a high resoltion time elapsed
    *
@@ -318,7 +320,7 @@ export const types = {
   /**
    * ## `regexp`
    *
-   * `a -> regexp`
+   * `a ⭢ Regexp`
    *
    * convert string to regular expresion
    *

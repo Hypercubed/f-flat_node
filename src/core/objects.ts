@@ -22,7 +22,7 @@ export const objects = {
   /**
    * ## `object`
    *
-   * `[ a: b ... ] -> { a: b ... }`
+   * `[ a: b ... ] ⭢ { a: b ... }`
    *
    * convert a quotation to an object
    *
@@ -32,7 +32,7 @@ export const objects = {
   /**
    * ## `object?`
    *
-   * `a -> bool`
+   * `a ⭢ bool`
    *
    * retruns true of the item is an object
    */
@@ -41,7 +41,7 @@ export const objects = {
   /**
    * ## `has?`
    *
-   * `{A} a: -> bool`
+   * `{a: b ...} a: ⭢ bool`
    *
    * returns true if an item contains a key
    *
@@ -51,7 +51,7 @@ export const objects = {
   /**
    * ## `keys`
    *
-   * `{A} -> [str*]`
+   * `{a: b ...} ⭢ [str*]`
    *
    * returns an array of keys
    *
@@ -61,7 +61,7 @@ export const objects = {
   /**
    * ## `vals`
    *
-   * `{A} -> [b*]`
+   * `{a: b ...} ⭢ [b*]`
    *
    * returns an array of values
    *

@@ -79,7 +79,7 @@ class IndexOf {
  *
  * returns the item at the specified index/key
  *
- * `seq x -> a`
+ * `[a*] n ⭢ a`
  *
  * ```
  * f♭> [ 1 2 3 ] 1 @
@@ -258,7 +258,7 @@ export const core = {
    *
    * conditional (ternary) operator
    *
-   * `bool a b -> c`
+   * `bool a b ⭢ a||b`
    *
    * ```
    * f♭> true 1 2 choose
@@ -272,7 +272,7 @@ export const core = {
    *
    * moves the top of the stack to the tail of the queue
    *
-   * `a ->`
+   * `a ⭢`
    *
    * ```
    * f♭> 1 2 4 q< 3
@@ -288,7 +288,7 @@ export const core = {
    *
    * moves the tail of the queue to the top of the stack
    *
-   * `-> a`
+   * `⭢ a`
    *
    * ```
    * f♭> 1 2 q> 4 3
@@ -304,7 +304,7 @@ export const core = {
    *
    * replaces the stack with a quote containing the current stack
    *
-   * `a* -> [ a* ] )
+   * `a* ⭢ [a*] )
    *
    * ```
    * f♭> 1 2 3 stack
@@ -322,7 +322,7 @@ export const core = {
    *
    * push items in a quote to the stack without evaluation
    *
-   * `[ A* ] -> A*`
+   * `[A*] ⭢ A*`
    *
    * ```
    * f♭> [ 1 2 * ] unstack
@@ -336,7 +336,7 @@ export const core = {
    *
    * clears the stack
    *
-   * `a* ->`
+   * `a* ⭢`
    *
    * ```
    * f♭> 1 2 3 clr
@@ -352,7 +352,7 @@ export const core = {
    *
    * pushes the size of the current stack (number of items on the stack)
    *
-   * `-> x`
+   * `⭢ n`
    *
    * ```
    * f♭> 0 1 2 depth
@@ -368,7 +368,7 @@ export const core = {
    *
    * evaluate quote or string
    *
-   * `[A*] -> a*`
+   * `[A*] ⭢ a*`
    *
    * ```
    * f♭> [ 1 2 * ] eval
@@ -382,7 +382,7 @@ export const core = {
    *
    * evalues the quote in a child environment
    *
-   * `[A*] -> [a*]`
+   * `[A*] ⭢ [a*]`
    *
    * ```
    * f♭> [ 1 2 * ] in
@@ -396,10 +396,10 @@ export const core = {
   /**
    * ## `in-catch`
    *
-   * Evaluates the quotation in a child environment
-   * calls the second quotation in a child throws an error
+   * Evaluates the first quotation in a child environment
+   * calls the second quotation in a child if the frist throws an error
    *
-   * `[A*] [B*] -> [ {a*|b*} ]`
+   * `[A*] [B*] ⭢ [ a*||b* ]`
    *
    */
   'in-catch'(this: StackEnv, t: StackValue, c: StackValue) {
@@ -415,7 +415,7 @@ export const core = {
    *
    * Throws an error
    *
-   * `str ->`
+   * `str ⭢`
    *
    * ```
    * f♭> 'PC LOAD LETTER' throw
@@ -431,7 +431,7 @@ export const core = {
    *
    * pushes one element from stack to parent.
    *
-   * `a ->`
+   * `a ⭢`
    *
    * ```
    * f♭> [ 1 2 3 send 4 ] in
@@ -449,7 +449,7 @@ export const core = {
    *
    * drops the item on the bottom of the stack
    *
-   * `a ->`
+   * `a ⭢`
    *
    * ```
    * > 1 2 3 drop
@@ -465,7 +465,7 @@ export const core = {
    *
    * swaps the items on the bottom of the stack
    *
-   * `a b -> b c`
+   * `a b ⭢ b c`
    *
    * ```
    * > 1 2 3 swap
@@ -479,7 +479,7 @@ export const core = {
    *
    * duplicates the item on the bottom of the stack
    *
-   * `a -> a a`
+   * `a ⭢ a a`
    *
    * ```
    * > 1 2 3 dup
@@ -493,7 +493,7 @@ export const core = {
    *
    * returns the position of the first occurrence of a specified value in a sequence
    *
-   * `[a*] b -> x`
+   * `[a*] b ⭢ n`
    *
    * ```
    * f♭> [ '1' '2' '3' '4' ] '2' indexof
@@ -506,33 +506,31 @@ export const core = {
   /**
    * ## `zip`
    *
-   * `[A*] [B*] -> [C*]`
+   * `[A*] [B*] ⭢ [[A B]*]`
    *
    * ```
    * f♭> [ 1 2 3 ] [ 4 5 6 ] zip
-   * [ [ 1 4 ] [ 2 5 ] [ 3 6 ] ]
+   * [ [ [ 1 4 ] [ 2 5 ] [ 3 6 ] ] ]
+   * ```
+   *
+   * ```
+   * f♭> [ 1 2 3 ] [ * + / ] zip
+   * [ [ [ 1 * ] [ 2 + ] [ 3 / ] ] ]
+   * ```
+   *
+   * ```
+   * f♭> [ 1 2 3 ] [ 4 5 6 7 8 ] zip
+   * [ [ [ 1 4 ] [ 2 5 ] [ 3 6 ] ] ]
    * ```
    */
   zip: dynamo.function(Zip),
-
-  /**
-   * ## `zipinto`
-   *
-   * `[A*] [B*] [C*] -> [D*]`
-   *
-   * ```
-   * f♭> [ 1 2 3 ] [ 4 5 6 ] [ 7 8 9 ] zipinto
-   * [ [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] ]
-   * ```
-   */
-  // zipinto: dynamo.function(ZipInto), // aka `[] zipwith3`
 
   /**
    * ## `(` (immediate quote)
    *
    * pushes a quotation maker onto the stack
    *
-   * `-> #(`
+   * `⭢ #(`
    */
   '(': () => Symbol.for('('),
 
@@ -541,7 +539,7 @@ export const core = {
    *
    * collects stack items upto the last quote marker
    *
-   * `#( a -> [ a ]`
+   * `#( a* ⭢ [ a* ]`
    */
   ')': function(this: StackEnv, s: StackValue) {
     return dequoteStack(this, s);
@@ -551,7 +549,7 @@ export const core = {
    * ## `[` (lazy quote)
    * pushes a quotation maker onto the stack, increments depth
    *
-   * `-> #(`
+   * `⭢ #(`
    */
   '[': function(this: StackEnv) {
     this.depth++;
@@ -563,7 +561,7 @@ export const core = {
    *
    * decrements depth, collects stack items upto the last quote marker
    *
-   * `#( A* -> [ A* ]`
+   * `#( A* ⭢ [ A* ]`
    */
   ']': function(this: StackEnv, s: StackValue) {
     this.depth--;
@@ -580,7 +578,7 @@ export const core = {
    *
    * pushes a quotation marker onto the stack
    *
-   * `-> #(`
+   * `⭢ #(`
    */
   '{': () => Symbol.for('('),
 
@@ -589,7 +587,7 @@ export const core = {
    *
    * collects stack items upto the last quote marker, converts to an object
    *
-   * `#( a* -> { A* }`
+   * `#( a b ... ⭢ { a: b ... }`
    */
   '}': function(this: StackEnv, s: StackValue) {
     const r = dequoteStack(this, s);
@@ -601,7 +599,7 @@ export const core = {
    *
    * converts a string to a string template
    *
-   * `str -> [A*]`
+   * `str ⭢ [A*]`
    *
    * ```
    * f♭> 'hello $(world)' template
@@ -625,7 +623,7 @@ export const core = {
    *
    * wait x milliseconds
    *
-   * `x ->`
+   * `n ⭢`
    *
    */
   sleep(ms: number): Promise<void> {
@@ -642,7 +640,7 @@ export const core = {
   /**
    * ## `match
    *
-   * `str a -> bool`
+   * `str a ⭢ bool`
    *
    * Matches a string a regex and returns an array containing the results of that search.
    *
@@ -652,7 +650,7 @@ export const core = {
   /**
    * ## `=~`
    *
-   * `a b -> bool`
+   * `a b ⭢ bool`
    *
    * Returns a Boolean value that indicates whether or not the lhs matches the rhs.
    *
@@ -662,7 +660,7 @@ export const core = {
   /**
    * ## `_`
    *
-   * `-> #_`
+   * `⭢ #_`
    *
    * Match symbol
    *

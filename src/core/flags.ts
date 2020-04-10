@@ -12,7 +12,7 @@ export const flags = {
    * sets a system level flag
    * - flags: `'log-level'`, `'decimal-precision'`
    *
-   * `str a ->`
+   * `str a ⭢`
    *
    *
    * ```
@@ -42,7 +42,7 @@ export const flags = {
    * gets a system level flag
    * - flags: `'log-level'`, `'decimal-precision'`
    *
-   * `str -> a`
+   * `str ⭢ a`
    *
    * ```
    * f♭> 'log-level' get-system-property

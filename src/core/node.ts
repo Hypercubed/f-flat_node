@@ -59,7 +59,7 @@ export const node = {
   /**
    * ## `args`
    *
-   * `-> [str*]`
+   * `⭢ [str*]`
    *
    * Returns an array containing of command line arguments passed when the process was launched
    */
@@ -68,7 +68,7 @@ export const node = {
   /**
    * ## `println`
    *
-   * `a ->`
+   * `a ⭢`
    *
    * Prints the value followed by (newline)
    *
@@ -80,7 +80,7 @@ export const node = {
   /**
    * ## `print`
    *
-   * `a ->`
+   * `a ⭢`
    *
    * Prints the value
    *
@@ -93,6 +93,14 @@ export const node = {
     process.stdout.write(String(a));
   },
 
+  /**
+   * ## `table`
+   *
+   * `a ⭢`
+   *
+   * Prints an object as a table
+   *
+   */
   table(a: any) {
     try {
       process.stdout.clearLine(-1);
@@ -105,7 +113,7 @@ export const node = {
   /**
    * ## `exit`
    *
-   * `->`
+   * `⭢`
    *
    * terminate the process synchronously with an a status code
    *
@@ -117,7 +125,7 @@ export const node = {
   /**
    * ## `rand-u32`
    *
-   * `-> x`
+   * `⭢ x`
    *
    * Generates cryptographically strong pseudo-random with a givennumber of bytes to generate
    *
@@ -127,7 +135,7 @@ export const node = {
   /**
    * ## `dirname`
    *
-   * `str₁ -> str₂`
+   * `str₁ ⭢ str₂`
    *
    * returns the directory name of a path, similar to the Unix dirname command.
    * See https://nodejs.org/api/path.html#path_path_dirname_path
@@ -138,7 +146,7 @@ export const node = {
   /**
    * ## `path-join`
    *
-   * `[ str* ] -> str`
+   * `[str*] ⭢ str`
    *
    * joins all given path segments together using the platform specific separator as a delimiter
    * See https://nodejs.org/api/path.html#path_path_join_paths
@@ -149,7 +157,7 @@ export const node = {
   /**
    * ## `resolve`
    *
-   * `str₁ -> str₂`
+   * `str₁ ⭢ str₂`
    *
    * returns a URL href releative to the current base
    *
@@ -159,7 +167,7 @@ export const node = {
   /**
    * ## `exists`
    *
-   * `str -> bool`
+   * `str ⭢ bool`
    *
    * Returns true if the file exists, false otherwise.
    *
@@ -169,7 +177,7 @@ export const node = {
   /**
    * ## `read`
    *
-   * `str₁ -> str₂`
+   * `str₁ ⭢ str₂`
    *
    * Pushes the content of a file as a utf8 string
    *
@@ -185,7 +193,7 @@ export const node = {
   /**
    * ## `cwd`
    *
-   * `-> str`
+   * `⭢ str`
    *
    * Pushes the current working directory
    *
@@ -207,7 +215,7 @@ export const node = {
   /**
    * ## `get-env`
    *
-   * `str₁ -> str₂`
+   * `str₁ ⭢ str₂`
    *
    * Gets a environment variable
    *

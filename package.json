@@ -10,6 +10,8 @@
     "dist": "rimraf ./dist && tsc",
     "build": "npm run dist && npm run docs",
     "docs": "node ./scripts/generate-docs.js && node ./scripts/gen-spec.js",
+    "prestart-docs": "npm run docs",
+    "start-docs": "cd docs && bundle exec jekyll serve",
     "prettier": "prettier \"{test,src,bin}/**/*.{js,ts,spec.ts}\" --write",
     "test": "npm run lint && jest",
     "watch": "jest --watch",
@@ -17,7 +19,6 @@
     "check": "npm run coverage && npm run lint",
     "coverage": "nyc -r lcov -r html -r text ava ./test/*.spec.ts",
     "start": "tsc && node ./bin/repl.js",
-    "gui": "tsc && node ./bin/gui.js",
     "debugger": "tsc && node --inspect ./bin/repl.js",
     "np": "npm run dist && np"
   },

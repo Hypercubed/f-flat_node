@@ -64,7 +64,7 @@ function invertObject(source: any) {
 /**
  * ## `+` (plus, or, concat)
  *
- * `a b -> c`
+ * `a b ⭢ c`
  *
  */
 class Add {
@@ -198,7 +198,7 @@ class Add {
 /**
  * ## `-` (minus, nor)
  *
- * `a b -> c`
+ * `a b ⭢ c`
  *
  */
 class Sub {
@@ -294,7 +294,7 @@ class Sub {
 /**
  * ## `*` (times, and, join)
  *
- * `a b -> c`
+ * `a b ⭢ c`
  *
  */
 class Mul {
@@ -456,7 +456,7 @@ const mul = dynamo.function(Mul);
 /**
  * ## `/` (forward slash, div)
  *
- * `a b -> c`
+ * `a b ⭢ c`
  *
  */
 class Div {
@@ -563,7 +563,7 @@ const div = dynamo.function(Div);
 /**
  * ## `\` (backslash)
  *
- * `a b -> n`
+ * `a b ⭢ n`
  *
  */
 class IDiv {
@@ -644,7 +644,7 @@ class IDiv {
 /**
  * ## `%` (modulo)
  *
- * `a b -> n`
+ * `a b ⭢ n`
  *
  */
 class Rem {
@@ -728,7 +728,7 @@ class Rem {
 /**
  * ## `>>`
  *
- * `a b -> c`
+ * `a b ⭢ c`
  *
  */
 class Unshift {
@@ -843,7 +843,7 @@ const unshiftFn = dynamo.function(Unshift);
  * ## `<<`
  * Left shift
  *
- * `a b -> c`
+ * `a b ⭢ c`
  *
  */
 class Shift {
@@ -954,7 +954,7 @@ const pushFn = dynamo.function(Shift);
 /**
  * ## `^` (pow)
  *
- * `a b -> c`
+ * `a b ⭢ c`
  *
  */
 class Pow {
@@ -1032,7 +1032,7 @@ class Pow {
 /**
  * ## `ln`
  *
- * `a b -> n`
+ * `a b ⭢ n`
  */
 class Ln {
   /**
@@ -1097,7 +1097,7 @@ class Ln {
 /**
  * ## `~` (not)
  *
- * `a -> b`
+ * `a ⭢ b`
  *
  */
 class Not {
@@ -1173,7 +1173,7 @@ class Not {
 /**
  * ## `empty`
  *
- * `a b -> c`
+ * `a b ⭢ c`
  *
  * Returns an empty value of the same type
  *
@@ -1211,7 +1211,7 @@ class Empty {
  * Pushes a -1, 0, or 1 when x is logically 'less than', 'equal to', or 'greater than' y.
  * Push null if sort order is unknown
  *
- * `a b -> n`
+ * `a b ⭢ n`
  *
  * ```
  * f♭> 1 2 <=>
@@ -1351,7 +1351,7 @@ export const base = {
    *
    * Pushes true if x is equal to y.
    *
-   * `a b -> bool`
+   * `a b ⭢ bool`
    *
    * ```
    * f♭> 1 2 =

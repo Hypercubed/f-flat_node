@@ -3,7 +3,7 @@
 
 ## `+` (plus, or, concat)
 
-`a b -> c`
+`a b ⭢ c`
 
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L70">[src]</a></div>
 
@@ -71,7 +71,7 @@ f♭> "abc" "xyz" +
 
 ## `-` (minus, nor)
 
-`a b -> c`
+`a b ⭢ c`
 
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L204">[src]</a></div>
 
@@ -113,7 +113,7 @@ f♭> '3/17/2003' date dup 1000 +
 
 ## `*` (times, and, join)
 
-`a b -> c`
+`a b ⭢ c`
 
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L300">[src]</a></div>
 
@@ -198,7 +198,7 @@ f♭> 2 3 *
 
 ## `/` (forward slash, div)
 
-`a b -> c`
+`a b ⭢ c`
 
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L462">[src]</a></div>
 
@@ -248,7 +248,7 @@ f♭> 6 2 /
 
 ## `\` (backslash)
 
-`a b -> n`
+`a b ⭢ n`
 
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L570">[src]</a></div>
 
@@ -293,7 +293,7 @@ f♭> true true \
 
 ## `%` (modulo)
 
-`a b -> n`
+`a b ⭢ n`
 
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L650">[src]</a></div>
 
@@ -347,7 +347,7 @@ f♭> true false %
 
 ## `>>`
 
-`a b -> c`
+`a b ⭢ c`
 
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L734">[src]</a></div>
 
@@ -415,7 +415,7 @@ f♭> "/skiing/i" regexp "sledding" regexp >>
 ## `<<`
 Left shift
 
-`a b -> c`
+`a b ⭢ c`
 
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L849">[src]</a></div>
 
@@ -482,7 +482,7 @@ f♭> "/skiing/i" regexp "sledding" regexp <<
 
 ## `^` (pow)
 
-`a b -> c`
+`a b ⭢ c`
 
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L960">[src]</a></div>
 
@@ -521,7 +521,7 @@ f♭> "skiing" regexp "sledding" regexp ^
 
 ## `ln`
 
-`a b -> n`
+`a b ⭢ n`
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1037">[src]</a></div>
 
 - natural log
@@ -553,7 +553,7 @@ f♭> "skiing" regexp "sledding" regexp ^
 
 ## `~` (not)
 
-`a -> b`
+`a ⭢ b`
 
 <div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/base.ts#L1103">[src]</a></div>
 
@@ -598,7 +598,7 @@ f♭> [ 'a' 'b' 'c' ] ~
 
 ## `empty`
 
-`a b -> c`
+`a b ⭢ c`
 
 Returns an empty value of the same type
 
@@ -609,7 +609,7 @@ Returns an empty value of the same type
 Pushes a -1, 0, or 1 when x is logically 'less than', 'equal to', or 'greater than' y.
 Push null if sort order is unknown
 
-`a b -> n`
+`a b ⭢ n`
 
 ```
 f♭> 1 2 <=>
@@ -679,7 +679,7 @@ f♭> { x: 123, z: 789 } { y: 456 } <=>
 
 Pushes true if x is equal to y.
 
-`a b -> bool`
+`a b ⭢ bool`
 
 ```
 f♭> 1 2 =

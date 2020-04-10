@@ -62,6 +62,7 @@ zipinto: [ [ zip ] dip [ + unstack ] >> map ] ;;  // aka interleave3?
 interleave: [ zip [ unstack ] map ] ;;
 zipwith: [ [ zip ] dip [ + eval ] >> map ] ;;
 unzip: [ [ [ fst ] map ] [ [ snd ] map ] bi ] ;;
+zipmap: [ interleave object ] ;;
 
     [ [ 1 2 3 ] [ 4 5 6 ] [ 7 8 9 ] zipinto [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] assert-equal ] 'zipinto' test
     [ [ 1 2 3 ] [ 4 5 6 ] [ + ] zipinto [ 1 4 + 2 5 + 3 6 + ] assert-equal ] 'zipinto is lazy' test
@@ -70,6 +71,7 @@ unzip: [ [ [ fst ] map ] [ [ snd ] map ] bi ] ;;
     [ [ 1 2 3 ] [ 4 5 6 ] [ + ] zipwith [ 5 7 9 ] assert-equal ] 'zipwith' test
     [ [ [ 1 2 ] [ 3 4 ] [ 5 6 ] ] unzip [ 2 4 6 ] assert-equal [ 1 3 5 ] assert-equal ] 'unzip' test
     [ [ [ 1 + ] [ 2 - ] [ 3 * ] ] unzip [ + - * ] assert-equal [ 1 2 3 ] assert-equal ] 'unzip is lazy' test
+    [ [ a: b: c: ] [ 1 2 3 ] zipmap { a: 1, b: 2, c: 3 } assert-equal ] 'zipmap' test
 
 // No matter how many parameters the quotation consumes from the stack when nullary executes it, they are all restored and the final value calculated by the execution of the quotation is pushed on top of that
 nullary: [ [ stack dup ] dip + in -1 @ [ unstack ] dip ] ;;

@@ -1,5 +1,5 @@
 # Internal Type Words
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L113">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L94">[src]</a></div>
 
 ## `type`
 
@@ -7,7 +7,7 @@
 
 retruns the type of an item
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L123">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L104">[src]</a></div>
 
 ## `number`
 
@@ -15,7 +15,7 @@ retruns the type of an item
 
 converts to a number
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L133">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L114">[src]</a></div>
 
 ## `complex`
 
@@ -23,13 +23,13 @@ converts to a number
 
 converts to a complex number
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L143">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L124">[src]</a></div>
 
 ## `string`
 
 converts to a string
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L153">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L134">[src]</a></div>
 
 ## `itoa`
 
@@ -37,7 +37,7 @@ converts to a string
 
 returns a string created from UTF-16 character code
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L163">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L144">[src]</a></div>
 
 ## `atoi`
 
@@ -45,7 +45,7 @@ returns a string created from UTF-16 character code
 
 returns an integer between 0 and 65535 representing the UTF-16 code of the first character of a string
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L173">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L154">[src]</a></div>
 
 ## `atob`
 
@@ -53,7 +53,7 @@ returns an integer between 0 and 65535 representing the UTF-16 code of the first
 
 decodes a string of data which has been encoded using base-64 encoding
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L183">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L164">[src]</a></div>
 
 ## `btoa`
 
@@ -61,7 +61,7 @@ decodes a string of data which has been encoded using base-64 encoding
 
 creates a base-64 encoded ASCII string from a String
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L193">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L174">[src]</a></div>
 
 ## `hash`
 
@@ -69,7 +69,7 @@ creates a base-64 encoded ASCII string from a String
 
 creates a numeric hash from a String
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L203">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L184">[src]</a></div>
 
 ## `hex-hash`
 
@@ -77,7 +77,7 @@ creates a numeric hash from a String
 
 creates a hexidecimal hash from a String
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L213">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L194">[src]</a></div>
 
 ## `base`
 
@@ -85,7 +85,7 @@ creates a hexidecimal hash from a String
 
 Convert an integer to a string in the given base
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L223">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L204">[src]</a></div>
 
 ## `boolean`
 
@@ -93,7 +93,7 @@ Convert an integer to a string in the given base
 
 converts a value to a boolean
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L233">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L214">[src]</a></div>
 
 ## `:` (key)
 
@@ -101,7 +101,7 @@ converts a value to a boolean
 
 converts a string to a key
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L246">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L227">[src]</a></div>
 
 ## `array`
 
@@ -109,15 +109,15 @@ converts a string to a key
 
 converts a value to an array
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L274">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L245">[src]</a></div>
 
 ## `of`
 
-`a b -> c`
+`a b ⇒ c`
 
 converts the rhs value to the type of the lhs
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L284">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L255">[src]</a></div>
 
 ## `is?`
 
@@ -125,7 +125,7 @@ converts the rhs value to the type of the lhs
 
 returns true if to values are the same value
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L306">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L277">[src]</a></div>
 
 ## `nothing?`
 
@@ -133,7 +133,7 @@ returns true if to values are the same value
 
 returns true if the value is null or undefined
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L316">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L287">[src]</a></div>
 
 ## `date`
 
@@ -141,7 +141,7 @@ returns true if the value is null or undefined
 
 convert a value to a date/time
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L326">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L297">[src]</a></div>
 
 ## `now`
 
@@ -149,7 +149,7 @@ convert a value to a date/time
 
 returns the current date/time
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L336">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L307">[src]</a></div>
 
 ## `clock`
 
@@ -157,7 +157,7 @@ returns the current date/time
 
 returns a high resoltion time elapsed
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L346">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L317">[src]</a></div>
 
 ## `regexp`
 
@@ -165,4 +165,4 @@ returns a high resoltion time elapsed
 
 convert string to regular expresion
 
-<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L356">[src]</a></div>
+<div style="text-align: right"><a href="https:/github.com/Hypercubed/f-flat_node/blob/master/src/core/types.ts#L327">[src]</a></div>

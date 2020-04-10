@@ -17,6 +17,9 @@
   - [ ] Online UI
 
 ## TODO Now
+- [ ] `popr`/`pop`, `[ A B C ]` -> `[ A B ] C`
+- [ ] `popl`/`shift`, `[ A B C ]` -> `A [ B C ]`
+- [ ] force matching quotes, `( 1 2 ]` ia an error
 - [ ] `switch, case` vs `case, ->`, `case, when`?
 - [ ] reintroduce
   - [x] `bind`
@@ -26,6 +29,11 @@
 - [ ] Standard words (haskell-ish):
   - [?] `fst`, `snd`, `head`, `tail`, `take`, `drop`
   - [x] `zip`, `zipwith`, `zipinto`
+  - [ ] `***`, `[x y] [x->a] [y->b] ***` ==> `[ a b ]`
+  - [ ] `&&&`, `x [x->a] [x->b] &&&` ==> `[ a b ]`
+  - [ ] `>>=`, `[a] [b]` ==> `[b]`
+  - [ ] `>>`, `[a] [a -> [b]]` ==> `[b]`
+  - [ ] `<*>`, `<$>`, `<&>`, `<-`, `<=<`?
 - [x] Move trace to repl?
 - [ ] contracts/guards
   - [?] guard
