@@ -39,9 +39,9 @@ if (typeof program.quiet === 'undefined') {
   program.quiet = !program.interactive;
 }
 
-// process.on('unhandledRejection', (reason, p) => {
-//   console.log('Unhandled Rejection at:', p, 'reason:', reason);
-// });
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at:', p, 'reason:', reason);
+});
 
 // TODO: start in user directory
 process.chdir('./src/ff-lib/');

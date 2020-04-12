@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import * as readline from 'readline';
 import * as program from 'commander';
 import * as gradient from 'gradient-string';
@@ -9,9 +7,11 @@ import * as fixedWidthString from 'fixed-width-string';
 import * as short from 'short-uuid';
 
 import { createRootEnv } from '../stack';
-import { log, bar, ffPrettyPrint, type } from '../utils';
+import { log, bar, ffPrettyPrint, type, template } from '../utils';
 
 import { StackEnv } from './env';
+import { terminal } from 'terminal-kit';
+import { experimental } from '../core';
 
 const WELCOME = gradient.rainbow(`
 
@@ -135,41 +135,29 @@ export class CLI {
 
     this.prompt();
 
-    this.readline.on('pause', () => {
-      this.isPaused = true;
-    });
-
-    this.readline.on('resume', () => {
-      this.isPaused = false;
-    });
-
-    this.readline.on('line', (line: string) => {
-      if (!this.isPaused && !this.processReplCommand(line)) {
-        this.fEval(line);
-      }
-      this.watchCtrlC = false;
-    });
-
-    this.readline.on('close', () => {
-      process.exit(0);
-    });
-
-    this.readline.on('SIGINT', () => {
-      if (this.editorMode) {
-        this.buffer = '';
-        this.turnOffEditorMode();
-      } else if (this.watchCtrlC) {
-        this.readline.pause();
-      } else {
-        console.log(`\nTo exit, press ^C again or ^D or type .exit`);
-        this.prompt();
-        this.watchCtrlC = true;
-      }
-    });
-
-    this.readline.on('SIGCONT', () => {
-      this.prompt();
-    });
+    this.readline
+      .on('pause', () => this.isPaused = true)
+      .on('resume', () => this.isPaused = false)
+      .on('line', (line: string) => {
+        if (!this.isPaused && !this.processReplCommand(line)) {
+          this.fEval(line);
+        }
+        this.watchCtrlC = false;
+      })
+      .on('close', () => process.exit(0))
+      .on('SIGINT', () => {
+        if (this.editorMode) {
+          this.buffer = '';
+          this.turnOffEditorMode();
+        } else if (this.watchCtrlC) {
+          this.readline.pause();
+        } else {
+          console.log(`\nTo exit, press ^C again or ^D or type .exit`);
+          this.prompt();
+          this.watchCtrlC = true;
+        }
+      })
+      .on('SIGCONT', () => this.prompt());
 
     process.stdin.on('keypress', (_s, key) => {
       if (key.ctrl) {
@@ -393,17 +381,31 @@ export class CLI {
         const q = this.f.stack.length + this.f.queue.length;
         if (q > qMax) qMax = q;
 
+        terminal.saveCursor();
+        terminal.down(1);
+
         bar.update(this.f.stack.length / qMax, {
           stack: this.f.stack.length,
           queue: this.f.queue.length,
           depth: this.f.depth,
           lastAction: ffPrettyPrint.trace(this.f.currentAction)
         });
+        
+        terminal.restoreCursor();
       };
 
-      this.bindings.push(this.f.before.add(updateBar));
+      this.bindings.push(this.f.before.add(() => {
+        console.log('');
+        terminal.hideCursor();
+        terminal.up(1);
+        updateBar();
+      }));
       this.bindings.push(this.f.beforeEach.add(updateBar));
-      this.bindings.push(this.f.idle.add(() => bar.terminate()));
+      this.bindings.push(this.f.idle.add(() => {
+        terminal.down(1);
+        bar.terminate();
+        terminal.hideCursor(false);
+      }));
     }
   }
 

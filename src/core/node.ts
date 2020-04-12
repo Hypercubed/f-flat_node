@@ -9,6 +9,7 @@ import { spawnSync } from 'child_process';
 
 import { bar } from '../utils';
 import { dynamo } from '../types';
+import { terminal } from 'terminal-kit';
 
 import normalizeUrl = require('normalize-url');
 
@@ -74,7 +75,16 @@ export const node = {
    *
    */
   println(a: any) {
-    bar.interrupt(String(a));
+    console.log(String(a));
+    terminal.saveCursor();
+    bar.interrupt('');
+    terminal.restoreCursor();
+    terminal.up(1);
+
+    // try {
+    //   process.stdout.clearLine(-1);
+    //   process.stdout.cursorTo(0);
+    // } catch (e) {}
   },
 
   /**
@@ -86,11 +96,23 @@ export const node = {
    *
    */
   print(a: any) {
-    try {
-      process.stdout.clearLine(-1);
-      process.stdout.cursorTo(0);
-    } catch (e) {}
+    // try {
+    //   process.stdout.clearLine(-1);
+    //   process.stdout.cursorTo(0);
+    // } catch (e) {}
     process.stdout.write(String(a));
+    terminal.eraseLineAfter();
+    terminal.saveCursor();
+
+    // console.log('');
+    // terminal.eraseLine();
+    // terminal.restoreCursor();
+
+    // terminal.eraseLineAfter();
+    // terminal.saveCursor();
+    // console.log('');
+    // bar.interrupt('');
+    // terminal.restoreCursor();
   },
 
   /**
