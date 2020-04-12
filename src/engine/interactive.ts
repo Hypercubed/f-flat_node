@@ -11,7 +11,6 @@ import { log, bar, ffPrettyPrint, type, template } from '../utils';
 
 import { StackEnv } from './env';
 import { terminal } from 'terminal-kit';
-import { experimental } from '../core';
 
 const WELCOME = gradient.rainbow(`
 
@@ -244,9 +243,19 @@ export class CLI {
         return true;
       case 'reset':
         console.log('Resetting the environment...\n');
+        let f: StackEnv;
+        try {
+          f = newStack(this.readline);
+        } catch(err) {
+          console.error('Error during reset, aborting...')
+          console.error(err);
+          this.prompt();
+          return true;
+        }
+
         this.autoundo = undefined;
         this.undoStack = [];
-        this.f = newStack(this.readline);
+        this.f = f;
         this.f.defineAction('prompt', () => {
           return new Promise(resolve => {
             this.readline.question('', resolve);

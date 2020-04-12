@@ -46,7 +46,15 @@ process.on('unhandledRejection', (reason, p) => {
 // TODO: start in user directory
 process.chdir('./src/ff-lib/');
 
-let f = newStack();
+let f;
+try {
+  f = newStack();
+} catch (err) {
+  console.error('Error during boot process, aborting...')
+  console.error(err);
+  process.exit(1);
+}
+
 
 if (program.file) {
   f.promise(`"${program.file}" read await`).then(exitOrStartREPL);

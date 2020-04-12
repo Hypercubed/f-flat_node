@@ -57,11 +57,11 @@
   - [ ] regex unicode property aliases?  (https://github.com/tc39/proposal-regexp-unicode-property-escapes)
 
 ## Bugs
-- [ ] error on `.reset` crashes
+- [x] error on `.reset` crashes
 - [x] `"123\"456"` parse error
 - [ ] `'x' exit` should be type error?
 - [ ] `_ 3 =~`?
-- [ ] `print` gets swallowed by stack printing
+- [x] `print` gets swallowed by stack printing
 
 ## Testing
 - [ ] test tokenizer/parser
