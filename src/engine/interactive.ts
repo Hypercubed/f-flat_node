@@ -379,6 +379,8 @@ export class CLI {
 
     let qMax = this.f.stack.length + this.f.queue.length;
 
+    bar.active = false;
+
     if (this.tracing) {
       const trace = () => console.log(ffPrettyPrint.formatTrace(this.f));
 
@@ -386,6 +388,7 @@ export class CLI {
       this.bindings.push(this.f.beforeEach.add(trace));
       this.bindings.push(this.f.idle.add(trace));
     } else if (!this.f.silent) {
+      bar.active = true;
       const updateBar = () => {
         const q = this.f.stack.length + this.f.queue.length;
         if (q > qMax) qMax = q;

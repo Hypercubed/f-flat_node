@@ -66,27 +66,6 @@ export const node = {
    */
   args: () => process.argv,
 
-  // /**
-  //  * ## `println`
-  //  *
-  //  * `a ⭢`
-  //  *
-  //  * Prints the value followed by (newline)
-  //  *
-  //  */
-  // println(a: any) {
-  //   console.log(String(a));
-  //   terminal.saveCursor();
-  //   bar.interrupt('');
-  //   terminal.restoreCursor();
-  //   terminal.up(1);
-
-  //   // try {
-  //   //   process.stdout.clearLine(-1);
-  //   //   process.stdout.cursorTo(0);
-  //   // } catch (e) {}
-  // },
-
   /**
    * ## `print`
    *
@@ -98,15 +77,17 @@ export const node = {
   print(a: any) {
     const st = String(a);
 
-    terminal.eraseDisplayBelow();
+    if (bar.active) terminal.eraseDisplayBelow();
     process.stdout.write(st);
-    terminal.saveCursor();
+    if (bar.active) {
+      terminal.saveCursor();
 
-    if (st.includes('\n')) {
-      terminal.scrollUp();
-      process.stdout.write(bar.lastDraw);
-      terminal.restoreCursor();
-      terminal.up(1);
+      if (st.includes('\n')) {
+        terminal.scrollUp();
+        process.stdout.write(bar.lastDraw);
+        terminal.restoreCursor();
+        terminal.up(1);
+      }
     }
   },
 
