@@ -66,26 +66,26 @@ export const node = {
    */
   args: () => process.argv,
 
-  /**
-   * ## `println`
-   *
-   * `a ⭢`
-   *
-   * Prints the value followed by (newline)
-   *
-   */
-  println(a: any) {
-    console.log(String(a));
-    terminal.saveCursor();
-    bar.interrupt('');
-    terminal.restoreCursor();
-    terminal.up(1);
+  // /**
+  //  * ## `println`
+  //  *
+  //  * `a ⭢`
+  //  *
+  //  * Prints the value followed by (newline)
+  //  *
+  //  */
+  // println(a: any) {
+  //   console.log(String(a));
+  //   terminal.saveCursor();
+  //   bar.interrupt('');
+  //   terminal.restoreCursor();
+  //   terminal.up(1);
 
-    // try {
-    //   process.stdout.clearLine(-1);
-    //   process.stdout.cursorTo(0);
-    // } catch (e) {}
-  },
+  //   // try {
+  //   //   process.stdout.clearLine(-1);
+  //   //   process.stdout.cursorTo(0);
+  //   // } catch (e) {}
+  // },
 
   /**
    * ## `print`
@@ -96,23 +96,18 @@ export const node = {
    *
    */
   print(a: any) {
-    // try {
-    //   process.stdout.clearLine(-1);
-    //   process.stdout.cursorTo(0);
-    // } catch (e) {}
-    process.stdout.write(String(a));
-    terminal.eraseLineAfter();
+    const st = String(a);
+
+    terminal.eraseDisplayBelow();
+    process.stdout.write(st);
     terminal.saveCursor();
 
-    // console.log('');
-    // terminal.eraseLine();
-    // terminal.restoreCursor();
-
-    // terminal.eraseLineAfter();
-    // terminal.saveCursor();
-    // console.log('');
-    // bar.interrupt('');
-    // terminal.restoreCursor();
+    if (st.includes('\n')) {
+      terminal.scrollUp();
+      process.stdout.write(bar.lastDraw);
+      terminal.restoreCursor();
+      terminal.up(1);
+    }
   },
 
   /**

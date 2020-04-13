@@ -9,6 +9,8 @@
 <=: [ > ~ ] ;
 !=: [ = ~ ] ;
 
+println: [ print "\n" print ] ;
+
 'testing.ff' require
 'shuffle.ff' require
 'types.ff' require
