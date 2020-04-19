@@ -53,15 +53,15 @@ describe('errors on unknown command', () => {
   test('sync', () => {
     expect(() => {
       F().eval('abc');
-    }).toThrow('Word is not defined: "abc"');
+    }).toThrow('"abc" is not defined');
   });
 
   test('async', () => {
-    expect(ƒ(`abc`)).rejects.toThrow('Word is not defined: "abc"');
+    expect(ƒ(`abc`)).rejects.toThrow('"abc" is not defined');
   });
 
   test('in child', () => {
-    expect(ƒ(`[ abc ] in`)).rejects.toThrow('Word is not defined: "abc"');
+    expect(ƒ(`[ abc ] in`)).rejects.toThrow('"abc" is not defined');
   });
 });
 
@@ -289,15 +289,15 @@ test('keywords are case insenstivive', async () => {
 });
 
 test('type errors', async () => {
-  expect(ƒ('4 "d" *')).rejects.toThrow(`'*' Unexpected type of arguments`);
+  expect(ƒ('4 "d" *')).rejects.toThrow(`Error calling '*': Unexpected type of arguments`);
 });
 
 test('stack underflow', async () => {
   expect(ƒ('4 *')).rejects.toThrow(
-    `'*' stack underflow. Too few values in the stack. Requires 2 values, 1 found.`
+    `Error calling '*': stack underflow. Too few values in the stack. Requires 2 values, 1 found.`
   );
   expect(ƒ('4 slip')).rejects.toThrow(
-    `'<<' stack underflow. Too few values in the stack. Requires 2 values, 1 found.`
+    `Error calling '<<': stack underflow. Too few values in the stack. Requires 2 values, 1 found.`
   );
 });
 
@@ -315,43 +315,35 @@ describe('unicode words', () => {
   test('character with ASCII code \\yyy octa', async () => {
     expect(await ƒ('[ \\251 ]')).toEqual(`[ [ © ] ]`);
     expect(await ƒ('\\251:')).toEqual(`[ ©: ]`);
-    expect(ƒ('\\251')).rejects.toThrow(`Word is not defined: "©"`);
+    expect(ƒ('\\251')).rejects.toThrow(`"©" is not defined`);
     expect(await ƒ('\\251: [ 1 2 + ] ; \\251')).toEqual(`[ 3 ]`);
   });
 
   test('character with ASCII code \\xhh hexadecimal', async () => {
     expect(await ƒ('[ \\x62 ]')).toEqual(`[ [ b ] ]`);
     expect(await ƒ('\\x62:')).toEqual(`[ b: ]`);
-    expect(ƒ('\\x62')).rejects.toThrow(`Word is not defined: "b"`);
+    expect(ƒ('\\x62')).rejects.toThrow(`"b" is not defined`);
     expect(await ƒ('\\x62: [ 1 2 + ] ; \\x62')).toEqual(`[ 3 ]`);
   });
 
   test('character with code \\uhhhh hexadecimal', async () => {
     expect(await ƒ('[ \\u266D ]')).toEqual(`[ [ ♭ ] ]`);
     expect(await ƒ('\\u266D:')).toEqual(`[ ♭: ]`);
-    expect(ƒ('\\u266D')).rejects.toThrow(`Word is not defined: "♭"`);
+    expect(ƒ('\\u266D')).rejects.toThrow(`"♭" is not defined`);
     expect(await ƒ('\\u266D: [ 1 2 + ] ; \\u266D')).toEqual(`[ 3 ]`);
   });
 
   test('character with code \\u{h} hexadecimal', async () => {
     expect(await ƒ('[ \\u{266D} ]')).toEqual(`[ [ ♭ ] ]`);
     expect(await ƒ('\\u{266D}:')).toEqual(`[ ♭: ]`);
-    expect(ƒ('\\u{266D}')).rejects.toThrow(`Word is not defined: "♭"`);
+    expect(ƒ('\\u{266D}')).rejects.toThrow(`"♭" is not defined`);
     expect(await ƒ('\\u{266D}: [ 1 2 + ] ; \\u266D')).toEqual(`[ 3 ]`);
   });
 
   test('character with code \\Uhhhhhhhh hexadecimal', async () => {
     expect(await ƒ('[ \\U0001F4A9 ]')).toEqual(`[ [ 💩 ] ]`);
     expect(await ƒ('\\U0001F4A9:')).toEqual(`[ 💩: ]`);
-    expect(ƒ('\\U0001F4A9')).rejects.toThrow(`Word is not defined: "💩"`);
+    expect(ƒ('\\U0001F4A9')).rejects.toThrow(`"💩" is not defined`);
     expect(await ƒ('\\U0001F4A9: [ 1 2 + ] ; \\U0001F4A9')).toEqual(`[ 3 ]`);
   });
-
-  // todo
-  // test('character with given Unicode name', async () => {
-  //   expect(await ƒ('[ \\u[flat] ]')).toEqual(`[ [ ♭ ] ]`);
-  //   expect(await ƒ('\\u[flat]:')).toEqual(`[ ♭: ]`);
-  //   expect(ƒ('\\u[flat]')).rejects.toThrow(`Word is not defined: "♭"`);
-  //   expect(await ƒ('\\u[flat]: [ 1 2 + ] ; \\u[flat]')).toEqual(`[ 3 ]`);
-  // });
 });

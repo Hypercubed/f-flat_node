@@ -64,8 +64,8 @@ test('should foldl and foldr', async () => {
   expect(await ƒ('10 integers 0 [-] foldr')).toEqual(`[ -5 ]`);
 });
 
-test('should uncons', async () => {
-  expect(await ƒ('(5 4 3) uncons')).toEqual(`[ 5 [ 4 3 ] ]`);
+test('should popl', async () => {
+  expect(await ƒ('(5 4 3) popl')).toEqual(`[ 5 [ 4 3 ] ]`);
 });
 
 test('nop', async () => {

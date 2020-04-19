@@ -1,0 +1,32 @@
+// keep/check
+keep: [ sip ] ;            // B [A*] -> B a* B    (aka sip)
+check: [ dupd eval ] ;     // B [A*] -> B B a*    (aka w)
+
+// No matter how many parameters the quotation consumes from the stack when nullary executes it, they are all restored and the final value calculated by the execution of the quotation is pushed on top of that
+nullary: [ [ stack dup ] dip ap -1 @ [ unstack ] dip ] ;;
+
+// control
+branch: [ choose eval ] ;
+when: [ [ ] branch ] ;
+unless: [ [ ] swap branch ] ;
+ifte: [ slipd branch ] ;;
+if: [ slip when ] ;;
+loop: [ [ eval ] keep [ loop ] >> when ] ;;
+while: [ swap dup dipd + [ loop ] >> when ] ;;
+runn: [ [ 1 - dup -1 > ] [ [ run ] dip ] while drop ] ;;
+times: [ runn drop ] ;;
+dupn: [ [ dup ] swap times ] ;;
+
+// y combinator
+y: [ [ dup >> ] swap + dup >> ] ;;
+
+// functional
+chain: [ over nothing? ~ swap when ] ;;
+
+/**
+  * ## `nop`
+  * no op
+  *
+  * ( -> )
+  */
+nop: [] ;

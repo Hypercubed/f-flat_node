@@ -138,7 +138,7 @@ test(`defined?`, async () => {
   expect(await ƒ(`'slip' defined?`)).toEqual(`[ true ]`);
   expect(await ƒ(`'junk' defined?`)).toEqual(`[ false ]`);
   expect(ƒ(`'_top' defined?`)).rejects.toThrow(
-    `'defined?' invalid key: "_top"`
+    `Error calling 'defined?': invalid key "_top"`
   ); // ????
 });
 
@@ -194,7 +194,7 @@ test('module `use` scoping', async () => {
 
 test('only `use` modules', async () => {
   expect(ƒ(`{ x: [ 1 2 + ] } use`)).rejects.toThrow(
-    `'use' invalid vocabulary. Vocabulary should be a map of global symbols`
+    `Error calling 'use': invalid vocabulary. Vocabulary should be a map of global symbols`
   );
 });
 

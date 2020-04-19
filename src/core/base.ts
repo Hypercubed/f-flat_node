@@ -310,12 +310,12 @@ class Mul {
   arrayIntersparse = arrayMul;
 
   @signature(String, [Array, Word, Key, Sentence, Function])
-  stringIntersparse(lhs: string, rhs: unknown) {
+  stringIntersparse(lhs: string, rhs: StackValue) {
     return arrayMul(lhs.split(''), rhs);
   }
 
   @signature(Future, Any)
-  futureIntersparse(f: Future, rhs: any) {
+  futureIntersparse(f: Future, rhs: StackValue) {
     return f.map((lhs: Future) => mul(lhs, rhs));
   }
 
@@ -328,7 +328,7 @@ class Mul {
    *```
    */
   @signature()
-  arrayJoin(lhs: any[], rhs: string) {
+  arrayJoin(lhs: StackValue[], rhs: string) {
     return lhs.join(rhs);
   }
 
@@ -414,7 +414,7 @@ class Mul {
   }
 
   @signature(Array, [Number, Decimal])
-  array(a: any[], b: number) {
+  array(a: StackValue[], b: number) {
     return arrayRepeat(a, +b);
   }
 
@@ -472,7 +472,7 @@ class Div {
   arrayIntersparse = arrayInvMul;
 
   @signature(Array, [Array, Word, Key, Sentence, Function])
-  stringIntersparse(lhs: string, rhs: any) {
+  stringIntersparse(lhs: string, rhs: StackValue) {
     return arrayInvMul(lhs.split(''), rhs);
   }
 
@@ -513,13 +513,13 @@ class Div {
    * ```
    */
   @signature([Array, String], [Number, Decimal])
-  splitAt(a: any[] | string, b: number) {
+  splitAt(a: StackValue[] | string, b: number) {
     b = +b | 0;
     return new ReturnValues([a.slice(0, b), a.slice(b)]);
   }
 
   @signature(Future, Any)
-  future(f: Future, rhs: any) {
+  future(f: Future, rhs: StackValue) {
     return f.map((lhs: Future) => div(lhs, rhs));
   }
 
@@ -568,12 +568,12 @@ const div = dynamo.function(Div);
  */
 class IDiv {
   @signature(Array, [Array, Word, Key, Sentence, Function])
-  arrayIntersparse(lhs: any[], rhs: any) {
+  arrayIntersparse(lhs: StackValue[], rhs: StackValue) {
     return new Sentence(arrayMul(lhs, rhs));
   }
 
   @signature(String, [Array, Word, Key, Sentence, Function])
-  stringIntersparse(lhs: string, rhs: any) {
+  stringIntersparse(lhs: string, rhs: StackValue) {
     return new Sentence(arrayMul(lhs.split(''), rhs));
   }
 
@@ -741,20 +741,20 @@ class Unshift {
    * ```
    */
   @signature(Any, Array)
-  cons(lhs: any, rhs: any[]) {
+  cons(lhs: StackValue, rhs: StackValue[]) {
     return unshift(rhs, lhs);
   }
   @signature(Array, String)
-  consString(lhs: any[], rhs: string) {
+  consString(lhs: StackValue[], rhs: string) {
     return [lhs, new Word(rhs)];
   }
   @signature([Array, Word, Key, Sentence], [Array, Word, Sentence])
-  consWord(lhs: any, rhs: any) {
+  consWord(lhs: StackValue, rhs: StackValue) {
     return [lhs, rhs];
   }
 
   @signature(Future, Any)
-  future(f: Future, rhs: any) {
+  future(f: Future, rhs: StackValue) {
     return f.map((lhs: Future) => unshiftFn(lhs, rhs));
   }
 
@@ -856,12 +856,12 @@ class Shift {
    * ```
    */
   @signature(Array, Any)
-  array(lhs: any[], rhs: any) {
+  array(lhs: any[], rhs: StackValue) {
     return push(lhs, rhs);
   }
 
   @signature(Future, Any)
-  future(f: Future, rhs: any) {
+  future(f: Future, rhs: StackValue) {
     return f.map((lhs: any) => pushFn(lhs, rhs));
   }
 
@@ -1063,7 +1063,7 @@ class Ln {
    * ```
    */
   @signature([Array, String])
-  array(a: any[] | string) {
+  array(a: StackValue[] | string) {
     return a.length;
   }
 
@@ -1089,7 +1089,7 @@ class Ln {
    * ```
    */
   @signature(Any)
-  any(a: any) {
+  any(a: StackValue) {
     return 0;
   }
 }
@@ -1192,7 +1192,7 @@ class Empty {
     return '';
   }
   @signature()
-  array(a: any[]) {
+  array(a: StackValue[]) {
     return [];
   }
   @signature()
@@ -1259,7 +1259,7 @@ class Cmp {
    * ```
    */
   @signature()
-  array(lhs: any[], rhs: any[]) {
+  array(lhs: StackValue[], rhs: StackValue[]) {
     return numCmp(lhs.length, rhs.length);
   }
 
@@ -1326,7 +1326,7 @@ class Cmp {
   }
 
   @signature(Any, Any)
-  any(lhs: any, rhs: any) {
+  any(lhs: StackValue, rhs: StackValue) {
     return null;
   }
 }
@@ -1361,8 +1361,8 @@ export const base = {
   '=': deepEquals
 };
 
-function numCmp(lhs: any, rhs: any) {
-  if (Number.isNaN(lhs) || Number.isNaN(rhs)) {
+function numCmp(lhs: number | string, rhs: number | string) {
+  if (Number.isNaN(lhs as number) || Number.isNaN(rhs as number)) {
     return Object.is(lhs, rhs) ? null : NaN;
   }
   if (lhs === rhs) {

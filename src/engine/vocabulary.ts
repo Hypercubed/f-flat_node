@@ -84,12 +84,12 @@ export class Vocabulary {
 
     if (path.length > 0) {
       // cannot set to path
-      throw new Error(`invalid key: "${_key}"`);
+      throw new Error(`invalid key "${_key}"`);
     }
 
     if (key.length > 1 && INVALID_WORDS.some(r => key.match(r))) {
       // invalid keys
-      throw new Error(`invalid key: "${_key}"`);
+      throw new Error(`invalid key "${_key}"`);
     }
 
     let sym = new GlobalSymbol(key);
@@ -99,7 +99,7 @@ export class Vocabulary {
         // allow defintion to words that have been declared but not defined
         sym = w;
       } else {
-        throw new Error(`cannot overwrite definition: "${key}"`);
+        throw new Error(`cannot overwrite definition "${key}"`);
       }
     }
 
@@ -132,12 +132,12 @@ export class Vocabulary {
       const value = dict[key];
       if (!GlobalSymbol.is(value)) {
         throw new Error(
-          `'use' invalid vocabulary. Vocabulary should be a map of global symbols`
+          `Error calling 'use': invalid vocabulary. Vocabulary should be a map of global symbols.`
         ); // make FFlatError
       }
       if (!this.globalMap.has(value)) {
         throw new Error(
-          `'use' invalid vocabulary. Symbol is undefined: ${value.description}`
+          `Error calling 'use': invalid vocabulary. Symbol is undefined ${value.description}.`
         ); // make FFlatError
       }
       this.scope[key] = value;
@@ -169,7 +169,7 @@ export class Vocabulary {
         if (typeof v.value === 'string' && !v.value.startsWith(LOCAL)) {
           const sym = this.findSymbol(v.value);
           if (is.undefined(sym)) {
-            throw new Error(`Word is not defined: "${v.value}"`);
+            throw new Error(`"${v.value}" is not defined.`);
           }
           return sym;
         }
@@ -211,7 +211,7 @@ export class Vocabulary {
         const type = typeof value;
         if (type === 'undefined') {
           if (!this.globalMap.has(v)) {
-            throw new Error(`Word is not defined: "${v.description}"`);
+            throw new Error(`"${v.description}" is not defined.`);
           }
           return v;  // defered
         }
@@ -226,7 +226,7 @@ export class Vocabulary {
         if ((typeof v.value === 'string' && !v.value.startsWith(LOCAL))) {
           const sym = this.findSymbol(v.value);
           if (is.undefined(sym)) {
-            throw new Error(`Word is not defined: "${v.value}"`);
+            throw new Error(`"${v.value}" is not defined.`);
           }
           return _bind(sym);
         }
@@ -267,7 +267,7 @@ export class Vocabulary {
     if (GlobalSymbol.is(key)) return key;
 
     if ([TOP].includes(key)) {
-      throw new Error(`invalid key: "${key}"`);
+      throw new Error(`invalid key "${key}"`);
     }
 
     const path = Vocabulary.makePath(key);

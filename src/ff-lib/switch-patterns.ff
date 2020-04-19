@@ -21,7 +21,7 @@ guard: [
 switch: [
   dup empty?
   [
-    uncons slip        // pop and evaluate first item in list
+    popl slip        // pop and evaluate first item in list
     [ switch ] >>      // switch rest
     branch
   ] unless

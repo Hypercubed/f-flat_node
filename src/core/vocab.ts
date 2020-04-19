@@ -122,24 +122,6 @@ export const dict = {
   },
 
   /**
-   * ## `;` (def)
-   *
-   * stores a definition in the current dictionary
-   *
-   * `a: [A*] ⭢`
-   *
-   * ```
-   * f♭> sqr: [ dup * ] ;
-   * [ ]
-   * ```
-   */
-  // ';'(this: StackEnv, lhs: string | Key, rhs: StackValue[]) {
-  //   this.dict.set(String(lhs), undefined);
-  //   const action = createAction(this.dict.bind(rhs));
-  //   this.dict.set(String(lhs), action);
-  // },
-
-  /**
    * ## `use`
    *
    * Move the contents of a map into scope
@@ -228,14 +210,14 @@ export const dict = {
     return console.log(ffPrettyPrint.color(r));
   },
 
-  '.'(this: StackEnv, a: any) {
-    try {
-      process.stdout.clearLine(-1);
-      process.stdout.cursorTo(0);
-    } catch (e) {}
-    console.log(ffPrettyPrint.color(a));
-    console.log('');
-  },
+  // '.'(this: StackEnv, a: StackValue) {
+  //   try {
+  //     process.stdout.clearLine(-1);
+  //     process.stdout.cursorTo(0);
+  //   } catch (e) {}
+  //   console.log(ffPrettyPrint.color(a));
+  //   console.log('');
+  // },
 
   /**
    * ## `words`

@@ -1,0 +1,123 @@
+'testing.ff' require
+
+// aggregates
+slice: [ [ % ] dip \ ] ;;
+pop: [ -1 \ ] ;;
+shift: [ 1 % ] ;;
+car: [ 0 @ ] ;;
+cdr: [ 1 % ] ;;
+fst: [ 0 @ ] ;;
+snd: [ 1 @ ] ;;
+first: [ 0 @ ] ;;
+last: [ -1 @ ] ;;
+rest: [ 1 % ] ;;
+head: [ \ ] ;;  // [a] n -> [a]  // aka take
+tail: [ % ] ;;  // [a] n -> [a]  // aka  drop
+startswith?: [ dup ln [ head ] >> dip = ] ;;
+endswith?: [ dup ln [ tail ] >> dip = ] ;;
+contains?: [ indexof 1 > ] ;;
+
+    [ [ 1 2 3 ] 3 contains? assert ] 'contains-1' test
+    [ [ 1 2 3 ] 4 contains? assert-false ] 'contains-2' test
+    [ [ 1 2 3 ] 2 head [ 1 2 ] assert-equal ] 'head' test
+    [ [ 1 2 3 ] 1 tail [ 2 3 ] assert-equal ] 'head' test
+
+popr: [ -1 / unstack ] ;
+popl: [ 1 / [ unstack ] dip ] ;
+
+    [ [ 1 2 3 ] popr 3 assert-equal [ 1 2 ] assert-equal ] 'popr' test
+    [ [ 1 2 3 ] popl [ 2 3 ] assert-equal 1 assert-equal ] 'popl' test
+
+// lists
+>>>: [ >> >> ] ;
+empty?: [ ln 0 = ] ;
+unit: [ [ ] >> ] ;
+cons: [ >> ] ;                        // aka unshift
+pair: [ [ ] >>> ] ;;
+unpair: [ [ 0 @ ] [ 1 @ ] bi ] ;;     // unstack for 2-tuple
+
+    [ 1 2 pair [ 1 2 ] assert-equal ] 'pair' test
+    [ [ 1 2 ] unpair 2 assert-equal 1 assert-equal ] 'unpair' test
+
+// 
+stackd: [ q< stack q> ] ;;
+get: [ q< @ dup null? swap q> swap choose ] ;;
+zipinto: [ [ zip ] dip [ + unstack ] >> map ] ;;  // aka interleave3?
+interleave: [ zip [ unstack ] map ] ;;
+zipwith: [ [ zip ] dip [ + eval ] >> map ] ;;
+unzip: [ [ [ fst ] map ] [ [ snd ] map ] bi ] ;;
+zipmap: [ interleave object ] ;;
+
+    [ [ 1 2 3 ] [ 4 5 6 ] [ 7 8 9 ] zipinto [ 1 4 7 8 9 2 5 7 8 9 3 6 7 8 9 ] assert-equal ] 'zipinto' test
+    [ [ 1 2 3 ] [ 4 5 6 ] [ + ] zipinto [ 1 4 + 2 5 + 3 6 + ] assert-equal ] 'zipinto is lazy' test
+    [ [ 1 2 3 ] [ 4 5 6 ] interleave [ 1 4 2 5 3 6 ] assert-equal ] 'interleave' test
+    [ [ 1 2 3 ] [ + - * ] interleave [ 1 + 2 - 3 * ] assert-equal ] 'interleave is lazy' test
+    [ [ 1 2 3 ] [ 4 5 6 ] [ + ] zipwith [ 5 7 9 ] assert-equal ] 'zipwith' test
+    [ [ [ 1 2 ] [ 3 4 ] [ 5 6 ] ] unzip [ 2 4 6 ] assert-equal [ 1 3 5 ] assert-equal ] 'unzip' test
+    [ [ [ 1 + ] [ 2 - ] [ 3 * ] ] unzip [ + - * ] assert-equal [ 1 2 3 ] assert-equal ] 'unzip is lazy' test
+    [ [ a: b: c: ] [ 1 2 3 ] zipmap { a: 1, b: 2, c: 3 } assert-equal ] 'zipmap' test
+
+bimap: [ [ bi* ] >>> ap ] ;;
+
+    [ [ 1 2 ] [ 5 + ] [ 3 * ] bimap [ 6 6 ] assert-equal ] 'bimap' test
+
+lift: [ [ bi ] >>> appl ] ;;
+
+    [ 6 [ 2 * ] [ 3 * ] lift [ 12 18 ] assert-equal ] 'lift' test
+
+    
+_flatten: [ dup array? [ [ _flatten ] map unstack ] when ] ;
+flatten: [ [ _flatten ] map ] ;;
+
+    [ [[1] 2 [[3 4] 5] [[[]]] [[[6]]] 7 8 []] flatten [ 1 2 3 4 5 6 7 8 ] assert-equal ] 'flatten' test
+
+_flat: [ dup array? [ unstack ] when ] ;
+flat: [ [ _flat ] map ] ;;
+
+    [ [ [1 2] [3 4] [ 5 6 ] ] flat [ 1 2 3 4 5 6 ] assert-equal ] 'flat-1' test
+    [ [ [1 2] [3 4] [[5 6]] ] flat [ 1 2 3 4 [ 5 6 ] ] assert-equal ] 'flat-2' test
+
+flatmap: [ [ _flat ] + map ] ;;
+
+    [ [1 2 3 4] [ 2 * unit ] flatmap [ 2 4 6 8 ] assert-equal ] 'flatmap' test
+    [ [1 2 3 4] [ 2 * unit unit ] flatmap [ [2] [4] [6] [8] ] assert-equal ] 'flatmap' test
+
+// folds
+each: [ * eval ] ;;
+reverse-each: [ / eval ] ;;
+foldl: [ swapd each ] ;;
+foldr: [ [ swap ] swap + swapd reverse-each ] ;;
+foldl1: [ [ popl ] dip each ] ;;
+foldr1: [ [ popl ] dip reverse-each ] ;;
+fold: [ foldl1 ] ;;
+guard: [ [ keep ] >> dip branch ] ;;
+orelse: [ [ null? ~ ] guard ] ;;
+keepif: [ over unit if ] ;;
+until: [ [ [ ~ ] + ] dip while ] ;;
+forever: [ [ eval ] keep [ forever ] >> eval ] ;;
+either?: [ bi + ] ;;
+
+    [ [ 1 2 3 ] 0 [ - ] foldl -6 assert-equal ] 'foldl' test
+    [ [ 1 2 3 ] 0 [ - ] foldr 2 assert-equal ] 'foldr' test
+
+sum: [ [ + ] fold ] ;;
+
+    [ [ 1 2 3 ] sum 6 assert-equal ] 'sum' test
+    [ [ 'a' 'b' 'c' ] sum 'abc' assert-equal ] 'sum' test
+
+product: [ [ * ] fold ] ;;
+
+    [ [ 1 2 3 ] product 6 assert-equal ] 'product' test
+    [ [ 4 5 6 ] product 120 assert-equal ] 'product' test
+
+map-reduce: [ [ map ] dip fold ] ;;
+
+filter: [ [ dup empty swap ] dip [ keepif ] >> map swap * ] ;;
+
+    [ [ 1 2 3 4 ] [ 2 % 0 = ] filter [ 2 4 ] assert-equal ] 'filter-1' test
+    [ [ 1 2 3 4 ] [ 2 > ] filter [ 3 4 ] assert-equal ] 'filter-2' test
+
+// aggregate reduction
+reverse: [ [ ] / ] ;;
+
+    [ [ 1 2 3 ] reverse [ 3 2 1 ] assert-equal ] 'reverse' test

@@ -1,4 +1,4 @@
-import { Decimal } from '../types';
+import { Decimal, StackValue } from '../types';
 import { log, FFlatError } from '../utils';
 import { StackEnv } from '../engine/env';
 
@@ -20,7 +20,7 @@ export const flags = {
    * [ ]
    * ```
    */
-  'set-system-property'(this: StackEnv, p: string, v: any): void {
+  'set-system-property'(this: StackEnv, p: string, v: StackValue): void {
     switch (p) {
       case 'log-level':
         log.level = String(v);
@@ -30,7 +30,7 @@ export const flags = {
         break;
       default:
         throw new FFlatError(
-          `'set-system-property' value is not a valid flag: "${p}"`,
+          `Error calling 'set-system-property': "${p}" is not a valid flag.`,
           this
         );
     }
@@ -57,7 +57,7 @@ export const flags = {
         return Decimal.precision;
       default:
         throw new FFlatError(
-          `'get-system-property' value is not a valid flag: "${p}"`,
+          `Error calling 'get-system-property': "${p}" is not a valid flag.`,
           this
         );
     }

@@ -8,7 +8,7 @@ import { signature } from '@hypercubed/dynamo';
 import { spawnSync } from 'child_process';
 
 import { bar } from '../utils';
-import { dynamo } from '../types';
+import { dynamo, StackValue } from '../types';
 import { terminal } from 'terminal-kit';
 
 import normalizeUrl = require('normalize-url');
@@ -74,7 +74,7 @@ export const node = {
    * Prints the value
    *
    */
-  print(a: any) {
+  print(a: StackValue) {
     const st = String(a);
 
     if (bar.active) terminal.eraseDisplayBelow();
@@ -99,7 +99,7 @@ export const node = {
    * Prints an object as a table
    *
    */
-  table(a: any) {
+  table(a: Object) {
     try {
       process.stdout.clearLine(-1);
       process.stdout.cursorTo(0);
@@ -116,7 +116,7 @@ export const node = {
    * terminate the process synchronously with an a status code
    *
    */
-  exit(a: any) {
+  exit(a: number) {
     process.exit(Number(a)); // exit: `process.exit` js-raw ;
   },
 

@@ -569,7 +569,7 @@ F♭> 'square' show
 
 F♭> y: [ x 2 + ] ;        // Referenced words must be defined at defintion time
 Thrown:
-FFlatError: ';' Word is not defined: "x"
+FFlatError: Error calling 'def': "x" is not defined.
 
 F♭> x: defer y: defer     // mutually recursive words must be defered
 [ ]
@@ -613,7 +613,7 @@ F♭> 'World' hello
 
 F♭> hello: [ 'Hi ' swap + ] ;                        // words cannot be redefined in the current context
 Thrown:
-FFlatError: ';' cannot overwrite definition: 'hello'
+FFlatError: Error calling 'def': cannot overwrite definition "hello"
 
 F♭> [ hello: [ 'Hi ' swap + ] ; 'World' hello ] in   // `in` runs the quote in a child scope, pushing the child stack to the parent
 [ 'Hello World' [ 'Hi World' ] ]

@@ -1,7 +1,7 @@
 import { signature, Any } from '@hypercubed/dynamo';
-import { dynamo, Word, Sentence, Decimal, Complex } from '../types/index';
+import { dynamo, Word, Sentence, Decimal, Complex, StackValue } from '../types/index';
 
-export const arrayRepeat = (a: any[], len: any) => {
+export const arrayRepeat = (a: StackValue[], len: StackValue): StackValue[] => {
   len = Number(len) | 0;
   let acc: any[] = [];
   if (len < 1) {
@@ -14,7 +14,7 @@ export const arrayRepeat = (a: any[], len: any) => {
   return acc;
 };
 
-export const arrayMul = (lhs: any[], rhs: any) => {
+export const arrayMul = (lhs: StackValue[], rhs: StackValue): StackValue[] => {
   const len = lhs.length;
   let acc: any[] = [];
   if (len < 1) {
@@ -27,7 +27,7 @@ export const arrayMul = (lhs: any[], rhs: any) => {
   return acc;
 };
 
-export const arrayInvMul = (lhs: any[], rhs: any) => {
+export const arrayInvMul = (lhs: StackValue[], rhs: StackValue): StackValue[] => {
   const len = lhs.length;
   let acc: any[] = [];
   if (len < 1) {
@@ -132,7 +132,7 @@ export function deepEquals(a: any, b: any): boolean {
 }
 
 class ToObject {
-  @signature()
+  @signature(Array)
   array(a: any[]) {
     // hash-map
     const r = {};

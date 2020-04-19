@@ -128,7 +128,7 @@ export class StackEnv {
     });
 
     this.run();
-    if (!finished) throw new FFlatError('Do Not Release Zalgo', this);
+    if (!finished) throw new FFlatError('Do Not Release Zalgo.', this);
     return this;
   }
 
@@ -148,8 +148,8 @@ export class StackEnv {
 
   async createChildPromise(a: StackValue): Promise<StackValue[]> {
     try {
-      const child = await this.createChild().promise(a);
-      return child.stack;
+      const { stack } = await this.createChild().promise(a);
+      return stack;
     } catch (err) {
       this.onError(err);
     }
@@ -166,7 +166,6 @@ export class StackEnv {
     return {
       currentAction: this.currentAction,
       depth: this.depth,
-      // prevState: this.prevState,
       stack: this.stack,
       queue: this.queue.slice()
     };
@@ -175,9 +174,7 @@ export class StackEnv {
   private run(s?: StackValue): StackEnv {
     s && this.enqueueFront(s);
 
-    if (this.status !== IDLE) {
-      return this;
-    }
+    if (this.status !== IDLE) return this;
 
     this.status = DISPATCHING;
     let loopCount = 0;
@@ -188,14 +185,14 @@ export class StackEnv {
 
     try {
       while (this.status !== YIELDING && this.queue.length > 0) {
-        checkMaxErrors(this);
-
         this.currentAction = this.queue.shift();
         this.trace = [...this.trace.slice(-10), this.stateSnapshot()];
         this.beforeEach.dispatch(this);
         this.dispatchValue(this.currentAction);
         this.afterEach.dispatch(this);
         this.currentAction = undefined;
+
+        checkMaxErrors(this);
       }
       this.onIdle();
     } catch (e) {
@@ -207,14 +204,21 @@ export class StackEnv {
     // Actions to run after each dispatch
     // Used to detect MAXSTACK and MAXRUN errors
     function checkMaxErrors(self: StackEnv) {
-      if (self.stack.length > MAXSTACK || self.queue.length > MAXSTACK) {
+      if (loopCount++ % 10000 !== 0) return;
+      if (self.stack.length > MAXSTACK) {
         throw new FFlatError(
-          `Maximum stack size of ${MAXSTACK} exceeded`,
+          `Maximum stack size of ${MAXSTACK} exceeded.`,
           self
         );
       }
-      if (loopCount++ > MAXRUN) {
-        throw new FFlatError(`Maximum loop count of ${MAXRUN} exceeded`, self);
+      if (self.queue.length > MAXSTACK) {
+        throw new FFlatError(
+          `Maximum queue size of ${MAXSTACK} exceeded.`,
+          self
+        );
+      }
+      if (loopCount > MAXRUN) {
+        throw new FFlatError(`Maximum loop count of ${MAXRUN} exceeded.`, self);
       }
     }
   }
@@ -301,7 +305,7 @@ export class StackEnv {
       : tokenValue;
 
     if (is.undefined(lookup)) {
-      throw new FFlatError(`Word is not defined: "${tokenValue}"`, this);
+      throw new FFlatError(`"${tokenValue}" is not defined.`, this);
     }
 
     if (lookup instanceof Sentence) {
@@ -323,7 +327,7 @@ export class StackEnv {
 
     if (args > len) {
       throw new FFlatError(
-        `'${name}' stack underflow. Too few values in the stack. Requires ${args} values, ${len} found.`,
+        `Error calling '${name}': stack underflow. Too few values in the stack. Requires ${args} values, ${len} found.`,
         this
       );
     }
@@ -348,7 +352,7 @@ export class StackEnv {
       if (e instanceof FFlatError) {
         throw e;
       }
-      throw new FFlatError(`'${name}' ${e.message}`, this);
+      throw new FFlatError(`Error calling '${name}': ${e.message}`, this);
     }
   }
 

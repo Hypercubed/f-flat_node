@@ -10,18 +10,22 @@
   read eval
 
 'core.ff' require
-'shuffle.ff' require
 'types.ff' require
+'shuffle.ff' require
+'control.ff' require
+
+lists: 'lists.ff' import ;
+lists use
 
 math: 'math.ff' import ;
+math use
 
-'math.ff' require
-'strings.ff' require
+strings: 'strings.ff' import ;
+strings use
+
 'datetime.ff' require
 'lambdas.ff' require
 'switch-patterns.ff' require
-
-math use
 
 'NODE_ENV' get-env 'test' != 
   [ 'usr.ff' if-exists-load ] when

@@ -14,7 +14,6 @@ import {
 import {
   deepEquals,
   template,
-  templateParts,
   toObject,
   FFlatError
 } from '../utils';
@@ -48,17 +47,17 @@ class Choose {
   name = 'choose';
 
   @signature(Boolean, Any, Any)
-  boolean(b: boolean, t: any, f: any) {
+  boolean(b: boolean, t: StackValue, f: StackValue) {
     return new ReturnValues([b ? t : f]);
   }
 
   @signature(null, Any, Any)
-  n(b: null, t: any, f: any) {
+  n(_b: null, _t: StackValue, _f: StackValue) {
     return null;
   }
 
   @signature(Future, Any, Any)
-  future(ff: Future, t: any, f: any) {
+  future(ff: Future, t: StackValue, f: StackValue) {
     return ff.map((b: any) => (b ? t : f));
   }
 }
@@ -72,7 +71,7 @@ class IndexOf {
   }
 
   @signature(Array, Any)
-  array(a: any[], b: string) {
+  array(a: StackValue[], b: string) {
     return a.findIndex(v => deepEquals(v, b));
   }
 
@@ -126,7 +125,7 @@ class At {
    * ```
    */
   @signature(Array, [Number, Decimal])
-  array(lhs: any[], rhs: number) {
+  array(lhs: StackValue[], rhs: number) {
     rhs = +rhs | 0;
     if (rhs < 0) {
       rhs = lhs.length + rhs;
@@ -151,7 +150,7 @@ class At {
   }
 
   @signature(Future, Any)
-  future(f: Future, rhs: any) {
+  future(f: Future, rhs: StackValue) {
     return f.map((lhs: any) => core['@'](lhs, rhs));
   }
 
@@ -164,7 +163,7 @@ class At {
    * ```
    */
   @signature(Object, Any) // 'map | Object, Word | Sentence | string | null'
-  object(a: any, b: any) {
+  object(a: Object, b: StackValue) {
     const path = String(b).split('.');
     const r = getIn(a, path);
     return r === undefined ? null : r;
@@ -172,7 +171,7 @@ class At {
 
   @signature(Any, null)
   @signature(null, Any)
-  n(f: null, rhs: any) {
+  n(_f: any, _rhs: any) {
     return null;
   }
 }
@@ -223,7 +222,7 @@ class Eval {
   }
 
   @signature(Any)
-  any(a: any) {
+  any(a: StackValue) {
     return new ReturnValues([a]);
   }
 }
@@ -292,7 +291,7 @@ export const core = {
    * [ 1 2 3 4 ]
    * ```
    */
-  'q>': function(this: StackEnv): any {
+  'q>': function(this: StackEnv) {
     return new ReturnValues([this.queue.pop()]); // danger
   },
 
@@ -614,14 +613,6 @@ export const core = {
    */
   template(this: StackEnv, str: string): string {
     return template(this, str);
-  },
-
-  'template-with'(this: StackEnv, str: string, action: any): string {
-    return template(this, str, action);
-  },
-
-  'template-parts'(this: StackEnv, str: string) {
-    return templateParts(this, str);
   },
 
   /**

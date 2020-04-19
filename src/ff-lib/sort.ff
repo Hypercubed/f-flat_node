@@ -8,7 +8,7 @@
 qsort: [
   dup ln 1 >             // when length > 1
   [
-    uncons                            // split into first [ ...rest ]
+    popl                            // split into first [ ...rest ]
     over dup                          // shuffle
     [ [ <= ] >> filter qsort ] >>     // filter values less than or equal to pivot
     swap [ [ > ] >> filter qsort ] >> // filter values greater than the pivot

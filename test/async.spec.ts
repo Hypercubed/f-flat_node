@@ -127,7 +127,7 @@ test('should read and parse JSON', async () => {
 
 test('throw on missing file', async () => {
   expect(ƒ(`'file:///Users/missing/file.ff' read`)).rejects.toThrow(
-    `'read' ENOENT: no such file or directory, open '/Users/missing/file.ff'`
+    `Error calling 'read': ENOENT: no such file or directory, open '/Users/missing/file.ff'`
   );
 });
 
@@ -186,19 +186,19 @@ test('multiple promises correct order', async () => {
 
 test('errors on unknown command, async', async () => {
   await expect(F().promise('abc')).rejects.toThrow(
-    `Word is not defined: "abc"`
+    `"abc" is not defined`
   );
 });
 
 test('errors on unknown command in child, async', async () => {
   await expect(F().promise('[ abc ] in')).rejects.toThrow(
-    `Word is not defined: "abc"`
+    `"abc" is not defined`
   );
 });
 
 test('errors on unknown command in child, async 2', async () => {
   await expect(F().promise('[ abc ] await')).rejects.toThrow(
-    `Word is not defined: "abc"`
+    `"abc" is not defined`
   );
 });
 

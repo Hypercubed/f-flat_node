@@ -7,6 +7,7 @@ import { Decimal } from '../types/decimal';
 import { Complex } from '../types/complex';
 import { Word, Key } from '../types/words';
 import { type } from '../utils';
+import { StackValue } from '../types';
 
 const NUMERALS = '0123456789ABCDEF';
 
@@ -120,7 +121,7 @@ export const types = {
    * converts to a complex number
    *
    */
-  complex(x: any) {
+  complex(x: string | number | Decimal | Complex) {
     return Complex.parse(x);
   },
 
@@ -132,7 +133,7 @@ export const types = {
    * converts to a string
    *
    */
-  string: (x: any) => String(x),
+  string: (x: StackValue) => String(x),
 
   /**
    * ## `itoa`
@@ -212,7 +213,7 @@ export const types = {
    * converts a value to a boolean
    *
    */
-  boolean: (x: any) => {
+  boolean: (x: StackValue) => {
     if (x === null) return x;
     return x ? Boolean(x.valueOf()) : false;
   },
@@ -225,7 +226,7 @@ export const types = {
    * converts a string to a key
    *
    */
-  ':'(x: any) {
+  ':'(x: Word | Key | string) {
     if (x instanceof Word) {
       return new Key(x.value);
     }
@@ -235,15 +236,15 @@ export const types = {
     return new Key(x);
   },
 
-  /**
-   * ## `array`
-   *
-   * `a ⭢ [A]`
-   *
-   * converts a value to an array
-   *
-   */
-  array: (x: any) => new Array(x), // used?
+  // /**
+  //  * ## `array`
+  //  *
+  //  * `a ⭢ [A]`
+  //  *
+  //  * converts a value to an array
+  //  *
+  //  */
+  // array: (x: StackValue) => new Array(x), // used?
 
   /**
    * ## `of`
@@ -253,7 +254,7 @@ export const types = {
    * converts the rhs value to the type of the lhs
    *
    */
-  of(lhs: any, rhs: any) {
+  of(lhs: StackValue, rhs: StackValue) {
     if (lhs !== null && lhs.constructor) {
       switch (lhs.constructor) {
         case Number:
@@ -261,7 +262,7 @@ export const types = {
         case String:
           return '' + rhs;
         default:
-          return new lhs.constructor(rhs);
+          return new (lhs as any).constructor(rhs);
       }
     }
     return null;
@@ -275,7 +276,7 @@ export const types = {
    * returns true if to values are the same value
    *
    */
-  'is?': (a: any, b: any) => Object.is(a, b),
+  'is?': (a: StackValue, b: StackValue) => Object.is(a, b),
 
   /**
    * ## `nothing?`
@@ -285,7 +286,7 @@ export const types = {
    * returns true if the value is null or undefined
    *
    */
-  'nothing?': (a: any) => a === null || typeof a === 'undefined',
+  'nothing?': (a: StackValue) => a === null || typeof a === 'undefined',
 
   /**
    * ## `date`
@@ -295,7 +296,7 @@ export const types = {
    * convert a value to a date/time
    *
    */
-  date: (a: any) => new Date(a),
+  date: (a: number | string) => new Date(a),
 
   /**
    * ## `now`
@@ -325,7 +326,7 @@ export const types = {
    * convert string to regular expresion
    *
    */
-  regexp(x: any) {
+  regexp(x: string | RegExp) {
     if (x instanceof RegExp) return x;
     const match = x.match(new RegExp('^/(.*?)/([gimy]*)$'));
     return match ? new RegExp(match[1], match[2]) : new RegExp(x);

@@ -62,7 +62,7 @@ p-reverse: [
   [
     [ 0 p-case [] ]
     [ 1 p-case [] ]
-    [ _ p-case [ uncons p-reverse swap + ] ]
+    [ _ p-case [ popl p-reverse swap + ] ]
   ]
   switch
 ] ;

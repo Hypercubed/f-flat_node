@@ -444,7 +444,7 @@ export class CLI {
           this.f.run();
         }, 0);
       }
-    }
+    };
 
     this.bindings.push(this.f.afterEach.add(pauser));
   }

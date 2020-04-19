@@ -9,7 +9,7 @@ test('number', async () => {
   expect(await ƒ('123 number')).toEqual(`[ 123 ]`);
   expect(await ƒ('"123" number')).toEqual(`[ 123 ]`);
   expect(ƒ('"abc" number')).rejects.toThrow(
-    `'number' [DecimalError] Invalid argument: abc`
+    `Error calling 'number': [DecimalError] Invalid argument: abc`
   ); // nan?
 });
 

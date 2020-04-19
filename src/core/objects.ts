@@ -1,6 +1,6 @@
 import { signature, Any } from '@hypercubed/dynamo';
 
-import { dynamo } from '../types';
+import { dynamo, StackValue } from '../types';
 import { toObject } from '../utils';
 
 // TODO: use dynamo to get the guard
@@ -46,7 +46,7 @@ export const objects = {
    * returns true if an item contains a key
    *
    */
-  'has?': (a: {}, b: any) => b in a, // object by keys, array by values (move to indexof?)
+  'has?': (a: {}, b: StackValue) => b in a, // object by keys, array by values (move to indexof?)
 
   /**
    * ## `keys`

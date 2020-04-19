@@ -18,7 +18,7 @@ describe('define', () => {
 
   test('cannot overwrite defined words', async () => {
     await expect(ƒ('x: [123] def x: [456] def')).rejects.toThrow(
-      `'def' cannot overwrite definition: "x"`
+      `Error calling 'def': cannot overwrite definition "x"`
     );
   });
 
@@ -38,7 +38,7 @@ describe('define', () => {
       `[ [ 'in-fork-a' ] ]`
     );
     await expect(ƒ('[ "a" ["in-fork-a"] def a ] in a')).rejects.toThrow(
-      'Word is not defined: "a"'
+      '"a" is not defined'
     );
   });
 });
@@ -49,7 +49,7 @@ test('create keys', async () => {
 
 describe('defer', () => {
   test('can defer, but not use', async () => {
-    expect(ƒ('x: defer x')).rejects.toThrow('Word is not defined: "x"');
+    expect(ƒ('x: defer x')).rejects.toThrow('"x" is not defined');
   });
 
   test('can defer, then define and use', async () => {
@@ -62,7 +62,7 @@ describe('defer', () => {
 
   test(`can't defer after defining`, async () => {
     expect(ƒ('x: [ 1 ] def x: defer')).rejects.toThrow(
-      `'defer' cannot overwrite definition: "x"`
+      `Error calling 'defer': cannot overwrite definition "x"`
     );
   });
 
@@ -93,20 +93,20 @@ describe('defer', () => {
 
 describe('invalid words', () => {
   test('invalid keys', async () => {
-    await expect(ƒ(`'x:y' [456] def`)).rejects.toThrow(`'def' invalid key: "x:y"`);
-    await expect(ƒ(`'x y' [456] def`)).rejects.toThrow(`'def' invalid key: "x y"`);
-    await expect(ƒ(`'x[y' [456] def`)).rejects.toThrow(`'def' invalid key: "x[y"`);
+    await expect(ƒ(`'x:y' [456] def`)).rejects.toThrow(`Error calling 'def': invalid key "x:y"`);
+    await expect(ƒ(`'x y' [456] def`)).rejects.toThrow(`Error calling 'def': invalid key "x y"`);
+    await expect(ƒ(`'x[y' [456] def`)).rejects.toThrow(`Error calling 'def': invalid key "x[y"`);
     await expect(ƒ(`'x_%y' [456] def`)).rejects.toThrow(
-      `'def' invalid key: "x_%y"`
+      `Error calling 'def': invalid key "x_%y"`
     );
-    await expect(ƒ(`'x,y' [456] def`)).rejects.toThrow(`'def' invalid key: "x,y"`);
-    await expect(ƒ(`'x"y' [456] def`)).rejects.toThrow(`'def' invalid key: "x"y"`);
+    await expect(ƒ(`'x,y' [456] def`)).rejects.toThrow(`Error calling 'def': invalid key "x,y"`);
+    await expect(ƒ(`'x"y' [456] def`)).rejects.toThrow(`Error calling 'def': invalid key "x"y"`);
     await expect(ƒ(`"x\ty" [456] def`)).rejects.toThrow(
-      `'def' invalid key: "x\ty"`
+      `Error calling 'def': invalid key "x\ty"`
     );
-    await expect(ƒ(`"123" [456] def`)).rejects.toThrow(`'def' invalid key: "123"`);
+    await expect(ƒ(`"123" [456] def`)).rejects.toThrow(`Error calling 'def': invalid key "123"`);
     await expect(ƒ(`"1.23" [456] def`)).rejects.toThrow(
-      `'def' invalid key: "1.23"`
+      `Error calling 'def': invalid key "1.23"`
     );
   });
 });
@@ -114,7 +114,7 @@ describe('invalid words', () => {
 test('see', async () => {
   expect(await ƒ(`'slip' see`)).toEqual(`[ '[ << eval ]' ]`);
   expect(await ƒ(`'swap' see`)).toEqual(`[ '[function swap]' ]`);
-  expect(ƒ(`'_top' see`)).rejects.toThrow(`'see' invalid key: "_top"`); // ???
+  expect(ƒ(`'_top' see`)).rejects.toThrow(`Error calling 'see': invalid key "_top"`); // ???
 });
 
 describe('bind', () => {

@@ -1,8 +1,12 @@
 'shuffle.ff' require
 'testing.ff' require
 
-split: [ '' / ] ;
-join: [ '' * ] ;
+unpack: [ '' / ] ;
+pack: [ '' * ] ;
+
+smap: [ map pack ] ;;
+
+    [ 'aBcD' [ atoi 1 + itoa ] smap 'bCdE' assert-equal ] 'smap' test
 
 // strings
 between?: [ swap dupd < bury < * ] ;
@@ -11,11 +15,7 @@ ucase-char?: [ atoi [ 64 91 ] dip between? ] ;
 lcase-char: [ dup ucase-char? [ atoi 32 + itoa ] when ] ;
 ucase-char: [ dup lcase-char? [ atoi 32 - itoa ] when ] ;
 
-smap: [ map join ] ;
-
-    [ 'aBcD' [ ucase-char ] smap 'ABCD' assert-equal ] 'smap' test
-
-sreverse: [ split reverse join ] ;;
+sreverse: [ unpack reverse pack ] ;;
 
     [ 'racecar' sreverse 'racecar' assert-equal ] 'sreverse' test
     [ 'aabb' sreverse 'bbaa' assert-equal ] 'sreverse' test
@@ -38,6 +38,17 @@ palindrome?: [ [ alphanumeric? ] filter lcase dup sreverse = ] ;
     [ 'aabb' palindrome? assert-false ] 'palindrome?' test
 
 // regexp
+lines: [ '[\r\n]+' :regexp / ] ;
+unlines: [ "\n" * ] ;
+
+    [ "abc\ndef" lines [ 'abc' 'def' ] assert-equal ] 'lines' test
+    [ [ 'abc' 'def' ] unlines "abc\ndef" assert-equal ] 'unlines' test
+
+words: [ '\s' :regexp / ] ;
+unwords: [ ' ' * ] ;
+
+    [ 'abc def' words [ 'abc' 'def' ] assert-equal ] 'words' test
+    [ [ 'abc' 'def' ] unwords 'abc def' assert-equal ] 'unwords' test
 
 /**
   * ## `replace`

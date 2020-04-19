@@ -1,6 +1,6 @@
 import { stringifyStrict } from '../utils/json';
 
-import { Future, ReturnValues, StackValue, Decimal } from '../types';
+import { Future, ReturnValues, StackValue, Decimal, Word, Sentence } from '../types';
 import { StackEnv } from '../engine/env';
 
 /**
@@ -12,7 +12,7 @@ export const experimental = {
    *
    * `a ⭢ str`
    */
-  stringify(a: any) {
+  stringify(a: StackValue) {
     return stringifyStrict(a);
   },
 
@@ -23,8 +23,8 @@ export const experimental = {
    *
    * `[A*] ⭢ future`
    */
-  spawn(this: StackEnv, a: any): Future {
-    return new Future(a, this.createChildPromise(a));
+  spawn(this: StackEnv, a: Word | Sentence): Future {
+    return new Future(a, this.createChildPromise(a as any));
   },
 
   /**
@@ -91,11 +91,11 @@ export const experimental = {
     return new Function(`return ${s}`).call(this);
   },
 
-  'create-object'(obj: any): any {
+  'create-object'(obj: Object): any {
     return Object.create(obj);
   },
 
-  'case-of?'(obj: any, proto: any): any {
+  'case-of?'(obj: Object, proto: Object): any {
     while (true) {
       if (obj === null) return false;
       if (proto === obj) return true;
@@ -103,7 +103,7 @@ export const experimental = {
     }
   },
 
-  put(obj: any, key: any, value: any): any {
+  put(obj: Object, key: any, value: StackValue): any {
     const proto = Object.getPrototypeOf(obj);
     const newObj = Object.create(proto);
     return Object.assign(newObj, { [key]: value });

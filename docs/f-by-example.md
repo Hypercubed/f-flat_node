@@ -262,7 +262,7 @@ f♭> x
 
 // dictionary words cannot be over written
 f♭> 54 x: sto
-FFlatError: Error: Cannot overwrite definitions in strict mode: x
+FFlatError: Error: Cannot overwrite definition "x"
 ```
 
 ## Slices and Lengths

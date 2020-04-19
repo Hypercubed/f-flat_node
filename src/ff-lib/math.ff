@@ -188,16 +188,6 @@ _recur-fact: [ 1 swap _fact-go ] ;;
 npr: [ [ [ ! ] keep ] dip - ! / ] ;;
 ncr: [ [ npr ] keep ! / round ] ;;
 
-// reduce
-sum: [ 0 [ + ] foldl ] ;;
-
-    [ [ 1 2 3 ] sum 6 assert-equal ] 'sum' test
-
-product: [ 1 [ * ] foldl ] ;;
-
-    [ [ 1 2 3 ] product 6 assert-equal ] 'product' test
-    [ [ 4 5 6 ] product 120 assert-equal ] 'product' test
-
 dot: [ [ * ] zipwith sum ] ;;
 
 sum-of-squares: [ 0 [ sq + ] foldl ] ;
