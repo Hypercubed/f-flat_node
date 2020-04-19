@@ -18,6 +18,8 @@
   - [ ] move `show` and others to repl
   - [ ] timing to repl?
   - [ ] logging in browser?
+- [ ] flag to disable stack tracing
+  - [ ] move checkMaxErrors to signal?
 
 ## TODO Now
 - [!] map over strings should return strings? (same sequence type)

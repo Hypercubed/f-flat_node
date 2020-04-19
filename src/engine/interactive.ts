@@ -8,6 +8,7 @@ import * as short from 'short-uuid';
 
 import { createRootEnv } from '../stack';
 import { log, bar, ffPrettyPrint, type } from '../utils';
+import { YIELDING, IDLE } from '../constants';
 
 import { StackEnv } from './env';
 import { terminal } from 'terminal-kit';
@@ -378,6 +379,7 @@ export class CLI {
     }
 
     bar.active = false;
+    bar.curr = 0;
 
     if (this.tracing) {
       const trace = () => console.log(ffPrettyPrint.formatTrace(this.f));
@@ -426,6 +428,25 @@ export class CLI {
         terminal.hideCursor(false);
       }));
     }
+
+    // pause every 3 seconds to allow interupt
+    let lastPause = Date.now();
+    const pauser = () => {
+      const now = Date.now();
+      const delta = now - lastPause;
+      if (delta > 3000) {
+        this.f.status = YIELDING;
+        this.readline.resume();
+        setTimeout(() => {
+          lastPause = now;
+          this.f.status = IDLE;
+          this.readline.pause();
+          this.f.run();
+        }, 0);
+      }
+    }
+
+    this.bindings.push(this.f.afterEach.add(pauser));
   }
 
   private getKeypress() {

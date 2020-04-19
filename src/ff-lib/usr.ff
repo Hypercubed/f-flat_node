@@ -22,8 +22,8 @@ nth: [ -- @ ] ;
 // ] ;
 
 // side effects
-timingon: [ 'log-level' 'timing' set-system-property ] ;
-timingoff: [ 'log-level' 'warn' set-system-property ] ;
+timing-on: [ 'log-level' 'timing' set-system-property ] ;
+timing-off: [ 'log-level' 'warn' set-system-property ] ;
 
 // quick check
 for-all: [ [ [ 100 times ] appl ] dip [ ~ ] + filter ] ;

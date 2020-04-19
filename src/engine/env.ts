@@ -74,7 +74,7 @@ export class StackEnv {
   lastFnDispatch: any;
   currentAction: StackValue;
 
-  // prevState: Partial<StackEnv> = null;
+  // for stack tracing
   trace: Array<Partial<StackEnv>> = [];
 
   before = new MiniSignal();
@@ -191,8 +191,7 @@ export class StackEnv {
         checkMaxErrors(this);
 
         this.currentAction = this.queue.shift();
-        this.trace.push(this.stateSnapshot());
-        this.trace = this.trace.slice(-10);
+        this.trace = [...this.trace.slice(-10), this.stateSnapshot()];
         this.beforeEach.dispatch(this);
         this.dispatchValue(this.currentAction);
         this.afterEach.dispatch(this);
@@ -237,9 +236,6 @@ export class StackEnv {
   }
 
   private onError(err: Error): void {
-    // if (this.autoundo) {
-    //   this.undo();
-    // }
     if (err instanceof TypeError) {
       err = new FFlatError(err.message, this);
     }
