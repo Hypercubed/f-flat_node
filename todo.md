@@ -18,7 +18,8 @@
   - [ ] move `show` and others to repl
   - [ ] timing to repl?
   - [ ] logging in browser?
-- [ ] flag to disable stack tracing
+- [ ] Speed up main loop
+  - [ ] flag to disable stack tracing
   - [ ] move checkMaxErrors to signal?
 
 ## TODO Now
