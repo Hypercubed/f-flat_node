@@ -1,4 +1,8 @@
 'shuffle.ff' require
+'testing.ff' require
+
+split: [ '' / ] ;
+join: [ '' * ] ;
 
 // strings
 between?: [ swap dupd < bury < * ] ;
@@ -6,20 +10,32 @@ lcase-char?: [ atoi [ 96 123 ] dip between? ] ;
 ucase-char?: [ atoi [ 64 91 ] dip between? ] ;
 lcase-char: [ dup ucase-char? [ atoi 32 + itoa ] when ] ;
 ucase-char: [ dup lcase-char? [ atoi 32 - itoa ] when ] ;
-char-map: [ map sum ] ;
-ucase: [ [ ucase-char ] char-map ] ;
-lcase: [ [ lcase-char ] char-map ] ;
+
+smap: [ map join ] ;
+
+    [ 'aBcD' [ ucase-char ] smap 'ABCD' assert-equal ] 'smap' test
+
+sreverse: [ split reverse join ] ;;
+
+    [ 'racecar' sreverse 'racecar' assert-equal ] 'sreverse' test
+    [ 'aabb' sreverse 'bbaa' assert-equal ] 'sreverse' test
+
+ucase: [ [ ucase-char ] smap ] ;
+lcase: [ [ lcase-char ] smap ] ;
 
 // rot12
 _rot13-char*: [ [ atoi ] dip [ - 13 + 26 % ] [ + ] bi itoa ] ;
 rot13-char: [ dup ucase-char? 64 97 choose _rot13-char* ] ;
-rot13: [ [ rot13-char ] char-map ] ;
+rot13: [ [ rot13-char ] smap ] ;
 
 // inquisitive
 digit-char?: [ atoi [ 47 58 ] dip between? ] ;
 char?: [ [ lcase-char? ] [ ucase-char? ] either? ] ;
 alphanumeric?: [ [ char? ] [ digit-char? ] either? ] ;
-palindrome?: [ [ alphanumeric? ] filter lcase dup reverse = ] ;
+palindrome?: [ [ alphanumeric? ] filter lcase dup sreverse = ] ;
+
+    [ 'racecar' palindrome? assert ] 'palindrome?' test
+    [ 'aabb' palindrome? assert-false ] 'palindrome?' test
 
 // regexp
 
@@ -29,3 +45,5 @@ palindrome?: [ [ alphanumeric? ] filter lcase dup reverse = ] ;
   * {string}, {regexp | string}, {string} -> {string}
   */
 replace: [ [ / ] dip * ] ;
+
+

@@ -55,7 +55,15 @@ logn: [ [ ln ] dip ln / ] ;;
     [ 10 10 logn 1 assert-equal ] 'calculates logn(1, 10) = 1' test
     [ 100 10 logn 2 assert-equal ] 'calculates logn(1, 10) = 1' test
 
-// Misc
+// Sign
+sign: [ 0 <=> ] ;;
+
+    [ 0 sign 0 assert-equal ] 'sign(0)' test
+    [ 10 sign 1 assert-equal ] 'sign(-10)' test
+    [ -10 sign -1 assert-equal ] 'sign(10)' test
+    [ infinity sign 1 assert-equal ] 'sign(inf)' test
+    [ -infinity sign -1 assert-equal ] 'sign(-inf)' test
+
 neg: [ 0 swap - ] ;;
 
     [ 1 neg -1 assert-equal ] 'neg' test
@@ -181,19 +189,18 @@ npr: [ [ [ ! ] keep ] dip - ! / ] ;;
 ncr: [ [ npr ] keep ! / round ] ;;
 
 // reduce
-sum: [ [ + ] fold ] ;;
+sum: [ 0 [ + ] foldl ] ;;
 
     [ [ 1 2 3 ] sum 6 assert-equal ] 'sum' test
-    [ [ 'a' 'b' 'c' ] sum 'abc' assert-equal ] 'alpha sum' test
 
-product: [ [ * ] fold ] ;;
+product: [ 1 [ * ] foldl ] ;;
 
     [ [ 1 2 3 ] product 6 assert-equal ] 'product' test
     [ [ 4 5 6 ] product 120 assert-equal ] 'product' test
 
 dot: [ [ * ] zipwith sum ] ;;
 
-sum-of-squares: [ 0 [ sq + ] reduce ] ;
+sum-of-squares: [ 0 [ sq + ] foldl ] ;
 square-of-sum: [ sum sq ] ;
 
 // math-ish
@@ -205,7 +212,7 @@ factors: [ [ 2 [ dup2 2 ^ > ] [ dup2 divisor? [ tuck / over ] [ next-odd ] branc
 next-fib: [ dup2 + ] ;;
 fib: [ ( 0 1 [ next-fib ] ) dip -- times drop ] ;;
 next-collatz: [ dup even? [ 2 / ] [ 3 * 1 + ] branch ] ;;
-collatz: [ [ [ dup 1 > ] [ dup next-collatz ] while ] >> in ] ;;
+collatz: [ [ [ dup 1 > ] [ dup next-collatz ] while ] appl ] ;;
 divrem: [ [ \ ] [ % ] bi2 ] ;;
 gcd: [ [ dup 0 > ] [ dup bury % ] while drop ] ;;
 lcm: [ dup2 [ [ * abs ] dip ] dip gcd / ] ;;

@@ -7,7 +7,7 @@ import * as fixedWidthString from 'fixed-width-string';
 import * as short from 'short-uuid';
 
 import { createRootEnv } from '../stack';
-import { log, bar, ffPrettyPrint, type, template } from '../utils';
+import { log, bar, ffPrettyPrint, type } from '../utils';
 
 import { StackEnv } from './env';
 import { terminal } from 'terminal-kit';
@@ -246,8 +246,8 @@ export class CLI {
         let f: StackEnv;
         try {
           f = newStack(this.readline);
-        } catch(err) {
-          console.error('Error during reset, aborting...')
+        } catch (err) {
+          console.error('Error during reset, aborting...');
           console.error(err);
           this.prompt();
           return true;
@@ -377,8 +377,6 @@ export class CLI {
       this.bindings.pop().detach();
     }
 
-    let qMax = this.f.stack.length + this.f.queue.length;
-
     bar.active = false;
 
     if (this.tracing) {
@@ -387,11 +385,20 @@ export class CLI {
       this.bindings.push(this.f.before.add(trace));
       this.bindings.push(this.f.beforeEach.add(trace));
       this.bindings.push(this.f.idle.add(trace));
-    } else if (!this.f.silent) {
+    } else if (!this.f.silent && log.level !== 'timing') {
       bar.active = true;
+
+      let qMax = this.f.stack.length + this.f.queue.length;
+      let lastRender = Date.now();
       const updateBar = () => {
         const q = this.f.stack.length + this.f.queue.length;
         if (q > qMax) qMax = q;
+
+        const now = Date.now();
+        const delta = now - lastRender;
+        if (delta < 320) return;
+
+        lastRender = now;
 
         terminal.saveCursor();
         terminal.down(1);
@@ -402,7 +409,7 @@ export class CLI {
           depth: this.f.depth,
           lastAction: ffPrettyPrint.trace(this.f.currentAction)
         });
-        
+
         terminal.restoreCursor();
       };
 

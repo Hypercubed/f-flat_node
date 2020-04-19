@@ -20,6 +20,15 @@ map: [ * in ] ;
     [ [ 1 2 3 ] [ 2 * ] map [ 2 4 6 ] assert-equal ] 'map' test
     [ [ 1 2 3 4 ] [ 2 % 0 = ] map [ false true false true ] assert-equal ] 'map' test
 
+ap: [ + in ] ;
+
+
+    [ [ 1 2 3 ] [ * ] ap [ 1 6 ] assert-equal ] 'ap' test
+
+appl: [ >> in ] ;
+
+    [ 3 [ 2 * ] appl [ 6 ] assert-equal ] 'appl' test
+
 // keep/check
 keep: [ sip ] ;            // B [A*] -> B a* B    (aka sip)
 check: [ dupd eval ] ;     // B [A*] -> B B a*    (aka w)
@@ -53,10 +62,11 @@ popl: [ 1 / [ unstack ] dip ] ;
     [ [ 1 2 3 ] popl [ 2 3 ] assert-equal 1 assert-equal ] 'popl' test
 
 // lists
-empty?: [ ln 0 = ] ;;
-unit: [ [ ] >> ] ;;
-cons: [ >> ] ;;                       // aka unshift
-pair: [ unit >> ] ;;
+>>>: [ >> >> ] ;
+empty?: [ ln 0 = ] ;
+unit: [ [ ] >> ] ;
+cons: [ >> ] ;                        // aka unshift
+pair: [ [ ] >>> ] ;;
 unpair: [ [ 0 @ ] [ 1 @ ] bi ] ;;     // unstack for 2-tuple
 uncons: [ [ first ] [ rest ] bi ] ;;  // aka shift
 
@@ -81,18 +91,25 @@ zipmap: [ interleave object ] ;;
     [ [ [ 1 + ] [ 2 - ] [ 3 * ] ] unzip [ + - * ] assert-equal [ 1 2 3 ] assert-equal ] 'unzip is lazy' test
     [ [ a: b: c: ] [ 1 2 3 ] zipmap { a: 1, b: 2, c: 3 } assert-equal ] 'zipmap' test
 
+bimap: [ [ bi* ] >>> ap ] ;;
+
+    [ [ 1 2 ] [ 5 + ] [ 3 * ] bimap [ 6 6 ] assert-equal ] 'bimap' test
+
+lift: [ [ bi ] >>> appl ] ;;
+
+    [ 6 [ 2 * ] [ 3 * ] lift [ 12 18 ] assert-equal ] 'lift' test
+
 // No matter how many parameters the quotation consumes from the stack when nullary executes it, they are all restored and the final value calculated by the execution of the quotation is pushed on top of that
-nullary: [ [ stack dup ] dip + in -1 @ [ unstack ] dip ] ;;
+nullary: [ [ stack dup ] dip ap -1 @ [ unstack ] dip ] ;;
 
 // control
-_do: [ dup dipd ] ;;
-branch: [ choose eval ] ;;
-when: [ [ ] branch ] ;;
-unless: [ [ ] swap branch ] ;;
+branch: [ choose eval ] ;
+when: [ [ ] branch ] ;
+unless: [ [ ] swap branch ] ;
 ifte: [ slipd branch ] ;;
 if: [ slip when ] ;;
 loop: [ [ eval ] keep [ loop ] >> when ] ;;
-while: [ swap _do + [ loop ] >> when ] ;;
+while: [ swap dup dipd + [ loop ] >> when ] ;;
 runn: [ [ 1 - dup -1 > ] [ [ run ] dip ] while drop ] ;;
 times: [ runn drop ] ;;
 dupn: [ [ dup ] swap times ] ;;
@@ -131,23 +148,22 @@ either?: [ bi + ] ;;
     [ [ 1 2 3 ] 0 [ - ] foldl -6 assert-equal ] 'foldl' test
     [ [ 1 2 3 ] 0 [ - ] foldr 2 assert-equal ] 'foldr' test
 
-appl: [ >> in ] ;;
 y: [ [ dup >> ] swap + dup >> ] ;;
 
 // functional
 chain: [ over nothing? ~ swap when ] ;;
 // fmap: [ eval ] ;;
 map-reduce: [ [ map ] dip fold ] ;;
-reduce: [ foldl ] ;;
+// reduce: [ foldl ] ;;
 filter: [ [ dup empty swap ] dip [ keepif ] >> map swap * ] ;;
 
     [ [ 1 2 3 4 ] [ 2 % 0 = ] filter [ 2 4 ] assert-equal ] 'filter-1' test
     [ [ 1 2 3 4 ] [ 2 > ] filter [ 3 4 ] assert-equal ] 'filter-2' test
 
 // aggregate reduction
-reverse: [ dup ln 1 > [ uncons [ reverse ] eval swap + ] when ] ;;
+reverse: [ [ ] / ] ;;
 
-    [ 'abcd' reverse 'dcba' assert-equal ] 'reverse' test
+    [ [ 1 2 3 ] reverse [ 3 2 1 ] assert-equal ] 'reverse' test
 
 /**
   * ## `nop`

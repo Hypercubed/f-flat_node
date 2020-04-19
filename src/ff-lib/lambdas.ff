@@ -3,7 +3,7 @@
 _stackn: [ [ ] swap [ >> ] swap times ] ;
 
 =>: [ dup ln swap [ _stackn ] dip swap [ def ] zipinto ] ;
-lambda: [ + in eval ] ;
+lambda: [ ap eval ] ;
 
 // f x y z = y2 + x2 − |y|  (The Dark Side, http://evincarofautumn.blogspot.com/2012/02/why-concatenative-programming-matters.html)
 _f: [

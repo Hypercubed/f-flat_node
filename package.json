@@ -16,6 +16,7 @@
     "test": "npm run lint && jest",
     "watch": "jest --watch",
     "lint": "tslint \"{test,src,bin}/**/*.{js,ts,spec.ts}\"",
+    "lint:fix": "tslint --fix \"{test,src,bin}/**/*.{js,ts,spec.ts}\"",
     "check": "npm run coverage && npm run lint",
     "coverage": "nyc -r lcov -r html -r text ava ./test/*.spec.ts",
     "start": "tsc && node ./bin/repl.js",
@@ -54,7 +55,7 @@
   },
   "devDependencies": {
     "@types/jest": "^25.2.1",
-    "@types/node": "^13.13.0",
+    "@types/node": "^12.12.36",
     "fast-check": "^1.23.0",
     "grammkit": "^0.7.1",
     "jest": "^25.1.0",

@@ -4,7 +4,7 @@
 - [ ] https://github.com/Hypercubed/real
   - [ ] Finish needed methods (`sin`, `cos`)
   - [ ] `Complex` module
-- [ ] Classes
+- [ ] Records/Classes
   - [ ] Prototypes (https://vimeo.com/74314050), 
   - [ ] go style interfaces (https://medium.com/@vtereshkov/how-i-implemented-go-style-interfaces-in-my-own-pascal-compiler-a0f8d37cd297)
   - [ ] Magic (Dunder) methods (https://rszalski.github.io/magicmethods/)
@@ -15,11 +15,13 @@
 - [ ] Running in browser
   - [ ] Move node specific code to repl
   - [ ] Online UI
+  - [ ] move `show` and others to repl
+  - [ ] timing to repl?
+  - [ ] logging in browser?
 
 ## TODO Now
-- [x] `popr`/`pop`, `[ A B C ]` -> `[ A B ] C`
-- [x] `popl`/`shift`, `[ A B C ]` -> `A [ B C ]`
-- [ ] force matching quotes, `( 1 2 ]` is an error
+- [!] map over strings should return strings? (same sequence type)
+- [ ] `show` to repl?
 - [ ] `switch, case` vs `case, ->`, `case, when`?
 - [ ] reintroduce
   - [x] `bind`
@@ -29,16 +31,16 @@
 - [ ] Standard words (haskell-ish):
   - [?] `fst`, `snd`, `head`, `tail`, `take`, `drop`
   - [x] `zip`, `zipwith`, `zipinto`
-  - [ ] `***`, `[x y] [x->a] [y->b] ***` ==> `[ a b ]`
-  - [ ] `&&&`, `x [x->a] [x->b] &&&` ==> `[ a b ]`
-  - [ ] `>>=`, `[a] [b]` ==> `[b]`
-  - [ ] `>>`, `[a] [a -> [b]]` ==> `[b]`
-  - [ ] `<*>`, `<$>`, `<&>`, `<-`, `<=<`?
+  - [?] `***`, `[x y] [x->a] [y->b] ***` ==> `[ a b ]` (bimap)
+  - [ ] `&&&`, `x [x->a] [x->b] &&&` ==> `[ a b ]` (bi?)
+  - [?] `>>`, `[a] [a -> [b]]` ==> `[b]` (flatmap?)
+  - [ ] `>>=`, `<*>`, `<$>`, `<&>`, `<-`, `<=<`?
 - [x] Move trace to repl?
 - [ ] contracts/guards
   - [?] guard
   - [ ] stack case guard
 - [ ] Replace `.x` syntax?  `/x`, `:x:`, `::x`, `/x/`, `~x`, `$x`
+  - [ ] repl commands vs force local
 - [ ] repl
   - [x] move repl to `src`...  use TS
   - [x] `.editor` in repl
@@ -59,11 +61,15 @@
 ## Bugs
 - [x] error on `.reset` crashes
 - [x] `"123\"456"` parse error
-- [ ] `'x' exit` should be type error?
+- [?] `'x' exit` should be type error?
 - [ ] `_ 3 =~`?
 - [x] `print` gets swallowed by stack printing
 
 ## Testing
+- [ ] force matching quotes, `( 1 2 ]` is an error
+  - [ ] force matching quotes
+  - [ ] mismatch error
+  - [ ] underflow error
 - [ ] test tokenizer/parser
 - [ ] Nested lambdas
 - [ ] test the repl
@@ -74,7 +80,7 @@
 - [?] Tests for `vocab`, `use`, etc.
 - [ ] Test all internal words
   - [ ] Basis
-  - [x] Core
+  - [ ] Core
   - [ ] Dictionary words
 - [ ] Test all errors
   - [ ] MAXSTACK
@@ -85,26 +91,16 @@
 - [?] pick for module? `math [ '!' ] pluck use`
 
 ## TODOs
-- [ ] Function defintion primitives?  (`;: [ [ inter ] dip bind define ] define`)
-  - [ ] `inter`, create an return an undefined global symbol
-      `x: inter` -> `x:` (symbol)
-  - [ ] `bind`, convert keys to global symbol
-      `[ x ] bind` -> `[ x ]` (symbols)
-  - [ ] `#`, convert a key or string to a symbol
-      `'x' #` -> 'x' (symbol.)
 - [ ] Bash-like brace expansion (https://github.com/micromatch/braces) `'{0..5}' :braces` -> `['1', '2', '3', '4', '5']`
 - [?] highlight as you type? (would need to parse as you type!)
-- [ ] recursive lambdas?
 - [ ] shell commands
-- [ ] sigils (`+x`, `~x`, `@x`, `^x`, `#x`, `%x`, `?x`, `!x`, `=x`)
+- [-] sigils (`+x`, `~x`, `@x`, `^x`, `#x`, `%x`, `?x`, `!x`, `=x`)
   - [?] User defined sigils?  (https://medium.com/blackode/write-your-own-sigils-elixir-ce648f531211)
     - [ ] `~regex/abc/u`, `/abc/u :regex` -> `'/.../u' :regex`
     - [ ] `~complex/3+2i/`, `/3+2i/ :complex`
   - [ ] get (`.x`, `@x`)?
   - [ ] lazy word (`.x`, `?x`, `#x`)?
   - [ ] repl commands (`.x`)?
-- [ ] Move `silent` flag to system properties
-  - [?] Progress bar flag?
 - [ ] `resolve` to allow missing file extension?
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [?] `@` from complex value?
@@ -115,7 +111,7 @@
 - [?] fried defintions `[ .x 2 ^ .y 2 ^ + .y abs - ] fry` -> `[[ x: y: ] => [ .x 2 ^ .y 2 ^ + .y abs - ]] lambda`
 - [ ] ability to define words as immediate (without prefix)?
 - [?] ensure defining a module (`x: 'xx.ff' import ;`) doesn't create extra globals
-- [?] all pprint values should be copy-pasteable in literal?
+- [?] all pprint values should be copy-pastable in literal?
   - [?] regex
   - [?] dates
   - [?] special numbers (`complexinfinity`, etc)
@@ -124,21 +120,21 @@
 - [?] Decimal shift/unshift
 - [ ] More complexInfinity/indeterminate base operations (http://functions.wolfram.com/Constants/ComplexInfinity/introductions/Symbols/ShowAll.html)
 - [?] immutable imports (https://github.com/moonad/Formality/blob/master/DOCUMENTATION.md#import)
-- [ ] flags for pprinting (*maxDepth*, etc)
+- [?] flags for pprinting (*maxDepth*, etc)
 - [ ] os/platform specific bootloading?
 - [?] all internal words are loaded at runtime (`js-import`?)
 - [x] different pprint for bound words?
 - [ ] `stack` and `unstack`
   - [ ] `stack` and `unstack` are reverse of common defs
-  - [ ] should `unstack` replace the stack?  If not then is `unstack: [ eval ] ;`?
+  - [-] should `unstack` replace the stack?  If not then is `unstack: [ eval ] ;`?
   - [ ] `unstack` allows pushing words to stack `[ 1 2 * ] unstack`!!
-  - [ ] `unstack` vs `eval`.
+  - [-] `unstack` vs `eval`.
 
 ## Parser
-- [ ] unicode words and keys: `f\u266D:`
-- [ ] Regex literal
+- [x] unicode words and keys: `f\u266D:`
+- [?] Regex literal
 - [?] `undefined` literal?
-- [ ] complex, `i`
+- [-] complex, `i`
 - [?] `+/-infinity`
 - [-] Dates (local dates, times, timestaps...) (could dates be user defined classes?)
 
@@ -147,7 +143,7 @@
 - [x] assertions
 - [?] TDD words (`suite`, `test`)
 - [ ] option skip tests on load?
-
+undefined
 ## Improved user space
 - [ ] Start in user directory
 - [ ] `add` - adds a word/vacabulary to the user's persistant dictionary/bootstrap? `math: add`
@@ -164,23 +160,13 @@
 - [?] `Alias` type?
 - [?] `ResolvedWord`?
 
-## Decide
-- [-] Better macro system, `dupn!3`, `dup<5>`, `range<1, 100>`, `range:(1, 10).` ?
-  - Using sap, prefer post-fix "macros" `1 10 :range`
-- [ ] `~` vs `!`, `!` vs `factorial`, `/=` or `!=`
-- [ ] Choose `regex` vs `regexp`
-- [ ] Ranges?  Infinite ranges? generators?
-- [ ] map over strings should return strings?
-
 ## Older Todos:
 - [ ] Finish JSON output
 - [ ] Serialize to `.ff` file?
 - [?] Tagged templates `fn'${A}-${B}'` -> `${A fn}-${B fn}`?
 - [?] Mixed numeric and string indecies for arrays and maps `[ 1 2 x: 3 ]` `{ x: 1 y: 2 3 4 5}`?
 - [?] Combine lambdas and pattern matching?
-- [?] Online help?
-- [ ] Fix/improve API docs
-    - [x] Move docs from gitbook?
+- [-] Online help?
 - [ ] Consistant and predictable display precision:
   - [ ] `1 acos` => `0` (precision issue)
   - [ ] precision in complex calculations (on print)
@@ -188,7 +174,7 @@
 - [ ] JSON
   - [ ] to simplified JSON (Decimal -> number, regex, etc)
   - [ ] Decimal/Complex .fromJSON + Tests
-- [ ] rewrite reduction rules?  user-defined?
+- [ ] reduction rules?
   - [ ] `dup drop` -> ``
   - [ ] `q> q< ` -> ``
 - [ ] Ensure predictable `<=>` with `null` and `nan`
@@ -203,9 +189,9 @@
 - [ ] More bitwise words:
   - [ ] `bit-set`, `bit-flip`, `bit-clr`, `bit-get`
 - [ ] `cld`: (Smallest integer larger than or equal to x/y)
-- [ ] `isfinite?`, `isinf?`, `isnan?`
-- [ ] `sign`, `ispos?`, `isneg?`
-- [ ] `>>>` ?
+- [ ] `finite?`, `inf?`, `undefined?`
+- [x] `sign` (same as `0 <=>`?)
+- [?] `>>>` ?
 - [ ] `sinpi`, `cospi` (more accurate than `cos(pi*x)`, especially for large `x`)?
 - [ ] Better complex inputs
   - [ ] `1+2i` (Literal)?
@@ -214,11 +200,11 @@
 - [ ] `clamp`, `scale`
 - [ ] radians -> rads-per-degree, etc. ?
 - [ ] `lesser-of`, `greater-of` vs `max`, `min`?
-- [ ] `gte` vs `>=`
+- [-] `gte` vs `>=`
 - [ ] Derivatives:
   - [ ] `deriv = (f, h) => x => (f(x + h) - f(x)) / h`
   - [x] `nd = (f, x, h) => (f(x + h) - f(x)) / h`
-- [ ] Move `prompt` into code?
+- [?] Move `prompt` into code?
 - [ ] Radix from number: `radix = (n, radix) => n.toString(radix)`
   - [ ] Fix `bin` and `oct` floating point
   - [ ] fix `hex`, `bin`, ect with neg values
@@ -243,7 +229,7 @@
 ## More Todo:
 
 - [ ] Matrices?
-- [ ] composite truth values?
+- [?] composite truth values?
 - [?] Improve errors (FF errors should not have a JS stack, FF stack)
 - [ ] Trig functions on complex
   - [x] sin, cos, tan
@@ -251,7 +237,7 @@
   - [x] asin, acos, atan
   - [x] asin, acos with real values > 1 are complex
   - [x] asin and acos of complex infinities
-  - [ ] atan2?
+  - [?] atan2?
   - [ ] other derived words: `sec`, `cot`, etc.
 - [ ] Infinity and complex numbers
   - [?] Infinity in a complex number is a ComplexInfinity
@@ -295,7 +281,7 @@
 - [ ] Pattern matching?
   - [ ] Pattern matching substitution? `[_ _]` => `[a,b]` (lambdas?)
   - [x] place holder `_`
-  - [x] rest pattern in arrays `[ 1 ... ]`
+  - [?] rest pattern in arrays `[ 1 ... ]`
   - [-] OR patterns `1 | 2` (now using regex)
   - [-] ranges `1...4` (now using regex)
   - [?] guards `3 >` (`case when`)?

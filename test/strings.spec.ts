@@ -184,8 +184,8 @@ test('should @ from out of bounds', async () => {
 });
 
 test('should reverse strings', async () => {
-  expect(await ƒ('"timov,tab" reverse')).toEqual(`[ 'bat,vomit' ]`);
-  expect(await ƒ('"racecar" reverse')).toEqual(`[ 'racecar' ]`);
+  expect(await ƒ('"timov,tab" sreverse')).toEqual(`[ 'bat,vomit' ]`);
+  expect(await ƒ('"racecar" sreverse')).toEqual(`[ 'racecar' ]`);
 });
 
 test('should filter strings', async () => {

@@ -21,12 +21,21 @@ import {
 import { patternMatch } from '../utils/pattern';
 import { StackEnv } from '../engine/env';
 
-function dequoteStack(env: StackEnv, s: StackValue) {
+const IMMEDIATE_QUOTE = Symbol.for('(');
+const LAZY_QUOTE = Symbol.for('[');
+const OBJECT_QUOTE = Symbol.for('{');
+
+const QUOTES = [IMMEDIATE_QUOTE, LAZY_QUOTE, OBJECT_QUOTE];
+
+function dequoteStack(env: StackEnv, s: StackValue, sym: Symbol) {
   const r: StackValue[] = [];
-  while (env.stack.length > 0 && s !== Symbol.for('(')) {
+  while (env.stack.length > 0 && !QUOTES.includes(s as any)) {
     r.unshift(s);
     s = env.stack[env.stack.length - 1];
     env.stack = pop(env.stack);
+  }
+  if (s !== sym) {
+    throw new Error('Unbalanced or unexpected parenthesis or bracket');
   }
   return r;
 }
@@ -226,18 +235,6 @@ class Zip {
     const r: StackValue[][] = [];
     for (let i = 0; i < l; i++) {
       r.push([a[i], b[i]]);
-    }
-    return r;
-  }
-}
-
-class ZipInto {
-  @signature(Array, Array, Array)
-  array(a: StackValue[], b: StackValue[], c: StackValue[]): StackValue[] {
-    const l = a.length < b.length ? a.length : b.length;
-    const r: StackValue[] = [];
-    for (let i = 0; i < l; i++) {
-      r.push(a[i], b[i], ...c);
     }
     return r;
   }
@@ -532,7 +529,7 @@ export const core = {
    *
    * `⭢ #(`
    */
-  '(': () => Symbol.for('('),
+  '(': () => IMMEDIATE_QUOTE,
 
   /**
    * ## `)` (immediate dequote)
@@ -542,18 +539,22 @@ export const core = {
    * `#( a* ⭢ [ a* ]`
    */
   ')': function(this: StackEnv, s: StackValue) {
-    return dequoteStack(this, s);
+    try {
+      return dequoteStack(this, s, IMMEDIATE_QUOTE);
+    } catch (e) {
+      throw new FFlatError(e, this);
+    }
   },
 
   /**
    * ## `[` (lazy quote)
    * pushes a quotation maker onto the stack, increments depth
    *
-   * `⭢ #(`
+   * `⭢ #[`
    */
   '[': function(this: StackEnv) {
     this.depth++;
-    return Symbol.for('(');
+    return LAZY_QUOTE;
   },
 
   /**
@@ -565,22 +566,21 @@ export const core = {
    */
   ']': function(this: StackEnv, s: StackValue) {
     this.depth--;
-    return dequoteStack(this, s);
+    try {
+      return dequoteStack(this, s, LAZY_QUOTE);
+    } catch (e) {
+      throw new FFlatError(e, this);
+    }
   },
-
-  // '|': function(this: StackEnv, s: StackValue) {
-  //   const st = dequoteStack(this, s);
-  //   return new ReturnValues([st, Symbol.for('(')]);
-  // },
 
   /**
    * ## `{` (immediate object quote)
    *
    * pushes a quotation marker onto the stack
    *
-   * `⭢ #(`
+   * `⭢ #{`
    */
-  '{': () => Symbol.for('('),
+  '{': () => OBJECT_QUOTE,
 
   /**
    * ## `}` (immediate object dequote)
@@ -590,7 +590,13 @@ export const core = {
    * `#( a b ... ⭢ { a: b ... }`
    */
   '}': function(this: StackEnv, s: StackValue) {
-    const r = dequoteStack(this, s);
+    let r: any;
+    try {
+      r = dequoteStack(this, s, OBJECT_QUOTE);
+
+    } catch (e) {
+      throw new FFlatError(e, this);
+    }
     return toObject(r);
   },
 

@@ -50,7 +50,7 @@ let f;
 try {
   f = newStack();
 } catch (err) {
-  console.error('Error during boot process, aborting...')
+  console.error('Error during boot process, aborting...');
   console.error(err);
   process.exit(1);
 }

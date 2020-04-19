@@ -22,13 +22,11 @@ nth: [ -- @ ] ;
 // ] ;
 
 // side effects
-traceoff: [ 'log-level' 'warn'  set-system-property ] ;
-traceon: [ 'log-level' 'trace' set-system-property ] ;
-timing: [ 'log-level' 'timing' set-system-property ] ;
-// trace: [ traceon eval traceoff ] ; // doesn't work!!
+timingon: [ 'log-level' 'timing' set-system-property ] ;
+timingoff: [ 'log-level' 'warn' set-system-property ] ;
 
 // quick check
-for-all: [ [ [ 100 times ] >> in ] dip [ ~ ] + filter ] ;
+for-all: [ [ [ 100 times ] appl ] dip [ ~ ] + filter ] ;
 check-for-all: [ for-all dup empty? [ '+++ OK, passed 100 tests.' println drop ] [ [ ' Failed!' + println ] map ] branch ] ;
 
 // generators
