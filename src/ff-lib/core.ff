@@ -46,6 +46,12 @@ contains?: [ indexof 1 > ] ;;
     [ [ 1 2 3 ] 2 head [ 1 2 ] assert-equal ] 'head' test
     [ [ 1 2 3 ] 1 tail [ 2 3 ] assert-equal ] 'head' test
 
+popr: [ -1 / unstack ] ;
+popl: [ 1 / [ unstack ] dip ] ;
+
+    [ [ 1 2 3 ] popr 3 assert-equal [ 1 2 ] assert-equal ] 'popr' test
+    [ [ 1 2 3 ] popl [ 2 3 ] assert-equal 1 assert-equal ] 'popl' test
+
 // lists
 empty?: [ ln 0 = ] ;;
 unit: [ [ ] >> ] ;;

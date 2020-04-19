@@ -17,9 +17,9 @@
   - [ ] Online UI
 
 ## TODO Now
-- [ ] `popr`/`pop`, `[ A B C ]` -> `[ A B ] C`
-- [ ] `popl`/`shift`, `[ A B C ]` -> `A [ B C ]`
-- [ ] force matching quotes, `( 1 2 ]` ia an error
+- [x] `popr`/`pop`, `[ A B C ]` -> `[ A B ] C`
+- [x] `popl`/`shift`, `[ A B C ]` -> `A [ B C ]`
+- [ ] force matching quotes, `( 1 2 ]` is an error
 - [ ] `switch, case` vs `case, ->`, `case, when`?
 - [ ] reintroduce
   - [x] `bind`
