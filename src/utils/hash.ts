@@ -1,38 +1,46 @@
 import { signature, Any } from '@hypercubed/dynamo';
-import { v3 } from 'murmurhash';
+import * as MurmurHash3 from 'imurmurhash';
 
 import { dynamo } from '../types/dynamo';
 
+const m = new MurmurHash3();
+
 class Hash {
   @signature()
-  str(x: string): number {
-    return v3(x);
+  str(x: string): void {
+    m.hash(x);
   }
   @signature(Array)
-  arr(x: any[]): number {
+  arr(x: any[]): void {
     const type = Object.prototype.toString.call(x);
-    let hash = v3(type);
-    for (let i = 0; i < x.length; i++) {;
-      hash += hashCode(x[i]);
+    m.hash(type);
+    for (let i = 0; i < x.length; i++) {
+      hashAdd(x[i]);
     }
-    return hash;
   }
   @signature(Object)
-  obj(x: Object): number {
+  obj(x: Object): void {
     const type = Object.prototype.toString.call(x);
     const keys = Object.keys(x).sort();
-    let hash = v3(type);
+    m.hash(type);
     for (let i = keys.length - 1; i >= 0; i--) {
       const key = keys[i];
-      hash += v3(key) + hashCode(x[key]);
+      hashAdd(key);
+      hashAdd(x[key]);
     }
-    return hash;
   }
   @signature(Any)
-  any(x: any): number {
+  any(x: any): void {
     const type = Object.prototype.toString.call(x);
-    return v3(type) + v3(JSON.stringify(x));
+    m.hash(type);
+    m.hash(JSON.stringify(x));
   }
 }
 
-export const hashCode = dynamo.function(Hash);
+const hashAdd = dynamo.function(Hash);
+
+export function hashCode(x: any): number {
+  m.reset();
+  hashAdd(x);
+  return m.result();
+}

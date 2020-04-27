@@ -91,8 +91,16 @@ export const experimental = {
     return new Function(`return ${s}`).call(this);
   },
 
-  'create-object'(obj: Object): any {
-    return Object.create(obj);
+  /**
+   * ## `make`
+   *
+   * make a new object instance using another object as the prototype
+   *
+   * `a b ⭢ c`
+   */
+  'make'(proto: Object, obj: Object): any {
+    const newObject = Object.create(proto);
+    return Object.assign(newObject, obj);
   },
 
   'case-of?'(obj: Object, proto: Object): any {

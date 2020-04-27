@@ -35,7 +35,7 @@ test('btoa', async () => {
 });
 
 test('hash', async () => {
-  expect(await ƒ(`'Hello World!' hash`)).toEqual(`[ 3691591037 ]`);
+  expect(await ƒ(`'Hello World!' hash`)).toEqual(`[ 3691591037 ]`);  // MurmurHash3 (32 bit, x86)
 
   expect(await ƒ(`1 hash 2 2 / hash =`)).toEqual(`[ true ]`);
   expect(await ƒ(`{} hash {} hash =`)).toEqual(`[ true ]`);
