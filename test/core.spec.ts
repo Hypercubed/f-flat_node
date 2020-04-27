@@ -46,6 +46,11 @@ describe('@', () => {
     expect(await ƒ('[ 1 2 3 ] null @')).toEqual(`[ null ]`);
     expect(await ƒ('null null @')).toEqual(`[ null ]`);
   });
+
+  test('pick is nullish coalescing ', async () => {
+    expect(await ƒ('[ 1 2 3 ] 4 @ 1 @')).toEqual(`[ null ]`);
+    expect(await ƒ(`{ x: { y: 1 } } y: @ x: @`)).toEqual(`[ null ]`);
+  });
 });
 
 test('q< q>', async () => {

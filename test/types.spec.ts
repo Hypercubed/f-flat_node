@@ -35,11 +35,24 @@ test('btoa', async () => {
 });
 
 test('hash', async () => {
-  expect(await ƒ(`'Hello' hash`)).toEqual(`[ 69609650 ]`);
+  expect(await ƒ(`'Hello World!' hash`)).toEqual(`[ 3691591037 ]`);
+
+  expect(await ƒ(`1 hash 2 2 / hash =`)).toEqual(`[ true ]`);
+  expect(await ƒ(`{} hash {} hash =`)).toEqual(`[ true ]`);
+  expect(await ƒ(`{} hash '{}' hash =`)).toEqual(`[ false ]`);
+  expect(await ƒ(`{x: 1} hash {x: 1} hash =`)).toEqual(`[ true ]`);
+  expect(await ƒ(`{x: 1} hash '{x: 1}' hash =`)).toEqual(`[ false ]`);
+  expect(await ƒ(`[] hash [] hash =`)).toEqual(`[ true ]`);
+  expect(await ƒ(`null hash null hash =`)).toEqual(`[ true ]`);
+  expect(await ƒ(`true hash true hash =`)).toEqual(`[ true ]`);
+
+  expect(await ƒ(`{x: 1, y: 2} hash {y: 2, x: 1} hash =`)).toEqual(`[ true ]`);
+  expect(await ƒ(`[{x: 1, y: 2}] hash [{y: 2, x: 1}] hash =`)).toEqual(`[ true ]`);
+  expect(await ƒ(`{x:{x: 1, y: 2}} hash {x:{y: 2, x: 1}} hash =`)).toEqual(`[ true ]`);
 });
 
 test('hex-hash', async () => {
-  expect(await ƒ(`'Hello' hex-hash`)).toEqual(`[ '42628b2' ]`);
+  expect(await ƒ(`'Hello World!' hex-hash`)).toEqual(`[ 'dc09357d' ]`);
 });
 
 describe('base', () => {

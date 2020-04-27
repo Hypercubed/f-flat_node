@@ -54,8 +54,30 @@ rand-bool: [ rand-u32 even? ] ;
 cls: [ "\u001B[2J\u001B[0;0f" println ] ;
 
 // short circuit logicals
-&&: [ slip when ] ;
-||: [ slip [] swap branch ] ;
+&&: [ [ dup truthy? swap ] dip swap choose ] ;
+
+    [ true false && assert-false ] '&&' test
+    [ false true && assert-false ] '&&' test
+    [ 'true' 'false' && 'false' assert-equal ] '&&' test
+    [ '' 'false' && '' assert-equal ] '&&' test
+    [ 0 'false' && 0 assert-equal ] '&&' test
+
+||: [ [ dup truthy? swap ] dip choose ] ;
+
+    [ true false || assert ] '||' test
+    [ false true || assert ] '||' test
+    [ 'true' 'false' || 'true' assert-equal ] '||' test
+    [ '' 'false' || 'false' assert-equal ] '||' test
+    [ 0 'false' || 'false' assert-equal ] '||' test
+
+// nullish coalescing operator
+??: [ [ dup null? ~ swap ] dip choose ] ;
+
+    [ true false ?? assert ] '??' test
+    [ null true ?? assert ] '??' test
+    [ 'true' 'false' ?? 'true' assert-equal ] '??' test
+    [ null 'false' ?? 'false' assert-equal ] '??' test
+    [ null 'false' ?? 'false' assert-equal ] '??' test
 
 p-reverse: [
   dup ln

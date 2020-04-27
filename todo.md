@@ -23,36 +23,22 @@
   - [ ] move checkMaxErrors to signal?
 
 ## TODO Now
-- [!] map over strings should return strings? (same sequence type)
-- [ ] `show` to repl?
+- [?] built-in `include`?
+  - [ ] errors by line number
+- [-] map over strings should return strings? (same sequence type)
+- [ ] move `show` to repl?
+- [ ] move `.` to repl?
 - [ ] `switch, case` vs `case, ->`, `case, when`?
-- [ ] reintroduce
-  - [x] `bind`
-  - [x] `inline`
-  - [?] `def`? `;` -> `q< [ dup defer ] q> bind def`
-  - [?] `def`? `;;` -> `q< [ dup defer ] q> inline def`
-- [ ] Standard words (haskell-ish):
-  - [?] `fst`, `snd`, `head`, `tail`, `take`, `drop`
-  - [x] `zip`, `zipwith`, `zipinto`
+- [ ] Haskell-ish operators:
   - [?] `***`, `[x y] [x->a] [y->b] ***` ==> `[ a b ]` (bimap)
   - [ ] `&&&`, `x [x->a] [x->b] &&&` ==> `[ a b ]` (bi?)
   - [?] `>>`, `[a] [a -> [b]]` ==> `[b]` (flatmap?)
   - [ ] `>>=`, `<*>`, `<$>`, `<&>`, `<-`, `<=<`?
-- [x] Move trace to repl?
 - [ ] contracts/guards
   - [?] guard
   - [ ] stack case guard
 - [ ] Replace `.x` syntax?  `/x`, `:x:`, `::x`, `/x/`, `~x`, `$x`
   - [ ] repl commands vs force local
-- [ ] repl
-  - [x] move repl to `src`...  use TS
-  - [x] `.editor` in repl
-  - [x] move undo to repl
-  - [x] docs
-  - [x] redo
-  - [x] max redo/undo
-  - [ ] Interactive errors
-  - [x] Prompt to undo on error?
 - [ ] Better unicode (lugaru.com/man/Character.Constants.html)
   - [x] unescape without eval? (https://github.com/iamakulov/unescape-js#readme)
   - [ ] `\flat`? (https://docs.julialang.org/en/v1/manual/unicode-input/) (https://github.com/coq/coq/blob/master/ide/default_bindings_src.ml)
@@ -62,17 +48,10 @@
   - [ ] regex unicode property aliases?  (https://github.com/tc39/proposal-regexp-unicode-property-escapes)
 
 ## Bugs
-- [x] error on `.reset` crashes
-- [x] `"123\"456"` parse error
 - [?] `'x' exit` should be type error?
 - [ ] `_ 3 =~`?
-- [x] `print` gets swallowed by stack printing
 
 ## Testing
-- [ ] force matching quotes, `( 1 2 ]` is an error
-  - [ ] force matching quotes
-  - [ ] mismatch error
-  - [ ] underflow error
 - [ ] test tokenizer/parser
 - [ ] Nested lambdas
 - [ ] test the repl
@@ -85,33 +64,28 @@
   - [ ] Basis
   - [ ] Core
   - [ ] Dictionary words
+- [ ] Test all lib words?
 - [ ] Test all errors
   - [ ] MAXSTACK
   - [ ] MAXRUN
 - [ ] circular imports?
 - [ ] test pprint?
 - [ ] test `read` and `resolve`
-- [?] pick for module? `math [ '!' ] pluck use`
+- [ ] pick for module? `math [ '!' ] pluck use`
 
 ## TODOs
 - [ ] Bash-like brace expansion (https://github.com/micromatch/braces) `'{0..5}' :braces` -> `['1', '2', '3', '4', '5']`
 - [?] highlight as you type? (would need to parse as you type!)
 - [ ] shell commands
-- [-] sigils (`+x`, `~x`, `@x`, `^x`, `#x`, `%x`, `?x`, `!x`, `=x`)
-  - [?] User defined sigils?  (https://medium.com/blackode/write-your-own-sigils-elixir-ce648f531211)
-    - [ ] `~regex/abc/u`, `/abc/u :regex` -> `'/.../u' :regex`
-    - [ ] `~complex/3+2i/`, `/3+2i/ :complex`
-  - [ ] get (`.x`, `@x`)?
-  - [ ] lazy word (`.x`, `?x`, `#x`)?
-  - [ ] repl commands (`.x`)?
+- [ ] sigils (`+x`, `~x`, `@x`, `^x`, `#x`, `%x`, `?x`, `!x`, `=x`)
+  - [ ] lazy word (`.x`, `?x`, `#x`, `$x`)?
+  - [ ] repl commands (`.x`, `!x`)?
 - [ ] `resolve` to allow missing file extension?
 - [ ] `undef`, `null`, `nan`, `nil`, `ComplexInfinity`, `Indeterminate`, `unknown` (http://www.wolframalpha.com/input/?i=ComplexInfinity)
 - [?] `@` from complex value?
 - [ ] pprint `Infinity`, `ComplexInfinity`, `NaN` etc.
-- [ ] Move vscode extension?
 - [ ] pattern + lambdas `[ 1 2 a: ] ~> [ .a .a * ]`
 - [ ] stack matcher `[ 1 2 3 [ _ 3 ] stack-case ]` -> `[ 1 2 3 true ]`
-- [?] fried defintions `[ .x 2 ^ .y 2 ^ + .y abs - ] fry` -> `[[ x: y: ] => [ .x 2 ^ .y 2 ^ + .y abs - ]] lambda`
 - [ ] ability to define words as immediate (without prefix)?
 - [?] ensure defining a module (`x: 'xx.ff' import ;`) doesn't create extra globals
 - [?] all pprint values should be copy-pastable in literal?
@@ -146,16 +120,10 @@
 - [x] assertions
 - [?] TDD words (`suite`, `test`)
 - [ ] option skip tests on load?
-undefined
+
 ## Improved user space
 - [ ] Start in user directory
 - [ ] `add` - adds a word/vacabulary to the user's persistant dictionary/bootstrap? `math: add`
-
-## Safer?
-- [x] redefine action `:` ( string -> Key )?
-- [?] more restrictions types on stack, queue and dictionary
-- [?] Safer module loading (module class?)
-- [?] defining objects? `z: { x: [ y ] } ;`?
 
 ## Internal Type cleaning
 - [ ] `:xyz` -> `ImmediateWord`?
@@ -164,10 +132,8 @@ undefined
 - [?] `ResolvedWord`?
 
 ## Older Todos:
-- [ ] Finish JSON output
 - [ ] Serialize to `.ff` file?
 - [?] Tagged templates `fn'${A}-${B}'` -> `${A fn}-${B fn}`?
-- [?] Mixed numeric and string indecies for arrays and maps `[ 1 2 x: 3 ]` `{ x: 1 y: 2 3 4 5}`?
 - [?] Combine lambdas and pattern matching?
 - [-] Online help?
 - [ ] Consistant and predictable display precision:
@@ -177,7 +143,7 @@ undefined
 - [ ] JSON
   - [ ] to simplified JSON (Decimal -> number, regex, etc)
   - [ ] Decimal/Complex .fromJSON + Tests
-- [ ] reduction rules?
+- [?] reduction rules?
   - [ ] `dup drop` -> ``
   - [ ] `q> q< ` -> ``
 - [ ] Ensure predictable `<=>` with `null` and `nan`
@@ -191,15 +157,12 @@ undefined
 - [?] `alias` `x: y: alias`
 - [ ] More bitwise words:
   - [ ] `bit-set`, `bit-flip`, `bit-clr`, `bit-get`
+  - [ ] verify with decimals
 - [ ] `cld`: (Smallest integer larger than or equal to x/y)
 - [ ] `finite?`, `inf?`, `undefined?`
-- [x] `sign` (same as `0 <=>`?)
 - [?] `>>>` ?
 - [ ] `sinpi`, `cospi` (more accurate than `cos(pi*x)`, especially for large `x`)?
-- [ ] Better complex inputs
-  - [ ] `1+2i` (Literal)?
-  - [x] `"1+2i" :complex`
-  - [x] `[1,2] :complex`
+- [?] Complex Literal?
 - [ ] `clamp`, `scale`
 - [ ] radians -> rads-per-degree, etc. ?
 - [ ] `lesser-of`, `greater-of` vs `max`, `min`?

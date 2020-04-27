@@ -7,3 +7,5 @@ export * from './kleene-logic';
 export * from './json';
 export * from './types';
 export * from './rewrite';
+export * from './hash';
+

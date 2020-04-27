@@ -6,7 +6,7 @@ import { dynamo } from '../types/dynamo';
 import { Decimal } from '../types/decimal';
 import { Complex } from '../types/complex';
 import { Word, Key } from '../types/words';
-import { type } from '../utils';
+import { type, hashCode } from '../utils';
 import { StackValue } from '../types';
 
 const NUMERALS = '0123456789ABCDEF';
@@ -81,13 +81,6 @@ class Base {
   }
 }
 
-const hashCode = function(s: string) {
-  let h = 0,
-    l = s.length,
-    i = 0;
-  if (l > 0) while (i < l) h = ((h << 5) - h + s.charCodeAt(i++)) | 0;
-  return h;
-};
 
 /**
  * # Internal Type Words
@@ -235,16 +228,6 @@ export const types = {
     }
     return new Key(x);
   },
-
-  // /**
-  //  * ## `array`
-  //  *
-  //  * `a ⭢ [A]`
-  //  *
-  //  * converts a value to an array
-  //  *
-  //  */
-  // array: (x: StackValue) => new Array(x), // used?
 
   /**
    * ## `of`

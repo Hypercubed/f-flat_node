@@ -3,9 +3,10 @@ import fc from 'fast-check';
 import { ƒ, τ } from './helpers/setup';
 
 const { value, array } = fc.letrec(tie => ({
-  prim: fc.oneof<any>(fc.hexa(), fc.integer(), fc.float(), fc.boolean()),
+  prim: fc.oneof<any>(fc.hexa(), fc.integer(), fc.float(), fc.boolean(), fc.constant(null)),
   array: fc.array(tie('value'), 1, 5),
-  value: fc.oneof(tie('array'), tie('prim'), tie('prim'), tie('prim'))
+  object: fc.dictionary(fc.hexa(), tie('prim')),
+  value: fc.oneof(tie('array'), tie('object'), tie('prim'), tie('prim')),
 }));
 
 describe('core', () => {
@@ -341,5 +342,13 @@ test('infinity identities', async () => {
         expect(await ƒ`infinity ${a} ^`).toEqual(`[ Infinity ]`);
       }
     )
+  );
+});
+
+test('types', async () => {
+  await fc.assert(
+    fc.asyncProperty(value, async a => {
+      expect(await ƒ`${a} hash ${a} hash =`).toEqual(`[ true ]`);
+    })
   );
 });
