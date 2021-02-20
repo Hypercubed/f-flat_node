@@ -1,10 +1,7 @@
 import { ƒ, τ, Complex } from './helpers/setup';
 import { Decimal } from '../src/types/decimal';
 
-const C = (
-  x: Decimal | string | number | Complex,
-  y: Decimal | string | number
-) => new Complex(x, y).toJSON();
+const C = (x: Decimal | string | number | Complex, y: Decimal | string | number) => new Complex(x, y).toJSON();
 
 test('should parse i', async () => {
   expect(await ƒ('i')).toBe(`[ 0+1i ]`);
@@ -22,9 +19,7 @@ test('should return sqrt of imaginary numbers', async () => {
 });
 
 test('should return sqrt of complex numbers', async () => {
-  expect(await ƒ('1 i + 4 * sqrt 1 i + sqrt /')).toBe(
-    `[ 1.9999999999999999999 ]`
-  ); // 2
+  expect(await ƒ('1 i + 4 * sqrt 1 i + sqrt /')).toBe(`[ 1.9999999999999999999 ]`); // 2
 });
 
 test('should perform basic arithmetic', async () => {
@@ -60,12 +55,8 @@ test('should calculate magnitude/absolute value', async () => {
 });
 
 test('should calculate gamma of complex numbers', async () => {
-  expect(await ƒ('i gamma')).toBe(
-    τ([new Complex('-0.15494982830181015806', '-0.49801566811835666783')])
-  );
-  expect(await ƒ('i 1 + gamma')).toBe(
-    τ([new Complex('0.49801566811835599107', '-0.15494982830181068729')])
-  );
+  expect(await ƒ('i gamma')).toBe(τ([new Complex('-0.15494982830181015806', '-0.49801566811835666783')]));
+  expect(await ƒ('i 1 + gamma')).toBe(τ([new Complex('0.49801566811835599107', '-0.15494982830181068729')]));
 });
 
 test('should compare complex numbers by magnitude', async () => {
@@ -139,12 +130,8 @@ test('abs of complex', async () => {
 });
 
 test('exp of complex', async () => {
-  expect(await ƒ('i exp')).toBe(
-    '[ 0.5403023058681397174+0.84147098480789650665i ]'
-  );
-  expect(await ƒ('i -1 * exp')).toBe(
-    '[ 0.5403023058681397174-0.84147098480789650665i ]'
-  );
+  expect(await ƒ('i exp')).toBe('[ 0.5403023058681397174+0.84147098480789650665i ]');
+  expect(await ƒ('i -1 * exp')).toBe('[ 0.5403023058681397174-0.84147098480789650665i ]');
 });
 
 test('ln of complex', async () => {
@@ -160,39 +147,27 @@ test('trig of complex', async () => {
 
 test('inverse trig of complex', async () => {
   expect(await ƒ('i asin')).toBe('[ 0+0.88137358701954302524i ]');
-  expect(await ƒ('i acos')).toBe(
-    '[ 1.5707963267948966193-0.8813735870195430253i ]'
-  );
+  expect(await ƒ('i acos')).toBe('[ 1.5707963267948966193-0.8813735870195430253i ]');
   expect(await ƒ('i 2 / atan')).toBe('[ 0+0.5493061443340548457i ]');
 });
 
 test('hyper trig of complex', async () => {
   expect(await ƒ('i sinh')).toBe('[ 5e-21+0.84147098480789650665i ]');
   expect(await ƒ('i cosh')).toBe('[ 0.5403023058681397174+1e-20i ]');
-  expect(await ƒ('i tanh')).toBe(
-    '[ 7.7870386232745111526e-21+1.5574077246549022305i ]'
-  );
+  expect(await ƒ('i tanh')).toBe('[ 7.7870386232745111526e-21+1.5574077246549022305i ]');
 });
 
 test('inverse hyper trig of complex', async () => {
   expect(await ƒ('i asinh')).toBe('[ 0+1.5707963267948966192i ]');
-  expect(await ƒ('i acosh')).toBe(
-    '[ 0.88137358701954302519+1.5707963267948966192i ]'
-  );
+  expect(await ƒ('i acosh')).toBe('[ 0.88137358701954302519+1.5707963267948966192i ]');
   expect(await ƒ('i atanh')).toBe('[ 0+0.78539816339744830962i ]');
 });
 
 test('trig out of range returns complex values', async () => {
-  expect(await ƒ('2 asin')).toBe(
-    '[ 1.5707963267948966192-1.3169578969248167086i ]'
-  );
-  expect(await ƒ('-2 asin')).toBe(
-    '[ -1.5707963267948966192+1.3169578969248167085i ]'
-  );
+  expect(await ƒ('2 asin')).toBe('[ 1.5707963267948966192-1.3169578969248167086i ]');
+  expect(await ƒ('-2 asin')).toBe('[ -1.5707963267948966192+1.3169578969248167085i ]');
   expect(await ƒ('2 acos')).toBe('[ 5e-20+1.3169578969248167087i ]');
-  expect(await ƒ('-2 acos')).toBe(
-    '[ 3.1415926535897932385-1.3169578969248167085i ]'
-  );
+  expect(await ƒ('-2 acos')).toBe('[ 3.1415926535897932385-1.3169578969248167085i ]');
 });
 
 test('abs of complex infinities', async () => {
@@ -268,16 +243,12 @@ test('hyperbolic inverse trig functions on complex infinities', async () => {
   expect(await ƒ('infinity i * acosh')).toBe('[ Infinity ]');
 
   expect(await ƒ('infinity i * atanh')).toBe('[ 0+1.5707963267948966192i ]');
-  expect(await ƒ('infinity i * -1 * atanh')).toBe(
-    '[ 0-1.5707963267948966192i ]'
-  );
+  expect(await ƒ('infinity i * -1 * atanh')).toBe('[ 0-1.5707963267948966192i ]');
 });
 
 test('should negate', async () => {
   expect(await ƒ('i 3 * ~')).toBe('[ -0-3i ]');
-  expect(await ƒ('pi i 1 + * ~')).toBe(
-    '[ -3.141592653589793-3.141592653589793i ]'
-  );
+  expect(await ƒ('pi i 1 + * ~')).toBe('[ -3.141592653589793-3.141592653589793i ]');
 });
 
 test('floor division', async () => {
@@ -291,9 +262,7 @@ test('complex', async () => {
   expect(await ƒ('"5" complex')).toBe('[ 5 ]');
   expect(await ƒ('"3i" complex')).toBe('[ 0+3i ]');
   expect(await ƒ('"0.03+0.86i" complex')).toBe('[ 0.03+0.86i ]');
-  expect(await ƒ('"0.0_3e+100+0.8_6e-100i" complex')).toBe(
-    '[ 3e+98+8.6e-101i ]'
-  );
+  expect(await ƒ('"0.0_3e+100+0.8_6e-100i" complex')).toBe('[ 3e+98+8.6e-101i ]');
 });
 
 test('complex works as a "macro"', async () => {

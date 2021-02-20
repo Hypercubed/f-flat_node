@@ -29,10 +29,7 @@ export const flags = {
         Decimal.config({ precision: +v });
         break;
       default:
-        throw new FFlatError(
-          `Error calling 'set-system-property': "${p}" is not a valid flag.`,
-          this
-        );
+        throw new FFlatError(`Error calling 'set-system-property': "${p}" is not a valid flag.`, this);
     }
   },
 
@@ -56,10 +53,7 @@ export const flags = {
       case 'decimal-precision':
         return Decimal.precision;
       default:
-        throw new FFlatError(
-          `Error calling 'get-system-property': "${p}" is not a valid flag.`,
-          this
-        );
+        throw new FFlatError(`Error calling 'get-system-property': "${p}" is not a valid flag.`, this);
     }
   }
 };

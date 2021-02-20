@@ -8,9 +8,7 @@ test('type', async () => {
 test('number', async () => {
   expect(await ƒ('123 number')).toEqual(`[ 123 ]`);
   expect(await ƒ('"123" number')).toEqual(`[ 123 ]`);
-  expect(ƒ('"abc" number')).rejects.toThrow(
-    `Error calling 'number': [DecimalError] Invalid argument: abc`
-  ); // nan?
+  expect(ƒ('"abc" number')).rejects.toThrow(`Error calling 'number': [DecimalError] Invalid argument: abc`); // nan?
 });
 
 test('string', async () => {
@@ -35,7 +33,7 @@ test('btoa', async () => {
 });
 
 test('hash', async () => {
-  expect(await ƒ(`'Hello World!' hash`)).toEqual(`[ 3691591037 ]`);  // MurmurHash3 (32 bit, x86)
+  expect(await ƒ(`'Hello World!' hash`)).toEqual(`[ 3691591037 ]`); // MurmurHash3 (32 bit, x86)
 
   expect(await ƒ(`1 hash 2 2 / hash =`)).toEqual(`[ true ]`);
   expect(await ƒ(`{} hash {} hash =`)).toEqual(`[ true ]`);
@@ -61,22 +59,12 @@ describe('base', () => {
     expect(await ƒ('5 2 base')).toEqual(`[ '0b101' ]`);
 
     expect(await ƒ('3735928559 16 base')).toEqual(`[ '0xDEADBEEF' ]`);
-    expect(await ƒ('3735928559 2 base')).toEqual(
-      `[ '0b11011110101011011011111011101111' ]`
-    );
+    expect(await ƒ('3735928559 2 base')).toEqual(`[ '0b11011110101011011011111011101111' ]`);
 
-    expect(await ƒ('18446744073709551615 16 base')).toEqual(
-      `[ '0xFFFFFFFFFFFFFFFF' ]`
-    );
-    expect(await ƒ('18446744073709551615 10 base')).toEqual(
-      `[ '18446744073709551615' ]`
-    );
-    expect(await ƒ('18446744073709551615 8 base')).toEqual(
-      `[ '0o1777777777777777777777' ]`
-    );
-    expect(await ƒ('18446744073709551615 4 base')).toEqual(
-      `[ '33333333333333333333333333333333' ]`
-    );
+    expect(await ƒ('18446744073709551615 16 base')).toEqual(`[ '0xFFFFFFFFFFFFFFFF' ]`);
+    expect(await ƒ('18446744073709551615 10 base')).toEqual(`[ '18446744073709551615' ]`);
+    expect(await ƒ('18446744073709551615 8 base')).toEqual(`[ '0o1777777777777777777777' ]`);
+    expect(await ƒ('18446744073709551615 4 base')).toEqual(`[ '33333333333333333333333333333333' ]`);
     expect(await ƒ('18446744073709551615 2 base')).toEqual(
       `[ '0b1111111111111111111111111111111111111111111111111111111111111111' ]`
     );
@@ -84,15 +72,9 @@ describe('base', () => {
 
   test('base, neg integers', async () => {
     expect(await ƒ('-3735928559 16 base')).toEqual(`[ '-0xDEADBEEF' ]`);
-    expect(await ƒ('-18446744073709551615 16 base')).toEqual(
-      `[ '-0xFFFFFFFFFFFFFFFF' ]`
-    );
-    expect(await ƒ('-18446744073709551615 10 base')).toEqual(
-      `[ '-18446744073709551615' ]`
-    );
-    expect(await ƒ('-18446744073709551615 8 base')).toEqual(
-      `[ '-0o1777777777777777777777' ]`
-    );
+    expect(await ƒ('-18446744073709551615 16 base')).toEqual(`[ '-0xFFFFFFFFFFFFFFFF' ]`);
+    expect(await ƒ('-18446744073709551615 10 base')).toEqual(`[ '-18446744073709551615' ]`);
+    expect(await ƒ('-18446744073709551615 8 base')).toEqual(`[ '-0o1777777777777777777777' ]`);
     expect(await ƒ('-18446744073709551615 2 base')).toEqual(
       `[ '-0b1111111111111111111111111111111111111111111111111111111111111111' ]`
     );

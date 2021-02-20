@@ -23,12 +23,8 @@ describe('@', () => {
 
   test('pick into object with default', async () => {
     expect(await ƒ('{ a: { a: 1 } b: @ 2 orelse }')).toEqual(`[ { a: 2 } ]`);
-    expect(await ƒ('{ a: 3 } q< { b: q> over @ 5 orelse }')).toEqual(
-      `[ { b: 5 } ]`
-    );
-    expect(await ƒ('{ a: 7 } q< { c: q> b: @ 11 orelse }')).toEqual(
-      `[ { c: 11 } ]`
-    );
+    expect(await ƒ('{ a: 3 } q< { b: q> over @ 5 orelse }')).toEqual(`[ { b: 5 } ]`);
+    expect(await ƒ('{ a: 7 } q< { c: q> b: @ 11 orelse }')).toEqual(`[ { c: 11 } ]`);
   });
 
   test('pick into array', async () => {
@@ -117,10 +113,7 @@ describe('dup', () => {
 
   test('dup arrays', async () => {
     const f = F().eval('[ 1 2 3 ] dup');
-    expect(f.stack).toEqual([
-      [1, 2, 3].map(x => new Decimal(x)),
-      [1, 2, 3].map(x => new Decimal(x))
-    ]);
+    expect(f.stack).toEqual([[1, 2, 3].map(x => new Decimal(x)), [1, 2, 3].map(x => new Decimal(x))]);
     expect(f.stack[0]).toBe(f.stack[1]);
   });
 });
@@ -134,12 +127,8 @@ test('indexof', async () => {
 });
 
 test('zip', async () => {
-  expect(await ƒ('[ 1 2 3 ] [ 4 5 6 ] zip')).toEqual(
-    `[ [ [ 1 4 ] [ 2 5 ] [ 3 6 ] ] ]`
-  );
-  expect(await ƒ(`[ 1 ] [ 'a' 'b' ] zip`)).toEqual(
-    `[ [ [ 1 'a' ] ] ]`
-  );
+  expect(await ƒ('[ 1 2 3 ] [ 4 5 6 ] zip')).toEqual(`[ [ [ 1 4 ] [ 2 5 ] [ 3 6 ] ] ]`);
+  expect(await ƒ(`[ 1 ] [ 'a' 'b' ] zip`)).toEqual(`[ [ [ 1 'a' ] ] ]`);
 });
 
 // test('zipinto', async () => {

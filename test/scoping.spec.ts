@@ -2,12 +2,8 @@ import { ƒ } from './helpers/setup';
 
 test('in', async () => {
   expect(await ƒ(`a: [ 'before' ] ; [ a ] in`)).toEqual(`[ [ 'before' ] ]`);
-  expect(await ƒ(`a: [ "outer" ] ; [ a: [ "inner" ] ; a ] in a`)).toEqual(
-    `[ [ 'inner' ] 'outer' ]`
-  );
-  expect(
-    await ƒ(`a: [ 'outer' ] ; [ b: [ 'inner' ] ; a ] in b: defined?`)
-  ).toEqual(`[ [ 'outer' ] false ]`);
+  expect(await ƒ(`a: [ "outer" ] ; [ a: [ "inner" ] ; a ] in a`)).toEqual(`[ [ 'inner' ] 'outer' ]`);
+  expect(await ƒ(`a: [ 'outer' ] ; [ b: [ 'inner' ] ; a ] in b: defined?`)).toEqual(`[ [ 'outer' ] false ]`);
 });
 
 describe('module `use` scoping', () => {
@@ -137,9 +133,7 @@ test(`defined?`, async () => {
   expect(await ƒ(`'swap' defined?`)).toEqual(`[ true ]`);
   expect(await ƒ(`'slip' defined?`)).toEqual(`[ true ]`);
   expect(await ƒ(`'junk' defined?`)).toEqual(`[ false ]`);
-  expect(ƒ(`'_top' defined?`)).rejects.toThrow(
-    `Error calling 'defined?': invalid key "_top"`
-  ); // ????
+  expect(ƒ(`'_top' defined?`)).rejects.toThrow(`Error calling 'defined?': invalid key "_top"`); // ????
 });
 
 test('hides private', async () => {

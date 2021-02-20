@@ -22,24 +22,18 @@ test('should push numeric values', async () => {
   expect(await ƒ('10_000 1_00')).toEqual(τ([10000, 100]));
   expect(await ƒ('9007199254740993')).toEqual(`[ 9007199254740993 ]`);
   expect(await ƒ('-9007199254740993')).toEqual(`[ -9007199254740993 ]`);
-  expect(await ƒ('1.7976931348623159077e+308')).toEqual(
-    `[ 1.7976931348623159077e+308 ]`
-  );
+  expect(await ƒ('1.7976931348623159077e+308')).toEqual(`[ 1.7976931348623159077e+308 ]`);
 });
 
 test('should push hexidecimal numeric values', async () => {
   expect(await ƒ('0x5 0x55 0xff')).toEqual(τ([5, 85, 255]));
-  expect(await ƒ('0x5.5 0xff.ff')).toEqual(
-    τ([85 * Math.pow(16, -1), 65535 * Math.pow(16, -2)])
-  );
+  expect(await ƒ('0x5.5 0xff.ff')).toEqual(τ([85 * Math.pow(16, -1), 65535 * Math.pow(16, -2)]));
   expect(await ƒ('0x1p+1 0xffp-2')).toEqual(τ([2, 255 * Math.pow(2, -2)]));
 });
 
 test('should push binary numeric values', async () => {
   expect(await ƒ('0b1 0b10 0b11')).toEqual(τ([1, 2, 3]));
-  expect(await ƒ('0b1.1 0b11.11')).toEqual(
-    τ([3 * Math.pow(2, -1), 15 * Math.pow(2, -2)])
-  );
+  expect(await ƒ('0b1.1 0b11.11')).toEqual(τ([3 * Math.pow(2, -1), 15 * Math.pow(2, -2)]));
   expect(await ƒ('0b1p+1 0b11p-2')).toEqual(τ([2, 3 * Math.pow(2, -2)]));
 });
 
@@ -80,9 +74,7 @@ describe('errors on async command in eval', () => {
 });
 
 test('can spawn a future', async () => {
-  expect(await ƒ('[ 1 2 + 100 sleep ] spawn 3 4 +')).toEqual(
-    `[ [Future:pending [1,2,+,100,sleep]] 7 ]`
-  );
+  expect(await ƒ('[ 1 2 + 100 sleep ] spawn 3 4 +')).toEqual(`[ [Future:pending [1,2,+,100,sleep]] 7 ]`);
 });
 
 test('keys', async () => {
@@ -112,15 +104,9 @@ test('immutable array actions', async () => {
 test('immutable object actions', async () => {
   const first = 'Manfred';
   const last = 'Von Thun';
-  expect(await ƒ('{ first: "Manfred" } dup { last: "Von Thun" } +')).toEqual(
-    τ([{ first }, { first, last }])
-  );
-  expect(await ƒ('{ first: "Manfred" } dup { last: "Von Thun" } <<')).toEqual(
-    τ([{ first }, { first, last }])
-  );
-  expect(await ƒ('{ first: "Manfred" } dup { last: "Von Thun" } >>')).toEqual(
-    τ([{ first }, { last, first }])
-  );
+  expect(await ƒ('{ first: "Manfred" } dup { last: "Von Thun" } +')).toEqual(τ([{ first }, { first, last }]));
+  expect(await ƒ('{ first: "Manfred" } dup { last: "Von Thun" } <<')).toEqual(τ([{ first }, { first, last }]));
+  expect(await ƒ('{ first: "Manfred" } dup { last: "Von Thun" } >>')).toEqual(τ([{ first }, { last, first }]));
 });
 
 test('immutable sto', async () => {
@@ -148,9 +134,7 @@ test('atoms are not executed by stack actions', async () => {
 
 test('can perform actions from module', async () => {
   expect(await ƒ(`core: 'math.ff' import ; 5 core.pred`)).toEqual(`[ 5 4 ]`);
-  expect(await ƒ(`math: 'math.ff' import ; 12 math.!`)).toEqual(
-    `[ 479001600 ]`
-  );
+  expect(await ƒ(`math: 'math.ff' import ; 12 math.!`)).toEqual(`[ 479001600 ]`);
 });
 
 test('postfix "macros"', async () => {
@@ -179,21 +163,15 @@ test('length', async () => {
 
 test('hex, bin', async () => {
   // types-ff
-  expect(await ƒ('18446744073709551615 hex')).toEqual(
-    `[ '0xFFFFFFFFFFFFFFFF' ]`
-  );
+  expect(await ƒ('18446744073709551615 hex')).toEqual(`[ '0xFFFFFFFFFFFFFFFF' ]`);
   expect(await ƒ('18446744073709551615 bin')).toEqual(
     `[ '0b1111111111111111111111111111111111111111111111111111111111111111' ]`
   );
-  expect(await ƒ('18446744073709551615 oct')).toEqual(
-    `[ '0o1777777777777777777777' ]`
-  );
+  expect(await ƒ('18446744073709551615 oct')).toEqual(`[ '0o1777777777777777777777' ]`);
 
   expect(await ƒ('0.125 hex')).toEqual(`[ '0x0.2' ]`);
 
-  expect(await ƒ('-18446744073709551615 hex')).toEqual(
-    `[ '-0xFFFFFFFFFFFFFFFF' ]`
-  );
+  expect(await ƒ('-18446744073709551615 hex')).toEqual(`[ '-0xFFFFFFFFFFFFFFFF' ]`);
   expect(await ƒ('-18446744073709551615 bin')).toEqual(
     `[ '-0b1111111111111111111111111111111111111111111111111111111111111111' ]`
   );
@@ -269,15 +247,9 @@ test('should resolve', async () => {
   // node
   expect(await ƒ('"core" resolve')).toMatch(/^\[ 'file:.*core' \]$/);
   expect(await ƒ('"core.ff" resolve')).toMatch(/^\[ 'file:.*core.ff' \]$/);
-  expect(await ƒ('"/home/core.ff" resolve')).toMatch(
-    /^\[ 'file:\/\/\/.*home\/core.ff' \]$/
-  );
-  expect(await ƒ('"file:///home/core.ff" resolve')).toMatch(
-    /^\[ 'file:\/\/\/.*home\/core.ff' \]$/
-  );
-  expect(await ƒ('"http://www.home.com/core.ff" resolve')).toEqual(
-    `[ 'http://home.com/core.ff' ]`
-  );
+  expect(await ƒ('"/home/core.ff" resolve')).toMatch(/^\[ 'file:\/\/\/.*home\/core.ff' \]$/);
+  expect(await ƒ('"file:///home/core.ff" resolve')).toMatch(/^\[ 'file:\/\/\/.*home\/core.ff' \]$/);
+  expect(await ƒ('"http://www.home.com/core.ff" resolve')).toEqual(`[ 'http://home.com/core.ff' ]`);
 });
 
 test('keywords are case insenstivive', async () => {
@@ -303,12 +275,8 @@ test('stack underflow', async () => {
 
 test('lambdas', async () => {
   // lambdas-ff
-  expect(
-    await ƒ('l: [ [ a: b: c: ] => [ .b .c .c .a ] lambda ] ; 1 2 3 l')
-  ).toEqual(`[ 2 3 3 1 ]`);
-  expect(
-    await ƒ('d: [ [ a: b: ] => [ .a .b - abs .a / ] lambda ] ; 10 5 d')
-  ).toEqual(`[ 0.5 ]`);
+  expect(await ƒ('l: [ [ a: b: c: ] => [ .b .c .c .a ] lambda ] ; 1 2 3 l')).toEqual(`[ 2 3 3 1 ]`);
+  expect(await ƒ('d: [ [ a: b: ] => [ .a .b - abs .a / ] lambda ] ; 10 5 d')).toEqual(`[ 0.5 ]`);
 });
 
 describe('unicode words', () => {

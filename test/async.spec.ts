@@ -7,9 +7,7 @@ const good = {
   name: 'f-flat_node'
 };
 
-nock('https://api.github.com/')
-  .get('/users/Hypercubed/repos/')
-  .reply(200, JSON.stringify(good, null, ' '));
+nock('https://api.github.com/').get('/users/Hypercubed/repos/').reply(200, JSON.stringify(good, null, ' '));
 
 test('yield', async () => {
   const yieldAction = new Word('yield');
@@ -88,15 +86,11 @@ test('should delay', async () => {
 }); */
 
 test('should await', async () => {
-  expect(await ƒ('1 [ 100 sleep 10 ! ] await 4 5 +')).toEqual(
-    `[ 1 [ 3628800 ] 9 ]`
-  );
+  expect(await ƒ('1 [ 100 sleep 10 ! ] await 4 5 +')).toEqual(`[ 1 [ 3628800 ] 9 ]`);
 });
 
 test('all', async () => {
-  expect(await ƒ('[ 100 sleep 10 ! ] dup pair all')).toEqual(
-    `[ [ [ 3628800 ] [ 3628800 ] ] ]`
-  );
+  expect(await ƒ('[ 100 sleep 10 ! ] dup pair all')).toEqual(`[ [ [ 3628800 ] [ 3628800 ] ] ]`);
 });
 
 test('should generate promise', async () => {
@@ -120,9 +114,7 @@ test('should work with async/await', async () => {
 });
 
 test('should read and parse JSON', async () => {
-  expect(
-    await ƒ(`'https://api.github.com/users/Hypercubed/repos/' read eval`)
-  ).toEqual(τ([good]));
+  expect(await ƒ(`'https://api.github.com/users/Hypercubed/repos/' read eval`)).toEqual(τ([good]));
 });
 
 test.skip('throw on missing file', async () => {
@@ -137,18 +129,12 @@ test('sleep', async () => {
 
 test('multiple async', async () => {
   expect(await ƒ('10 100 sleep 20 + 100 sleep 15 +')).toEqual(`[ 45 ]`);
-  expect(await ƒ('10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 +')).toEqual(
-    `[ 45 ]`
-  );
+  expect(await ƒ('10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 +')).toEqual(`[ 45 ]`);
 });
 
 test('multiple async in children', async () => {
-  expect(await ƒ('[ 10 100 sleep 20 + 100 sleep 15 + ] await')).toEqual(
-    `[ [ 45 ] ]`
-  );
-  expect(
-    await ƒ('[ 10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 + ] await')
-  ).toEqual(`[ [ 45 ] ]`);
+  expect(await ƒ('[ 10 100 sleep 20 + 100 sleep 15 + ] await')).toEqual(`[ [ 45 ] ]`);
+  expect(await ƒ('[ 10 100 sleep 20 + 100 sleep 10 + 100 sleep 5 + ] await')).toEqual(`[ [ 45 ] ]`);
 });
 
 test('should await on multiple promises', async () => {
@@ -185,21 +171,15 @@ test('multiple promises correct order', async () => {
 });
 
 test('errors on unknown command, async', async () => {
-  await expect(F().promise('abc')).rejects.toThrow(
-    `"abc" is not defined`
-  );
+  await expect(F().promise('abc')).rejects.toThrow(`"abc" is not defined`);
 });
 
 test('errors on unknown command in child, async', async () => {
-  await expect(F().promise('[ abc ] in')).rejects.toThrow(
-    `"abc" is not defined`
-  );
+  await expect(F().promise('[ abc ] in')).rejects.toThrow(`"abc" is not defined`);
 });
 
 test('errors on unknown command in child, async 2', async () => {
-  await expect(F().promise('[ abc ] await')).rejects.toThrow(
-    `"abc" is not defined`
-  );
+  await expect(F().promise('[ abc ] await')).rejects.toThrow(`"abc" is not defined`);
 });
 
 test('should await on a future', async () => {
@@ -211,12 +191,6 @@ test('should await on a future', async () => {
 
   await f.promise('[ await ] dip');
 
-  expect(f.toJSON()).toEqual([
-    [new Decimal(3628800).toJSON()],
-    new Decimal(9).toJSON()
-  ]);
-  expect(f.eval('slip').toJSON()).toEqual([
-    new Decimal(3628800).toJSON(),
-    new Decimal(9).toJSON()
-  ]);
+  expect(f.toJSON()).toEqual([[new Decimal(3628800).toJSON()], new Decimal(9).toJSON()]);
+  expect(f.eval('slip').toJSON()).toEqual([new Decimal(3628800).toJSON(), new Decimal(9).toJSON()]);
 });

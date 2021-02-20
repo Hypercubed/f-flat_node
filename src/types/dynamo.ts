@@ -16,15 +16,4 @@ class IsSymbol {
   }
 }
 
-dynamo.add(
-  GlobalSymbol,
-  Future,
-  Word,
-  Key,
-  Sentence,
-  DecimalDef,
-  Complex,
-  ComplexInfinity,
-  Indeterminate,
-  IsSymbol
-);
+dynamo.add(GlobalSymbol, Future, Word, Key, Sentence, DecimalDef, Complex, ComplexInfinity, Indeterminate, IsSymbol);

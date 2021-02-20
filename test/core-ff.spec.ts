@@ -27,9 +27,7 @@ test('map', async () => {
 });
 
 test('filter and foldl', async () => {
-  expect(await ƒ('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] [ even? ] filter')).toEqual(
-    `[ [ 10 2 6 4 2 4 8 ] ]`
-  );
+  expect(await ƒ('[ 10 2 5 3 1 6 7 4 2 3 4 8 9 ] [ even? ] filter')).toEqual(`[ [ 10 2 6 4 2 4 8 ] ]`);
   expect(await ƒ('10 integers [ even? ] filter')).toEqual(`[ [ 2 4 6 8 10 ] ]`);
   expect(await ƒ('10 integers 0 [ + ] foldl')).toEqual(`[ 55 ]`);
   expect(await ƒ('10 integers 1 [ * ] foldl')).toEqual(`[ 3628800 ]`);
@@ -38,9 +36,7 @@ test('filter and foldl', async () => {
 });
 
 test('zipwith', async () => {
-  expect(await ƒ('[ 1 2 3 ] [ 4 5 6 ] [ + ] zipwith in')).toEqual(
-    `[ [ 5 7 9 ] ]`
-  );
+  expect(await ƒ('[ 1 2 3 ] [ 4 5 6 ] [ + ] zipwith in')).toEqual(`[ [ 5 7 9 ] ]`);
 });
 
 test('dot', async () => {

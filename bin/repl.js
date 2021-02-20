@@ -23,12 +23,7 @@ program
 program.parse(process.argv);
 
 if (typeof program.interactive === 'undefined') {
-  program.interactive =
-    !program.file &&
-    arg === '' &&
-    process &&
-    process.stdin &&
-    process.stdin.isTTY;
+  program.interactive = !program.file && arg === '' && process && process.stdin && process.stdin.isTTY;
 }
 
 if (program.logLevel) {
@@ -54,7 +49,6 @@ try {
   console.error(err);
   process.exit(1);
 }
-
 
 if (program.file) {
   f.promise(`"${program.file}" read await`).then(exitOrStartREPL);

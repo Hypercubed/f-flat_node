@@ -16,15 +16,12 @@ export const log = new Logger({
 // log.cli();
 log.level = (process.env as any).NODE_ENV || 'warn';
 
-export const bar = new ProgressBar(
-  ':elapsed s [:bar] S::stack Q::queue :: :lastAction',
-  {
-    complete: '=',
-    incomplete: ' ',
-    total: 100,
-    width: 50,
-    clear: true,
-    renderThrottle: 1000,
-    stream: process.stderr
-  }
-);
+export const bar = new ProgressBar(':elapsed s [:bar] S::stack Q::queue :: :lastAction', {
+  complete: '=',
+  incomplete: ' ',
+  total: 100,
+  width: 50,
+  clear: true,
+  renderThrottle: 1000,
+  stream: process.stderr
+});

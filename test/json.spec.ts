@@ -15,12 +15,8 @@ test('special', () => {
   expect(stringifyStrict(NaN)).toEqual('{"$numberDecimal":"NaN"}');
   expect(stringifyStrict(Infinity)).toEqual('{"$numberDecimal":"Infinity"}');
   expect(stringifyStrict(-Infinity)).toEqual('{"$numberDecimal":"-Infinity"}');
-  expect(stringifyStrict(/regexp/gim)).toEqual(
-    '{"$regex":"regexp","$options":"gim"}'
-  );
-  expect(stringifyStrict(new Date(1e12))).toEqual(
-    '{"$date":"2001-09-09T01:46:40.000Z"}'
-  );
+  expect(stringifyStrict(/regexp/gim)).toEqual('{"$regex":"regexp","$options":"gim"}');
+  expect(stringifyStrict(new Date(1e12))).toEqual('{"$date":"2001-09-09T01:46:40.000Z"}');
   expect(stringifyStrict(Symbol('a'))).toEqual('{"$symbol":"a"}');
 });
 
@@ -29,11 +25,7 @@ test('nested', () => {
   testStringify('Array (empty)', [], '[]');
   // tslint:disable-next-line: whitespace
   testStringify('Array (sparse)', [, 'b', ,], '[null,"b",null]');
-  testStringify(
-    'Object',
-    { foo: 'bar', 'x-y': 'z' },
-    '{"foo":"bar","x-y":"z"}'
-  );
+  testStringify('Object', { foo: 'bar', 'x-y': 'z' }, '{"foo":"bar","x-y":"z"}');
   testStringify('Set', new Set([1, 2, 3]), '{"$set":[1,2,3]}');
   testStringify('Map', new Map([['a', 'b']]), '{"$map":[["a","b"]]}');
 
@@ -43,26 +35,14 @@ test('nested', () => {
 });
 
 test('nested - special', () => {
-  testStringify(
-    'Array',
-    ['a', new Date(1e12), 'c'],
-    '["a",{"$date":"2001-09-09T01:46:40.000Z"},"c"]'
-  );
+  testStringify('Array', ['a', new Date(1e12), 'c'], '["a",{"$date":"2001-09-09T01:46:40.000Z"},"c"]');
   testStringify(
     'Object',
     { foo: 'bar', 'x-y': new Date(1e12) },
     '{"foo":"bar","x-y":{"$date":"2001-09-09T01:46:40.000Z"}}'
   );
-  testStringify(
-    'Set',
-    new Set([1, new Date(1e12), 3]),
-    '{"$set":[1,{"$date":"2001-09-09T01:46:40.000Z"},3]}'
-  );
-  testStringify(
-    'Map',
-    new Map([['a', new Date(1e12)]]),
-    '{"$map":[["a",{"$date":"2001-09-09T01:46:40.000Z"}]]}'
-  );
+  testStringify('Set', new Set([1, new Date(1e12), 3]), '{"$set":[1,{"$date":"2001-09-09T01:46:40.000Z"},3]}');
+  testStringify('Map', new Map([['a', new Date(1e12)]]), '{"$map":[["a",{"$date":"2001-09-09T01:46:40.000Z"}]]}');
 
   function testStringify(name: string, input: any, expected: string) {
     expect(stringifyStrict(input)).toEqual(expected);
@@ -71,9 +51,7 @@ test('nested - special', () => {
 
 test('fflat', () => {
   expect(stringifyStrict(new Decimal(42))).toEqual('{"$numberDecimal":"42"}');
-  expect(stringifyStrict(new Complex(42, 3))).toEqual(
-    '{"@@Complex":{"re":"42","im":"3"}}'
-  );
+  expect(stringifyStrict(new Complex(42, 3))).toEqual('{"@@Complex":{"re":"42","im":"3"}}');
   expect(stringifyStrict(new Word('word'))).toEqual('{"@@Word":"word"}');
   expect(stringifyStrict(new Key('word'))).toEqual('{"@@Key":"word"}');
   expect(stringifyStrict(new Sentence(['word']))).toEqual('{"@@Sentence":["word"]}');
@@ -149,10 +127,7 @@ test('generate json for strings', async () => {
 
 test('generate json for decimals', async () => {
   expect((await μ('1'))[0]).toEqual({ $numberDecimal: '1' });
-  expect((await μ('[1 2]'))[0]).toEqual([
-    { $numberDecimal: '1' },
-    { $numberDecimal: '2' }
-  ]);
+  expect((await μ('[1 2]'))[0]).toEqual([{ $numberDecimal: '1' }, { $numberDecimal: '2' }]);
   expect((await μ('{ x: [1 2] }'))[0]).toEqual({
     x: [{ $numberDecimal: '1' }, { $numberDecimal: '2' }]
   });

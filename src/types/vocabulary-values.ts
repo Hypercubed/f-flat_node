@@ -23,8 +23,4 @@ export class GlobalSymbol {
 
 export type ScopeModule = { [k in string]: GlobalSymbol };
 
-export type VocabValue =
-  | Sentence
-  | ScopeModule
-  | { [key: string]: VocabValue }
-  | Function;
+export type VocabValue = Sentence | ScopeModule | { [key: string]: VocabValue } | Function;

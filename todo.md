@@ -1,5 +1,8 @@
 # Todo list
 
+## Update
+- [ ] Replace tslint with eslint
+
 ## Roadmap
 - [ ] https://github.com/Hypercubed/real
   - [ ] Finish needed methods (`sin`, `cos`)

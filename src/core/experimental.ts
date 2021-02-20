@@ -98,7 +98,7 @@ export const experimental = {
    *
    * `a b ⭢ c`
    */
-  'make'(proto: Object, obj: Object): any {
+  make(proto: Object, obj: Object): any {
     const newObject = Object.create(proto);
     return Object.assign(newObject, obj);
   },

@@ -39,11 +39,8 @@ export const objectToString = () => (s: any, _p: any, v: any) => {
   return s;
 };
 
-export const sentences = (_o: never, _r: never, get: any) => (
-  s: any,
-  path: any,
-  v: any
-) => (v instanceof Sentence ? get(v.value, path) : s);
+export const sentences = (_o: never, _r: never, get: any) => (s: any, path: any, v: any) =>
+  v instanceof Sentence ? get(v.value, path) : s;
 
 export const symbols = () => (s: any) => {
   if (typeof s === 'symbol') {
@@ -89,8 +86,7 @@ const functions = () => {
   };
 };
 
-export const oneline = () => (s: any) =>
-  typeof s === 'string' ? s.replace(/\n\s*/g, ' ') : s;
+export const oneline = () => (s: any) => (typeof s === 'string' ? s.replace(/\n\s*/g, ' ') : s);
 
 const ARRAY_DECENDER_OPTIONS = {
   comma: true,
@@ -99,11 +95,7 @@ const ARRAY_DECENDER_OPTIONS = {
   sparse: false
 };
 
-export const arrayDecender = (
-  _options: Partial<typeof ARRAY_DECENDER_OPTIONS>,
-  _root: any,
-  get: any
-) => {
+export const arrayDecender = (_options: Partial<typeof ARRAY_DECENDER_OPTIONS>, _root: any, get: any) => {
   const options = { ...ARRAY_DECENDER_OPTIONS, ..._options };
   const pre = options.brackets[0] + '\n';
   const post = '\n' + options.brackets[1];
@@ -235,23 +227,15 @@ export const ffPrettyPrint = {
 
   literal: literal.stringify.bind(literal),
 
-  formatTrace(
-    { stack, queue, currentAction },
-    max = ffPrettyPrint.consoleWidth
-  ): string {
+  formatTrace({ stack, queue, currentAction }, max = ffPrettyPrint.consoleWidth): string {
     const maxOutputWidth = ffPrettyPrint.consoleWidth;
     max = max < 0 ? maxOutputWidth / 2 + max : max / 2;
     max -= 16;
 
     const stackString = trace.stringify(stack);
-    const lastActionString = is.undefined(currentAction)
-      ? ''
-      : trace.stringify(currentAction);
+    const lastActionString = is.undefined(currentAction) ? '' : trace.stringify(currentAction);
     const queueString = trace.stringify(queue);
-    return `${lpad(stackString, max)}> ${fixedWidthString(
-      lastActionString,
-      16
-    )} <${rtrim(queueString, max)}`;
+    return `${lpad(stackString, max)}> ${fixedWidthString(lastActionString, 16)} <${rtrim(queueString, max)}`;
   }
 };
 

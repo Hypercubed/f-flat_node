@@ -16,15 +16,7 @@ import { lexer } from '../parser';
 import { FFlatError, encode } from '../utils';
 import { Vocabulary } from './vocabulary';
 
-import {
-  MAXSTACK,
-  MAXRUN,
-  IDLE,
-  DISPATCHING,
-  YIELDING,
-  ERR,
-  IIF
-} from '../constants';
+import { MAXSTACK, MAXRUN, IDLE, DISPATCHING, YIELDING, ERR, IIF } from '../constants';
 
 import MiniSignal = require('mini-signals');
 
@@ -206,16 +198,10 @@ export class StackEnv {
     function checkMaxErrors(self: StackEnv) {
       if (loopCount++ % 10000 !== 0) return;
       if (self.stack.length > MAXSTACK) {
-        throw new FFlatError(
-          `Maximum stack size of ${MAXSTACK} exceeded.`,
-          self
-        );
+        throw new FFlatError(`Maximum stack size of ${MAXSTACK} exceeded.`, self);
       }
       if (self.queue.length > MAXSTACK) {
-        throw new FFlatError(
-          `Maximum queue size of ${MAXSTACK} exceeded.`,
-          self
-        );
+        throw new FFlatError(`Maximum queue size of ${MAXSTACK} exceeded.`, self);
       }
       if (loopCount > MAXRUN) {
         throw new FFlatError(`Maximum loop count of ${MAXRUN} exceeded.`, self);
@@ -269,9 +255,7 @@ export class StackEnv {
     if (is.undefined(token)) return;
 
     if (token instanceof Future) {
-      return token.isResolved()
-        ? this.push(...(token.value as StackValue[]))
-        : this.push(token);
+      return token.isResolved() ? this.push(...(token.value as StackValue[])) : this.push(token);
     }
 
     if (token instanceof Sentence && this.depth < 1) {
@@ -291,18 +275,12 @@ export class StackEnv {
   }
 
   private dispatchLookup(tokenValue: string | GlobalSymbol) {
-    if (
-      is.string(tokenValue) &&
-      tokenValue.length > 1 &&
-      tokenValue.startsWith(IIF)
-    ) {
+    if (is.string(tokenValue) && tokenValue.length > 1 && tokenValue.startsWith(IIF)) {
       tokenValue = tokenValue.slice(1);
     }
 
     const lookup = this.dict.get(tokenValue);
-    const name = GlobalSymbol.is(tokenValue)
-      ? tokenValue.description
-      : tokenValue;
+    const name = GlobalSymbol.is(tokenValue) ? tokenValue.description : tokenValue;
 
     if (is.undefined(lookup)) {
       throw new FFlatError(`"${tokenValue}" is not defined.`, this);

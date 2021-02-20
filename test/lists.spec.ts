@@ -120,7 +120,5 @@ test('should fine maximum and minimum', async () => {
 test('should split at', async () => {
   // base
   expect(await ƒ('["a" "b" "c" "d"] 1 /')).toEqual(τ([['a'], ['b', 'c', 'd']]));
-  expect(await ƒ('["a" "b" "c" "d"] -1 /')).toEqual(
-    τ([['a', 'b', 'c'], ['d']])
-  );
+  expect(await ƒ('["a" "b" "c" "d"] -1 /')).toEqual(τ([['a', 'b', 'c'], ['d']]));
 });

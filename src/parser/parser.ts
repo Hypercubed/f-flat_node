@@ -66,9 +66,7 @@ function processNumeric(value: string): Decimal | number {
   value = value.replace(/_/g, '');
   try {
     if (value === '-0') return new Decimal('-0');
-    return value.slice(-1) === '%'
-      ? new Decimal(String(value.slice(0, -1))).div(100)
-      : new Decimal(String(value));
+    return value.slice(-1) === '%' ? new Decimal(String(value.slice(0, -1))).div(100) : new Decimal(String(value));
   } catch (e) {
     return NaN;
   }

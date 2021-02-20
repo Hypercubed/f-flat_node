@@ -83,12 +83,8 @@ test('precision', async () => {
 });
 
 test('trig', async () => {
-  expect(await ƒ('1 cos 1 sin 1 tan')).toEqual(
-    `[ ${Decimal.cos(1)} ${Decimal.sin(1)} ${Decimal.tan(1)} ]`
-  );
-  expect(await ƒ('1 acos 1 asin 1 atan')).toEqual(
-    `[ 5e-20 ${Decimal.asin(1)} ${Decimal.atan(1)} ]`
-  ); // fix acos
+  expect(await ƒ('1 cos 1 sin 1 tan')).toEqual(`[ ${Decimal.cos(1)} ${Decimal.sin(1)} ${Decimal.tan(1)} ]`);
+  expect(await ƒ('1 acos 1 asin 1 atan')).toEqual(`[ 5e-20 ${Decimal.asin(1)} ${Decimal.atan(1)} ]`); // fix acos
   expect(await ƒ('1 atan 4 *')).toEqual(`[ ${PI} ]`);
   expect(await ƒ('1 1 atan2 4 *')).toEqual(`[ ${PI} ]`);
 });
@@ -277,21 +273,15 @@ test('atanh', async () => {
   expect(await ƒ('0 atanh')).toEqual('[ 0 ]');
   expect(await ƒ('1 atanh')).toEqual('[ Infinity ]');
   expect(await ƒ('-1 atanh')).toEqual('[ -Infinity ]');
-  expect(await ƒ('pi atanh')).toEqual(
-    '[ 0.3297653149566991076-1.5707963267948966193i ]'
-  );
-  expect(await ƒ('pi -1 * atanh')).toEqual(
-    '[ -0.3297653149566991076+1.5707963267948966193i ]'
-  );
+  expect(await ƒ('pi atanh')).toEqual('[ 0.3297653149566991076-1.5707963267948966193i ]');
+  expect(await ƒ('pi -1 * atanh')).toEqual('[ -0.3297653149566991076+1.5707963267948966193i ]');
   expect(await ƒ('1 2 / atanh')).toEqual('[ 0.5493061443340548457 ]');
   expect(await ƒ('-1 2 / atanh')).toEqual('[ -0.5493061443340548457 ]');
 });
 
 test('atanh of infinities', async () => {
   expect(await ƒ('infinity atanh')).toEqual('[ 0-1.5707963267948966192i ]');
-  expect(await ƒ('infinity -1 * atanh')).toEqual(
-    '[ 0+1.5707963267948966192i ]'
-  );
+  expect(await ƒ('infinity -1 * atanh')).toEqual('[ 0+1.5707963267948966192i ]');
 });
 
 test('should support neg 0', async () => {

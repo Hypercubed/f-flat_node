@@ -10,10 +10,7 @@ function toString(x: any) {
 }
 
 abstract class Action {
-  constructor(
-    public readonly value: any,
-    public readonly displayString?: string
-  ) {
+  constructor(public readonly value: any, public readonly displayString?: string) {
     if (!displayString) {
       this.displayString = toString(value);
     }
@@ -33,9 +30,7 @@ abstract class Action {
   }
 
   equals(b: any): boolean {
-    return typeof this.value.equals === 'function'
-      ? this.value.equals(b.value)
-      : this.value === b.value;
+    return typeof this.value.equals === 'function' ? this.value.equals(b.value) : this.value === b.value;
   }
 
   extract(): any {
@@ -63,10 +58,7 @@ export class Word extends Action {
     return x instanceof Word;
   }
 
-  constructor(
-    public readonly value: string,
-    public readonly displayString?: string
-  ) {
+  constructor(public readonly value: string, public readonly displayString?: string) {
     // value s/b PropertyKey?
     super(value, displayString);
     if (new.target === Word) {
@@ -87,10 +79,7 @@ export class Key extends Action {
     return x instanceof Key;
   }
 
-  constructor(
-    public readonly value: string,
-    public readonly displayString?: string
-  ) {
+  constructor(public readonly value: string, public readonly displayString?: string) {
     super(value, displayString);
     if (!displayString) {
       this.displayString = toString(value) + ':';
@@ -113,10 +102,7 @@ export class Sentence extends Action {
     return x instanceof Sentence;
   }
 
-  constructor(
-    public readonly value: StackValue[],
-    public readonly displayString?: string
-  ) {
+  constructor(public readonly value: StackValue[], public readonly displayString?: string) {
     super(value, displayString);
     if (new.target === Sentence) {
       Object.freeze(this);

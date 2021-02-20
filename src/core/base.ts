@@ -3,30 +3,8 @@ import { signature, Any } from '@hypercubed/dynamo';
 
 import { lexer } from '../parser';
 import { deepEquals, arrayRepeat, arrayMul, arrayInvMul } from '../utils';
-import {
-  and,
-  nand,
-  or,
-  xor,
-  not,
-  nor,
-  cmp,
-  mimpl,
-  cimpl,
-  mnonimpl,
-  cnonimpl
-} from '../utils/kleene-logic';
-import {
-  rAnd,
-  rNot,
-  rOr,
-  rXor,
-  rNand,
-  rLsh,
-  rRsh,
-  rNor,
-  rRepeat
-} from '../utils/regex-logic';
+import { and, nand, or, xor, not, nor, cmp, mimpl, cimpl, mnonimpl, cnonimpl } from '../utils/kleene-logic';
+import { rAnd, rNot, rOr, rXor, rNand, rLsh, rRsh, rNor, rRepeat } from '../utils/regex-logic';
 import {
   dynamo,
   Word,

@@ -3,17 +3,7 @@
 import { StackEnv } from './engine/env';
 import { join } from 'path';
 
-import {
-  dict,
-  base,
-  objects,
-  core,
-  math,
-  types,
-  experimental,
-  node,
-  flags
-} from './core';
+import { dict, base, objects, core, math, types, experimental, node, flags } from './core';
 
 let defaultRootStack: StackEnv;
 

@@ -136,8 +136,8 @@ export class CLI {
     this.prompt();
 
     this.readline
-      .on('pause', () => this.isPaused = true)
-      .on('resume', () => this.isPaused = false)
+      .on('pause', () => (this.isPaused = true))
+      .on('resume', () => (this.isPaused = false))
       .on('line', (line: string) => {
         if (!this.isPaused && !this.processReplCommand(line)) {
           this.fEval(line);
@@ -209,10 +209,7 @@ export class CLI {
 
     log.profile('dispatch');
 
-    this.undoStack = [
-      ...this.undoStack.slice(-MAX_UNDO + 1),
-      this.f.stateSnapshot()
-    ];
+    this.undoStack = [...this.undoStack.slice(-MAX_UNDO + 1), this.f.stateSnapshot()];
     this.redoStack = [];
 
     this.readline.pause();
@@ -415,18 +412,22 @@ export class CLI {
         terminal.restoreCursor();
       };
 
-      this.bindings.push(this.f.before.add(() => {
-        console.log('');
-        terminal.hideCursor();
-        terminal.up(1);
-        updateBar();
-      }));
+      this.bindings.push(
+        this.f.before.add(() => {
+          console.log('');
+          terminal.hideCursor();
+          terminal.up(1);
+          updateBar();
+        })
+      );
       this.bindings.push(this.f.beforeEach.add(updateBar));
-      this.bindings.push(this.f.idle.add(() => {
-        terminal.down(1);
-        bar.terminate();
-        terminal.hideCursor(false);
-      }));
+      this.bindings.push(
+        this.f.idle.add(() => {
+          terminal.down(1);
+          bar.terminate();
+          terminal.hideCursor(false);
+        })
+      );
     }
 
     // pause every 3 seconds to allow interupt

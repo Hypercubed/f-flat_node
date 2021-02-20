@@ -1,11 +1,4 @@
-import {
-  sequence,
-  flags,
-  lookAhead,
-  avoid,
-  either,
-  suffix
-} from 'compose-regexp';
+import { sequence, flags, lookAhead, avoid, either, suffix } from 'compose-regexp';
 
 export function rAnd(lhs: RegExp, rhs: RegExp) {
   const slhs = lookAhead(lhs);

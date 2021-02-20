@@ -44,23 +44,23 @@ const P = <any>Decimal.prototype;
 
 P.toString = P.valueOf;
 
-P.valueOf = function() {
+P.valueOf = function () {
   return Number(this.toString());
 };
 
-P.toJSON = function() {
+P.toJSON = function () {
   return { $numberDecimal: this.toString() };
 };
 
-P.inspect = function() {
+P.inspect = function () {
   return this.toString();
 };
 
-P.fromJSON = function(json: { $numberDecimal: string }) {
+P.fromJSON = function (json: { $numberDecimal: string }) {
   return new Decimal(json.$numberDecimal);
 };
 
-P.digits = function() {
+P.digits = function () {
   return this.toString().replace(/[-+.eE]/g, '');
 };
 

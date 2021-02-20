@@ -33,11 +33,7 @@ function create(dictObject: Object | undefined) {
       const path = Vocabulary.makePath(action.value as string);
       const value: StackValue = getIn(dictObject, path as string[]);
 
-      if (
-        is.undefined(value) &&
-        (typeof action.value !== 'string' ||
-          !(action.value as string).endsWith(IIF))
-      )
+      if (is.undefined(value) && (typeof action.value !== 'string' || !(action.value as string).endsWith(IIF)))
         return action;
       if (is.function_(value)) return new ReturnValues([action]);
 
@@ -50,9 +46,7 @@ function create(dictObject: Object | undefined) {
     plainObject(obj: Object) {
       return Object.keys(obj).reduce((p, key) => {
         const n = _rewrite(obj[key]); // todo: think about this, do we ever want to work on anything other than {string: Array}?
-        n instanceof ReturnValues
-          ? (p[key] = n.value.length === 1 ? n.value[0] : n.value)
-          : (p[key] = n);
+        n instanceof ReturnValues ? (p[key] = n.value.length === 1 ? n.value[0] : n.value) : (p[key] = n);
         return p;
       }, {});
     }

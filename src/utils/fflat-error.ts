@@ -18,10 +18,7 @@ export class FFlatError extends Error {
 
     let stackValue: string[];
     if (state) {
-      stackValue = [
-        `${this.name}: ${this.message}`,
-        `stack/queue: ${state.stack.length} / ${state.queue.length}`
-      ];
+      stackValue = [`${this.name}: ${this.message}`, `stack/queue: ${state.stack.length} / ${state.queue.length}`];
 
       stackValue.push(`stack trace:`);
 

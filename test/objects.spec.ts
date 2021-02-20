@@ -5,17 +5,15 @@ test('should create objects object', async () => {
     `[ { first: 'Manfred', last: 'von Thun' } ]`
   );
 
-  expect(await ƒ('{ first: "Manfred" last: "von Thun" }')).toEqual(
-    `[ { first: 'Manfred', last: 'von Thun' } ]`
-  );
+  expect(await ƒ('{ first: "Manfred" last: "von Thun" }')).toEqual(`[ { first: 'Manfred', last: 'von Thun' } ]`);
 
   expect(await ƒ('{ name: { first: "Manfred" last: "von Thun" } }')).toEqual(
     `[ { name: { first: 'Manfred', last: 'von Thun' } } ]`
   );
 
-  expect(
-    await ƒ('{ name: [ { first: "Manfred" } { last: "von Thun" } ] }')
-  ).toEqual(`[ { name: [ { first: 'Manfred' } { last: 'von Thun' } ] } ]`);
+  expect(await ƒ('{ name: [ { first: "Manfred" } { last: "von Thun" } ] }')).toEqual(
+    `[ { name: [ { first: 'Manfred' } { last: 'von Thun' } ] } ]`
+  );
 });
 
 test('should create objects object with cased keys', async () => {
@@ -23,34 +21,24 @@ test('should create objects object with cased keys', async () => {
     `[ { First: 'Manfred', Last: 'von Thun' } ]`
   );
 
-  expect(await ƒ('{ First: "Manfred" Last: "von Thun" }')).toEqual(
-    `[ { First: 'Manfred', Last: 'von Thun' } ]`
-  );
+  expect(await ƒ('{ First: "Manfred" Last: "von Thun" }')).toEqual(`[ { First: 'Manfred', Last: 'von Thun' } ]`);
 });
 
 test('should create objects object, cont', async () => {
   // t.deepEqual(await ƒ('{ name: [ { first: "Manfred" } { last: "von" " Thun" + } ] }'), [{ name: [{first: 'Manfred'}, {last: 'von Thun'}] }]);
-  expect(await ƒ('{ first: "Manfred", last: "von Thun" }')).toEqual(
-    `[ { first: 'Manfred', last: 'von Thun' } ]`
-  );
+  expect(await ƒ('{ first: "Manfred", last: "von Thun" }')).toEqual(`[ { first: 'Manfred', last: 'von Thun' } ]`);
   expect(await ƒ('{ first: "Manfred", last: [ "von" "Thun" ] " " * }')).toEqual(
     `[ { first: 'Manfred', last: 'von Thun' } ]`
   );
 });
 
 test('should test is object', async () => {
-  expect(await ƒ('{ first: "Manfred" last: "von Thun" } object?')).toEqual(
-    `[ true ]`
-  );
-  expect(await ƒ('[ first: "Manfred" last: "von Thun" ] object?')).toEqual(
-    `[ false ]`
-  );
+  expect(await ƒ('{ first: "Manfred" last: "von Thun" } object?')).toEqual(`[ true ]`);
+  expect(await ƒ('[ first: "Manfred" last: "von Thun" ] object?')).toEqual(`[ false ]`);
 });
 
 test('should create objects object, cont2', async () => {
-  expect(await ƒ('{ "first": "Manfred", "last": "von Thun" }')).toEqual(
-    `[ { first: 'Manfred', last: 'von Thun' } ]`
-  );
+  expect(await ƒ('{ "first": "Manfred", "last": "von Thun" }')).toEqual(`[ { first: 'Manfred', last: 'von Thun' } ]`);
 
   expect(await ƒ('[ { first: "Manfred", last: "von Thun" } ]')).toEqual(
     `[ [ { first: 'Manfred', last: 'von Thun' } ] ]`
@@ -62,42 +50,28 @@ test('should create objects object, cont2', async () => {
 });
 
 test('should test is object', async () => {
-  expect(await ƒ('{ first: "Manfred" last: "von Thun" } object?')).toEqual(
-    `[ true ]`
-  );
-  expect(await ƒ('[ first: "Manfred" last: "von Thun" ] object?')).toEqual(
-    `[ false ]`
-  );
+  expect(await ƒ('{ first: "Manfred" last: "von Thun" } object?')).toEqual(`[ true ]`);
+  expect(await ƒ('[ first: "Manfred" last: "von Thun" ] object?')).toEqual(`[ false ]`);
 });
 
 test('should get keys and values', async () => {
-  expect(await ƒ('{ first: "Manfred" last: "von Thun" } keys')).toEqual(
-    `[ [ 'first' 'last' ] ]`
-  );
-  expect(await ƒ('{ "first" "Manfred" "last" "von Thun" } vals')).toEqual(
-    `[ [ 'Manfred' 'von Thun' ] ]`
-  );
+  expect(await ƒ('{ first: "Manfred" last: "von Thun" } keys')).toEqual(`[ [ 'first' 'last' ] ]`);
+  expect(await ƒ('{ "first" "Manfred" "last" "von Thun" } vals')).toEqual(`[ [ 'Manfred' 'von Thun' ] ]`);
 });
 
 test('should get single values usint @', async () => {
-  expect(await ƒ('{ first: "Manfred" last: "von Thun" } first: @')).toEqual(
-    `[ 'Manfred' ]`
-  );
-  expect(await ƒ('{ first: "Manfred" last: "von Thun" } last: @')).toEqual(
-    `[ 'von Thun' ]`
-  );
+  expect(await ƒ('{ first: "Manfred" last: "von Thun" } first: @')).toEqual(`[ 'Manfred' ]`);
+  expect(await ƒ('{ first: "Manfred" last: "von Thun" } last: @')).toEqual(`[ 'von Thun' ]`);
 });
 
 test('should join objects', async () => {
-  expect(await ƒ('{ first: "Manfred" } { last: "von Thun" } +')).toEqual(
-    `[ { first: 'Manfred', last: 'von Thun' } ]`
+  expect(await ƒ('{ first: "Manfred" } { last: "von Thun" } +')).toEqual(`[ { first: 'Manfred', last: 'von Thun' } ]`);
+  expect(await ƒ('{ first: "Manfred" } { first: "John" last: "von Thun" } <<')).toEqual(
+    `[ { first: 'John', last: 'von Thun' } ]`
   );
-  expect(
-    await ƒ('{ first: "Manfred" } { first: "John" last: "von Thun" } <<')
-  ).toEqual(`[ { first: 'John', last: 'von Thun' } ]`);
-  expect(
-    await ƒ('{ first: "Manfred" } { first: "John" last: "von Thun" } >>')
-  ).toEqual(`[ { last: 'von Thun', first: 'Manfred' } ]`);
+  expect(await ƒ('{ first: "Manfred" } { first: "John" last: "von Thun" } >>')).toEqual(
+    `[ { last: 'von Thun', first: 'Manfred' } ]`
+  );
 });
 
 test('should join objects without mutations', async () => {
@@ -113,15 +87,9 @@ test('should join objects without mutations', async () => {
 });
 
 test('objects', async () => {
-  expect(await ƒ('{ name: [ "Manfred" "von Thun" ] }')).toEqual(
-    `[ { name: [ 'Manfred' 'von Thun' ] } ]`
-  );
-  expect(await ƒ('{ name: "Manfred" " von Thun" + }')).toEqual(
-    `[ { name: 'Manfred von Thun' } ]`
-  );
-  expect(await ƒ('{ name: ( "Manfred" " von Thun" + ) }')).toEqual(
-    `[ { name: [ 'Manfred von Thun' ] } ]`
-  );
+  expect(await ƒ('{ name: [ "Manfred" "von Thun" ] }')).toEqual(`[ { name: [ 'Manfred' 'von Thun' ] } ]`);
+  expect(await ƒ('{ name: "Manfred" " von Thun" + }')).toEqual(`[ { name: 'Manfred von Thun' } ]`);
+  expect(await ƒ('{ name: ( "Manfred" " von Thun" + ) }')).toEqual(`[ { name: [ 'Manfred von Thun' ] } ]`);
   expect(await ƒ('{ first: "Manfred" last: "von Thun" } ln')).toEqual(`[ 2 ]`);
 });
 

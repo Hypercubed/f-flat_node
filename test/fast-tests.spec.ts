@@ -6,7 +6,7 @@ const { value, array } = fc.letrec(tie => ({
   prim: fc.oneof<any>(fc.hexa(), fc.integer(), fc.float(), fc.boolean(), fc.constant(null)),
   array: fc.array(tie('value'), 1, 5),
   object: fc.dictionary(fc.hexa(), tie('prim')),
-  value: fc.oneof(tie('array'), tie('object'), tie('prim'), tie('prim')),
+  value: fc.oneof(tie('array'), tie('object'), tie('prim'), tie('prim'))
 }));
 
 describe('core', () => {
@@ -282,9 +282,7 @@ test('integer arithmetic', async () => {
 test('polynomial identities', async () => {
   await fc.assert(
     fc.asyncProperty(fc.integer(), fc.integer(), async (a, b) => {
-      expect(await ƒ`${a} ${b} + 2 ^`).toEqual(
-        await ƒ`${a} 2 ^ ${b} 2 ^ ${a} ${b} * 2 * + +`
-      ); // (a+b)^2 = a^2 + 2ab + b^2
+      expect(await ƒ`${a} ${b} + 2 ^`).toEqual(await ƒ`${a} 2 ^ ${b} 2 ^ ${a} ${b} * 2 * + +`); // (a+b)^2 = a^2 + 2ab + b^2
     })
   );
 });

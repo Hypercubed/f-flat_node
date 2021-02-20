@@ -3,11 +3,7 @@ import is from '@sindresorhus/is';
 import { StackValue } from '../types/stack-values';
 import { Word, Sentence } from '../types/words';
 import { ReturnValues } from '../types/return-values';
-import {
-  VocabValue,
-  ScopeModule,
-  GlobalSymbol
-} from '../types/vocabulary-values';
+import { VocabValue, ScopeModule, GlobalSymbol } from '../types/vocabulary-values';
 
 import { SEP } from '../constants';
 
@@ -28,9 +24,7 @@ const INVALID_WORDS = [
 
 export class Vocabulary {
   static makePath(key: string): string[] {
-    key = String(key)
-      .toLowerCase()
-      .trim();
+    key = String(key).toLowerCase().trim();
     if (key.startsWith(LOCAL) && key.length > LOCAL.length) {
       // words starting with '.' are alays local, not compiled
       key = key.slice(LOCAL.length);
@@ -131,14 +125,10 @@ export class Vocabulary {
     Object.keys(dict).forEach(key => {
       const value = dict[key];
       if (!GlobalSymbol.is(value)) {
-        throw new Error(
-          `Error calling 'use': invalid vocabulary. Vocabulary should be a map of global symbols.`
-        ); // make FFlatError
+        throw new Error(`Error calling 'use': invalid vocabulary. Vocabulary should be a map of global symbols.`); // make FFlatError
       }
       if (!this.globalMap.has(value)) {
-        throw new Error(
-          `Error calling 'use': invalid vocabulary. Symbol is undefined ${value.description}.`
-        ); // make FFlatError
+        throw new Error(`Error calling 'use': invalid vocabulary. Symbol is undefined ${value.description}.`); // make FFlatError
       }
       this.scope[key] = value;
     });
@@ -213,7 +203,7 @@ export class Vocabulary {
           if (!this.globalMap.has(v)) {
             throw new Error(`"${v.description}" is not defined.`);
           }
-          return v;  // defered
+          return v; // defered
         }
         if (type === 'function') return v;
         symbolStack.push(v);
@@ -223,7 +213,7 @@ export class Vocabulary {
       }
 
       if (v instanceof Word) {
-        if ((typeof v.value === 'string' && !v.value.startsWith(LOCAL))) {
+        if (typeof v.value === 'string' && !v.value.startsWith(LOCAL)) {
           const sym = this.findSymbol(v.value);
           if (is.undefined(sym)) {
             throw new Error(`"${v.value}" is not defined.`);

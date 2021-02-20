@@ -11,10 +11,7 @@ export class Complex {
   re: Decimal;
   im: Decimal;
 
-  constructor(
-    re: string | number | Decimal | Complex,
-    im: string | number | Decimal = 0
-  ) {
+  constructor(re: string | number | Decimal | Complex, im: string | number | Decimal = 0) {
     if (re instanceof Complex) {
       return re;
     }
@@ -112,9 +109,7 @@ export class Complex {
   }
 
   sin() {
-    return this.times(I)
-      .sini()
-      .div(I);
+    return this.times(I).sini().div(I);
   }
 
   cos() {
@@ -133,11 +128,7 @@ export class Complex {
 
   asin() {
     const one = new Complex(1, 0);
-    const log = one
-      .minus(this.times(this))
-      .sqrt()
-      .plus(this.times(I))
-      .ln();
+    const log = one.minus(this.times(this)).sqrt().plus(this.times(I)).ln();
     return I.times(-1).times(log);
   }
 
@@ -304,12 +295,7 @@ export class Complex {
   }
 
   normalize(): any {
-    if (
-      this.im
-        .div(this.re)
-        .abs()
-        .lessThan(precision)
-    ) {
+    if (this.im.div(this.re).abs().lessThan(precision)) {
       return this.abs().times((Decimal as any).sign(this.re));
     }
     return this;
@@ -380,9 +366,7 @@ export class Complex {
 
   pow(y): Complex {
     // x^y = exp(log(x)*y)
-    return this.ln()
-      .times(y)
-      .exp();
+    return this.ln().times(y).exp();
   }
 
   gamma(): Complex {
@@ -405,14 +389,8 @@ export class Complex {
       if (den.isZero()) {
         agre = c[i] < 0 ? -Infinity : Infinity;
       } else {
-        agre = <any>npi.re
-          .times(c[i])
-          .div(den)
-          .plus(agre); //  Ag += c(k)/(z+k)
-        agim = <any>npi.im
-          .times(-c[i])
-          .div(den)
-          .plus(agim);
+        agre = <any>npi.re.times(c[i]).div(den).plus(agre); //  Ag += c(k)/(z+k)
+        agim = <any>npi.im.times(-c[i]).div(den).plus(agim);
       }
     }
 

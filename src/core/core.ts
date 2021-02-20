@@ -1,22 +1,8 @@
 import { splice, pop, push, getIn } from 'icepick';
 import { signature, Any } from '@hypercubed/dynamo';
 
-import {
-  dynamo,
-  ReturnValues,
-  StackValue,
-  Future,
-  Sentence,
-  Word,
-  Key,
-  Decimal
-} from '../types';
-import {
-  deepEquals,
-  template,
-  toObject,
-  FFlatError
-} from '../utils';
+import { dynamo, ReturnValues, StackValue, Future, Sentence, Word, Key, Decimal } from '../types';
+import { deepEquals, template, toObject, FFlatError } from '../utils';
 import { patternMatch } from '../utils/pattern';
 import { StackEnv } from '../engine/env';
 
@@ -275,7 +261,7 @@ export const core = {
    * [ 1 2 3 4 ]
    * ```
    */
-  'q<': function(this: StackEnv, a: StackValue): void {
+  'q<': function (this: StackEnv, a: StackValue): void {
     this.queue.push(a);
   },
 
@@ -291,7 +277,7 @@ export const core = {
    * [ 1 2 3 4 ]
    * ```
    */
-  'q>': function(this: StackEnv) {
+  'q>': function (this: StackEnv) {
     return new ReturnValues([this.queue.pop()]); // danger
   },
 
@@ -339,7 +325,7 @@ export const core = {
    * [  ]
    * ```
    */
-  clr: function(this: StackEnv): void {
+  clr: function (this: StackEnv): void {
     this.clear();
   },
 
@@ -537,7 +523,7 @@ export const core = {
    *
    * `#( a* ⭢ [ a* ]`
    */
-  ')': function(this: StackEnv, s: StackValue) {
+  ')': function (this: StackEnv, s: StackValue) {
     try {
       return dequoteStack(this, s, IMMEDIATE_QUOTE);
     } catch (e) {
@@ -551,7 +537,7 @@ export const core = {
    *
    * `⭢ #[`
    */
-  '[': function(this: StackEnv) {
+  '[': function (this: StackEnv) {
     this.depth++;
     return LAZY_QUOTE;
   },
@@ -563,7 +549,7 @@ export const core = {
    *
    * `#( A* ⭢ [ A* ]`
    */
-  ']': function(this: StackEnv, s: StackValue) {
+  ']': function (this: StackEnv, s: StackValue) {
     this.depth--;
     try {
       return dequoteStack(this, s, LAZY_QUOTE);
@@ -588,11 +574,10 @@ export const core = {
    *
    * `#( a b ... ⭢ { a: b ... }`
    */
-  '}': function(this: StackEnv, s: StackValue) {
+  '}': function (this: StackEnv, s: StackValue) {
     let r: any;
     try {
       r = dequoteStack(this, s, OBJECT_QUOTE);
-
     } catch (e) {
       throw new FFlatError(e, this);
     }

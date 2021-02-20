@@ -117,7 +117,7 @@ export const dict = {
    * [ ]
    * ```
    */
-  'def'(this: StackEnv, lhs: string | Key, rhs: StackValue[]) {
+  def(this: StackEnv, lhs: string | Key, rhs: StackValue[]) {
     this.dict.set(String(lhs), createAction(rhs));
   },
 

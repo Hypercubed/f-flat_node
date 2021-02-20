@@ -65,22 +65,14 @@ class Base {
       case 10:
         return lhs.toString();
       case 16:
-        return (lhs.toHexadecimal() as any)
-          .toUpperCase()
-          .replace('X', 'x')
-          .replace('P', 'p');
+        return (lhs.toHexadecimal() as any).toUpperCase().replace('X', 'x').replace('P', 'p');
       default:
         const sgn = lhs.isNeg() ? '-' : '';
-        const arr = convertBase(
-          new d(lhs).absoluteValue().toString(),
-          10,
-          base
-        );
+        const arr = convertBase(new d(lhs).absoluteValue().toString(), 10, base);
         return sgn + arr.map(x => NUMERALS[x]).join('');
     }
   }
 }
-
 
 /**
  * # Internal Type Words

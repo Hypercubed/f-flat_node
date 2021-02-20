@@ -199,15 +199,11 @@ export const node = {
   cwd: (): string => getURLStringForCwd(),
 
   md5(x: string) {
-    return createHash('md5')
-      .update(x)
-      .digest('hex');
+    return createHash('md5').update(x).digest('hex');
   },
 
   sha1(x: string) {
-    return createHash('sha1')
-      .update(x)
-      .digest('base64');
+    return createHash('sha1').update(x).digest('base64');
   },
 
   /**
