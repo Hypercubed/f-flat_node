@@ -5,9 +5,9 @@ import { dynamo } from '../types/dynamo';
 
 import { Decimal } from '../types/decimal';
 import { Complex } from '../types/complex';
-import { Word, Key } from '../types/words';
+import { Word, Key, Sentence } from '../types/words';
 import { type, hashCode } from '../utils';
-import { StackValue } from '../types';
+import { StackValue, ReturnValues } from '../types';
 
 const NUMERALS = '0123456789ABCDEF';
 

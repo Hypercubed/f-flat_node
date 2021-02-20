@@ -18,59 +18,59 @@ test('words', () => {
   expect(lexer('[ a b: :c .d ]')).toMatchInlineSnapshot(`
     Array [
       Object {
-        "@@Action": "[",
+        "@@Word": "[",
       },
       Object {
-        "@@Action": "a",
+        "@@Word": "a",
       },
       Object {
-        "@@Action": "b",
+        "@@Key": "b",
       },
       Object {
-        "@@Action": ":c",
+        "@@Word": ":c",
       },
       Object {
-        "@@Action": ".d",
+        "@@Word": ".d",
       },
       Object {
-        "@@Action": "]",
+        "@@Word": "]",
       },
     ]
-`);
+  `);
 });
 
 test('tricky words', () => {
   expect(lexer('[a]')).toMatchInlineSnapshot(`
     Array [
       Object {
-        "@@Action": "[",
+        "@@Word": "[",
       },
       Object {
-        "@@Action": "a",
+        "@@Word": "a",
       },
       Object {
-        "@@Action": "]",
+        "@@Word": "]",
       },
     ]
   `);
 
   expect(lexer('a:b')).toMatchInlineSnapshot(`
-    Array [
-      Object {
-        "@@Action": "a",
-      },
-      Object {
-        "@@Action": "b",
-      },
-    ]
-  `);
+Array [
+  Object {
+    "@@Key": "a",
+  },
+  Object {
+    "@@Word": "b",
+  },
+]
+`);
 
   // TODO: fix this
   expect(lexer('"a":true')).toMatchInlineSnapshot(`
     Array [
       "a",
       Object {
-        "@@Action": ":true",
+        "@@Word": ":true",
       },
     ]
   `);

@@ -1,4 +1,4 @@
-import { μ, Decimal, Complex, Word } from './helpers/setup';
+import { μ, Decimal, Complex, Word, Key, Sentence } from './helpers/setup';
 import { stringifyStrict } from '../src/utils/json';
 
 test('prims', () => {
@@ -74,7 +74,9 @@ test('fflat', () => {
   expect(stringifyStrict(new Complex(42, 3))).toEqual(
     '{"@@Complex":{"re":"42","im":"3"}}'
   );
-  expect(stringifyStrict(new Word('word'))).toEqual('{"@@Action":"word"}');
+  expect(stringifyStrict(new Word('word'))).toEqual('{"@@Word":"word"}');
+  expect(stringifyStrict(new Key('word'))).toEqual('{"@@Key":"word"}');
+  expect(stringifyStrict(new Sentence(['word']))).toEqual('{"@@Sentence":["word"]}');
 });
 
 /* test('cycles', async t => {
@@ -160,17 +162,6 @@ test('generate json for complex values', async () => {
   expect((await μ('{ x: [1 2], y: i }'))[0]).toEqual({
     x: [{ $numberDecimal: '1' }, { $numberDecimal: '2' }],
     y: { '@@Complex': { re: '0', im: '1' } }
-  });
-});
-
-test('generate json for actions', async () => {
-  expect((await μ('"word" :'))[0]).toEqual({ '@@Action': 'word' });
-  expect((await μ('[ "a" "b" ] :'))[0]).toEqual({ '@@Action': ['a', 'b'] });
-  expect((await μ('[ 1 2 ] :'))[0]).toEqual({
-    '@@Action': [{ $numberDecimal: '1' }, { $numberDecimal: '2' }]
-  });
-  expect((await μ('[ a b ] :'))[0]).toEqual({
-    '@@Action': [{ '@@Action': 'a' }, { '@@Action': 'b' }]
   });
 });
 

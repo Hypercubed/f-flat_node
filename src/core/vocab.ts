@@ -5,7 +5,7 @@ import { Key, Sentence } from '../types/words';
 import { StackValue } from '../types/stack-values';
 import { GlobalSymbol, ScopeModule } from '../types/vocabulary-values';
 
-import { ffPrettyPrint, rewrite } from '../utils';
+import { ffPrettyPrint } from '../utils';
 
 import { StackEnv } from '../engine/env';
 

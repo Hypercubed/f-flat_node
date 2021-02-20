@@ -23,6 +23,7 @@
   - [ ] move checkMaxErrors to signal?
 
 ## TODO Now
+- [ ] remove `action` type (`word`, `key`, etc)
 - [?] built-in `include`?
   - [ ] errors by line number
 - [-] map over strings should return strings? (same sequence type)
@@ -39,6 +40,7 @@
   - [ ] stack case guard
 - [ ] Replace `.x` syntax?  `/x`, `:x:`, `::x`, `/x/`, `~x`, `$x`
   - [ ] repl commands vs force local
+  - [ ] getter `.x` -> `'x' @`?
 - [ ] Better unicode (lugaru.com/man/Character.Constants.html)
   - [x] unescape without eval? (https://github.com/iamakulov/unescape-js#readme)
   - [ ] `\flat`? (https://docs.julialang.org/en/v1/manual/unicode-input/) (https://github.com/coq/coq/blob/master/ide/default_bindings_src.ml)

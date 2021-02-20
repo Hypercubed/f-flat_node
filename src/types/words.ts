@@ -32,12 +32,6 @@ abstract class Action {
     return this.value.inspect ? this.value.inspect() : String(this.value);
   }
 
-  toJSON(): any {
-    return {
-      '@@Action': encode(this.value)
-    };
-  }
-
   equals(b: any): boolean {
     return typeof this.value.equals === 'function'
       ? this.value.equals(b.value)
@@ -79,6 +73,12 @@ export class Word extends Action {
       Object.freeze(this);
     }
   }
+
+  toJSON(): any {
+    return {
+      '@@Word': encode(this.value)
+    };
+  }
 }
 
 export class Key extends Action {
@@ -99,6 +99,12 @@ export class Key extends Action {
       Object.freeze(this);
     }
   }
+
+  toJSON(): any {
+    return {
+      '@@Key': encode(this.value)
+    };
+  }
 }
 
 export class Sentence extends Action {
@@ -115,5 +121,11 @@ export class Sentence extends Action {
     if (new.target === Sentence) {
       Object.freeze(this);
     }
+  }
+
+  toJSON(): any {
+    return {
+      '@@Sentence': encode(this.value)
+    };
   }
 }

@@ -125,7 +125,7 @@ test('should read and parse JSON', async () => {
   ).toEqual(τ([good]));
 });
 
-test('throw on missing file', async () => {
+test.skip('throw on missing file', async () => {
   expect(ƒ(`'file:///Users/missing/file.ff' read`)).rejects.toThrow(
     `Error calling 'read': ENOENT: no such file or directory, open '/Users/missing/file.ff'`
   );

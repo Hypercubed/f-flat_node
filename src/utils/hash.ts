@@ -2,6 +2,7 @@ import { signature, Any } from '@hypercubed/dynamo';
 import * as MurmurHash3 from 'imurmurhash';
 
 import { dynamo } from '../types/dynamo';
+import { stringifyStrict } from './json';
 
 const m = new MurmurHash3();
 
@@ -33,7 +34,7 @@ class Hash {
   any(x: any): void {
     const type = Object.prototype.toString.call(x);
     m.hash(type);
-    m.hash(JSON.stringify(x));
+    m.hash(stringifyStrict(x));
   }
 }
 
