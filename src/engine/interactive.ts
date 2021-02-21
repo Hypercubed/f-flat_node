@@ -291,7 +291,7 @@ export class CLI {
         const N = Math.max(0, this.f.stack.length - 20);
         for (let i = N; i < this.f.stack.length; i++) {
           const v = this.f.stack[i];
-          const n = fixedWidthString(this.f.stack.length - i, 4, {
+          const n = fixedWidthString(String(this.f.stack.length - i), 4, {
             align: 'right'
           });
           const id = objectId(v);
