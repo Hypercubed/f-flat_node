@@ -24,6 +24,7 @@
 - [ ] Speed up main loop
   - [ ] flag to disable stack tracing
   - [ ] move checkMaxErrors to signal?
+- [ ] Add reader/writer objects
 
 ## TODO Now
 - [ ] remove `action` type (`word`, `key`, etc)

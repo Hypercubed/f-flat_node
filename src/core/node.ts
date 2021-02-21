@@ -103,7 +103,9 @@ export const node = {
     try {
       process.stdout.clearLine(-1);
       process.stdout.cursorTo(0);
-    } catch (e) {}
+    } catch (e) {
+      // nop
+    }
     console.table(a);
     bar.interrupt('');
   },
@@ -231,7 +233,9 @@ export const node = {
     try {
       process.stdout.clearLine(-1);
       process.stdout.cursorTo(0);
-    } catch (e) {}
+    } catch (e) {
+      // nop
+    }
     spawnSync(x, { shell: false, stdio: 'inherit' });
     bar.interrupt('');
   }

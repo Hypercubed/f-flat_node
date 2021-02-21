@@ -13,12 +13,12 @@
     "prestart-docs": "npm run docs",
     "start-docs": "cd docs && bundle exec jekyll serve",
     "test": "run-s test:*",
-    "test:lint": "tslint \"{test,src,bin}/**/*.{js,ts,spec.ts}\"",
+    "test:lint": "eslint \"src/**/*.{js,ts}\" --ext .ts",
     "test:prettier": "prettier \"{test,src,bin}/**/*.{js,ts,spec.ts}\" --check",
     "test:unit": "jest",
     "watch": "jest --watch",
     "fix": "run-s fix:*",
-    "fix:lint": "tslint --fix \"{test,src,bin}/**/*.{js,ts,spec.ts}\"",
+    "fix:lint": "eslint \"src/**/*.{js,ts}\" --ext .ts --fix",
     "fix:prettier": "prettier \"{test,src,bin}/**/*.{js,ts,spec.ts}\" --write",
     "check": "run-s test:lint test:prettier",
     "coverage": "jest --coverage",
@@ -65,6 +65,10 @@
   "devDependencies": {
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.31",
+    "@typescript-eslint/eslint-plugin": "^4.15.1",
+    "@typescript-eslint/parser": "^4.15.1",
+    "eslint": "^7.20.0",
+    "eslint-config-prettier": "^7.2.0",
     "fast-check": "^2.13.0",
     "grammkit": "^0.7.1",
     "jest": "^26.6.3",
@@ -76,7 +80,6 @@
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.1",
-    "tslint": "^6.1.3",
     "typescript": "^4.1.5"
   },
   "files": [

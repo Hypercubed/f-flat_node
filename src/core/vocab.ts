@@ -206,7 +206,9 @@ export const dict = {
     try {
       process.stdout.clearLine(-1);
       process.stdout.cursorTo(0);
-    } catch (e) {}
+    } catch (e) {
+      // nop
+    }
     return console.log(ffPrettyPrint.color(r));
   },
 
